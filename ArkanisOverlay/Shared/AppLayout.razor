@@ -1,0 +1,12 @@
+@using System.Diagnostics
+@inherits LayoutComponentBase
+@layout MainLayout
+@inject IJSRuntime JsRuntime
+
+@Body
+
+@code {
+
+    [CascadingParameter] public Error? Error { get; set; }
+
+}
