@@ -11,12 +11,17 @@
         ResizeMode="NoResize"
         Topmost="True"
         ShowInTaskbar="False"
-        WindowStyle="None">
+        WindowStyle="None"
+        Visibility="Collapsed"
+        Focusable="True"
+        AllowsTransparency="True"
+        Background="#01000000">
     <Grid x:Name="blazorUIGrid">
         <blazor:BlazorWebView HostPage="wwwroot\index.html"
                               Services="{StaticResource services}"
                               x:Name="blazorWebView"
-                              Loaded="MainWindow_Loaded">
+                              Loaded="MainWindow_Loaded"
+                              Panel.ZIndex="99">
             <blazor:BlazorWebView.RootComponents>
                 <blazor:RootComponent Selector="#app" ComponentType="{x:Type local:RazorApp}" />
             </blazor:BlazorWebView.RootComponents>

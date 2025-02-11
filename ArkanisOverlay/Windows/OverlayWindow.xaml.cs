@@ -16,7 +16,7 @@ namespace ArkanisOverlay.Windows;
 public partial class OverlayWindow : Window
 {
     private readonly Thread _windowTrackerThread;
-    
+
     public OverlayWindow()
     {
         var serviceCollection = new ServiceCollection();
@@ -24,29 +24,37 @@ public partial class OverlayWindow : Window
         serviceCollection.AddLogging(builder => builder.AddConsole());
         serviceCollection.AddWpfBlazorWebView();
         serviceCollection.AddMudServices();
-        
+
         WindowTracker windowTracker =
             new(
                 // ugly temp "solution"
-                new Logger<WindowTracker>(LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug))),
+                new Logger<WindowTracker>(LoggerFactory.Create(builder =>
+                    builder.AddConsole().SetMinimumLevel(LogLevel.Debug))),
                 Constants.WINDOW_CLASS,
                 Constants.WINDOW_NAME
             );
         serviceCollection.AddSingleton(windowTracker);
-        
+
         windowTracker.WindowPositionChanged += (sender, position) => Dispatcher.Invoke(() =>
         {
             Top = position.Y;
             Left = position.X;
         });
-        
+
         windowTracker.WindowSizeChanged += (sender, size) => Dispatcher.Invoke(() =>
         {
             Width = size.Width;
             Height = size.Height;
         });
 
-        _windowTrackerThread = new Thread(new ThreadStart(windowTracker.Start));
+        windowTracker.WindowFocusChanged += (sender, isFocused) => Dispatcher.Invoke(() =>
+        {
+            Visibility = isFocused ? Visibility.Visible : Visibility.Collapsed;
+            
+            // Topmost = isFocused;
+        });
+
+        _windowTrackerThread = new Thread(windowTracker.Start);
         _windowTrackerThread.Start();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();

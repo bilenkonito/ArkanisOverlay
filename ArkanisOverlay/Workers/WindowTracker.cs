@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows.Interop;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -162,9 +163,9 @@ public class WindowTracker
         }
 
         var length = PInvoke.GetWindowTextLength(hWnd);
-        Span<char> className = stackalloc char[length];
-        PInvoke.GetClassName(hWnd, className);
-        return new string(className);
+        Span<char> windowText = stackalloc char[length];
+        PInvoke.GetWindowText(hWnd, windowText);
+        return new string(windowText);
     }
 
     private Size GetWindowSize()
@@ -339,9 +340,11 @@ public class WindowTracker
         uint idEventThread,
         uint dwmsEventTime)
     {
-        // safety precaution
-        if (hWnd == HWND.Null) return;
-
-        WindowFocusChanged?.Invoke(this, IsWindowFocussed());
+        WindowFocusChanged?.Invoke(this,
+            hWnd != HWND.Null &&
+            (hWnd == _currentWindowHWnd ||
+             // allows for convenient debugging
+             // this way the DevTools window counts as the window being focused
+             (Debugger.IsAttached && GetWindowText(hWnd).StartsWith("DevTools"))));
     }
 }
