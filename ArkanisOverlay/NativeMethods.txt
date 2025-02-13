@@ -54,3 +54,9 @@ GetModuleHandle
 WINDOWS_HOOK_ID
 HC_ACTION
 KBDLLHOOKSTRUCT
+
+// Blur
+SetWindowCompositionAttribute
+WINDOWCOMPOSITIONATTRIBDATA
+WindowCompositionAttribute
+AccentState

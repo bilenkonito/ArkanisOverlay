@@ -1,9 +1,12 @@
-@using System.Diagnostics
 @inherits LayoutComponentBase
 @layout MainLayout
 @inject IJSRuntime JsRuntime
 
-@Body
+<MudLayout>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
 
 @code {
 
