@@ -1,0 +1,27 @@
+@page "/"
+@page "/overlay"
+
+<MudContainer>
+    <MudGrid>
+        <h1>Counter</h1>
+        <p>Current count: @currentCount</p>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="IncrementCount">Click me</MudButton>
+    </MudGrid>
+</MudContainer>
+
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Console.WriteLine("Overlay initialized");
+    }
+
+}

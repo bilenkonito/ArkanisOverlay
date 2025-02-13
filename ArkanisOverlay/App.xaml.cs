@@ -8,7 +8,7 @@ using Application = System.Windows.Application;
 namespace ArkanisOverlay;
 
 /// <summary>
-/// Interaction logic for App.xaml
+/// Interaction logic for Overlay.xaml
 /// </summary>
 public partial class App : Application
 {

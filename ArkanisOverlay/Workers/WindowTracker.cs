@@ -52,9 +52,14 @@ public class WindowTracker
         WindowName = windowName;
 
         WindowFound += OnWindowFound;
+        WindowLost += OnWindowLost;
     }
 
 
+    /**
+     * Entry method for Thread.
+     * Registers window event hooks and starts message loop.
+     */
     public void Start()
     {
         var hWnd = FindWindow();
@@ -236,6 +241,34 @@ public class WindowTracker
         );
     }
 
+    private void OnWindowLost(object? sender, EventArgs eventArgs)
+    {
+        Logger.LogDebug("Window lost.");
+
+        // unhook all current event listeners
+        foreach (HWINEVENTHOOK registeredHWinEventHook in _registeredHooksDictionary.Keys)
+        {
+            UnhookWinEvent(registeredHWinEventHook);
+            _registeredHooksDictionary.Remove(registeredHWinEventHook);
+        }
+
+        // just to be safe (should, ideally, be completely redundant and a waste of a re-allocation)
+        _registeredHooksDictionary = new Dictionary<IntPtr, WINEVENTPROC>();
+
+        // reset window handle
+        _currentWindowHWnd = default;
+
+        // start waiting for new window
+        RegisterWinEventHook(
+            PInvoke.EVENT_OBJECT_CREATE,
+            PInvoke.EVENT_OBJECT_CREATE,
+            Handler_WindowCreated,
+            0,
+            0,
+            PInvoke.WINEVENT_OUTOFCONTEXT | PInvoke.WINEVENT_SKIPOWNPROCESS
+        );
+    }
+
 
     private void Handler_WindowCreated(
         HWINEVENTHOOK hWinEventHook,
@@ -289,29 +322,6 @@ public class WindowTracker
 
         Logger.LogDebug("Window destroyed.");
 
-        // unhook all current event listeners
-        foreach (HWINEVENTHOOK registeredHWinEventHook in _registeredHooksDictionary.Keys)
-        {
-            UnhookWinEvent(registeredHWinEventHook);
-            _registeredHooksDictionary.Remove(registeredHWinEventHook);
-        }
-
-        // just to be safe (should, ideally, be completely redundant and a waste of a re-allocation)
-        _registeredHooksDictionary = new Dictionary<IntPtr, WINEVENTPROC>();
-
-        // reset window handle
-        _currentWindowHWnd = default;
-
-        // start waiting for new window
-        RegisterWinEventHook(
-            PInvoke.EVENT_OBJECT_CREATE,
-            PInvoke.EVENT_OBJECT_CREATE,
-            Handler_WindowCreated,
-            0,
-            0,
-            PInvoke.WINEVENT_OUTOFCONTEXT | PInvoke.WINEVENT_SKIPOWNPROCESS
-        );
-
         WindowLost?.Invoke(this, EventArgs.Empty);
     }
 
@@ -340,11 +350,20 @@ public class WindowTracker
         uint idEventThread,
         uint dwmsEventTime)
     {
+        // safety precaution
+        if (hWnd == HWND.Null) return;
+
+        var isFocused = hWnd == _currentWindowHWnd;
+        
+#if DEBUG
+        // allows for convenient debugging
+        // this way the DevTools window counts as the window being focused
+        isFocused |= Debugger.IsAttached && GetWindowText(hWnd).StartsWith("DevTools");
+#endif
+
+        Logger.LogDebug("Window focus changed: {isFocused}", isFocused);
+        ;
         WindowFocusChanged?.Invoke(this,
-            hWnd != HWND.Null &&
-            (hWnd == _currentWindowHWnd ||
-             // allows for convenient debugging
-             // this way the DevTools window counts as the window being focused
-             (Debugger.IsAttached && GetWindowText(hWnd).StartsWith("DevTools"))));
+            isFocused);
     }
 }
