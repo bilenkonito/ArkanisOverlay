@@ -14,7 +14,7 @@ public class WindowTracker
     /**
      * Raised when the window was found.
      */
-    public event EventHandler? WindowFound;
+    internal event EventHandler<HWND>? WindowFound;
 
     /**
      * Raised when the window was lost. This means that it is likely to be destroyed.
@@ -67,7 +67,7 @@ public class WindowTracker
         if (hWnd != HWND.Null)
         {
             _currentWindowHWnd = hWnd;
-            WindowFound?.Invoke(this, EventArgs.Empty);
+            WindowFound?.Invoke(this, hWnd);
         }
         else
         {
@@ -196,7 +196,7 @@ public class WindowTracker
         return activeWindowHWnd == _currentWindowHWnd && activeWindowHWnd != HWND.Null;
     }
 
-    private void OnWindowFound(object? sender, EventArgs eventArgs)
+    private void OnWindowFound(object? sender, HWND hWnd)
     {
         Logger.LogDebug("Window found.");
 
@@ -304,7 +304,7 @@ public class WindowTracker
         // stop listening for WindowCreated events
         UnhookWinEvent(hWinEventHook);
 
-        WindowFound?.Invoke(this, EventArgs.Empty);
+        WindowFound?.Invoke(this, hWnd);
     }
 
     private void Handler_WindowDestroyed(

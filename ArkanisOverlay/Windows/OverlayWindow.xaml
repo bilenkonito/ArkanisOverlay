@@ -14,8 +14,10 @@
         WindowStyle="None"
         Visibility="Collapsed"
         Focusable="True"
-        AllowsTransparency="True"
-        Background="#01000000">
+        AllowsTransparency="True">
+    <Window.Background>
+        <SolidColorBrush Color="#010000" Opacity="0.05" />
+    </Window.Background>
     <Grid x:Name="blazorUIGrid">
         <blazor:BlazorWebView HostPage="wwwroot\index.html"
                               Services="{StaticResource services}"

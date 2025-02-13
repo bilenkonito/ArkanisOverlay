@@ -17,6 +17,7 @@ GetClientRect
 ClientToScreen
 GetActiveWindow
 GetWindowThreadProcessId
+SetForegroundWindow
 
 // Winuser.h Event Constants
 // https://learn.microsoft.com/en-us/windows/win32/winauto/event-constants

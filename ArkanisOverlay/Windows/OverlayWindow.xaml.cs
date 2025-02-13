@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using Windows.Win32;
+using Windows.Win32.Foundation;
 using ArkanisOverlay.Workers;
 using Microsoft.AspNetCore.Components.WebView;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using Microsoft.Web.WebView2.Core;
 using MudBlazor.Services;
 
@@ -15,14 +17,20 @@ namespace ArkanisOverlay.Windows;
 /// </summary>
 public partial class OverlayWindow : Window
 {
+    public static OverlayWindow? Instance { get; private set; } 
+    
     private readonly Thread _windowTrackerThread;
     // private readonly Thread _keyboardTrackerThread;
     private readonly Thread _globalHotKeyThread;
     
-    private bool IsStarCitizenFocussed = false;
+    private bool IsStarCitizenFocussed;
+    
+    private HWND _currentWindowHWnd = HWND.Null;
 
     public OverlayWindow()
     {
+        Instance = this;
+        
         var serviceCollection = new ServiceCollection();
 
         serviceCollection.AddLogging(builder => builder.AddConsole());
@@ -38,6 +46,16 @@ public partial class OverlayWindow : Window
                 Constants.WINDOW_NAME
             );
         serviceCollection.AddSingleton(windowTracker);
+        
+        windowTracker.WindowFound += (sender, hWnd) => Dispatcher.Invoke(() =>
+        {
+            _currentWindowHWnd = hWnd;
+        });
+        
+        windowTracker.WindowLost += (sender, args) => Dispatcher.Invoke(() =>
+        {
+            _currentWindowHWnd = HWND.Null;
+        });
 
         windowTracker.WindowPositionChanged += (sender, position) => Dispatcher.Invoke(() =>
         {
@@ -122,6 +140,7 @@ public partial class OverlayWindow : Window
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
+        blazorWebView.WebView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
         blazorWebView.WebView.NavigationCompleted += WebView_Loaded;
         blazorWebView.WebView.CoreWebView2InitializationCompleted += CoreWebView_Loaded;
         Visibility = Visibility.Collapsed;
@@ -138,5 +157,19 @@ public partial class OverlayWindow : Window
         // blazorWebView.WebView.CoreWebView2.SetVirtualHostNameToFolderMapping("local.data", "Data", CoreWebView2HostResourceAccessKind.Allow);
         // blazorWebView.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
         // blazorWebView.WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+    }
+
+    /// <summary>
+    /// Interface to hide the overlay from JS.
+    /// Collapses the window. This will hide the window and give focus back to Star Citizen.
+    /// </summary>
+    public void Collapse()
+    {
+        Visibility = Visibility.Collapsed;
+        // we switch focus back to Star Citizen because
+        // otherwise the previously active window will
+        // receive focus instead for some reason
+        if (_currentWindowHWnd == HWND.Null) return;
+        PInvoke.SetForegroundWindow(_currentWindowHWnd);
     }
 }

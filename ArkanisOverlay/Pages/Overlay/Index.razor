@@ -1,16 +1,46 @@
 @page "/"
 @page "/overlay"
+@using System.Windows
+@using ArkanisOverlay.Windows
 
-<MudContainer>
-    <MudGrid>
+<style>
+    html, body {
+        height: 100%;
+        width: 100%;
+    }
+    
+    body {
+        background-color: transparent;
+    }
+    
+    #clickAwayBackground {
+        position: absolute;
+        /*top: 0;*/
+        /*left: 0;*/
+        width: 100%;
+        height: 100%;
+        background-color: #FF000030;
+    }
+</style>
+
+<div id="clickAwayBackground" onmousedown="if (event.target == this) DotNet.invokeMethodAsync('ArkanisOverlay', 'ClickAwayHide')">
+    
+</div>
+
+@* <MudContainer> *@
+@*     <MudGrid> *@
         <h1>Counter</h1>
         <p>Current count: @currentCount</p>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="IncrementCount">Click me</MudButton>
-    </MudGrid>
-</MudContainer>
+@*     </MudGrid> *@
+@* </MudContainer> *@
 
 
 @code {
+
+    [JSInvokable("ClickAwayHide")]
+    public static void ClickAwayHide() => OverlayWindow.Instance?.Collapse();
+    
     private int currentCount = 0;
 
     private void IncrementCount()
