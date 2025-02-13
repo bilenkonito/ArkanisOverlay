@@ -3,6 +3,7 @@
 @layout OverlayLayout
 @using ArkanisOverlay.Windows
 
+<!--suppress CssUnusedSymbol -->
 <style>
     body {
         background-color: transparent;
@@ -15,36 +16,46 @@
         width: 100%;
         height: 100%;
         background-color: #FF000030;
-        z-index: -1;
     }
 
     #searchContainer {
         position: relative;
-        top: 50%;
+        top: 30%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -30%);
         width: fit-content;
+        z-index: 1;
+
+        .mud-input-control {
+            margin: 0;
+            width: 60vw;
+        }
+
+        .mud-input,
+        .mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
+            font-size: 2vh; /* 1 rem is default */
+        }
+
+        .mud-icon-size-medium {
+            font-size: 2.5vh;
+        }
     }
 </style>
 
 <div id="clickAwayBackground"
      onmousedown="if (event.target == this) DotNet.invokeMethodAsync('ArkanisOverlay', 'ClickAwayHide')">
-
 </div>
 
-@* <MudContainer> *@
-@*     <MudGrid> *@
-<MudPaper id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0"
-          Style="position: relative">
-    <MudTextField @bind-Value="SearchText" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary"></MudTextField>
+<MudPaper id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
+    <MudTextField id="searchBox" @bind-Value="SearchText" Variant="Variant.Outlined" Adornment="Adornment.End"
+                  AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary"
+                  HelperText=":c Commodities, :s Ships, :v Vehicles, :i Items, :l Locations">
+    </MudTextField>
 </MudPaper>
-@*     </MudGrid> *@
-@* </MudContainer> *@
-
 
 @code {
     public string SearchText { get; set; } = "";
-    
+
     [JSInvokable("ClickAwayHide")]
     public static void ClickAwayHide() => OverlayWindow.Instance?.Collapse();
 
