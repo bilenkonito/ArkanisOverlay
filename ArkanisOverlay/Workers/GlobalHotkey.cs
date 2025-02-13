@@ -89,6 +89,7 @@ public class GlobalHotkey : IDisposable
 
     private bool _isShiftDown;
     private bool _isAltDown;
+    private bool _isSDown;
 
     /**
      * LowLevelKeyboardProc
@@ -107,33 +108,28 @@ public class GlobalHotkey : IDisposable
             switch ((VIRTUAL_KEY)hookStruct.vkCode)
             {
                 case VIRTUAL_KEY.VK_LMENU:
-                    if (wparam == PInvoke.WM_SYSKEYDOWN)
+                    if (wparam == PInvoke.WM_SYSKEYDOWN || wparam == PInvoke.WM_KEYDOWN)
                         _isAltDown = true;
-                    if (wparam == PInvoke.WM_KEYUP)
+                    if (wparam == PInvoke.WM_SYSKEYUP || wparam == PInvoke.WM_KEYUP)
                         _isAltDown = false;
                     break;
                 case VIRTUAL_KEY.VK_LSHIFT:
-                    if (wparam == PInvoke.WM_SYSKEYDOWN)
+                    if (wparam == PInvoke.WM_SYSKEYDOWN || wparam  == PInvoke.WM_KEYDOWN)
                         _isShiftDown = true;
-                    if (wparam == PInvoke.WM_KEYUP)
+                    if (wparam == PInvoke.WM_SYSKEYUP || wparam == PInvoke.WM_KEYUP)
                         _isShiftDown = false;
                     break;
                 case VIRTUAL_KEY.VK_S:
-                    if (wparam == PInvoke.WM_SYSKEYDOWN)
-                    {
-                        if (_isShiftDown && _isAltDown)
-                        {
-                            TabKeyPressed?.Invoke(null, EventArgs.Empty);
-                        }
-                    }
-
+                    if (wparam == PInvoke.WM_SYSKEYDOWN || wparam  == PInvoke.WM_KEYDOWN)
+                        _isSDown = true;
+                    if (wparam == PInvoke.WM_SYSKEYUP || wparam == PInvoke.WM_KEYUP)
+                        _isSDown = false;
                     break;
-                // case VIRTUAL_KEY.VK_TAB:
-                //     if (wparam == PInvoke.WM_KEYDOWN)
-                //     {
-                //         TabKeyPressed?.Invoke(null, EventArgs.Empty);
-                //     }
-                //     break;
+            }
+            
+            if (_isSDown && _isShiftDown && _isAltDown)
+            {
+                TabKeyPressed?.Invoke(null, EventArgs.Empty);
             }
         }
 
