@@ -99,32 +99,28 @@ public class GlobalHotkey : IDisposable
                         isAltDown = true;
                     if (wparam == PInvoke.WM_KEYUP)
                         isAltDown = false;
-                    Logger.LogInformation("AltKey: {isAltDown}", isAltDown);
                     break;
                 case VIRTUAL_KEY.VK_LSHIFT:
                     if (wparam == PInvoke.WM_SYSKEYDOWN)
                         isShiftDown = true;
                     if (wparam == PInvoke.WM_KEYUP)
                         isShiftDown = false;
-                    Logger.LogInformation("ShiftKey: {isShiftDown}", isShiftDown);
-                    break;
-                case VIRTUAL_KEY.VK_TAB:
-                    if (wparam == PInvoke.WM_KEYDOWN)
-                    {
-                        Logger.LogInformation("Tab key pressed.");
-                        TabKeyPressed?.Invoke(null, EventArgs.Empty);
-                    }
                     break;
                 case VIRTUAL_KEY.VK_S:
                     if (wparam == PInvoke.WM_SYSKEYDOWN)
                     {
                         if (isShiftDown && isAltDown)
                         {
-                            Logger.LogInformation("Shift + Alt + S key pressed.");
                             TabKeyPressed?.Invoke(null, EventArgs.Empty);
                         }
                     }
                     break;
+                // case VIRTUAL_KEY.VK_TAB:
+                //     if (wparam == PInvoke.WM_KEYDOWN)
+                //     {
+                //         TabKeyPressed?.Invoke(null, EventArgs.Empty);
+                //     }
+                //     break;
             }
         }
         
