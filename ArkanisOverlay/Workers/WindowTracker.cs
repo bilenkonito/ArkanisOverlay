@@ -367,6 +367,8 @@ public class WindowTracker
         // if (hWnd == HWND.Null) return;
 
         // var isFocused = hWnd == _currentWindowHWnd;
+        // sometimes there is an eroneous detected focus change
+        // if the above check is used, the below check works 100% of the time
         var isFocused = PInvoke.GetForegroundWindow() == _currentWindowHWnd;
         
 #if DEBUG
