@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using System.Windows.Interop;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
+using Windows.Win32.UI.WindowsAndMessaging;
 using Microsoft.Extensions.Logging;
 
 namespace ArkanisOverlay.Workers;
@@ -45,22 +45,35 @@ public class WindowTracker
     private static Dictionary<IntPtr, WINEVENTPROC> _registeredHooksDictionary = new();
     private HWND _currentWindowHWnd;
 
-    public WindowTracker(ILogger logger, string? windowClass, string? windowName)
+    private Thread? _thread;
+
+    public WindowTracker(ILogger<WindowTracker> logger)
     {
         Logger = logger;
-        WindowClass = windowClass;
-        WindowName = windowName;
+        WindowClass = Constants.WINDOW_CLASS;
+        WindowName = Constants.WINDOW_NAME;
 
         WindowFound += OnWindowFound;
         WindowLost += OnWindowLost;
     }
 
+    public void Start()
+    {
+        _thread = new Thread(Run)
+        {
+            // ensures that the application can exit
+            // regardless of this thread
+            // see: https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread.isbackground?view=net-9.0
+            IsBackground = true
+        };
+        _thread.Start();
+    }
 
     /**
      * Entry method for Thread.
-     * Registers window event hooks and starts message loop.
+     * Registers window event hooks and executes the message loop.
      */
-    public void Start()
+    private void Run()
     {
         var hWnd = FindWindow();
 
@@ -191,7 +204,7 @@ public class WindowTracker
 
     private bool IsWindowFocussed()
     {
-        var activeWindowHWnd = PInvoke.GetActiveWindow();
+        var activeWindowHWnd = PInvoke.GetForegroundWindow();
 
         return activeWindowHWnd == _currentWindowHWnd && activeWindowHWnd != HWND.Null;
     }
@@ -351,19 +364,21 @@ public class WindowTracker
         uint dwmsEventTime)
     {
         // safety precaution
-        if (hWnd == HWND.Null) return;
+        // if (hWnd == HWND.Null) return;
 
-        var isFocused = hWnd == _currentWindowHWnd;
+        // var isFocused = hWnd == _currentWindowHWnd;
+        var isFocused = PInvoke.GetForegroundWindow() == _currentWindowHWnd;
         
 #if DEBUG
+        var windowTitle = GetWindowText(hWnd);
         // allows for convenient debugging
         // this way the DevTools window counts as the window being focused
-        isFocused |= Debugger.IsAttached && GetWindowText(hWnd).StartsWith("DevTools");
+        isFocused |= Debugger.IsAttached && windowTitle.StartsWith("DevTools");
 #endif
 
-        Logger.LogDebug("Window focus changed: {isFocused}", isFocused);
-        ;
-        WindowFocusChanged?.Invoke(this,
-            isFocused);
+        // Logger.LogDebug(
+        //     "Window focus changed: {isFocused} => Event: {event} - hWnd: {hWnd} - idObject: {idObject} - idChild: {idChild} - idEventThread: {idEventThread} - dwmsEventTime: {dwmsEventTime} - WindowTitle: '{windowTitle}'",
+        //     isFocused, @event, (IntPtr)hWnd, idObject, idChild, idEventThread, dwmsEventTime, windowTitle);
+        WindowFocusChanged?.Invoke(this, isFocused);
     }
 }

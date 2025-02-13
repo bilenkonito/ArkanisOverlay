@@ -3,144 +3,95 @@ using System.Windows;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using ArkanisOverlay.Workers;
-using Microsoft.AspNetCore.Components.WebView;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
 using Microsoft.Web.WebView2.Core;
-using MudBlazor.Services;
 
 namespace ArkanisOverlay.Windows;
 
 /// <summary>
 /// Interaction logic for OverlayWindow.xaml
 /// </summary>
-public partial class OverlayWindow : Window
+public partial class OverlayWindow
 {
-    public static OverlayWindow? Instance { get; private set; } 
-    
-    private readonly Thread _windowTrackerThread;
-    // private readonly Thread _keyboardTrackerThread;
-    private readonly Thread _globalHotKeyThread;
-    
-    private bool IsStarCitizenFocussed;
-    
-    private HWND _currentWindowHWnd = HWND.Null;
+    public static OverlayWindow? Instance { get; private set; }
 
-    public OverlayWindow()
+    private readonly ILogger _logger;
+    private readonly WindowTracker _windowTracker;
+    private readonly GlobalHotkey _globalHotkey;
+
+    private bool _isStarCitizenFocussed;
+    private HWND _currentWindowHWnd = HWND.Null;
+    
+
+    public OverlayWindow(ILogger<OverlayWindow> logger, WindowTracker windowTracker, GlobalHotkey globalHotkey)
     {
         Instance = this;
+
+        _logger = logger;
+        _windowTracker = windowTracker;
+        _globalHotkey = globalHotkey;
+
+        SetupWorkerEventListeners();
         
-        var serviceCollection = new ServiceCollection();
-
-        serviceCollection.AddLogging(builder => builder.AddConsole());
-        serviceCollection.AddWpfBlazorWebView();
-        serviceCollection.AddMudServices();
-
-        WindowTracker windowTracker =
-            new(
-                // ugly temp "solution"
-                new Logger<WindowTracker>(LoggerFactory.Create(builder =>
-                    builder.AddConsole().SetMinimumLevel(LogLevel.Debug))),
-                Constants.WINDOW_CLASS,
-                Constants.WINDOW_NAME
-            );
-        serviceCollection.AddSingleton(windowTracker);
-        
-        windowTracker.WindowFound += (sender, hWnd) => Dispatcher.Invoke(() =>
-        {
-            _currentWindowHWnd = hWnd;
-        });
-        
-        windowTracker.WindowLost += (sender, args) => Dispatcher.Invoke(() =>
-        {
-            _currentWindowHWnd = HWND.Null;
-        });
-
-        windowTracker.WindowPositionChanged += (sender, position) => Dispatcher.Invoke(() =>
-        {
-            Top = position.Y;
-            Left = position.X;
-        });
-
-        windowTracker.WindowSizeChanged += (sender, size) => Dispatcher.Invoke(() =>
-        {
-            Width = size.Width;
-            Height = size.Height;
-        });
-
-        windowTracker.WindowFocusChanged += (sender, isFocused) => Dispatcher.Invoke(() =>
-        {
-            Console.WriteLine("Overlay: WindowFocusChanged: {0}", isFocused);
-            IsStarCitizenFocussed = isFocused;
-            
-            if (isFocused) return;
-            
-            Visibility = Visibility.Collapsed;
-            // Topmost = isFocused;
-        });
-
-        _windowTrackerThread = new Thread(windowTracker.Start);
-        _windowTrackerThread.Start();
-
-        // KeyboardTracker keyboardTracker =
-        //     new(
-        //         // ugly temp "solution"
-        //         new Logger<KeyboardTracker>(LoggerFactory.Create(builder =>
-        //             builder.AddConsole().SetMinimumLevel(LogLevel.Debug)))
-        //     );
-        // serviceCollection.AddSingleton(keyboardTracker);
-        //
-        // keyboardTracker.TabKeyPressed += (sender, args) => Dispatcher.Invoke(() =>
-        // {
-        //     if (!IsStarCitizenFocussed) return;
-        //     
-        //     Visibility = Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
-        // });
-        //
-        // _keyboardTrackerThread = new Thread(keyboardTracker.Start);
-        // _keyboardTrackerThread.Start();
-        
-        GlobalHotkey globalHotkey =
-            new(
-                // ugly temp "solution"
-                new Logger<GlobalHotkey>(LoggerFactory.Create(builder =>
-                    builder.AddConsole().SetMinimumLevel(LogLevel.Debug)))
-            );
-        serviceCollection.AddSingleton(globalHotkey);
-
-        globalHotkey.TabKeyPressed += (sender, args) => Dispatcher.Invoke(() =>
-        {
-            Console.WriteLine("Overlay: TabKeyPressed");
-            
-            if (!IsStarCitizenFocussed) return;
-
-            Visibility = Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
-        });
-        
-        _globalHotKeyThread = new Thread(globalHotkey.Start);
-        _globalHotKeyThread.Start();
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-
-        Resources.Add("services", serviceProvider);
-
-        Visibility = Visibility.Collapsed;
         InitializeComponent();
     }
 
-    private void Handle_UrlLoading(object sender, UrlLoadingEventArgs urlLoadingEventArgs)
+    protected override void OnInitialized(EventArgs e)
     {
-        if (urlLoadingEventArgs.Url.Host != "0.0.0.0")
-        {
-            urlLoadingEventArgs.UrlLoadingStrategy =
-                UrlLoadingStrategy.OpenInWebView;
-        }
+        base.OnInitialized(e);
+        
+        _windowTracker.Start();
+        _globalHotkey.Start();
     }
+
+    private void SetupWorkerEventListeners()
+    {
+        _windowTracker.WindowFound += (_, hWnd) => Dispatcher.Invoke(() => { _currentWindowHWnd = hWnd; });
+        _windowTracker.WindowLost += (_, _) => Dispatcher.Invoke(() => { _currentWindowHWnd = HWND.Null; });
+        _windowTracker.WindowPositionChanged += (_, position) => Dispatcher.Invoke(() =>
+        {
+            _logger.LogDebug("Overlay: WindowPositionChanged: {position}", position.ToString());
+            Top = position.Y;
+            Left = position.X;
+        });
+        _windowTracker.WindowSizeChanged += (_, size) => Dispatcher.Invoke(() =>
+        {
+            _logger.LogDebug("Overlay: WindowSizeChanged: {size}", size.ToString());
+            Width = size.Width;
+            Height = size.Height;
+        });
+        _windowTracker.WindowFocusChanged += (_, isFocused) => Dispatcher.Invoke(() =>
+        {
+            _logger.LogDebug("Overlay: WindowFocusChanged: {isFocused}", isFocused);
+            _isStarCitizenFocussed = isFocused;
+
+            if (isFocused) return;
+
+            Visibility = Visibility.Collapsed;
+        });
+
+        _globalHotkey.TabKeyPressed += (_, _) => Dispatcher.Invoke(() =>
+        {
+            Console.WriteLine("Overlay: HotKeyPressed");
+
+            if (!_isStarCitizenFocussed) return;
+
+            Visibility = Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+        });
+    }
+
+    // private void Handle_UrlLoading(object sender, UrlLoadingEventArgs urlLoadingEventArgs)
+    // {
+    //     if (urlLoadingEventArgs.Url.Host != "0.0.0.0")
+    //     {
+    //         urlLoadingEventArgs.UrlLoadingStrategy =
+    //             UrlLoadingStrategy.OpenInWebView;
+    //     }
+    // }
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
-        blazorWebView.WebView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
+        blazorWebView.WebView.DefaultBackgroundColor = Color.Transparent;
         blazorWebView.WebView.NavigationCompleted += WebView_Loaded;
         blazorWebView.WebView.CoreWebView2InitializationCompleted += CoreWebView_Loaded;
         Visibility = Visibility.Collapsed;

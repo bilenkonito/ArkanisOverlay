@@ -1,11 +1,9 @@
 using System.Runtime.InteropServices;
-using System.Windows.Input;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Microsoft.Extensions.Logging;
-
 
 namespace ArkanisOverlay.Workers;
 
@@ -15,29 +13,43 @@ namespace ArkanisOverlay.Workers;
  */
 public class GlobalHotkey : IDisposable
 {
-    private static HOOKPROC _proc;
+    private static HOOKPROC? _proc;
     private static HHOOK _hookId = HHOOK.Null;
     private ILogger Logger { get; }
+
+    private Thread? _thread;
 
     /**
      *
      */
     public event EventHandler? TabKeyPressed;
 
-    public GlobalHotkey(ILogger logger)
+    public GlobalHotkey(ILogger<GlobalHotkey> logger)
     {
         Logger = logger;
         _proc = HookProc;
     }
 
-    /**
-     * Entry method for Thread.
-     * Registers hotkeys and starts message loop.
-     */
     public void Start()
     {
+        _thread = new Thread(Run)
+        {
+            // ensures that the application can exit
+            // regardless of this thread
+            // see: https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread.isbackground?view=net-9.0
+            IsBackground = true
+        };
+        _thread.Start();
+    }
+
+    /**
+     * Entry method for Thread.
+     * Registers window event hooks and executes the message loop.
+     */
+    private void Run()
+    {
         SetHook();
-        
+
         // this thread needs a message loop
         // see: https://stackoverflow.com/a/2223270/4161937
         while (PInvoke.GetMessage(out var msg, HWND.Null, 0, 0))
@@ -55,15 +67,15 @@ public class GlobalHotkey : IDisposable
             var errorCode = Marshal.GetLastWin32Error();
             Logger.LogWarning("Failed to set hook; {errorCode}", errorCode);
             return;
-        };
+        }
         
         _hookId = hook;
     }
-    
+
     private void Unhook()
     {
         if (_hookId == HHOOK.Null) return;
-        
+
         var result = PInvoke.UnhookWindowsHookEx(_hookId);
         if (!result)
         {
@@ -71,12 +83,12 @@ public class GlobalHotkey : IDisposable
             Logger.LogWarning("Failed to unhook; {errorCode}", errorCode);
             return;
         }
-        
+
         _hookId = HHOOK.Null;
     }
 
-    private bool isShiftDown = false;
-    private bool isAltDown = false;
+    private bool _isShiftDown;
+    private bool _isAltDown;
 
     /**
      * LowLevelKeyboardProc
@@ -95,25 +107,26 @@ public class GlobalHotkey : IDisposable
             switch ((VIRTUAL_KEY)hookStruct.vkCode)
             {
                 case VIRTUAL_KEY.VK_LMENU:
-                    if (wparam == PInvoke.WM_SYSKEYDOWN) 
-                        isAltDown = true;
+                    if (wparam == PInvoke.WM_SYSKEYDOWN)
+                        _isAltDown = true;
                     if (wparam == PInvoke.WM_KEYUP)
-                        isAltDown = false;
+                        _isAltDown = false;
                     break;
                 case VIRTUAL_KEY.VK_LSHIFT:
                     if (wparam == PInvoke.WM_SYSKEYDOWN)
-                        isShiftDown = true;
+                        _isShiftDown = true;
                     if (wparam == PInvoke.WM_KEYUP)
-                        isShiftDown = false;
+                        _isShiftDown = false;
                     break;
                 case VIRTUAL_KEY.VK_S:
                     if (wparam == PInvoke.WM_SYSKEYDOWN)
                     {
-                        if (isShiftDown && isAltDown)
+                        if (_isShiftDown && _isAltDown)
                         {
                             TabKeyPressed?.Invoke(null, EventArgs.Empty);
                         }
                     }
+
                     break;
                 // case VIRTUAL_KEY.VK_TAB:
                 //     if (wparam == PInvoke.WM_KEYDOWN)
@@ -123,10 +136,10 @@ public class GlobalHotkey : IDisposable
                 //     break;
             }
         }
-        
+
         return PInvoke.CallNextHookEx(_hookId, nCode, wparam, lparam);
     }
-    
+
     public void Dispose()
     {
         Unhook();

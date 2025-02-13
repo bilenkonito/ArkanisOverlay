@@ -25,3 +25,5 @@
             - `Source Generators`
               - `Microsoft.Windows.CsWin32.SourceGenerator.CsWin32SourceGenerator`
 - [Programming reference for the Win32 API](https://learn.microsoft.com/en-us/windows/win32/api/)
+- [Setup Dependency Injection](https://medium.com/@shalahuddinshanto/dependency-injection-in-wpf-a-complete-implementation-guide-468abcf95337)
+- [Setup Window Blur](https://github.com/riverar/sample-win32-acrylicblur)
