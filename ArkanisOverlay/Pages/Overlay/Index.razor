@@ -3,6 +3,15 @@
 @layout OverlayLayout
 @using ArkanisOverlay.Windows
 
+<script>
+    window.onkeydown = ev => {
+        console.debug("KeyDown", ev);
+        if (ev.key == "Escape") {
+            DotNet.invokeMethodAsync("ArkanisOverlay", "ClickAwayHide");
+        }
+    };
+</script>
+
 <!--suppress CssUnusedSymbol -->
 <style>
     body {
@@ -15,7 +24,7 @@
         /*left: 0;*/
         width: 100%;
         height: 100%;
-        background-color: #FF000030;
+        /*background-color: #FF000030;*/
     }
 
     #searchContainer {
@@ -47,13 +56,17 @@
 </div>
 
 <MudPaper id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
-    <MudTextField id="searchBox" @bind-Value="SearchText" Variant="Variant.Outlined" Adornment="Adornment.End"
-                  AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary"
-                  HelperText=":c Commodities, :s Ships, :v Vehicles, :i Items, :l Locations">
-    </MudTextField>
+    <MudFocusTrap DefaultFocus="DefaultFocus.FirstChild">
+        <MudTextField id="searchBox" @ref="SearchBox" T="string" @bind-Value="SearchText" Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary"
+                      HelperText=":c Commodities, :s Ships, :v Vehicles, :i Items, :l Locations">
+        </MudTextField>
+    </MudFocusTrap>
 </MudPaper>
 
 @code {
+    public static MudTextField<string> SearchBox { get; set; } = null!;
     public string SearchText { get; set; } = "";
 
     [JSInvokable("ClickAwayHide")]

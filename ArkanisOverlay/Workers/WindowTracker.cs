@@ -244,14 +244,15 @@ public class WindowTracker
             PInvoke.WINEVENT_OUTOFCONTEXT | PInvoke.WINEVENT_SKIPOWNPROCESS
         );
 
-        RegisterWinEventHook(
-            PInvoke.EVENT_OBJECT_FOCUS,
-            PInvoke.EVENT_OBJECT_FOCUS,
-            Handler_WindowFocused,
-            0, // not needed, we need to know if our window has been unfocused
-            0, // not needed, we need to know if our window has been unfocused
-            PInvoke.WINEVENT_OUTOFCONTEXT | PInvoke.WINEVENT_SKIPOWNPROCESS
-        );
+        // RegisterWinEventHook(
+        //     PInvoke.EVENT_OBJECT_FOCUS,
+        //     PInvoke.EVENT_OBJECT_FOCUS,
+        //     Handler_WindowFocused,
+        //     0, // not needed, we need to know if our window has been unfocused
+        //     0, // not needed, we need to know if our window has been unfocused
+        //     // PInvoke.WINEVENT_OUTOFCONTEXT | PInvoke.WINEVENT_SKIPOWNPROCESS
+        //     PInvoke.WINEVENT_OUTOFCONTEXT
+        // );
     }
 
     private void OnWindowLost(object? sender, EventArgs eventArgs)
@@ -354,22 +355,10 @@ public class WindowTracker
         WindowSizeChanged?.Invoke(this, GetWindowSize());
     }
 
-    private void Handler_WindowFocused(
-        HWINEVENTHOOK hWinEventHook,
-        uint @event,
-        HWND hWnd,
-        int idObject,
-        int idChild,
-        uint idEventThread,
-        uint dwmsEventTime)
+    public bool IsWindowFocused()
     {
-        // safety precaution
-        // if (hWnd == HWND.Null) return;
-
-        // var isFocused = hWnd == _currentWindowHWnd;
-        // sometimes there is an eroneous detected focus change
-        // if the above check is used, the below check works 100% of the time
-        var isFocused = PInvoke.GetForegroundWindow() == _currentWindowHWnd;
+        var hWnd = PInvoke.GetForegroundWindow();
+        var isFocused = _currentWindowHWnd != HWND.Null && hWnd == _currentWindowHWnd;
         
 #if DEBUG
         var windowTitle = GetWindowText(hWnd);
@@ -377,10 +366,37 @@ public class WindowTracker
         // this way the DevTools window counts as the window being focused
         isFocused |= Debugger.IsAttached && windowTitle.StartsWith("DevTools");
 #endif
-
-        // Logger.LogDebug(
-        //     "Window focus changed: {isFocused} => Event: {event} - hWnd: {hWnd} - idObject: {idObject} - idChild: {idChild} - idEventThread: {idEventThread} - dwmsEventTime: {dwmsEventTime} - WindowTitle: '{windowTitle}'",
-        //     isFocused, @event, (IntPtr)hWnd, idObject, idChild, idEventThread, dwmsEventTime, windowTitle);
-        WindowFocusChanged?.Invoke(this, isFocused);
+        
+        return isFocused;
     }
+
+//     private void Handler_WindowFocused(
+//         HWINEVENTHOOK hWinEventHook,
+//         uint @event,
+//         HWND hWnd,
+//         int idObject,
+//         int idChild,
+//         uint idEventThread,
+//         uint dwmsEventTime)
+//     {
+//         // safety precaution
+//         // if (hWnd == HWND.Null) return;
+//
+//         // var isFocused = hWnd == _currentWindowHWnd;
+//         // sometimes there is an eroneous detected focus change
+//         // if the above check is used, the below check works 100% of the time
+//         var isFocused = PInvoke.GetForegroundWindow() == _currentWindowHWnd;
+//
+// #if DEBUG
+//         var windowTitle = GetWindowText(hWnd);
+//         // allows for convenient debugging
+//         // this way the DevTools window counts as the window being focused
+//         isFocused |= Debugger.IsAttached && windowTitle.StartsWith("DevTools");
+// #endif
+//
+//         // Logger.LogDebug(
+//         //     "Window focus changed: {isFocused} => Event: {event} - hWnd: {hWnd} - idObject: {idObject} - idChild: {idChild} - idEventThread: {idEventThread} - dwmsEventTime: {dwmsEventTime} - WindowTitle: '{windowTitle}'",
+//         //     isFocused, @event, (IntPtr)hWnd, idObject, idChild, idEventThread, dwmsEventTime, windowTitle);
+//         WindowFocusChanged?.Invoke(this, isFocused);
+//     }
 }

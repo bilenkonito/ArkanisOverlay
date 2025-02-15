@@ -1,9 +1,11 @@
 using System.Runtime.InteropServices;
+using System.Windows.Interop;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Microsoft.Extensions.Logging;
+using Application = System.Windows.Application;
 
 namespace ArkanisOverlay.Workers;
 
@@ -87,10 +89,6 @@ public class GlobalHotkey : IDisposable
         _hookId = HHOOK.Null;
     }
 
-    private bool _isShiftDown;
-    private bool _isAltDown;
-    private bool _isSDown;
-
     /**
      * LowLevelKeyboardProc
      * See: See: https://learn.microsoft.com/en-us/windows/win32/winmsg/lowlevelkeyboardproc
@@ -101,40 +99,30 @@ public class GlobalHotkey : IDisposable
      */
     private LRESULT HookProc(int nCode, WPARAM wparam, LPARAM lparam)
     {
-        if (nCode >= 0)
-        {
-            var hookStruct = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lparam);
-
-            switch ((VIRTUAL_KEY)hookStruct.vkCode)
-            {
-                case VIRTUAL_KEY.VK_LMENU:
-                    if (wparam == PInvoke.WM_SYSKEYDOWN || wparam == PInvoke.WM_KEYDOWN)
-                        _isAltDown = true;
-                    if (wparam == PInvoke.WM_SYSKEYUP || wparam == PInvoke.WM_KEYUP)
-                        _isAltDown = false;
-                    break;
-                case VIRTUAL_KEY.VK_LSHIFT:
-                    if (wparam == PInvoke.WM_SYSKEYDOWN || wparam  == PInvoke.WM_KEYDOWN)
-                        _isShiftDown = true;
-                    if (wparam == PInvoke.WM_SYSKEYUP || wparam == PInvoke.WM_KEYUP)
-                        _isShiftDown = false;
-                    break;
-                case VIRTUAL_KEY.VK_S:
-                    if (wparam == PInvoke.WM_SYSKEYDOWN || wparam  == PInvoke.WM_KEYDOWN)
-                        _isSDown = true;
-                    if (wparam == PInvoke.WM_SYSKEYUP || wparam == PInvoke.WM_KEYUP)
-                        _isSDown = false;
-                    break;
-            }
-            
-            if (_isSDown && _isShiftDown && _isAltDown)
-            {
-                TabKeyPressed?.Invoke(null, EventArgs.Empty);
-            }
-        }
+        if (nCode < 0) return PInvoke.CallNextHookEx(_hookId, nCode, wparam, lparam);
+        
+        HandleKeyEvent(nCode, wparam, lparam, out var handled);
+        if (handled) return (LRESULT)1;
 
         return PInvoke.CallNextHookEx(_hookId, nCode, wparam, lparam);
     }
+
+    private void HandleKeyEvent(int nCode, WPARAM wparam, LPARAM lparam, out bool handled)
+    {
+        handled = false;
+        var hookStruct = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lparam);
+
+        if (wparam != PInvoke.WM_KEYUP && wparam != PInvoke.WM_SYSKEYUP) return;
+        if (hookStruct.vkCode != (uint)VIRTUAL_KEY.VK_S) return;
+
+        if (IsKeyDown(VIRTUAL_KEY.VK_LSHIFT) && IsKeyDown(VIRTUAL_KEY.VK_LMENU))
+        {   
+            Logger.LogDebug("Hotkey pressed.");
+            TabKeyPressed?.Invoke(null, EventArgs.Empty);
+        }
+    }
+    
+    private bool IsKeyDown(VIRTUAL_KEY vkCode) => (PInvoke.GetAsyncKeyState((int)vkCode) & 0x8000) != 0;
 
     public void Dispose()
     {

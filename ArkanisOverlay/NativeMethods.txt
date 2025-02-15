@@ -23,6 +23,8 @@ GetActiveWindow
 GetWindowThreadProcessId
 SetForegroundWindow
 GetForegroundWindow
+SetFocus
+SetActiveWindow
 
 // Winuser.h Event Constants
 // https://learn.microsoft.com/en-us/windows/win32/winauto/event-constants
@@ -59,3 +61,8 @@ GetModuleHandle
 WINDOWS_HOOK_ID
 HC_ACTION
 KBDLLHOOKSTRUCT
+GetAsyncKeyState
+GetCurrentThreadId
+AttachThreadInput
+BringWindowToTop
+ShowWindow

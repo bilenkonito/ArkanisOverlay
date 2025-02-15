@@ -14,7 +14,8 @@
         WindowStyle="None"
         Visibility="Collapsed"
         Focusable="True"
-        AllowsTransparency="True">
+        AllowsTransparency="True"
+        FocusManager.FocusedElement="{Binding ElementName=blazorWebView}">
     <Window.Background>
         <SolidColorBrush Color="#010000" Opacity="0.05" />
     </Window.Background>
@@ -23,9 +24,10 @@
                               Services="{StaticResource services}"
                               x:Name="blazorWebView"
                               Loaded="MainWindow_Loaded"
-                              Panel.ZIndex="99">
+                              Panel.ZIndex="99"
+                              Focusable="True">
             <blazor:BlazorWebView.RootComponents>
-                <blazor:RootComponent Selector="#app" ComponentType="{x:Type local:RazorApp}" />
+                <blazor:RootComponent x:Name="App" Selector="#app" ComponentType="{x:Type local:RazorApp}" />
             </blazor:BlazorWebView.RootComponents>
         </blazor:BlazorWebView>
     </Grid>

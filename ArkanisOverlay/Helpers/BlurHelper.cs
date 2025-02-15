@@ -10,10 +10,10 @@ namespace ArkanisOverlay.Helpers;
 /// Helper class for setting window composition attributes to enable blur effects.
 /// Based on: https://github.com/riverar/sample-win32-acrylicblur/blob/917adc277c7258307799327d12262ebd47fd0308/MainWindow.xaml.cs
 /// </summary>
-public class BlurHelper(ILogger logger)
+public class BlurHelper(ILogger<BlurHelper> logger)
 {
     [DllImport("user32.dll")]
-    internal static extern BOOL SetWindowCompositionAttribute(IntPtr hWnd, ref WindowCompositionAttributeData data);
+    private static extern BOOL SetWindowCompositionAttribute(IntPtr hWnd, ref WindowCompositionAttributeData data);
     
     private uint _blurOpacity;
     public double BlurOpacity
@@ -22,16 +22,18 @@ public class BlurHelper(ILogger logger)
         set => _blurOpacity = (uint)value;
     }
     
-    private uint _blurBackgroundColor = 0x990000; /* BGR color format */
-    
     internal void EnableBlur(Window window, double blurOpacity = 0)
     {
         BlurOpacity = blurOpacity;
         var windowHelper = new WindowInteropHelper(window);
 
-        var accent = new AccentPolicy();
-        accent.AccentState = AccentState.ACCENT_ENABLE_ACRYLICBLURBEHIND;
-        accent.GradientColor = (_blurOpacity << 24) | (_blurBackgroundColor & 0xFFFFFF);
+        var accent = new AccentPolicy
+        {
+            AccentState = AccentState.ACCENT_ENABLE_BLURBEHIND,
+            GradientColor = 0x00_00_00_00,
+            AnimationId = 0,
+            AccentFlags = 0
+        };
 
         var accentStructSize = Marshal.SizeOf(accent);
 
@@ -57,6 +59,7 @@ public class BlurHelper(ILogger logger)
     }
 }
 
+// ReSharper disable InconsistentNaming
 internal enum AccentState
 {
     ACCENT_DISABLED = 0,
@@ -66,6 +69,7 @@ internal enum AccentState
     ACCENT_ENABLE_ACRYLICBLURBEHIND = 4,
     ACCENT_INVALID_STATE = 5
 }
+// ReSharper enable InconsistentNaming
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct AccentPolicy
