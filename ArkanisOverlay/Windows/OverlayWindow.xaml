@@ -24,7 +24,8 @@
                               x:Name="BlazorWebView"
                               Loaded="MainWindow_Loaded"
                               Panel.ZIndex="99"
-                              Focusable="True">
+                              Focusable="True"
+                              Services="{DynamicResource services}">
             <blazor:BlazorWebView.RootComponents>
                 <blazor:RootComponent Selector="#app" ComponentType="{x:Type local:RazorApp}" />
             </blazor:BlazorWebView.RootComponents>

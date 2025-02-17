@@ -61,7 +61,11 @@ public partial class App : ISingleInstance
         services.AddLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug).AddFilter((scope,
             _) => scope?.StartsWith("ArkanisOverlay") ?? false));
         services.AddWpfBlazorWebView();
-        services.AddMudServices();
+        services.AddMudServices(config =>
+        {
+            config.SnackbarConfiguration.NewestOnTop = true;
+            config.SnackbarConfiguration.MaxDisplayedSnackbars = 1;
+        });
         services.AddSingleton<IServiceProvider>(sp => sp);
         services.AddHttpClient();
 

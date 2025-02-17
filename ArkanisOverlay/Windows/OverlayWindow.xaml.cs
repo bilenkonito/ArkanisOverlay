@@ -1,10 +1,12 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using ArkanisOverlay.Helpers;
 using ArkanisOverlay.Workers;
+using Microsoft.AspNetCore.Components.WebView;
 using Microsoft.Extensions.Logging;
 using Microsoft.Web.WebView2.Core;
 using Index = ArkanisOverlay.Pages.Overlay.Index;
@@ -42,8 +44,9 @@ public partial class OverlayWindow
         SetupWorkerEventListeners();
 
         _blurHelper.EnableBlur(this, 1);
-
+        
         InitializeComponent();
+        BlazorWebView.BlazorWebViewInitializing += BlazorWebView_Initializing;
     }
 
     protected override void OnInitialized(EventArgs e)
@@ -87,7 +90,8 @@ public partial class OverlayWindow
         // Mouse.Capture(blazorWebView);
 
         // Index.SearchBox.FocusAsync();
-        Index.SearchBox.SelectAsync();
+        Index.SearchBox?.SelectAsync();
+        // Index.Instance?.ShowSnackbar();
     }
 
     private void SetupWorkerEventListeners()
@@ -106,15 +110,6 @@ public partial class OverlayWindow
             Width = size.Width;
             Height = size.Height;
         });
-        // _windowTracker.WindowFocusChanged += (_, isFocused) => Dispatcher.Invoke(() =>
-        // {
-        //     _logger.LogDebug("Overlay: WindowFocusChanged: {isFocused}", isFocused);
-        //     _isStarCitizenFocussed = isFocused;
-        //
-        //     if (isFocused) return;
-        //
-        //     HideOverlay();
-        // });
 
         _globalHotkey.TabKeyPressed += (_, _) => Dispatcher.Invoke(() =>
         {
@@ -129,36 +124,6 @@ public partial class OverlayWindow
             if (!_windowTracker.IsWindowFocused()) return;
 
             ShowOverlay();
-
-            // if (Application.Current.MainWindow == null) return;
-            //
-            // // if (Application.Current.MainWindow == null) return;
-            // Application.Current.MainWindow.Activate();
-            // Application.Current.MainWindow.WindowState = WindowState.Normal;
-            //
-            // // Invert the topmost state twice to bring
-            // // the window on top but keep the top most state
-            // Application.Current.MainWindow.Topmost = !Application.Current.MainWindow.Topmost;
-            // Application.Current.MainWindow.Topmost = !Application.Current.MainWindow.Topmost;
-            //
-            // Application.Current.MainWindow.Focusable = true;
-            // Application.Current.MainWindow.Focus();
-            //
-            // blazorWebView.Focusable = true;
-            // blazorWebView.Focus();
-            // //
-            // // HWND hWnd = (HWND)new WindowInteropHelper(Application.Current.MainWindow).Handle;
-            // // var result = PInvoke.SetFocus(hWnd);
-            // // _logger.LogDebug("Overlay: SetFocus: {result}", result.ToString());
-            // // PInvoke.SetActiveWindow(hWnd);
-            // //
-            // // Keyboard.Focus(blazorWebView);
-            // //
-            // //
-            // // if (Pages.Overlay.Index.SearchBox == null) return;
-            // // Pages.Overlay.Index.SearchBox.AutoFocus = true;
-            // Pages.Overlay.Index.SearchBox.FocusAsync();
-            // Pages.Overlay.Index.SearchBox.SelectAsync();
         });
     }
 
@@ -187,6 +152,11 @@ public partial class OverlayWindow
         BlazorWebView.WebView.NavigationCompleted += WebView_Loaded;
         BlazorWebView.WebView.CoreWebView2InitializationCompleted += CoreWebView_Loaded;
         Visibility = Visibility.Collapsed;
+    }
+
+    private void BlazorWebView_Initializing(object? sender, BlazorWebViewInitializingEventArgs e)
+    {
+        e.UserDataFolder = Path.Join(Constants.LocalAppDataPath, "WebView");
     }
 
     private void WebView_Loaded(object? sender, CoreWebView2NavigationCompletedEventArgs e)

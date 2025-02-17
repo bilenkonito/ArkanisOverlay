@@ -1,7 +1,13 @@
 @page "/"
 @page "/overlay"
 @layout OverlayLayout
+@using ArkanisOverlay.Data.Storage
+@using ArkanisOverlay.Data.UEX.DTO
 @using ArkanisOverlay.Windows
+@using Microsoft.EntityFrameworkCore
+
+@inject ISnackbar SnackbarService
+@inject UEXContext UEXContext
 
 <script>
     window.onkeydown = ev => {
@@ -9,6 +15,56 @@
         if (ev.key === "Escape") {
             DotNet.invokeMethodAsync("ArkanisOverlay", "ClickAwayHide");
         }
+
+        // if (ev.keyCode >= 38 && ev.keyCode <= 40) {
+        //     debugger;
+        // }
+
+        let target = ev.target;
+
+        if (target.id === "searchBox") {
+            if (ev.keyCode !== 40 && ev.keyCode !== 39) {
+                return;
+            }
+
+            document.querySelector('.search-result')?.focus();
+        } else {
+            let searchBox = document.getElementById('searchBox')
+
+            switch (ev.keyCode) {
+                case 38: // up
+                    (ev.target.previousElementSibling || searchBox)?.focus();
+                    break;
+                case 40: // down
+                    ev.target.nextElementSibling.focus();
+                    break;
+
+                case 37: // left
+                    (
+                        target.parentElement.querySelector('[tabindex="1"]:has(~ :focus)') ||
+                        target.tabIndex === 1 ?
+                            target.closest('.search-result') :
+                            searchBox
+                    )?.focus();
+                    break;
+
+                case 39: // right
+                    (
+                        target.tabIndex === 0 ?
+                            target.querySelector('[tabindex="1"]') :
+                            target.parentElement.querySelector(':focus ~ [tabindex="1"]')
+                    )?.focus();
+                    break;
+
+
+                default:
+                    searchBox?.focus();
+                    searchBox?.select();
+                    return; // do not prevent default so that the search box receives the key input
+            }
+        }
+
+        ev.preventDefault();
     };
 </script>
 
@@ -29,9 +85,9 @@
 
     #searchContainer {
         position: relative;
-        top: 30%;
+        top: 20%;
         left: 50%;
-        transform: translate(-50%, -30%);
+        transform: translate(-50%, 0%);
         width: fit-content;
         z-index: 1;
 
@@ -49,25 +105,74 @@
             font-size: 2.5vh;
         }
     }
+
+    .focus:focus {
+        outline: 2px solid var(--mud-palette-primary);
+    }
+
+    .mud-snackbar {
+        min-width: 0;
+    }
+
+    .mud-icon-button.focus {
+        border-radius: 0;
+    }
 </style>
 
 <div id="clickAwayBackground"
      onmousedown="if (event.target == this) DotNet.invokeMethodAsync('ArkanisOverlay', 'ClickAwayHide')">
 </div>
 
-<MudPaper id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
+<MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
     <MudFocusTrap DefaultFocus="DefaultFocus.FirstChild">
-        <MudTextField id="searchBox" @ref="SearchBox" T="string" @bind-Value="SearchText" Variant="Variant.Outlined"
-                      Adornment="Adornment.End"
-                      AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary"
-                      HelperText=":c Commodities, :s Ships, :v Vehicles, :i Items, :l Locations">
-        </MudTextField>
+        <MudPaper>
+            <MudTextField id="searchBox" @ref="SearchBox" T="string" @bind-Value="SearchText" Variant="Variant.Outlined"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary"
+                          HelperText=":c Commodities, :s Ships, :v Vehicles, :i Items, :l Locations"
+                          AutoFocus="true" DebounceInterval="500" OnDebounceIntervalElapsed="DoSearch">
+            </MudTextField>
+        </MudPaper>
+
+        <MudStack Class="mt-10" Style="width: 100%; min-height: 20vh;">
+            @foreach (var commodity in Commodities)
+            {
+                <MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0">
+                    <MudStack Row="true" Style="width: 100%"
+                              Class="justify-center align-center align-content-center">
+                        <MudIcon Icon="@Icons.Material.Outlined.Diamond"></MudIcon>
+                        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+                        <h1 class="flex-1">@commodity.Name</h1>
+                        <MudStack>
+                            <p style="color: lightskyblue">Buy: @commodity.PriceBuy.ToString("N0") UEC</p>
+                            <p style="color: sandybrown">Sell: @commodity.PriceSell.ToString("N0") UEC</p>
+                        </MudStack>
+                        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+                        <MudIconButton Icon="@Icons.Material.Outlined.Diamond" Class="focus"
+                                       tabindex="1">
+                        </MudIconButton>
+                        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+                        <MudIconButton Icon="@Icons.Material.Outlined.Diamond" Class="focus"
+                                       tabindex="1">
+                        </MudIconButton>
+                    </MudStack>
+                </MudPaper>
+            }
+
+        </MudStack>
     </MudFocusTrap>
-</MudPaper>
+</MudStack>
+
+
 
 @code {
-    public static MudTextField<string> SearchBox { get; set; } = null!;
+    public static Index? Instance { get; private set; }
+    public static MudTextField<string>? SearchBox { get; private set; }
     public string SearchText { get; set; } = "";
+
+    private Snackbar? _snackbar;
+
+    private List<CommodityDto> Commodities { get; set; } = new();
 
     [JSInvokable("ClickAwayHide")]
     public static void ClickAwayHide() => OverlayWindow.Instance?.Collapse();
@@ -76,6 +181,46 @@
     {
         base.OnInitialized();
         Console.WriteLine("Overlay initialized");
+
+        Instance = this;
+    }
+
+    @* public void ShowSnackbar() *@
+    @* { *@
+    @*     if (_snackbar is not null) SnackbarService.Remove(_snackbar); *@
+    @* *@
+    @*     _snackbar = SnackbarService.Add *@
+    @*     ( *@
+    @*         @<div class="pa-1"> *@
+    @*             <h3>Updating Database</h3> *@
+    @*             <MudProgressLinear Class="mt-3" Color="Color.Info" Indeterminate></MudProgressLinear> *@
+    @*         </div>, *@
+    @*         Severity.Normal, *@
+    @*         options => *@
+    @*         { *@
+    @*             options.HideIcon = true; *@
+    @*             options.RequireInteraction = true; *@
+    @*             options.ShowCloseIcon = false; *@
+    @*             options.ShowTransitionDuration = 0; *@
+    @*         }); *@
+    @* } *@
+
+    private async Task DoSearch(string searchText)
+    {
+        var lower = searchText.ToLower();
+        var commodities = await UEXContext.Commodities.Where(
+            commodity =>
+                commodity.Name != null &&
+                commodity.Name.ToLower().Contains(lower)
+        ).ToListAsync().ConfigureAwait(true);
+
+        Commodities = commodities;
+
+        Console.WriteLine(string.Join(", ", commodities.Select(c => c.Name).ToList()));
+
+        // await UEXContext.Ships.Where(ship => ship.Name.ToLower().Contains(lower));
+        // await UEXContext.Vehicles.Where(vehicle => vehicle.Name.ToLower().Contains(lower));
+        // await UEXContext.Items.Where(item => item.Name.ToLower().Contains(lower));
     }
 
 }
