@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows;
+using ArkanisOverlay.Data.UEX.API;
 using ArkanisOverlay.Helpers;
 using ArkanisOverlay.Windows;
 using ArkanisOverlay.Workers;
@@ -55,6 +56,7 @@ public partial class App : ISingleInstance
         services.AddWpfBlazorWebView();
         services.AddMudServices();
         services.AddSingleton<IServiceProvider>(sp => sp);
+        services.AddHttpClient();
 
         // Windows
         services.AddSingleton<OverlayWindow>();
@@ -65,10 +67,12 @@ public partial class App : ISingleInstance
 
         // Services
         services.AddSingleton<BlurHelper>();
+        services.AddSingleton<Client>();
 
         // Workers
         services.AddSingleton<WindowTracker>();
         services.AddSingleton<GlobalHotkey>();
+        services.AddSingleton<DataSync>();
     }
 
     public void OnInstanceInvoked(string[] args)

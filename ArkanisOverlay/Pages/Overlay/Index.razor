@@ -6,7 +6,7 @@
 <script>
     window.onkeydown = ev => {
         console.debug("KeyDown", ev);
-        if (ev.key == "Escape") {
+        if (ev.key === "Escape") {
             DotNet.invokeMethodAsync("ArkanisOverlay", "ClickAwayHide");
         }
     };

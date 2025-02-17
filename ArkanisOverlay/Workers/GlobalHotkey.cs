@@ -1,11 +1,9 @@
 using System.Runtime.InteropServices;
-using System.Windows.Interop;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Microsoft.Extensions.Logging;
-using Application = System.Windows.Application;
 
 namespace ArkanisOverlay.Workers;
 
@@ -101,13 +99,13 @@ public class GlobalHotkey : IDisposable
     {
         if (nCode < 0) return PInvoke.CallNextHookEx(_hookId, nCode, wparam, lparam);
         
-        HandleKeyEvent(nCode, wparam, lparam, out var handled);
+        HandleKeyEvent(wparam, lparam, out var handled);
         if (handled) return (LRESULT)1;
 
         return PInvoke.CallNextHookEx(_hookId, nCode, wparam, lparam);
     }
 
-    private void HandleKeyEvent(int nCode, WPARAM wparam, LPARAM lparam, out bool handled)
+    private void HandleKeyEvent(WPARAM wparam, LPARAM lparam, out bool handled)
     {
         handled = false;
         var hookStruct = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lparam);
@@ -115,11 +113,10 @@ public class GlobalHotkey : IDisposable
         if (wparam != PInvoke.WM_KEYUP && wparam != PInvoke.WM_SYSKEYUP) return;
         if (hookStruct.vkCode != (uint)VIRTUAL_KEY.VK_S) return;
 
-        if (IsKeyDown(VIRTUAL_KEY.VK_LSHIFT) && IsKeyDown(VIRTUAL_KEY.VK_LMENU))
-        {   
-            Logger.LogDebug("Hotkey pressed.");
-            TabKeyPressed?.Invoke(null, EventArgs.Empty);
-        }
+        if (!IsKeyDown(VIRTUAL_KEY.VK_LSHIFT) || !IsKeyDown(VIRTUAL_KEY.VK_LMENU)) return;
+        
+        Logger.LogDebug("Hotkey pressed.");
+        TabKeyPressed?.Invoke(null, EventArgs.Empty);
     }
     
     private bool IsKeyDown(VIRTUAL_KEY vkCode) => (PInvoke.GetAsyncKeyState((int)vkCode) & 0x8000) != 0;

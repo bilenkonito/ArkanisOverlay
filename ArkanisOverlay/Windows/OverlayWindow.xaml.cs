@@ -23,12 +23,13 @@ public partial class OverlayWindow
     private readonly WindowTracker _windowTracker;
     private readonly GlobalHotkey _globalHotkey;
     private readonly BlurHelper _blurHelper;
+    private readonly DataSync _dataSync;
 
     private HWND _currentWindowHWnd = HWND.Null;
 
 
     public OverlayWindow(ILogger<OverlayWindow> logger, WindowTracker windowTracker, GlobalHotkey globalHotkey,
-        BlurHelper blurHelper)
+        BlurHelper blurHelper, DataSync dataSync)
     {
         Instance = this;
 
@@ -36,6 +37,7 @@ public partial class OverlayWindow
         _windowTracker = windowTracker;
         _globalHotkey = globalHotkey;
         _blurHelper = blurHelper;
+        _dataSync = dataSync;
 
         SetupWorkerEventListeners();
 
@@ -50,6 +52,7 @@ public partial class OverlayWindow
 
         _windowTracker.Start();
         _globalHotkey.Start();
+        _dataSync.Start();
     }
 
     private void HideOverlay()
@@ -74,7 +77,7 @@ public partial class OverlayWindow
         var result = Activate();
         _logger.LogDebug("ShowOverlay(): Activate Window: {result}", result);
 
-        blazorWebView.WebView.Focus();
+        BlazorWebView.WebView.Focus();
         
         // blazorWebView.Focusable = true;
         // result = blazorWebView.Focus();
@@ -165,7 +168,7 @@ public partial class OverlayWindow
         base.OnKeyDown(e);
         if (e.Key == Key.F)
         {
-            blazorWebView.WebView.Focus();
+            BlazorWebView.WebView.Focus();
         }
     }
 
@@ -180,9 +183,9 @@ public partial class OverlayWindow
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
-        blazorWebView.WebView.DefaultBackgroundColor = Color.Transparent;
-        blazorWebView.WebView.NavigationCompleted += WebView_Loaded;
-        blazorWebView.WebView.CoreWebView2InitializationCompleted += CoreWebView_Loaded;
+        BlazorWebView.WebView.DefaultBackgroundColor = Color.Transparent;
+        BlazorWebView.WebView.NavigationCompleted += WebView_Loaded;
+        BlazorWebView.WebView.CoreWebView2InitializationCompleted += CoreWebView_Loaded;
         Visibility = Visibility.Collapsed;
     }
 
@@ -190,8 +193,8 @@ public partial class OverlayWindow
     {
         // If we are running in a development/debugger mode, open dev tools to help out
         // if (Debugger.IsAttached) blazorWebView.WebView.CoreWebView2.OpenDevToolsWindow();
-        blazorWebView.WebView.CoreWebView2.OpenDevToolsWindow();
-        blazorWebView.Focus();
+        BlazorWebView.WebView.CoreWebView2.OpenDevToolsWindow();
+        BlazorWebView.Focus();
     }
 
     private void CoreWebView_Loaded(object? sender, CoreWebView2InitializationCompletedEventArgs e)

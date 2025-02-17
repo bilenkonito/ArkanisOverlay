@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
-using Windows.Win32.UI.WindowsAndMessaging;
 using Microsoft.Extensions.Logging;
 
 namespace ArkanisOverlay.Workers;

@@ -1,6 +1,5 @@
 @inherits LayoutComponentBase
-@inject IJSRuntime JSRuntime;
-<MudThemeProvider Theme="currentTheme" IsDarkMode="true"/>
+<MudThemeProvider Theme="_currentTheme" IsDarkMode="true"/>
 @* <MudThemeProvider IsDarkMode="true"/> *@
 <MudPopoverProvider/>
 <MudDialogProvider/>
@@ -9,7 +8,8 @@
 @Body
 
 @code {
-    MudTheme currentTheme = new()
+
+    readonly MudTheme _currentTheme = new()
     {
         PaletteDark = new PaletteDark()
         {
