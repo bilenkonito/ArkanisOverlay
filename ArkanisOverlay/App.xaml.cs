@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Windows;
+using ArkanisOverlay.Data.Storage;
 using ArkanisOverlay.Data.UEX.API;
 using ArkanisOverlay.Helpers;
 using ArkanisOverlay.Windows;
@@ -34,6 +36,11 @@ public partial class App : ISingleInstance
             var splashScreen = new SplashScreen("Resources\\ArkanisTransparent_512x512.png");
             splashScreen.Show(true, true);
         }
+        
+        if (!Directory.Exists(Constants.LocalAppDataPath))
+        {
+            Directory.CreateDirectory(Constants.LocalAppDataPath);
+        }
 
         var serviceCollection = new ServiceCollection();
         ConfigureServices(serviceCollection);
@@ -64,6 +71,9 @@ public partial class App : ISingleInstance
         // Views
 
         // ViewModels
+        
+        // Data
+        services.AddSingleton<UEXContext>();
 
         // Services
         services.AddSingleton<BlurHelper>();
