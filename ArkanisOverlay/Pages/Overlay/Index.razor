@@ -1,14 +1,17 @@
 @page "/"
 @page "/overlay"
 @layout OverlayLayout
+@using System.Text.RegularExpressions
 @using ArkanisOverlay.Data.Storage
 @using ArkanisOverlay.Data.UEX.DTO
 @using ArkanisOverlay.Windows
 @using Microsoft.EntityFrameworkCore
 @using ArkanisOverlay.Components.SearchResult
+@using Microsoft.Extensions.Logging
 
 @inject ISnackbar SnackbarService
 @inject UEXContext UEXContext
+@inject ILogger<Index> Logger;
 
 <script>
     window.onkeydown = ev => {
@@ -198,30 +201,111 @@
     @*         }); *@
     @* } *@
 
+    private struct SearchOptions
+    {
+        public bool Commodities { get; set; }
+        public bool Ships { get; set; }
+        public bool Vehicles { get; set; }
+        public bool Items { get; set; }
+        public bool Locations { get; set; }
+    }
+
     private async Task DoSearch(string searchText)
     {
-        var lower = searchText.ToLower();
-        var commodities = await UEXContext.Commodities.Where(
+        if (searchText.Length < 3) return;
+        var (processedSearchText, searchOptions) = ProcessSearchTokens(searchText.ToLower());
+
+        Logger.LogDebug(
+            "Processed Search Tokens: {searchText}, {searchOptions}",
+            processedSearchText, searchOptions
+        );
+
+        if (searchOptions.Commodities)
+        {
+            Commodities = await SearchCommodities(processedSearchText).ConfigureAwait(false);
+        }
+        else
+        {
+            Commodities = [];
+        }
+
+        if (searchOptions.Ships || searchOptions.Vehicles)
+        {
+            Vehicles = await SearchVehicles(processedSearchText, searchOptions.Ships, searchOptions.Vehicles)
+                .ConfigureAwait(false);
+        }
+        else
+        {
+            Vehicles = [];
+        }
+    }
+
+    private async Task<List<CommodityDto>> SearchCommodities(string searchText)
+    {
+        return await UEXContext.Commodities.Where(
             commodity =>
                 commodity.Name != null &&
-                commodity.Name.ToLower().Contains(lower)
+                commodity.Name.ToLower().Contains(searchText)
         ).ToListAsync().ConfigureAwait(true);
+    }
 
-        var vehicles = await UEXContext.Vehicles.Where(
+    private async Task<List<VehicleDto>> SearchVehicles(string searchText, bool includeShips, bool includeVehicles)
+    {
+        var both = !(includeShips ^ includeVehicles);
+
+        return await UEXContext.Vehicles.Where(
             vehicle =>
-                vehicle.NameFull != null &&
-                vehicle.NameFull.ToLower().Contains(lower)
+                (vehicle.IsSpaceship == (both || includeShips)
+                 || vehicle.IsGroundVehicle == (both || includeVehicles))
+                && vehicle.NameFull != null
+                && vehicle.NameFull.ToLower().Contains(searchText)
         ).ToListAsync().ConfigureAwait(false);
+    }
 
-        Commodities = commodities;
-        Vehicles = vehicles;
+    private Tuple<string, SearchOptions> ProcessSearchTokens(string searchText)
+    {
+        var textTokens = new List<string>();
+        var searchOptions = new SearchOptions();
+        var hasFilterTokens = false;
 
-        Console.WriteLine(string.Join(", ", commodities.Select(c => c.Name).ToList()));
-        Console.WriteLine(string.Join(", ", vehicles.Select(c => c.Name).ToList()));
+        foreach (var token in searchText.Split(" "))
+        {
+            if (!Regex.IsMatch(token, @":\w"))
+            {
+                textTokens.Add(token);
+                continue;
+            }
 
-        // await UEXContext.Ships.Where(ship => ship.Name.ToLower().Contains(lower));
-        // await UEXContext.Vehicles.Where(vehicle => vehicle.Name.ToLower().Contains(lower));
-        // await UEXContext.Items.Where(item => item.Name.ToLower().Contains(lower));
+            hasFilterTokens = true;
+            switch (token[1])
+            {
+                case 'c':
+                    searchOptions.Commodities = true; break;
+                case 's':
+                    searchOptions.Ships = true; break;
+                case 'v':
+                    searchOptions.Vehicles = true; break;
+                case 'i':
+                    searchOptions.Items = true; break;
+                case 'l':
+                    searchOptions.Locations = true; break;
+            }
+        }
+
+        // if no tokens were specified, we include all
+        if (!hasFilterTokens)
+        {
+            searchOptions = new SearchOptions()
+            {
+                Commodities = true,
+                Ships = true,
+                Vehicles = true,
+                Items = true,
+                Locations = true
+            };
+        }
+
+        return new(string.Join(' ', textTokens), searchOptions);
     }
 
 }

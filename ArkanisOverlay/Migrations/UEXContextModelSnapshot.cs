@@ -176,143 +176,143 @@ namespace ArkanisOverlay.Migrations
                         .HasColumnType("TEXT")
                         .HasAnnotation("Relational:JsonPropertyName", "ids_vehicles_loaners");
 
-                    b.Property<int>("IsAddon")
+                    b.Property<bool>("IsAddon")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_addon");
 
-                    b.Property<int>("IsBoarding")
+                    b.Property<bool>("IsBoarding")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_boarding");
 
-                    b.Property<int>("IsBomber")
+                    b.Property<bool>("IsBomber")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_bomber");
 
-                    b.Property<int>("IsCargo")
+                    b.Property<bool>("IsCargo")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_cargo");
 
-                    b.Property<int>("IsCarrier")
+                    b.Property<bool>("IsCarrier")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_carrier");
 
-                    b.Property<int>("IsCivilian")
+                    b.Property<bool>("IsCivilian")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_civilian");
 
-                    b.Property<int>("IsConcept")
+                    b.Property<bool>("IsConcept")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_concept");
 
-                    b.Property<int>("IsConstruction")
+                    b.Property<bool>("IsConstruction")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_construction");
 
-                    b.Property<int>("IsDatarunner")
+                    b.Property<bool>("IsDatarunner")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_datarunner");
 
-                    b.Property<int>("IsDocking")
+                    b.Property<bool>("IsDocking")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_docking");
 
-                    b.Property<int>("IsEmp")
+                    b.Property<bool>("IsEmp")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_emp");
 
-                    b.Property<int>("IsExploration")
+                    b.Property<bool>("IsExploration")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_exploration");
 
-                    b.Property<int>("IsGroundVehicle")
+                    b.Property<bool>("IsGroundVehicle")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_ground_vehicle");
 
-                    b.Property<int>("IsHangar")
+                    b.Property<bool>("IsHangar")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_hangar");
 
-                    b.Property<int>("IsIndustrial")
+                    b.Property<bool>("IsIndustrial")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_industrial");
 
-                    b.Property<int>("IsInterdiction")
+                    b.Property<bool>("IsInterdiction")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_interdiction");
 
-                    b.Property<int>("IsLoadingDock")
+                    b.Property<bool>("IsLoadingDock")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_loading_dock");
 
-                    b.Property<int>("IsMedical")
+                    b.Property<bool>("IsMedical")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_medical");
 
-                    b.Property<int>("IsMilitary")
+                    b.Property<bool>("IsMilitary")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_military");
 
-                    b.Property<int>("IsMining")
+                    b.Property<bool>("IsMining")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_mining");
 
-                    b.Property<int>("IsPassenger")
+                    b.Property<bool>("IsPassenger")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_passenger");
 
-                    b.Property<int>("IsQed")
+                    b.Property<bool>("IsQed")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_qed");
 
-                    b.Property<int>("IsRacing")
+                    b.Property<bool>("IsRacing")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_racing");
 
-                    b.Property<int>("IsRefinery")
+                    b.Property<bool>("IsRefinery")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_refinery");
 
-                    b.Property<int>("IsRefuel")
+                    b.Property<bool>("IsRefuel")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_refuel");
 
-                    b.Property<int>("IsRepair")
+                    b.Property<bool>("IsRepair")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_repair");
 
-                    b.Property<int>("IsResearch")
+                    b.Property<bool>("IsResearch")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_research");
 
-                    b.Property<int>("IsSalvage")
+                    b.Property<bool>("IsSalvage")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_salvage");
 
-                    b.Property<int>("IsScanning")
+                    b.Property<bool>("IsScanning")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_scanning");
 
-                    b.Property<int>("IsScience")
+                    b.Property<bool>("IsScience")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_science");
 
-                    b.Property<int>("IsShowdownWinner")
+                    b.Property<bool>("IsShowdownWinner")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_showdown_winner");
 
-                    b.Property<int>("IsSpaceship")
+                    b.Property<bool>("IsSpaceship")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_spaceship");
 
-                    b.Property<int>("IsStarter")
+                    b.Property<bool>("IsStarter")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_starter");
 
-                    b.Property<int>("IsStealth")
+                    b.Property<bool>("IsStealth")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_stealth");
 
-                    b.Property<int>("IsTractorBeam")
+                    b.Property<bool>("IsTractorBeam")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "is_tractor_beam");
 

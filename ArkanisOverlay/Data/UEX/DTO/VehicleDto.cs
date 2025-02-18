@@ -24,50 +24,50 @@ public class VehicleDto : BaseDto
     [JsonPropertyName("fuel_quantum")] public int FuelQuantum { get; init; } // int(11) // SCU
     [JsonPropertyName("fuel_hydrogen")] public int FuelHydrogen { get; init; } // int(11) // SCU
     [JsonPropertyName("container_sizes")] public string? ContainerSizes { get; init; } // string? // SCU, comma separated
-    [JsonPropertyName("is_addon")] public int IsAddon { get; init; } // int(1) // e.g. RSI Galaxy Refinery Module
-    [JsonPropertyName("is_boarding")] public int IsBoarding { get; init; } // int(1)
-    [JsonPropertyName("is_bomber")] public int IsBomber { get; init; } // int(1)
-    [JsonPropertyName("is_cargo")] public int IsCargo { get; init; } // int(1)
-    [JsonPropertyName("is_carrier")] public int IsCarrier { get; init; } // int(1)
-    [JsonPropertyName("is_civilian")] public int IsCivilian { get; init; } // int(1)
-    [JsonPropertyName("is_concept")] public int IsConcept { get; init; } // int(1)
-    [JsonPropertyName("is_construction")] public int IsConstruction { get; init; } // int(1)
-    [JsonPropertyName("is_datarunner")] public int IsDatarunner { get; init; } // int(1)
-    [JsonPropertyName("is_docking")] public int IsDocking { get; init; } // int(1) // contains docking port
-    [JsonPropertyName("is_emp")] public int IsEmp { get; init; } // int(1)
-    [JsonPropertyName("is_exploration")] public int IsExploration { get; init; } // int(1)
+    [JsonPropertyName("is_addon")] public bool IsAddon { get; init; } // int(1) // e.g. RSI Galaxy Refinery Module
+    [JsonPropertyName("is_boarding")] public bool IsBoarding { get; init; } // int(1)
+    [JsonPropertyName("is_bomber")] public bool IsBomber { get; init; } // int(1)
+    [JsonPropertyName("is_cargo")] public bool IsCargo { get; init; } // int(1)
+    [JsonPropertyName("is_carrier")] public bool IsCarrier { get; init; } // int(1)
+    [JsonPropertyName("is_civilian")] public bool IsCivilian { get; init; } // int(1)
+    [JsonPropertyName("is_concept")] public bool IsConcept { get; init; } // int(1)
+    [JsonPropertyName("is_construction")] public bool IsConstruction { get; init; } // int(1)
+    [JsonPropertyName("is_datarunner")] public bool IsDatarunner { get; init; } // int(1)
+    [JsonPropertyName("is_docking")] public bool IsDocking { get; init; } // int(1) // contains docking port
+    [JsonPropertyName("is_emp")] public bool IsEmp { get; init; } // int(1)
+    [JsonPropertyName("is_exploration")] public bool IsExploration { get; init; } // int(1)
 
     [JsonPropertyName("is_ground_vehicle")]
-    public int IsGroundVehicle { get; init; } // int(1)
+    public bool IsGroundVehicle { get; init; } // int(1)
 
-    [JsonPropertyName("is_hangar")] public int IsHangar { get; init; } // int(1) // contains hangar
-    [JsonPropertyName("is_industrial")] public int IsIndustrial { get; init; } // int(1)
-    [JsonPropertyName("is_interdiction")] public int IsInterdiction { get; init; } // int(1)
+    [JsonPropertyName("is_hangar")] public bool IsHangar { get; init; } // int(1) // contains hangar
+    [JsonPropertyName("is_industrial")] public bool IsIndustrial { get; init; } // int(1)
+    [JsonPropertyName("is_interdiction")] public bool IsInterdiction { get; init; } // int(1)
 
     [JsonPropertyName("is_loading_dock")]
-    public int IsLoadingDock { get; init; } // int(1) // cargo can be loaded/unloaded via docking
+    public bool IsLoadingDock { get; init; } // int(1) // cargo can be loaded/unloaded via docking
 
-    [JsonPropertyName("is_medical")] public int IsMedical { get; init; } // int(1)
-    [JsonPropertyName("is_military")] public int IsMilitary { get; init; } // int(1)
-    [JsonPropertyName("is_mining")] public int IsMining { get; init; } // int(1)
-    [JsonPropertyName("is_passenger")] public int IsPassenger { get; init; } // int(1)
-    [JsonPropertyName("is_qed")] public int IsQed { get; init; } // int(1)
-    [JsonPropertyName("is_racing")] public int IsRacing { get; init; } // int(1)
-    [JsonPropertyName("is_refinery")] public int IsRefinery { get; init; } // int(1)
-    [JsonPropertyName("is_refuel")] public int IsRefuel { get; init; } // int(1)
-    [JsonPropertyName("is_repair")] public int IsRepair { get; init; } // int(1)
-    [JsonPropertyName("is_research")] public int IsResearch { get; init; } // int(1)
-    [JsonPropertyName("is_salvage")] public int IsSalvage { get; init; } // int(1)
-    [JsonPropertyName("is_scanning")] public int IsScanning { get; init; } // int(1)
-    [JsonPropertyName("is_science")] public int IsScience { get; init; } // int(1)
+    [JsonPropertyName("is_medical")] public bool IsMedical { get; init; } // int(1)
+    [JsonPropertyName("is_military")] public bool IsMilitary { get; init; } // int(1)
+    [JsonPropertyName("is_mining")] public bool IsMining { get; init; } // int(1)
+    [JsonPropertyName("is_passenger")] public bool IsPassenger { get; init; } // int(1)
+    [JsonPropertyName("is_qed")] public bool IsQed { get; init; } // int(1)
+    [JsonPropertyName("is_racing")] public bool IsRacing { get; init; } // int(1)
+    [JsonPropertyName("is_refinery")] public bool IsRefinery { get; init; } // int(1)
+    [JsonPropertyName("is_refuel")] public bool IsRefuel { get; init; } // int(1)
+    [JsonPropertyName("is_repair")] public bool IsRepair { get; init; } // int(1)
+    [JsonPropertyName("is_research")] public bool IsResearch { get; init; } // int(1)
+    [JsonPropertyName("is_salvage")] public bool IsSalvage { get; init; } // int(1)
+    [JsonPropertyName("is_scanning")] public bool IsScanning { get; init; } // int(1)
+    [JsonPropertyName("is_science")] public bool IsScience { get; init; } // int(1)
 
     [JsonPropertyName("is_showdown_winner")]
-    public int IsShowdownWinner { get; init; } // int(1)
+    public bool IsShowdownWinner { get; init; } // int(1)
 
-    [JsonPropertyName("is_spaceship")] public int IsSpaceship { get; init; } // int(1)
-    [JsonPropertyName("is_starter")] public int IsStarter { get; init; } // int(1)
-    [JsonPropertyName("is_stealth")] public int IsStealth { get; init; } // int(1)
-    [JsonPropertyName("is_tractor_beam")] public int IsTractorBeam { get; init; } // int(1)
+    [JsonPropertyName("is_spaceship")] public bool IsSpaceship { get; init; } // int(1)
+    [JsonPropertyName("is_starter")] public bool IsStarter { get; init; } // int(1)
+    [JsonPropertyName("is_stealth")] public bool IsStealth { get; init; } // int(1)
+    [JsonPropertyName("is_tractor_beam")] public bool IsTractorBeam { get; init; } // int(1)
     [JsonPropertyName("url_store")] public string? UrlStore { get; init; } // string?(255)
     [JsonPropertyName("url_brochure")] public string? UrlBrochure { get; init; } // string?(255)
     [JsonPropertyName("url_hotsite")] public string? UrlHotsite { get; init; } // string?(255)
