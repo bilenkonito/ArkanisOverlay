@@ -5,6 +5,7 @@
 @using ArkanisOverlay.Data.UEX.DTO
 @using ArkanisOverlay.Windows
 @using Microsoft.EntityFrameworkCore
+@using ArkanisOverlay.Components.SearchResult
 
 @inject ISnackbar SnackbarService
 @inject UEXContext UEXContext
@@ -23,7 +24,7 @@
         let target = ev.target;
 
         if (target.id === "searchBox") {
-            if (ev.keyCode !== 40 && ev.keyCode !== 39) {
+            if (ev.keyCode !== 40) {
                 return;
             }
 
@@ -41,10 +42,11 @@
 
                 case 37: // left
                     (
-                        target.parentElement.querySelector('[tabindex="1"]:has(~ :focus)') ||
                         target.tabIndex === 1 ?
-                            target.closest('.search-result') :
-                            searchBox
+                            (
+                                target.parentElement.querySelector('[tabindex="1"]:has(~ :focus)')
+                                || target.closest('.search-result')
+                            ) : searchBox
                     )?.focus();
                     break;
 
@@ -55,8 +57,14 @@
                             target.parentElement.querySelector(':focus ~ [tabindex="1"]')
                     )?.focus();
                     break;
+                    
+                case 13: // enter
+                case 32: // space
+                    if (target.id !== "searchBox") {
+                        break;
+                    }
 
-
+                <!--suppress FallThroughInSwitchStatementJS -->
                 default:
                     searchBox?.focus();
                     searchBox?.select();
@@ -137,26 +145,28 @@
         <MudStack Class="mt-10" Style="width: 100%; min-height: 20vh;">
             @foreach (var commodity in Commodities)
             {
-                <MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0">
-                    <MudStack Row="true" Style="width: 100%"
-                              Class="justify-center align-center align-content-center">
-                        <MudIcon Icon="@Icons.Material.Outlined.Diamond"></MudIcon>
-                        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
-                        <h1 class="flex-1">@commodity.Name</h1>
-                        <MudStack>
-                            <p style="color: lightskyblue">Buy: @commodity.PriceBuy.ToString("N0") UEC</p>
-                            <p style="color: sandybrown">Sell: @commodity.PriceSell.ToString("N0") UEC</p>
-                        </MudStack>
-                        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
-                        <MudIconButton Icon="@Icons.Material.Outlined.Diamond" Class="focus"
-                                       tabindex="1">
-                        </MudIconButton>
-                        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
-                        <MudIconButton Icon="@Icons.Material.Outlined.Diamond" Class="focus"
-                                       tabindex="1">
-                        </MudIconButton>
-                    </MudStack>
-                </MudPaper>
+                <CommodityResult Commodity="commodity"></CommodityResult>
+                
+                @* <MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0"> *@
+                @*     <MudStack Row="true" Style="width: 100%" *@
+                @*               Class="justify-center align-center align-content-center"> *@
+                @*         <MudIcon Icon="@Icons.Material.Outlined.Diamond"></MudIcon> *@
+                @*         <MudDivider Vertical="true" FlexItem="true"></MudDivider> *@
+                @*         <h1 class="flex-1">@commodity.Name</h1> *@
+                @*         <MudStack> *@
+                @*             <p style="color: lightskyblue">Buy: @commodity.PriceBuy.ToString("N0") UEC</p> *@
+                @*             <p style="color: sandybrown">Sell: @commodity.PriceSell.ToString("N0") UEC</p> *@
+                @*         </MudStack> *@
+                @*         <MudDivider Vertical="true" FlexItem="true"></MudDivider> *@
+                @*         <MudIconButton Icon="@Icons.Material.Outlined.Diamond" Class="focus" *@
+                @*                        tabindex="1"> *@
+                @*         </MudIconButton> *@
+                @*         <MudDivider Vertical="true" FlexItem="true"></MudDivider> *@
+                @*         <MudIconButton Icon="@Icons.Material.Outlined.Diamond" Class="focus" *@
+                @*                        tabindex="1"> *@
+                @*         </MudIconButton> *@
+                @*     </MudStack> *@
+                @* </MudPaper> *@
             }
 
         </MudStack>

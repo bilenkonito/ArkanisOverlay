@@ -1,0 +1,26 @@
+@using ArkanisOverlay.Data.UEX.DTO
+
+<MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0">
+    <MudStack Row="true" Style="width: 100%"
+              Class="justify-center align-center align-content-center">
+        <MudIcon Icon="@Icons.Material.Outlined.Diamond"></MudIcon>
+        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+        <h1 class="flex-1">@Commodity.Name</h1>
+        <MudStack>
+            <p style="color: lightskyblue">Buy: @Commodity.PriceBuy.ToString("N0") UEC</p>
+            <p style="color: sandybrown">Sell: @Commodity.PriceSell.ToString("N0") UEC</p>
+        </MudStack>
+        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+        <MudIconButton Icon="@Icons.Material.Outlined.Diamond" Class="focus"
+                       tabindex="1">
+        </MudIconButton>
+        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+        <MudIconButton Icon="@Icons.Material.Outlined.Diamond" Class="focus"
+                       tabindex="1">
+        </MudIconButton>
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter] public required CommodityDto Commodity { get; set; }
+}
