@@ -13,27 +13,36 @@
     }
 }
 
-.uex-badge-container {
+.badge-container {
     position: absolute;
-    left: 25px;
+
     bottom: 25px;
+
+    &.author {
+        right: 25px;
+    }
+
+    &.uex {
+        left: 25px;
+    }
+
     height: 2rem;
     padding: 0;
     transition: height 0.35s ease-in-out;
 
     a {
     }
-    
+
     &:hover {
         height: 3rem;
-        
-        & .uex-badge {
+
+        & .badge {
             &::after, &::before {
                 padding: 2px;
                 height: 100%;
                 width: 100%;
             }
-            
+
             &::before {
                 opacity: 0.5;
             }
@@ -42,7 +51,7 @@
 }
 
 /* Animation based on: https://www.coding2go.com/border-animation/ */
-.uex-badge {
+.badge {
     position: relative;
     height: 100%;
 
@@ -66,8 +75,8 @@
         animation: 5s spin linear infinite;
         transition: padding 0.3s ease-in-out;
     }
-    
-    &::before{
+
+    &::before {
         filter: blur(1.5rem);
         opacity: 0;
         transition: opacity 0.3s ease-in-out;
