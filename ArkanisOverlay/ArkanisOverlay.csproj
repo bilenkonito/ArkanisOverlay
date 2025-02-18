@@ -32,6 +32,7 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="MudBlazor" Version="8.2.0"/>
+        <PackageReference Include="MudBlazor.FontIcons.MaterialSymbols" Version="1.2.0" />
         <PackageReference Include="SingleInstanceCore" Version="2.2.2" />
     </ItemGroup>
 
