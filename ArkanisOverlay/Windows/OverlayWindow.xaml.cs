@@ -169,9 +169,9 @@ public partial class OverlayWindow
 
     private void CoreWebView_Loaded(object? sender, CoreWebView2InitializationCompletedEventArgs e)
     {
-        // blazorWebView.WebView.CoreWebView2.SetVirtualHostNameToFolderMapping("local.data", "Data", CoreWebView2HostResourceAccessKind.Allow);
-        // blazorWebView.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
-        // blazorWebView.WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+        // BlazorWebView.WebView.CoreWebView2.SetVirtualHostNameToFolderMapping("resources.internal", "Resources", CoreWebView2HostResourceAccessKind.Allow);
+        BlazorWebView.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+        BlazorWebView.WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
     }
 
     /// <summary>

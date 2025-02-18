@@ -92,6 +92,7 @@
         width: 100%;
         height: 100%;
         /*background-color: #FF000030;*/
+        overflow: hidden;
     }
 
     #searchContainer {
@@ -132,6 +133,15 @@
 
 <div id="clickAwayBackground"
      onmousedown="if (event.target == this) DotNet.invokeMethodAsync('ArkanisOverlay', 'ClickAwayHide')">
+
+    <div class="uex-badge-container">
+        <a href="https://uexcorp.space/" target="_blank" rel="noopener noreferrer">
+            <div class="uex-badge">
+                <img src="assets/img/uex-api-badge-powered.png"
+                     alt="Powered by UEX API Badge"/>
+            </div>
+        </a>
+    </div>
 </div>
 
 <MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">

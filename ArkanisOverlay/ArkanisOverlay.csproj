@@ -39,6 +39,7 @@
     <ItemGroup>
         <!--        <Resource Include="Resources\ArkanisTransparent.png" />-->
         <Resource Include="Resources\*.png"/>
+        <Resource Include="wwwroot\assets\img\uex-api-badge-powered.png" />
     </ItemGroup>
 
     <ItemGroup>
