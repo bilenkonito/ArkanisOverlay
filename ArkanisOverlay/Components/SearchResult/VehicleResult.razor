@@ -3,7 +3,7 @@
 <MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0">
     <MudStack Row="true" Style="width: 100%"
               Class="justify-center align-center align-content-center">
-        <MudIcon Icon="@Icons.Material.Outlined.Rocket"></MudIcon>
+        <MudIcon Icon="@VehicleIcon"></MudIcon>
         <MudDivider Vertical="true" FlexItem="true"></MudDivider>
         <h1 class="flex-1">@Vehicle.NameFull</h1>
         <MudStack>
@@ -23,4 +23,15 @@
 
 @code {
     [Parameter] public required VehicleDto Vehicle { get; set; }
+
+    private string VehicleIcon { get; set; } = Icons.Material.Outlined.Rocket;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        VehicleIcon =
+            Vehicle.IsSpaceship ? Icons.Material.Outlined.Rocket : Icons.Material.Outlined.AirportShuttle;
+    }
+
 }
