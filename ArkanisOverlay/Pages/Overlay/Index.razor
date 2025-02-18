@@ -57,7 +57,7 @@
                             target.parentElement.querySelector(':focus ~ [tabindex="1"]')
                     )?.focus();
                     break;
-                    
+
                 case 13: // enter
                 case 32: // space
                     if (target.id !== "searchBox") {
@@ -146,29 +146,11 @@
             @foreach (var commodity in Commodities)
             {
                 <CommodityResult Commodity="commodity"></CommodityResult>
-                
-                @* <MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0"> *@
-                @*     <MudStack Row="true" Style="width: 100%" *@
-                @*               Class="justify-center align-center align-content-center"> *@
-                @*         <MudIcon Icon="@Icons.Material.Outlined.Diamond"></MudIcon> *@
-                @*         <MudDivider Vertical="true" FlexItem="true"></MudDivider> *@
-                @*         <h1 class="flex-1">@commodity.Name</h1> *@
-                @*         <MudStack> *@
-                @*             <p style="color: lightskyblue">Buy: @commodity.PriceBuy.ToString("N0") UEC</p> *@
-                @*             <p style="color: sandybrown">Sell: @commodity.PriceSell.ToString("N0") UEC</p> *@
-                @*         </MudStack> *@
-                @*         <MudDivider Vertical="true" FlexItem="true"></MudDivider> *@
-                @*         <MudIconButton Icon="@Icons.Material.Outlined.Diamond" Class="focus" *@
-                @*                        tabindex="1"> *@
-                @*         </MudIconButton> *@
-                @*         <MudDivider Vertical="true" FlexItem="true"></MudDivider> *@
-                @*         <MudIconButton Icon="@Icons.Material.Outlined.Diamond" Class="focus" *@
-                @*                        tabindex="1"> *@
-                @*         </MudIconButton> *@
-                @*     </MudStack> *@
-                @* </MudPaper> *@
             }
-
+            @foreach (var vehicle in Vehicles)
+            {
+                <VehicleResult Vehicle="vehicle"></VehicleResult>
+            }
         </MudStack>
     </MudFocusTrap>
 </MudStack>
@@ -183,6 +165,7 @@
     private Snackbar? _snackbar;
 
     private List<CommodityDto> Commodities { get; set; } = new();
+    private List<VehicleDto> Vehicles { get; set; } = new();
 
     [JSInvokable("ClickAwayHide")]
     public static void ClickAwayHide() => OverlayWindow.Instance?.Collapse();
@@ -224,9 +207,17 @@
                 commodity.Name.ToLower().Contains(lower)
         ).ToListAsync().ConfigureAwait(true);
 
+        var vehicles = await UEXContext.Vehicles.Where(
+            vehicle =>
+                vehicle.NameFull != null &&
+                vehicle.NameFull.ToLower().Contains(lower)
+        ).ToListAsync().ConfigureAwait(false);
+
         Commodities = commodities;
+        Vehicles = vehicles;
 
         Console.WriteLine(string.Join(", ", commodities.Select(c => c.Name).ToList()));
+        Console.WriteLine(string.Join(", ", vehicles.Select(c => c.Name).ToList()));
 
         // await UEXContext.Ships.Where(ship => ship.Name.ToLower().Contains(lower));
         // await UEXContext.Vehicles.Where(vehicle => vehicle.Name.ToLower().Contains(lower));

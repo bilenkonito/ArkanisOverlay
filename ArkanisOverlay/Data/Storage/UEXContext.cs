@@ -11,6 +11,7 @@ public class UEXContext : DbContext
     );
 
     public DbSet<CommodityDto> Commodities { get; set; }
+    public DbSet<VehicleDto> Vehicles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
