@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ArkanisOverlay.Data.UEX.API;
+namespace ArkanisOverlay.Data.UEX.API.Converters;
 
 // from: https://stackoverflow.com/a/68685773/4161937
 public class BoolConverter : JsonConverter<bool>

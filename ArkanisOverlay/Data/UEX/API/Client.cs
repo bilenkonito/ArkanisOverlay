@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using ArkanisOverlay.Data.UEX.API.Converters;
 using Microsoft.Extensions.Logging;
 
 namespace ArkanisOverlay.Data.UEX.API;

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ArkanisOverlay.Data.UEX.API;
+namespace ArkanisOverlay.Data.UEX.API.Converters;
 
 public class DateTimeOffsetConverter : JsonConverter<DateTimeOffset>
 {

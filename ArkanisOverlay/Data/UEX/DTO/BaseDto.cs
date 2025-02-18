@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using ArkanisOverlay.Data.UEX.API;
+using ArkanisOverlay.Data.UEX.API.Converters;
 
 namespace ArkanisOverlay.Data.UEX.DTO;
 
