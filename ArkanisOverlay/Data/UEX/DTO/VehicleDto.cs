@@ -15,14 +15,14 @@ public class VehicleDto : BaseDto
     [JsonPropertyName("name_full")] public string? NameFull { get; init; } // string?(255)
     [JsonPropertyName("slug")] public string? Slug { get; init; } // string?(255)
     [JsonPropertyName("uuid")] public string? Uuid { get; init; } // string?(255) // star citizen uuid
-    [JsonPropertyName("scu")] public int Scu { get; init; } // int(11)
+    [JsonPropertyName("scu")] public float Scu { get; init; } // int(11)
     [JsonPropertyName("crew")] public string? Crew { get; init; } // string?(10) // comma separated
-    [JsonPropertyName("mass")] public int Mass { get; init; } // int(11)
-    [JsonPropertyName("width")] public int Width { get; init; } // int(11)
-    [JsonPropertyName("height")] public int Height { get; init; } // int(11)
-    [JsonPropertyName("length")] public int Length { get; init; } // int(11)
-    [JsonPropertyName("fuel_quantum")] public int FuelQuantum { get; init; } // int(11) // SCU
-    [JsonPropertyName("fuel_hydrogen")] public int FuelHydrogen { get; init; } // int(11) // SCU
+    [JsonPropertyName("mass")] public float Mass { get; init; } // int(11)
+    [JsonPropertyName("width")] public float Width { get; init; } // int(11)
+    [JsonPropertyName("height")] public float Height { get; init; } // int(11)
+    [JsonPropertyName("length")] public float Length { get; init; } // int(11)
+    [JsonPropertyName("fuel_quantum")] public float FuelQuantum { get; init; } // int(11) // SCU
+    [JsonPropertyName("fuel_hydrogen")] public float FuelHydrogen { get; init; } // int(11) // SCU
     [JsonPropertyName("container_sizes")] public string? ContainerSizes { get; init; } // string? // SCU, comma separated
     [JsonPropertyName("is_addon")] public bool IsAddon { get; init; } // int(1) // e.g. RSI Galaxy Refinery Module
     [JsonPropertyName("is_boarding")] public bool IsBoarding { get; init; } // int(1)

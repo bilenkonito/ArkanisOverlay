@@ -14,7 +14,12 @@ public class Client
 
     private readonly JsonSerializerOptions _options = new()
     {
-        Converters = { new BoolConverter() }
+        Converters =
+        {
+            new BoolConverter(),
+            // hotfix for UEX float -> string issue
+            new StringToNumberConverter<float>(),
+        }
     };
 
     public Client(ILogger<Client> logger, HttpClient client)
