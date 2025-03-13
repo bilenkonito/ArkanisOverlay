@@ -6,6 +6,7 @@ using ArkanisOverlay.Data.UEX.API;
 using ArkanisOverlay.Helpers;
 using ArkanisOverlay.Windows;
 using ArkanisOverlay.Workers;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
@@ -40,6 +41,11 @@ public partial class App : ISingleInstance
         if (!Directory.Exists(Constants.LocalAppDataPath))
         {
             Directory.CreateDirectory(Constants.LocalAppDataPath);
+        }
+
+        using (var context = new UEXContext())
+        {
+            context.Database.Migrate();
         }
 
         var serviceCollection = new ServiceCollection();
