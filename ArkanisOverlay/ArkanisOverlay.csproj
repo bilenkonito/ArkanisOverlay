@@ -11,7 +11,20 @@
         <RootNamespace>ArkanisOverlay</RootNamespace>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
         <Platform>x64</Platform>
+
+        <SelfContained>true</SelfContained>
+        <PublishSingleFile>true</PublishSingleFile>
+        <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+        <PublishDir>..\publish</PublishDir>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <ApplicationIcon>Resources/favicon.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Resource Include="Resources/favicon.ico" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.12"/>
@@ -34,6 +47,7 @@
         <PackageReference Include="MudBlazor" Version="8.2.0"/>
         <PackageReference Include="MudBlazor.FontIcons.MaterialSymbols" Version="1.2.0" />
         <PackageReference Include="SingleInstanceCore" Version="2.2.2" />
+        <PackageReference Include="TrayIcon" Version="1.1.1.1" />
     </ItemGroup>
 
     <ItemGroup>

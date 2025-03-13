@@ -15,7 +15,8 @@
         Visibility="Collapsed"
         Focusable="True"
         AllowsTransparency="True"
-        FocusManager.FocusedElement="{Binding ElementName=BlazorWebView}">
+        FocusManager.FocusedElement="{Binding ElementName=BlazorWebView}"
+        xmlns:icon="https://github.com/nullsoftware/TrayIcon">
     <Window.Background>
         <SolidColorBrush Color="#010000" Opacity="0.05" />
     </Window.Background>
@@ -31,4 +32,19 @@
             </blazor:BlazorWebView.RootComponents>
         </blazor:BlazorWebView>
     </Grid>
+    <icon:TrayIconHandlers.TrayIcons>
+        <icon:TrayIcon
+            Title="Arkanis Overlay"
+            IconSource="../Resources/favicon.ico"
+            NotificationServiceMemberPath="NotificationService"
+            ContextMenuVariation="ContextMenuStrip">
+            
+            <icon:TrayIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Exit" Click="OnExitCommand" />
+                </ContextMenu>
+            </icon:TrayIcon.ContextMenu>
+        </icon:TrayIcon>
+
+    </icon:TrayIconHandlers.TrayIcons>
 </Window>

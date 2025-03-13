@@ -9,6 +9,7 @@ using ArkanisOverlay.Workers;
 using Microsoft.AspNetCore.Components.WebView;
 using Microsoft.Extensions.Logging;
 using Microsoft.Web.WebView2.Core;
+using Application = System.Windows.Application;
 using Index = ArkanisOverlay.Pages.Overlay.Index;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
@@ -186,5 +187,9 @@ public partial class OverlayWindow
         // receive focus instead for some reason
         if (_currentWindowHWnd == HWND.Null) return;
         PInvoke.SetForegroundWindow(_currentWindowHWnd);
+    }
+    
+    private void OnExitCommand(object sender, RoutedEventArgs e) {
+        Application.Current.Shutdown();
     }
 }
