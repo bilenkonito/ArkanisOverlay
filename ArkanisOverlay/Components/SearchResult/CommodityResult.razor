@@ -6,9 +6,27 @@
         <MudIcon Icon="@Icons.Material.Outlined.Diamond"></MudIcon>
         <MudDivider Vertical="true" FlexItem="true"></MudDivider>
         <h1 class="flex-1">@Commodity.Name</h1>
-        <MudStack>
-            <p style="color: lightskyblue">Buy: @Commodity.PriceBuy.ToString("N0") UEC</p>
-            <p style="color: sandybrown">Sell: @Commodity.PriceSell.ToString("N0") UEC</p>
+        <MudStack Style="width: 8em; color: lightskyblue;" AlignItems="AlignItems.Center" Spacing="2">
+            <p>Avg. Buy:</p>
+            @if (Commodity.PriceBuy == 0)
+            {
+                <p>—</p>
+            }
+            else
+            {
+                <p>@Commodity.PriceBuy.ToString("N0") UEC</p>
+            }
+        </MudStack>
+        <MudStack Style="width: 8em; color: sandybrown;" AlignItems="AlignItems.Center" Spacing="2">
+            <p>Avg. Sell:</p>
+            @if (Commodity.PriceSell == 0)
+            {
+                <p>—</p>
+            }
+            else
+            {
+                <p>@Commodity.PriceSell.ToString("N0") UEC</p>
+            }
         </MudStack>
         <MudDivider Vertical="true" FlexItem="true"></MudDivider>
         <MudIconButton Icon="@MaterialSymbols.Outlined.AddShoppingCart" Class="focus"
