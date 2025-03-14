@@ -11,9 +11,12 @@
         <RootNamespace>ArkanisOverlay</RootNamespace>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
         <Platform>x64</Platform>
+    </PropertyGroup>
 
-        <SelfContained>true</SelfContained>
+    <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+        <!-- PublishSingleFile in csproj breaks debugger -->
         <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
         <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
         <PublishDir>..\publish</PublishDir>
     </PropertyGroup>
