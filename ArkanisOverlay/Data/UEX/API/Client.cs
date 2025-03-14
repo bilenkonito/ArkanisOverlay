@@ -18,7 +18,7 @@ public class Client
         {
             new BoolConverter(),
             // hotfix for UEX float -> string issue
-            new StringToNumberConverter<float>(),
+            new StringToNumberConverter<decimal>(),
         }
     };
 

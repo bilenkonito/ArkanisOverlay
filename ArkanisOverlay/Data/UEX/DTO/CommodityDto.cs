@@ -14,11 +14,11 @@ public class CommodityDto : BaseDto
     [JsonPropertyName("kind")]
     public string? Kind { get; init; } // string(255)
     [JsonPropertyName("weight_scu")]
-    public float WeightScu { get; init; } // ! WRONG ! // float, e.g. 1.2 // int(11) // tons per SCU
+    public decimal WeightScu { get; init; } // ! WRONG ! // float, e.g. 1.2 // int(11) // tons per SCU
     [JsonPropertyName("price_buy")]
-    public float PriceBuy { get; init; } // float // average market price per SCU
+    public decimal PriceBuy { get; init; } // float // average market price per SCU
     [JsonPropertyName("price_sell")]
-    public float PriceSell { get; init; } // float // average market price per SCU
+    public decimal PriceSell { get; init; } // float // average market price per SCU
     [JsonPropertyName("is_available")]
     public bool IsAvailable { get; init; } // int(1) // UEX website
     [JsonPropertyName("is_available_live")]
