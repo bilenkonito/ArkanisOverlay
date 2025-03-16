@@ -7,6 +7,7 @@ using ArkanisOverlay.Helpers;
 using ArkanisOverlay.Windows;
 using ArkanisOverlay.Workers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
@@ -64,8 +65,29 @@ public partial class App : ISingleInstance
 
     private static void ConfigureServices(IServiceCollection services)
     {
-        services.AddLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug).AddFilter((scope,
-            _) => scope?.StartsWith("ArkanisOverlay") ?? false));
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json",
+                optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables()
+            .Build();
+
+        services.AddScoped<IConfiguration>(_ => configuration);
+        
+        services.AddLogging(builder
+            => builder
+                .AddConsole()
+                .SetMinimumLevel(LogLevel.Debug)
+                .AddFilter(
+                    (scope, _)
+                        => scope?.StartsWith("ArkanisOverlay") ?? false));
+
+        services
+            .AddOptions<ConfigurationOptions>()
+            .BindConfiguration(ConfigurationOptions.Section)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
         services.AddWpfBlazorWebView();
         services.AddMudServices(config =>
         {
