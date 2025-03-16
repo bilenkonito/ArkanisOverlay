@@ -1,10 +1,9 @@
 using System.Text.Json.Serialization;
-using ArkanisOverlay.Data.UEX.API;
 using ArkanisOverlay.Data.UEX.API.Converters;
 
 namespace ArkanisOverlay.Data.UEX.DTO;
 
-public class BaseDto
+public abstract class BaseDto
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
