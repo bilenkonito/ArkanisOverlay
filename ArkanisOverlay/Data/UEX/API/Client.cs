@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using ArkanisOverlay.Data.UEX.API.Converters;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ArkanisOverlay.Data.UEX.API;
 
@@ -10,7 +11,8 @@ public class Client
 {
     private readonly ILogger<Client> _logger;
     private readonly HttpClient _client;
-    private const string _BASE_URL = "https://api.uexcorp.space/2.0/";
+    private readonly ConfigurationOptions _configurationOptions;
+    private readonly string _baseUrl;
 
     private readonly JsonSerializerOptions _options = new()
     {
@@ -22,32 +24,36 @@ public class Client
         }
     };
 
-    public Client(ILogger<Client> logger, HttpClient client)
+    public Client(ILogger<Client> logger, HttpClient client, IOptions<ConfigurationOptions> configurationOptions)
     {
         _logger = logger;
         _client = client;
+        _configurationOptions = configurationOptions.Value;
+        _baseUrl = _configurationOptions.UexBaseUrl;
 
-        if (!_BASE_URL.EndsWith('/')) throw new Exception("BaseUrl must end with '/'.");
+        if (!_baseUrl.EndsWith('/')) throw new Exception("BaseUrl must end with '/'.");
     }
 
     public async Task<T?> Get<T>(string endpoint)
     {
         try
         {
-            var response = await _client.GetFromJsonAsync<ApiResponse<T>>(_BASE_URL + endpoint, _options)
+            var response = await _client.GetFromJsonAsync<ApiResponse<T>>($"{_baseUrl}{endpoint}", _options)
                 .ConfigureAwait(false);
             
-            if (response is null) throw new Exception("Response is `null`.");
-
-            if (response is { IsSuccess: true })
+            switch (response)
             {
-                return response.Data;
+                case null:
+                    throw new Exception("Response is `null`.");
+                case { IsSuccess: true }:
+                    return response.Data;
+                default:
+                    _logger.LogError(
+                        "Failed to fetch {Endpoint}. HttpCode: {HttpCode}. Status: {Status}. Message: {Message}.",
+                        endpoint, response.HttpCode, response.Status, response.Message
+                    );
+                    break;
             }
-
-            _logger.LogError(
-                "Failed to fetch {Endpoint}. HttpCode: {HttpCode}. Status: {Status}. Message: {Message}.",
-                endpoint, response.HttpCode, response.Status, response.Message
-            );
         }
         catch (Exception e)
         {
