@@ -11,6 +11,7 @@
         <RootNamespace>ArkanisOverlay</RootNamespace>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
         <Platform>x64</Platform>
+        <StartupObject>ArkanisOverlay.Program</StartupObject>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
@@ -30,6 +31,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.AppServices" Version="1.0.14" />
+        <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Plugins" Version="1.0.14" />
+        <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Wpf" Version="1.0.14" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.12"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.0.100"/>
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
@@ -41,6 +45,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.13" />
         <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />

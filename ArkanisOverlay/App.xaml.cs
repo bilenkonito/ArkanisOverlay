@@ -20,18 +20,23 @@ namespace ArkanisOverlay;
 /// </summary>
 public partial class App : ISingleInstance
 {
-    private IServiceProvider? _serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<App> _logger;
 
+    // workaround to fix compiler error because of
+    // generated Main method in `App.g.cs`
+    private App() => throw new NotSupportedException();
+
+    // ReSharper disable once UnusedMember.Global
+    public App(ILogger<App> logger, IServiceProvider serviceProvider)
+    {
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
+    
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-        
-        var isFirstInstance = this.InitializeAsFirstInstance(Constants.INSTANCE_ID);
-        if (!isFirstInstance)
-        {
-            Shutdown();
-            return;
-        }
 
         if (!Debugger.IsAttached)
         {
@@ -49,9 +54,9 @@ public partial class App : ISingleInstance
             context.Database.Migrate();
         }
 
-        var serviceCollection = new ServiceCollection();
-        ConfigureServices(serviceCollection);
-        _serviceProvider = serviceCollection.BuildServiceProvider();
+        // var serviceCollection = new ServiceCollection();
+        // ConfigureServices(serviceCollection);
+        // _serviceProvider = serviceCollection.BuildServiceProvider();
         Resources.Add("services", _serviceProvider);
 
         var overlayWindow = _serviceProvider.GetRequiredService<OverlayWindow>();
@@ -61,60 +66,6 @@ public partial class App : ISingleInstance
         // would normally be specified as `StartupUri` in
         // `App.xaml`
         overlayWindow.Show();
-    }
-
-    private static void ConfigureServices(IServiceCollection services)
-    {
-        IConfiguration configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json",
-                optional: true, reloadOnChange: true)
-            .AddEnvironmentVariables()
-            .Build();
-
-        services.AddScoped<IConfiguration>(_ => configuration);
-        
-        services.AddLogging(builder
-            => builder
-                .AddConsole()
-                .SetMinimumLevel(LogLevel.Debug)
-                .AddFilter(
-                    (scope, _)
-                        => scope?.StartsWith("ArkanisOverlay") ?? false));
-
-        services
-            .AddOptions<ConfigurationOptions>()
-            .BindConfiguration(ConfigurationOptions.Section)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-        
-        services.AddWpfBlazorWebView();
-        services.AddMudServices(config =>
-        {
-            config.SnackbarConfiguration.NewestOnTop = true;
-            config.SnackbarConfiguration.MaxDisplayedSnackbars = 1;
-        });
-        services.AddSingleton<IServiceProvider>(sp => sp);
-        services.AddHttpClient();
-
-        // Windows
-        services.AddSingleton<OverlayWindow>();
-
-        // Views
-
-        // ViewModels
-        
-        // Data
-        services.AddSingleton<UEXContext>();
-
-        // Services
-        services.AddSingleton<BlurHelper>();
-        services.AddSingleton<Client>();
-
-        // Workers
-        services.AddSingleton<WindowTracker>();
-        services.AddSingleton<GlobalHotkey>();
-        services.AddSingleton<DataSync>();
     }
 
     public void OnInstanceInvoked(string[] args)
@@ -138,10 +89,19 @@ public partial class App : ISingleInstance
 
     protected override void OnExit(ExitEventArgs exitEventArgs)
     {
-        // Dispose of services if needed
-        if (_serviceProvider is IDisposable disposable)
+        _logger.LogInformation("Shutting down.");
+
+        try
         {
-            disposable.Dispose();
+            // Dispose of services if needed
+            if (_serviceProvider is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during shutdown.");
         }
     }
 }

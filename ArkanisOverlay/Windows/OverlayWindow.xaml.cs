@@ -7,6 +7,7 @@ using Windows.Win32.Foundation;
 using ArkanisOverlay.Helpers;
 using ArkanisOverlay.Workers;
 using Microsoft.AspNetCore.Components.WebView;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Web.WebView2.Core;
 using Application = System.Windows.Application;
@@ -23,6 +24,7 @@ public partial class OverlayWindow
     public static OverlayWindow? Instance { get; private set; }
 
     private readonly ILogger _logger;
+    private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly WindowTracker _windowTracker;
     private readonly GlobalHotkey _globalHotkey;
     private readonly BlurHelper _blurHelper;
@@ -31,12 +33,15 @@ public partial class OverlayWindow
     private HWND _currentWindowHWnd = HWND.Null;
 
 
-    public OverlayWindow(ILogger<OverlayWindow> logger, WindowTracker windowTracker, GlobalHotkey globalHotkey,
+    public OverlayWindow(
+        ILogger<OverlayWindow> logger, IHostApplicationLifetime hostApplicationLifetime,
+        WindowTracker windowTracker, GlobalHotkey globalHotkey,
         BlurHelper blurHelper, DataSync dataSync)
     {
         Instance = this;
 
         _logger = logger;
+        _hostApplicationLifetime = hostApplicationLifetime;
         _windowTracker = windowTracker;
         _globalHotkey = globalHotkey;
         _blurHelper = blurHelper;
@@ -190,6 +195,7 @@ public partial class OverlayWindow
     }
     
     private void OnExitCommand(object sender, RoutedEventArgs e) {
-        Application.Current.Shutdown();
+        // Application.Current.Shutdown();
+        _hostApplicationLifetime.StopApplication();
     }
 }
