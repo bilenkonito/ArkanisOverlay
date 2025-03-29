@@ -1,0 +1,330 @@
+@page "/"
+@page "/overlay"
+@layout OverlayLayout
+@using System.Text.RegularExpressions
+@using ArkanisOverlay.Data.Entities.UEX
+@using ArkanisOverlay.Data.Storage
+@using Microsoft.EntityFrameworkCore
+@using ArkanisOverlay.UI.Components.SearchResult
+@using ArkanisOverlay.UI.Windows
+@using Microsoft.Extensions.Logging
+
+@inject ISnackbar SnackbarService
+@inject UEXContext UEXContext
+@inject ILogger<Index> Logger;
+
+<script>
+    window.onkeydown = ev => {
+        console.debug("KeyDown", ev);
+        if (ev.key === "Escape") {
+            DotNet.invokeMethodAsync("ArkanisOverlay", "ClickAwayHide");
+        }
+
+        // if (ev.keyCode >= 38 && ev.keyCode <= 40) {
+        //     debugger;
+        // }
+
+        let target = ev.target;
+
+        if (target.id === "searchBox") {
+            if (ev.keyCode !== 40) {
+                return;
+            }
+
+            document.querySelector('.search-result')?.focus();
+        } else {
+            let searchBox = document.getElementById('searchBox')
+
+            switch (ev.keyCode) {
+                case 38: // up
+                    (ev.target.previousElementSibling || searchBox)?.focus();
+                    break;
+                case 40: // down
+                    ev.target.nextElementSibling.focus();
+                    break;
+
+                case 37: // left
+                    (
+                        target.tabIndex === 1 ?
+                            (
+                                target.parentElement.querySelector('[tabindex="1"]:has(~ :focus)')
+                                || target.closest('.search-result')
+                            ) : searchBox
+                    )?.focus();
+                    break;
+
+                case 39: // right
+                    (
+                        target.tabIndex === 0 ?
+                            target.querySelector('[tabindex="1"]') :
+                            target.parentElement.querySelector(':focus ~ [tabindex="1"]')
+                    )?.focus();
+                    break;
+
+                case 13: // enter
+                case 32: // space
+                    if (target.id !== "searchBox") {
+                        break;
+                    }
+
+                <!--suppress FallThroughInSwitchStatementJS -->
+                default:
+                    searchBox?.focus();
+                    searchBox?.select();
+                    return; // do not prevent default so that the search box receives the key input
+            }
+        }
+
+        ev.preventDefault();
+    };
+</script>
+
+<!--suppress CssUnusedSymbol -->
+<style>
+    body {
+        background-color: transparent;
+    }
+
+    #clickAwayBackground {
+        position: absolute;
+        /*top: 0;*/
+        /*left: 0;*/
+        width: 100%;
+        height: 100%;
+        /*background-color: #FF000030;*/
+        overflow: hidden;
+    }
+
+    #searchContainer {
+        position: relative;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, 0%);
+        width: fit-content;
+        z-index: 1;
+
+        .mud-input-control {
+            margin: 0;
+            width: 60vw;
+        }
+
+        .mud-input,
+        .mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
+            font-size: 2vh; /* 1 rem is default */
+        }
+
+        .mud-icon-size-medium {
+            font-size: 2.5vh;
+        }
+    }
+
+    .focus:focus {
+        outline: 2px solid var(--mud-palette-primary);
+    }
+
+    .mud-snackbar {
+        min-width: 0;
+    }
+
+    .mud-icon-button.focus {
+        border-radius: 0;
+    }
+</style>
+
+<div id="clickAwayBackground"
+     onmousedown="if (event.target == this) DotNet.invokeMethodAsync('ArkanisOverlay', 'ClickAwayHide')">
+
+    <div class="badge-container uex">
+        <a href="https://uexcorp.space/" target="_blank" rel="noopener noreferrer">
+            <div class="badge">
+                <img src="assets/img/uex-api-badge-powered.png"
+                     alt="Powered by UEX API Badge"/>
+            </div>
+        </a>
+    </div>
+
+    <div class="badge-container author">
+        <a href="https://discord.com/users/174617873182883841" target="_blank" rel="noopener noreferrer">
+            <div class="badge author">
+                <img src="assets/img/created-by-badge.png"
+                     alt="Powered by UEX API Badge"/>
+            </div>
+        </a>
+    </div>
+</div>
+
+<MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
+    <MudFocusTrap DefaultFocus="DefaultFocus.FirstChild">
+        <MudPaper>
+            <MudTextField id="searchBox" @ref="SearchBox" T="string" @bind-Value="SearchText" Variant="Variant.Outlined"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary"
+                          HelperText=":c Commodities, :s Ships, :v Vehicles, :i Items, :l Locations"
+                          AutoFocus="true" DebounceInterval="500" OnDebounceIntervalElapsed="DoSearch">
+            </MudTextField>
+        </MudPaper>
+
+        <MudStack Class="mt-10" Style="width: 100%; min-height: 20vh;">
+            @foreach (var commodity in Commodities)
+            {
+                <CommodityResult Commodity="commodity"></CommodityResult>
+            }
+            @foreach (var vehicle in Vehicles)
+            {
+                <VehicleResult Vehicle="vehicle"></VehicleResult>
+            }
+        </MudStack>
+    </MudFocusTrap>
+</MudStack>
+
+
+
+@code {
+    public static Index? Instance { get; private set; }
+    public static MudTextField<string>? SearchBox { get; private set; }
+    public string SearchText { get; set; } = "";
+
+    private Snackbar? _snackbar;
+
+    private List<CommodityEntity> Commodities { get; set; } = new();
+    private List<VehicleEntity> Vehicles { get; set; } = new();
+
+    [JSInvokable("ClickAwayHide")]
+    public static void ClickAwayHide() => OverlayWindow.Instance?.Collapse();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Console.WriteLine("Overlay initialized");
+
+        Instance = this;
+    }
+
+    @* public void ShowSnackbar() *@
+    @* { *@
+    @*     if (_snackbar is not null) SnackbarService.Remove(_snackbar); *@
+    @* *@
+    @*     _snackbar = SnackbarService.Add *@
+    @*     ( *@
+    @*         @<div class="pa-1"> *@
+    @*             <h3>Updating Database</h3> *@
+    @*             <MudProgressLinear Class="mt-3" Color="Color.Info" Indeterminate></MudProgressLinear> *@
+    @*         </div>, *@
+    @*         Severity.Normal, *@
+    @*         options => *@
+    @*         { *@
+    @*             options.HideIcon = true; *@
+    @*             options.RequireInteraction = true; *@
+    @*             options.ShowCloseIcon = false; *@
+    @*             options.ShowTransitionDuration = 0; *@
+    @*         }); *@
+    @* } *@
+
+    private struct SearchOptions
+    {
+        public bool Commodities { get; set; }
+        public bool Ships { get; set; }
+        public bool Vehicles { get; set; }
+        public bool Items { get; set; }
+        public bool Locations { get; set; }
+    }
+
+    private async Task DoSearch(string searchText)
+    {
+        if (searchText.Length < 3) return;
+        var (processedSearchText, searchOptions) = ProcessSearchTokens(searchText.ToLower());
+
+        Logger.LogDebug(
+            "Processed Search Tokens: {searchText}, {searchOptions}",
+            processedSearchText, searchOptions
+        );
+
+        if (searchOptions.Commodities)
+        {
+            Commodities = await SearchCommodities(processedSearchText).ConfigureAwait(false);
+        }
+        else
+        {
+            Commodities = [];
+        }
+
+        if (searchOptions.Ships || searchOptions.Vehicles)
+        {
+            Vehicles = await SearchVehicles(processedSearchText, searchOptions.Ships, searchOptions.Vehicles)
+                .ConfigureAwait(false);
+        }
+        else
+        {
+            Vehicles = [];
+        }
+    }
+
+    private async Task<List<CommodityEntity>> SearchCommodities(string searchText)
+    {
+        return await UEXContext.Commodities.Where(
+            commodity =>
+                commodity.Name != null &&
+                commodity.Name.ToLower().Contains(searchText)
+        ).ToListAsync().ConfigureAwait(true);
+    }
+
+    private async Task<List<VehicleEntity>> SearchVehicles(string searchText, bool includeShips, bool includeVehicles)
+    {
+        var both = !(includeShips ^ includeVehicles);
+
+        return await UEXContext.Vehicles.Where(
+            vehicle =>
+                (vehicle.IsSpaceship == (both || includeShips)
+                 || vehicle.IsGroundVehicle == (both || includeVehicles))
+                && vehicle.NameFull != null
+                && vehicle.NameFull.ToLower().Contains(searchText)
+        ).ToListAsync().ConfigureAwait(false);
+    }
+
+    private Tuple<string, SearchOptions> ProcessSearchTokens(string searchText)
+    {
+        var textTokens = new List<string>();
+        var searchOptions = new SearchOptions();
+        var hasFilterTokens = false;
+
+        foreach (var token in searchText.Split(" "))
+        {
+            if (!Regex.IsMatch(token, @":\w"))
+            {
+                textTokens.Add(token);
+                continue;
+            }
+
+            hasFilterTokens = true;
+            switch (token[1])
+            {
+                case 'c':
+                    searchOptions.Commodities = true; break;
+                case 's':
+                    searchOptions.Ships = true; break;
+                case 'v':
+                    searchOptions.Vehicles = true; break;
+                case 'i':
+                    searchOptions.Items = true; break;
+                case 'l':
+                    searchOptions.Locations = true; break;
+            }
+        }
+
+        // if no tokens were specified, we include all
+        if (!hasFilterTokens)
+        {
+            searchOptions = new SearchOptions()
+            {
+                Commodities = true,
+                Ships = true,
+                Vehicles = true,
+                Items = true,
+                Locations = true
+            };
+        }
+
+        return new(string.Join(' ', textTokens), searchOptions);
+    }
+
+}

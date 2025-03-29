@@ -12,6 +12,8 @@
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
         <Platform>x64</Platform>
         <StartupObject>ArkanisOverlay.Program</StartupObject>
+        <!-- see https://learn.microsoft.com/en-us/dotnet/core/extensions/workers#template-defaults -->
+        <ServerGarbageCollection>true</ServerGarbageCollection>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
@@ -25,10 +27,6 @@
     <PropertyGroup>
         <ApplicationIcon>Resources/favicon.ico</ApplicationIcon>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Resource Include="Resources/favicon.ico" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.AppServices" Version="1.0.14" />
@@ -63,19 +61,50 @@
     <ItemGroup>
         <!--        <Resource Include="Resources\ArkanisTransparent.png" />-->
         <Resource Include="Resources\*.png"/>
+        <Resource Include="Resources\favicon.ico" />
         <Resource Include="wwwroot\assets\img\uex-api-badge-powered.png" />
     </ItemGroup>
 
     <ItemGroup>
-        <Page Update="Windows\OverlayWindow.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
+        <File Include="NativeMethods.txt"/>
     </ItemGroup>
 
     <ItemGroup>
-        <File Include="NativeMethods.txt"/>
+      <AdditionalFiles Include="UI\Components\SearchResult\CommodityResult.razor" />
+      <AdditionalFiles Include="UI\Components\SearchResult\VehicleResult.razor" />
+      <AdditionalFiles Include="UI\Pages\Overlay\Index.razor" />
+      <AdditionalFiles Include="UI\Pages\Overlay\_Imports.razor" />
+      <AdditionalFiles Include="UI\Shared\AppLayout.razor" />
+      <AdditionalFiles Include="UI\Shared\Error.razor" />
+      <AdditionalFiles Include="UI\Shared\MainLayout.razor" />
+      <AdditionalFiles Include="UI\Shared\OverlayLayout.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="UI\Windows\OverlayWindow.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ApplicationDefinition Include="UI\App.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </ApplicationDefinition>
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Components\SearchResult\CommodityResult.razor" />
+      <UpToDateCheckInput Remove="Components\SearchResult\VehicleResult.razor" />
+      <UpToDateCheckInput Remove="Shared\AppLayout.razor" />
+      <UpToDateCheckInput Remove="Shared\Error.razor" />
+      <UpToDateCheckInput Remove="Shared\MainLayout.razor" />
+      <UpToDateCheckInput Remove="Shared\OverlayLayout.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Data\Entities\" />
     </ItemGroup>
 
 </Project>

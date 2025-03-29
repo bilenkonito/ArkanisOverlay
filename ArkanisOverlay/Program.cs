@@ -1,7 +1,10 @@
+using ArkanisOverlay.Data.API;
 using ArkanisOverlay.Data.Storage;
-using ArkanisOverlay.Data.UEX.API;
 using ArkanisOverlay.Helpers;
-using ArkanisOverlay.Windows;
+using ArkanisOverlay.Options;
+using ArkanisOverlay.Services;
+using ArkanisOverlay.UI;
+using ArkanisOverlay.UI.Windows;
 using ArkanisOverlay.Workers;
 using Dapplo.Microsoft.Extensions.Hosting.AppServices;
 using Dapplo.Microsoft.Extensions.Hosting.Wpf;
@@ -93,11 +96,16 @@ public static class Program
             services.AddHttpClient();
 
             // Data
-            services.AddSingleton<UEXContext>();
+            services.AddScoped<UEXContext>();
+
+            // Hosted Services
+            services.AddHostedService<UpdateService>();
+            services.AddHostedService<DataService>();
 
             // Services
+            services.AddSingleton<QueueService>();
             services.AddSingleton<BlurHelper>();
-            services.AddSingleton<Client>();
+            services.AddSingleton<DataClient>();
 
             // Workers
             services.AddSingleton<WindowTracker>();
