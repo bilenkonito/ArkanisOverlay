@@ -1,7 +1,7 @@
 using ArkanisOverlay.Data.Entities.UEX;
 using Microsoft.EntityFrameworkCore;
 
-namespace ArkanisOverlay.Data.Storage;
+namespace ArkanisOverlay.Data.Contexts;
 
 public class UEXContext : DbContext
 {
@@ -10,6 +10,7 @@ public class UEXContext : DbContext
         "UEX.db"
     );
 
+    public DbSet<CategoryEntity> Categories { get; set; }
     public DbSet<CommodityEntity> Commodities { get; set; }
     public DbSet<VehicleEntity> Vehicles { get; set; }
 
