@@ -68,18 +68,6 @@ public static class Program
             // Example:
             // services.AddTransient<OtherWindow>();
 
-            //? should be added automatically
-            // IConfiguration configuration = new ConfigurationBuilder()
-            //     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            //     .AddJsonFile(
-            //         $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json",
-            //         optional: true, reloadOnChange: true)
-            //     .AddEnvironmentVariables()
-            //     .Build();
-
-            // services.AddScoped<IConfiguration>(_ => configuration);
-
-
             services
                 .AddOptions<ConfigurationOptions>()
                 .BindConfiguration(ConfigurationOptions.Section)
