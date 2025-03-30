@@ -11,7 +11,7 @@ public class QueueService(ILogger<QueueService> logger, DataSync dataSync)
     
     public void EnqueueUpdate<T>(string apiPath) where T : BaseEntity, new()
     {
-        logger.LogInformation("Enqueuing update for {type} from {endpoint}", typeof(T).Name, apiPath);;
+        logger.LogInformation("Enqueuing update for {type} from {endpoint}", typeof(T).Name, apiPath);
         PendingUpdates.Enqueue(new Task(() =>
         {
             dataSync.Update<T>(apiPath).ConfigureAwait(false).GetAwaiter().GetResult();

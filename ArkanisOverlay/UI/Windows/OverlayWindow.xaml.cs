@@ -27,7 +27,6 @@ public partial class OverlayWindow
     private readonly WindowTracker _windowTracker;
     private readonly GlobalHotkey _globalHotkey;
     private readonly BlurHelper _blurHelper;
-    private readonly DataSync _dataSync;
 
     private HWND _currentWindowHWnd = HWND.Null;
 
@@ -35,7 +34,7 @@ public partial class OverlayWindow
     public OverlayWindow(
         ILogger<OverlayWindow> logger, IHostApplicationLifetime hostApplicationLifetime,
         WindowTracker windowTracker, GlobalHotkey globalHotkey,
-        BlurHelper blurHelper, DataSync dataSync)
+        BlurHelper blurHelper)
     {
         Instance = this;
 
@@ -44,7 +43,6 @@ public partial class OverlayWindow
         _windowTracker = windowTracker;
         _globalHotkey = globalHotkey;
         _blurHelper = blurHelper;
-        _dataSync = dataSync;
 
         SetupWorkerEventListeners();
 
@@ -60,7 +58,6 @@ public partial class OverlayWindow
 
         _windowTracker.Start();
         _globalHotkey.Start();
-        _dataSync.Start();
     }
 
     private void HideOverlay()

@@ -49,8 +49,8 @@ public class WindowTracker
     public WindowTracker(ILogger<WindowTracker> logger)
     {
         Logger = logger;
-        WindowClass = Constants.WINDOW_CLASS;
-        WindowName = Constants.WINDOW_NAME;
+        WindowClass = Constants.WindowClass;
+        WindowName = Constants.WindowName;
 
         WindowFound += OnWindowFound;
         WindowLost += OnWindowLost;

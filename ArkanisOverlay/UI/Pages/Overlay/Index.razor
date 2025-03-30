@@ -4,13 +4,11 @@
 @using System.Text.RegularExpressions
 @using ArkanisOverlay.Data.Contexts
 @using ArkanisOverlay.Data.Entities.UEX
-@using ArkanisOverlay.Data.Storage
 @using Microsoft.EntityFrameworkCore
 @using ArkanisOverlay.UI.Components.SearchResult
 @using ArkanisOverlay.UI.Windows
 @using Microsoft.Extensions.Logging
 
-@inject ISnackbar SnackbarService
 @inject UEXContext UEXContext
 @inject ILogger<Index> Logger;
 
@@ -185,7 +183,7 @@
     public static MudTextField<string>? SearchBox { get; private set; }
     public string SearchText { get; set; } = "";
 
-    private Snackbar? _snackbar;
+    // private Snackbar? _snackbar;
 
     private List<CommodityEntity> Commodities { get; set; } = new();
     private List<VehicleEntity> Vehicles { get; set; } = new();

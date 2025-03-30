@@ -12,7 +12,6 @@ public class DataClient
 {
     private readonly ILogger<DataClient> _logger;
     private readonly HttpClient _client;
-    private readonly ConfigurationOptions _configurationOptions;
     private readonly string _baseUrl;
 
     private readonly JsonSerializerOptions _options = new()
@@ -29,8 +28,7 @@ public class DataClient
     {
         _logger = logger;
         _client = client;
-        _configurationOptions = configurationOptions.Value;
-        _baseUrl = _configurationOptions.UexBaseUrl;
+        _baseUrl = configurationOptions.Value.UexBaseUrl;
 
         if (!_baseUrl.EndsWith('/')) throw new Exception("BaseUrl must end with '/'.");
     }

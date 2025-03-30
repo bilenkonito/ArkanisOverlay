@@ -26,7 +26,7 @@ public static class Program
             .ConfigureLogging()
             .ConfigureSingleInstance(options =>
             {
-                options.MutexId = $"{{{Constants.INSTANCE_ID}}}";
+                options.MutexId = $"{{{Constants.InstanceId}}}";
                 options.WhenNotFirstInstance = (environment, logger) =>
                 {
                     logger.LogInformation("{appName} is already running.", environment.ApplicationName);
