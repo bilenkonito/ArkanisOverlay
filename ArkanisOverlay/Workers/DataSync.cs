@@ -1,30 +1,19 @@
 using ArkanisOverlay.Data.API;
 using ArkanisOverlay.Data.Contexts;
 using ArkanisOverlay.Data.Entities.UEX;
-using ArkanisOverlay.Data.Storage;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace ArkanisOverlay.Workers;
 
-public class DataSync(ILogger<DataSync> logger, DataClient dataClient, UEXContext dbContext)
+public class DataSync(ILogger<DataSync> logger, DataClient dataClient, IServiceProvider serviceProvider)
 {
-    private Thread? _thread;
-
-    public void Start()
-    {
-        // _thread = new Thread(Run);
-        // _thread.Start();
-    }
-
-    private async void Run()
-    {
-        await Update<CommodityEntity>("/commodities").ConfigureAwait(false);
-        await Update<VehicleEntity>("/vehicles").ConfigureAwait(false);
-    }
-
     public async Task Update<T>(string endpoint) where T : BaseEntity, new()
     {
         var typeName = typeof(T).Name;
+        using var scope = serviceProvider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<UEXContext>();
 
         logger.LogInformation("Updating {type} from {endpoint}", typeName, endpoint);
         try
@@ -33,29 +22,14 @@ public class DataSync(ILogger<DataSync> logger, DataClient dataClient, UEXContex
 
             if (result == null) return;
 
-            logger.LogDebug(result.ToString());
-
-            var debug = result.GroupBy(x => x.Id).Where(x => x.Count() > 1).ToList();
-
-            
-            dbContext.UpdateRange(result);
-            // since we are doing a synchronization update, the remote state defines our local state
-            // so we can delete all existing entries and add new ones
-            // var dbSet = dbContext.Set<T>();
-            // delete all existing entries
-            // foreach (var id in dbSet.Select(e => e.Id))
-            // {
-            //     var entity = new T { Id = id };
-            //     dbSet.Entry(entity).State = EntityState.Deleted;
-            // }
-
-            // add new entries
-            // dbSet.UpdateRange(result);
-            // await dbSet.AddRangeAsync(result).ConfigureAwait(false);
-
+            var dbSet = dbContext.Set<T>();
+            // we are synchronizing the database from the API
+            // so we can be sure that the database is always up to date
+            // therefore we delete all existing data and replace it with the new data
+            await dbSet.ExecuteDeleteAsync().ConfigureAwait(false);
+            await dbSet.AddRangeAsync(result).ConfigureAwait(false);
             await dbContext.SaveChangesAsync().ConfigureAwait(false);
-            // fix EF Core tracking issues
-            dbContext.ChangeTracker.Clear();
+            // dbContext.ChangeTracker.Clear();
         }
         catch (Exception ex)
         {

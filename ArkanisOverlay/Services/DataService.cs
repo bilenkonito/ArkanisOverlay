@@ -45,6 +45,7 @@ public class DataService(ILogger<DataService> logger, QueueService queueService)
 
         RegisterEndpoint<CommodityEntity>("commodities", "00:00:10");
         RegisterEndpoint<VehicleEntity>("vehicles", "00:00:10");
+        RegisterEndpoint<CategoryEntity>("categories", "00:00:10");
     }
 
     private void RegisterEndpoint<T>(string apiPath, string cacheTtl) where T : BaseEntity, new()
