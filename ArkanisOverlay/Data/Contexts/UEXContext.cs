@@ -9,10 +9,13 @@ public class UEXContext : DbContext
         Constants.LocalAppDataPath,
         "UEX.db"
     );
+    
+    public DbSet<CacheInfo> CacheInfos { get; set; }
 
     public DbSet<CategoryEntity> Categories { get; set; }
     public DbSet<CommodityEntity> Commodities { get; set; }
     public DbSet<VehicleEntity> Vehicles { get; set; }
+    public DbSet<ItemEntity> Items { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {

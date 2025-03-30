@@ -3,6 +3,7 @@ using System;
 using ArkanisOverlay.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,29 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArkanisOverlay.Migrations
 {
     [DbContext(typeof(UEXContext))]
-    partial class UEXContextModelSnapshot : ModelSnapshot
+    [Migration("20250330121934_Add ItemEntity")]
+    partial class AddItemEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.13");
-
-            modelBuilder.Entity("ArkanisOverlay.Data.Entities.UEX.CacheInfo", b =>
-                {
-                    b.Property<string>("TypeName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ApiPath")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("TypeName");
-
-                    b.ToTable("CacheInfos");
-                });
 
             modelBuilder.Entity("ArkanisOverlay.Data.Entities.UEX.CategoryEntity", b =>
                 {

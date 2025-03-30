@@ -87,13 +87,13 @@ public static class Program
             services.AddScoped<UEXContext>();
 
             // Hosted Services
-            services.AddHostedService<UpdateService>();
-            services.AddHostedService<DataService>();
+            services.AddHostedService<EndpointManager>();
 
-            // Services
-            services.AddSingleton<QueueService>();
+            // Singleton Services
             services.AddSingleton<BlurHelper>();
             services.AddSingleton<DataClient>();
+            
+            // Scoped Services
 
             // Workers
             services.AddSingleton<WindowTracker>();
