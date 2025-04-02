@@ -49,7 +49,8 @@ public sealed class EndpointManager(
         RegisterEndpoint<ItemsPricesAllEntity>("items_prices_all", "00.12:00:00");
         RegisterEndpoint<CommoditiesPricesAllEntity>("commodities_prices_all", "00.00:30:00");
         RegisterEndpoint<CommoditiesRawPricesAllEntity>("commodities_raw_prices_all", "00.00:30:00");
-        RegisterEndpoint<VehiclesPurchasesPricesAllEntity>("vehicles_purchases_prices_all", "00.00:30:00");
+        RegisterEndpoint<VehiclesPurchasesPricesAllEntity>("vehicles_purchases_prices_all", "00.12:00:00");
+        RegisterEndpoint<VehiclesRentalsPricesAllEntity>("vehicles_rentals_prices_all", "00.12:00:00");
 
         RegisterDependantEndpoint<ItemEntity, CategoryEntity>("items", "01.00:00:00",
             (apiPath, c) =>
