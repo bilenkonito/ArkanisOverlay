@@ -43,11 +43,11 @@ public sealed class EndpointManager(
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        RegisterEndpoint<CommodityEntity>("commodities", "00:01:00");
-        RegisterEndpoint<VehicleEntity>("vehicles", "00:01:00");
-        RegisterEndpoint<CategoryEntity>("categories", "00:01:00");
+        RegisterEndpoint<CommodityEntity>("commodities", "00.01:00:00");
+        RegisterEndpoint<VehicleEntity>("vehicles", "00.12:00:00");
+        RegisterEndpoint<CategoryEntity>("categories", "01.00:00:00");
 
-        RegisterDependantEndpoint<ItemEntity, CategoryEntity>("items", "00:01:00",
+        RegisterDependantEndpoint<ItemEntity, CategoryEntity>("items", "01.00:00:00",
             (apiPath, c) =>
                 c.Where(e => e.Type == "item")
                     .Select(e => $"{apiPath}?id_category={e.Id}"));
