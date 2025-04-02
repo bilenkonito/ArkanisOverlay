@@ -46,6 +46,7 @@ public sealed class EndpointManager(
         RegisterEndpoint<CommodityEntity>("commodities", "00.01:00:00");
         RegisterEndpoint<VehicleEntity>("vehicles", "00.12:00:00");
         RegisterEndpoint<CategoryEntity>("categories", "01.00:00:00");
+        RegisterEndpoint<ItemsPricesAllEntity>("items_prices_all", "00.12:00:00");
 
         RegisterDependantEndpoint<ItemEntity, CategoryEntity>("items", "01.00:00:00",
             (apiPath, c) =>
@@ -102,13 +103,20 @@ public sealed class EndpointManager(
         var type = typeof(T);
         var config = _endpoints[type];
 
-        dbSet.AddOrUpdate(new CacheInfo
+        var cacheInfo = new CacheInfo
         {
             TypeName = type.Name,
             LastUpdated = DateTime.UtcNow,
             ApiPath = config.ApiPath,
-        });
-        
+        };
+
+        dbSet.AddOrUpdate(cacheInfo);
+
+        logger.LogInformation(
+            "Marked {type} as updated, next update in {timeUntilNextUpdate}",
+            type.Name, config.CacheTtl
+        );
+
         dbContext.SaveChanges();
     }
 
@@ -176,22 +184,38 @@ public sealed class EndpointManager(
 
     public async Task UpdateEndpointEntities<T>(IEnumerable<T> entities) where T : BaseEntity, new()
     {
+        var type = typeof(T);
         var entityList = entities.ToList();
 
-        using var scope = serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<UEXContext>();
-        var dbSet = dbContext.Set<T>();
-        // we are synchronizing the database from the API
-        // so we can be sure that the database is always up to date
-        // therefore we delete all existing data and replace it with the new data
-        await dbSet.ExecuteDeleteAsync().ConfigureAwait(false);
-        await dbSet.AddRangeAsync(entityList).ConfigureAwait(false);
-        await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        if (entityList.Count == 0)
+        {
+            logger.LogError("Failed to retrieve any entities for type {type}", type.Name);
+            return;
+        }
 
-        // previous duct-tape solution to prevent "entity already tracked" errors
-        // dbContext.ChangeTracker.Clear();
 
-        logger.LogInformation("Updated {type} with {count} entities", typeof(T).Name, entityList.Count);
+        try
+        {
+            using var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<UEXContext>();
+            var dbSet = dbContext.Set<T>();
+            // we are synchronizing the database from the API
+            // so we can be sure that the database is always up to date
+            // therefore we delete all existing data and replace it with the new data
+            await dbSet.ExecuteDeleteAsync().ConfigureAwait(false);
+            await dbSet.AddRangeAsync(entityList).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+            // previous duct-tape solution to prevent "entity already tracked" errors
+            // dbContext.ChangeTracker.Clear();
+
+            logger.LogInformation("Updated {type} with {count} entities", type.Name, entityList.Count);
+            MarkAsUpdated<T>();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to update {type}", typeof(T).Name);
+        }
     }
 
     public async Task UpdateEndpoint<T>() where T : BaseEntity, new()
@@ -204,8 +228,8 @@ public sealed class EndpointManager(
 
     public async Task UpdateEndpoint<T>(IEnumerable<string> apiPaths) where T : BaseEntity, new()
     {
-        await UpdateEndpointEntities(await FetchEndpoint<T>(apiPaths).ConfigureAwait(false)).ConfigureAwait(false);
-        MarkAsUpdated<T>();
+        var entities = await FetchEndpoint<T>(apiPaths).ConfigureAwait(false);
+        await UpdateEndpointEntities(entities).ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<T>> FetchEndpoint<T>(IEnumerable<string> apiPaths) where T : BaseEntity, new()

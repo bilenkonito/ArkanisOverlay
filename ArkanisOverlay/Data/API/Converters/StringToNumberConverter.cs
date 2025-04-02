@@ -12,6 +12,7 @@ public class StringToNumberConverter<T> : JsonConverter<T> where T : struct
             JsonTokenType.String when decimal.TryParse(reader.GetString(), out var value) =>
                 (T)Convert.ChangeType(value, typeof(T)),
             JsonTokenType.Number => (T)Convert.ChangeType(reader.GetDecimal(), typeof(T)),
+            JsonTokenType.Null => default(T),
             _ => throw new JsonException($"Unexpected token {reader.TokenType}")
         };
     }
