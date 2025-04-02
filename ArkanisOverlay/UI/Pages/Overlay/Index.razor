@@ -256,6 +256,9 @@
         {
             Items = await SearchItems(processedSearchText).ConfigureAwait(false);
         }
+        else {
+            Items = [];
+        }
 
         if (searchOptions.Ships || searchOptions.Vehicles)
         {
