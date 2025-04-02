@@ -1,0 +1,69 @@
+@using ArkanisOverlay.Data.Contexts
+@using ArkanisOverlay.Data.Entities.UEX
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Logging
+
+@inject UEXContext UEXContext
+@inject ILogger<Index> Logger
+
+<MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0">
+    <MudStack Row="true" Style="width: 100%"
+              Class="justify-center align-center align-content-center">
+        <MudIcon Icon="@Icons.Material.Outlined.Category"></MudIcon>
+        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+        <h1 class="flex-1">@Item.Name</h1>
+        <MudStack Style="width: 8em; color: lightskyblue;" AlignItems="AlignItems.Center" Spacing="2">
+            <p>Avg. Buy:</p>
+            @if (_avgBuyPrice == 0)
+            {
+                <p>—</p>
+            }
+            else
+            {
+                <p>@_avgBuyPrice.ToString("N0") UEC</p>
+            }
+        </MudStack>
+        <MudStack Style="width: 8em; color: sandybrown;" AlignItems="AlignItems.Center" Spacing="2">
+            <p>Avg. Sell:</p>
+            @if (_avgSellPrice == 0)
+            {
+                <p>—</p>
+            }
+            else
+            {
+                <p>@_avgSellPrice.ToString("N0") UEC</p>
+            }
+        </MudStack>
+        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+        <MudIconButton Icon="@MaterialSymbols.Outlined.AddShoppingCart" Class="focus"
+                       tabindex="1">
+        </MudIconButton>
+        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+        <MudIconButton Icon="@MaterialSymbols.Outlined.RemoveShoppingCart" Class="focus"
+                       tabindex="1">
+        </MudIconButton>
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter] public required ItemEntity Item { get; set; }
+    private List<ItemsPricesAllEntity> _prices = [];
+    
+    private decimal _avgBuyPrice = 0;
+    private decimal _avgSellPrice = 0;
+
+    private decimal GetAvgBuyPrice() => _prices.Count == 0 ? 0 : _prices.Average(price => price.PriceBuy);
+    private decimal GetAvgSellPrice() => _prices.Count == 0 ? 0 : _prices.Average(price => price.PriceSell);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _prices = await UEXContext.ItemsPricesAll
+            .Where(price => price.IdItem == Item.Id)
+            .ToListAsync().ConfigureAwait(false);
+        
+        _avgBuyPrice = GetAvgBuyPrice();
+        StateHasChanged();
+        _avgSellPrice = GetAvgSellPrice();
+        StateHasChanged();
+    }
+}

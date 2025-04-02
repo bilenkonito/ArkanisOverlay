@@ -10,7 +10,7 @@
 @using Microsoft.Extensions.Logging
 
 @inject UEXContext UEXContext
-@inject ILogger<Index> Logger;
+@inject ILogger<Index> Logger
 
 <script>
     window.onkeydown = ev => {
@@ -168,6 +168,10 @@
             {
                 <CommodityResult Commodity="commodity"></CommodityResult>
             }
+            @foreach (var item in Items)
+            {
+                <ItemResult Item="item"></ItemResult>
+            }
             @foreach (var vehicle in Vehicles)
             {
                 <VehicleResult Vehicle="vehicle"></VehicleResult>
@@ -185,8 +189,9 @@
 
     // private Snackbar? _snackbar;
 
-    private List<CommodityEntity> Commodities { get; set; } = new();
-    private List<VehicleEntity> Vehicles { get; set; } = new();
+    private List<CommodityEntity> Commodities { get; set; } = [];
+    private List<ItemEntity> Items { get; set; } = [];
+    private List<VehicleEntity> Vehicles { get; set; } = [];
 
     [JSInvokable("ClickAwayHide")]
     public static void ClickAwayHide() => OverlayWindow.Instance?.Collapse();
@@ -246,6 +251,11 @@
         {
             Commodities = [];
         }
+        
+        if (searchOptions.Items)
+        {
+            Items = await SearchItems(processedSearchText).ConfigureAwait(false);
+        }
 
         if (searchOptions.Ships || searchOptions.Vehicles)
         {
@@ -264,6 +274,26 @@
             commodity =>
                 commodity.Name != null &&
                 commodity.Name.ToLower().Contains(searchText)
+        ).ToListAsync().ConfigureAwait(true);
+    }
+
+    private async Task<List<ItemsPricesAllEntity>> SearchItemsPricesAll(string searchText)
+    {
+        return await UEXContext.ItemsPricesAll.Where(
+            item =>
+                item.ItemName != null &&
+                item.ItemName.ToLower().Contains(searchText)
+        )
+        .OrderBy(entity => entity.ItemName)
+        .ToListAsync().ConfigureAwait(true);
+    }
+    
+    private async Task<List<ItemEntity>> SearchItems(string searchText)
+    {
+        return await UEXContext.Items.Where(
+            item =>
+                item.Name != null &&
+                item.Name.ToLower().Contains(searchText)
         ).ToListAsync().ConfigureAwait(true);
     }
 
