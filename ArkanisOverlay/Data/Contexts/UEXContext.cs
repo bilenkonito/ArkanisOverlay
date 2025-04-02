@@ -19,6 +19,7 @@ public class UEXContext : DbContext
     public DbSet<ItemsPricesAllEntity> ItemsPricesAll { get; set; }
     public DbSet<CommoditiesPricesAllEntity> CommoditiesPricesAll { get; set; }
     public DbSet<CommoditiesRawPricesAllEntity> CommoditiesRawPricesAll { get; set; }
+    public DbSet<VehiclesPurchasesPricesAllEntity> VehiclesPurchasesPricesAll { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
