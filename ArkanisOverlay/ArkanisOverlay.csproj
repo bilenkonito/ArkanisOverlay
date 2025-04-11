@@ -103,8 +103,4 @@
       <UpToDateCheckInput Remove="Shared\OverlayLayout.razor" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Data\Entities\" />
-    </ItemGroup>
-
 </Project>

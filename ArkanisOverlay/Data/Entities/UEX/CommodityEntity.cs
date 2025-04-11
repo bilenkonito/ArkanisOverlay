@@ -1,4 +1,7 @@
 using System.Text.Json.Serialization;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArkanisOverlay.Data.Entities.UEX;
 public class CommodityEntity : BaseEntity
@@ -45,4 +48,11 @@ public class CommodityEntity : BaseEntity
     public bool IsFuel { get; init; } // int(1)
     [JsonPropertyName("wiki")]
     public string? Wiki { get; init; } // string(255)
+
+    // Navigation properties for prices
+    [JsonIgnore]
+    public virtual ICollection<CommoditiesPricesAllEntity> CommoditiesPricesAll { get; set; } = new List<CommoditiesPricesAllEntity>();
+    
+    [JsonIgnore]
+    public virtual ICollection<CommoditiesRawPricesAllEntity> CommoditiesRawPricesAll { get; set; } = new List<CommoditiesRawPricesAllEntity>();
 }

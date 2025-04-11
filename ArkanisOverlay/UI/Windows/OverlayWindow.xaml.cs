@@ -2,14 +2,15 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
-using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 using ArkanisOverlay.Helpers;
 using ArkanisOverlay.Workers;
 using Microsoft.AspNetCore.Components.WebView;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Web.WebView2.Core;
+using static Windows.Win32.PInvoke;
 using Index = ArkanisOverlay.UI.Pages.Overlay.Index;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
@@ -47,7 +48,7 @@ public partial class OverlayWindow
         SetupWorkerEventListeners();
 
         _blurHelper.EnableBlur(this, 1);
-        
+
         InitializeComponent();
         BlazorWebView.BlazorWebViewInitializing += BlazorWebView_Initializing;
     }
@@ -68,13 +69,13 @@ public partial class OverlayWindow
     private void ShowOverlay()
     {
         var mainWindowHandle = (HWND)new WindowInteropHelper(this).Handle;
-        var windowThreadProcessId = PInvoke.GetWindowThreadProcessId(PInvoke.GetForegroundWindow(), out _);
-        var currentThreadId = PInvoke.GetCurrentThreadId();
-        PInvoke.AttachThreadInput(windowThreadProcessId, currentThreadId, true);
-        PInvoke.BringWindowToTop(mainWindowHandle);
+        var windowThreadProcessId = GetWindowThreadProcessId(GetForegroundWindow(), out _);
+        var currentThreadId = GetCurrentThreadId();
+        AttachThreadInput(windowThreadProcessId, currentThreadId, true);
+        BringWindowToTop(mainWindowHandle);
         Show();
         // PInvoke.ShowWindow((HWND)MainWindowHandle, SHOW_WINDOW_CMD.SW_SHOW);
-        PInvoke.AttachThreadInput(windowThreadProcessId, currentThreadId, false);
+        AttachThreadInput(windowThreadProcessId, currentThreadId, false);
 
         // only works when window is visible
         _blurHelper.EnableBlur(this, 1);
@@ -83,7 +84,7 @@ public partial class OverlayWindow
         _logger.LogDebug("ShowOverlay(): Activate Window: {result}", result);
 
         BlazorWebView.WebView.Focus();
-        
+
         // blazorWebView.Focusable = true;
         // result = blazorWebView.Focus();
         // _logger.LogDebug("ShowOverlay(): Focus WebView: {result}", result);
@@ -148,8 +149,19 @@ public partial class OverlayWindow
     //     }
     // }
 
+    private void SetExtendedWindowStyle()
+    {
+        var wndHelper = new WindowInteropHelper(this);
+
+        var exStyle = GetWindowLong((HWND)wndHelper.Handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
+        exStyle |= (int)WINDOW_EX_STYLE.WS_EX_TOOLWINDOW;
+        _ = SetWindowLong((HWND)wndHelper.Handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, exStyle);
+    }
+
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
+        SetExtendedWindowStyle();
+            
         BlazorWebView.WebView.DefaultBackgroundColor = Color.Transparent;
         BlazorWebView.WebView.NavigationCompleted += WebView_Loaded;
         BlazorWebView.WebView.CoreWebView2InitializationCompleted += CoreWebView_Loaded;
@@ -187,10 +199,11 @@ public partial class OverlayWindow
         // otherwise the previously active window will
         // receive focus instead for some reason
         if (_currentWindowHWnd == HWND.Null) return;
-        PInvoke.SetForegroundWindow(_currentWindowHWnd);
+        SetForegroundWindow(_currentWindowHWnd);
     }
-    
-    private void OnExitCommand(object sender, RoutedEventArgs e) {
+
+    private void OnExitCommand(object sender, RoutedEventArgs e)
+    {
         // Application.Current.Shutdown();
         _hostApplicationLifetime.StopApplication();
     }

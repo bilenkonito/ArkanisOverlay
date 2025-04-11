@@ -1,3 +1,4 @@
+using ArkanisOverlay.Data.Entities.Overlay;
 using ArkanisOverlay.Data.Entities.UEX;
 using Microsoft.EntityFrameworkCore;
 

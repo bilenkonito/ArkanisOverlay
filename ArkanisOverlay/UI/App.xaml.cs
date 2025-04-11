@@ -5,6 +5,7 @@ using ArkanisOverlay.Data.Contexts;
 using ArkanisOverlay.UI.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SingleInstanceCore;
 
@@ -13,20 +14,23 @@ namespace ArkanisOverlay.UI;
 /// <summary>
 /// Interaction logic for Overlay.xaml
 /// </summary>
-public partial class App : ISingleInstance
+public partial class App
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly ILogger<App> _logger;
+   
 
     // workaround to fix compiler error because of
     // generated Main method in `App.g.cs`
     private App() => throw new NotSupportedException();
 
     // ReSharper disable once UnusedMember.Global
-    public App(ILogger<App> logger, IServiceProvider serviceProvider)
+    public App(ILogger<App> logger, IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _hostApplicationLifetime = hostApplicationLifetime;
     }
     
     protected override void OnStartup(StartupEventArgs e)
@@ -63,25 +67,6 @@ public partial class App : ISingleInstance
         overlayWindow.Show();
     }
 
-    public void OnInstanceInvoked(string[] args)
-    {
-        SingleInstance.Cleanup();
-
-        if (Current.MainWindow == null)
-        {
-            return;
-        }
-
-        // from RatScanner - https://github.com/RatScanner/RatScanner
-        Current.MainWindow.Activate();
-        Current.MainWindow.WindowState = WindowState.Normal;
-
-        // Invert the topmost state twice to bring
-        // the window on top but keep the top most state
-        Current.MainWindow.Topmost = !Current.MainWindow.Topmost;
-        Current.MainWindow.Topmost = !Current.MainWindow.Topmost;
-    }
-
     protected override void OnExit(ExitEventArgs exitEventArgs)
     {
         _logger.LogInformation("Shutting down.");
@@ -98,5 +83,8 @@ public partial class App : ISingleInstance
         {
             _logger.LogError(ex, "Error during shutdown.");
         }
+        
+        base.OnExit(exitEventArgs);
+        _hostApplicationLifetime.StopApplication();
     }
 }

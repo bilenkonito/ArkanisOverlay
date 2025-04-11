@@ -1,4 +1,7 @@
 using System.Text.Json.Serialization;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using ArkanisOverlay.Data.API.Converters;
 
 namespace ArkanisOverlay.Data.Entities.UEX;
@@ -96,4 +99,11 @@ public class VehicleEntity : BaseEntity
     public string? GameVersion { get; init; } // string?(255) // version it was announced or updated
 
     [JsonPropertyName("company_name")] public string? CompanyName { get; init; } // string?(255) // manufacturer name
+
+    // Navigation properties for prices
+    [JsonIgnore]
+    public virtual ICollection<VehiclesPurchasesPricesAllEntity> PurchasePricesAll { get; set; } = new List<VehiclesPurchasesPricesAllEntity>();
+    
+    [JsonIgnore]
+    public virtual ICollection<VehiclesRentalsPricesAllEntity> RentalPricesAll { get; set; } = new List<VehiclesRentalsPricesAllEntity>();
 }

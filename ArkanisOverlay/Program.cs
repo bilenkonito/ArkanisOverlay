@@ -61,8 +61,9 @@ public static class Program
                     (scope, _)
                         => scope?.StartsWith("ArkanisOverlay") ?? false));
 
-    private static IHostBuilder ConfigureServices(this IHostBuilder builder) =>
-        builder.ConfigureServices(services =>
+    private static IHostBuilder ConfigureServices(this IHostBuilder builder)
+    {
+        return builder.ConfigureServices((context, services) =>
         {
             //* Add non-singleton Windows here
             // Example:
@@ -92,7 +93,8 @@ public static class Program
             // Singleton Services
             services.AddSingleton<BlurHelper>();
             services.AddSingleton<DataClient>();
-            
+            services.AddMemoryCache();
+            services.AddScoped<ISearchService, SearchService>();
             // Scoped Services
 
             // Workers
@@ -100,4 +102,5 @@ public static class Program
             services.AddSingleton<GlobalHotkey>();
             services.AddSingleton<DataSync>();
         });
+    }
 }

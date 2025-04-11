@@ -1,16 +1,16 @@
 @page "/"
 @page "/overlay"
-@layout OverlayLayout
 @using System.Text.RegularExpressions
-@using ArkanisOverlay.Data.Contexts
-@using ArkanisOverlay.Data.Entities.UEX
-@using Microsoft.EntityFrameworkCore
-@using ArkanisOverlay.UI.Components.SearchResult
+@using ArkanisOverlay.Data.Entities.Overlay
+@using ArkanisOverlay.Data.Enums
+@using ArkanisOverlay.Data.Structs
+@using ArkanisOverlay.Services
 @using ArkanisOverlay.UI.Windows
 @using Microsoft.Extensions.Logging
+@layout OverlayLayout
 
-@inject UEXContext UEXContext
 @inject ILogger<Index> Logger
+@inject ISearchService SearchService
 
 <script>
     window.onkeydown = ev => {
@@ -78,7 +78,7 @@
     };
 </script>
 
-<!--suppress CssUnusedSymbol -->
+<!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
 <style>
     body {
         background-color: transparent;
@@ -157,206 +157,134 @@
         <MudPaper>
             <MudTextField id="searchBox" @ref="SearchBox" T="string" @bind-Value="SearchText" Variant="Variant.Outlined"
                           Adornment="Adornment.End"
-                          AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          AdornmentColor="Color.Secondary"
                           HelperText=":c Commodities, :s Ships, :v Vehicles, :i Items, :l Locations"
-                          AutoFocus="true" DebounceInterval="500" OnDebounceIntervalElapsed="DoSearch">
-            </MudTextField>
+                          AutoFocus="true"
+                          Immediate="true"
+                          DebounceInterval="300"
+                          OnDebounceIntervalElapsed="@SearchAsync"/>
         </MudPaper>
 
-        <MudStack Class="mt-10" Style="width: 100%; min-height: 20vh;">
-            @foreach (var commodity in Commodities)
-            {
-                <CommodityResult Commodity="commodity"></CommodityResult>
-            }
-            @foreach (var item in Items)
-            {
-                <ItemResult Item="item"></ItemResult>
-            }
-            @foreach (var vehicle in Vehicles)
-            {
-                <VehicleResult Vehicle="vehicle"></VehicleResult>
-            }
-        </MudStack>
+        @if (SearchResults?.Any() == true)
+        {
+            <MudStack Class="mt-10" Style="width: 100%; min-height: 20vh;">
+                @foreach (var result in SearchResults)
+                {
+                    <MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0">
+                        <MudStack Row="true" Style="width: 100%"
+                                  Class="justify-center align-center align-content-center">
+
+                            @{
+                                var entityIcon = result.EntityType switch
+                                {
+                                    EntityType.Commodity => Icons.Material.Outlined.Diamond,
+                                    EntityType.Vehicle => Icons.Material.Outlined.AirportShuttle,
+                                    EntityType.Item => Icons.Material.Outlined.Category,
+                                    EntityType.SpaceShip => Icons.Material.Outlined.Rocket,
+                                    // EntityType.Location => Icons.Material.Outlined.LocationOn,
+                                    _ => throw new ArgumentOutOfRangeException()
+                                };
+                            }
+
+                            <MudIcon Icon="@entityIcon"></MudIcon>
+                            <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+                            <h1 class="flex-1">@result.Name</h1>
+
+                            @foreach (var (priceType, price) in result.AveragePrices)
+                            {
+                                var color = priceType switch
+                                {
+                                    PriceType.Buy => "lightskyblue",
+                                    PriceType.Sell => "sandybrown",
+                                    PriceType.Rent => "sandybrown",
+                                    _ => throw new ArgumentOutOfRangeException()
+                                };
+
+                                <MudStack Style=@($"width: 8em; color: {color};") AlignItems="AlignItems.Center"
+                                          Spacing="2">
+                                    <p>Avg. @priceType.ToString():</p>
+                                    @if (price == 0)
+                                    {
+                                        <p>—</p>
+                                    }
+                                    else
+                                    {
+                                        <p>@price.ToString("N0") UEC</p>
+                                    }
+                                </MudStack>
+                            }
+
+                            @foreach (var (priceType, price) in result.AveragePrices)
+                            {
+                                var buttonIcon = priceType switch
+                                {
+                                    PriceType.Buy => MaterialSymbols.Outlined.AddShoppingCart,
+                                    PriceType.Sell => MaterialSymbols.Outlined.RemoveShoppingCart,
+                                    PriceType.Rent => MaterialSymbols.Outlined.CarRental,
+                                    _ => throw new ArgumentOutOfRangeException()
+                                };
+
+                                <MudDivider Vertical="true" FlexItem="true"/>
+                                <MudIconButton Icon="@buttonIcon" Class="focus" tabindex="1" Disabled=@(price == 0) />
+                            }
+                        </MudStack>
+                    </MudPaper>
+
+                    @* <MudListItem @key="@result.Name" Class="search-result" OnClick="@(() => OnResultClick(result))"> *@
+                    @*     <MudText>@result.Name (@result.EntityType)</MudText> *@
+                    @*     <MudText> *@
+                    @*         @foreach (var price in result.AveragePrices) *@
+                    @*         { *@
+                    @*             <span class="mr-2">@price.Key: @price.Value.ToString("N0") aUEC</span> *@
+                    @*         } *@
+                    @*     </MudText> *@
+                    @* </MudListItem> *@
+                }
+
+            </MudStack>
+        }
     </MudFocusTrap>
 </MudStack>
 
-
-
 @code {
-    public static Index? Instance { get; private set; }
     public static MudTextField<string>? SearchBox { get; private set; }
     public string SearchText { get; set; } = "";
-
-    // private Snackbar? _snackbar;
-
-    private List<CommodityEntity> Commodities { get; set; } = [];
-    private List<ItemEntity> Items { get; set; } = [];
-    private List<VehicleEntity> Vehicles { get; set; } = [];
-
+    private IEnumerable<SearchResult>? SearchResults { get; set; }
+    
     [JSInvokable("ClickAwayHide")]
     public static void ClickAwayHide() => OverlayWindow.Instance?.Collapse();
 
-    protected override void OnInitialized()
+    private async Task SearchAsync()
     {
-        base.OnInitialized();
-        Console.WriteLine("Overlay initialized");
-
-        Instance = this;
-    }
-
-    @* public void ShowSnackbar() *@
-    @* { *@
-    @*     if (_snackbar is not null) SnackbarService.Remove(_snackbar); *@
-    @* *@
-    @*     _snackbar = SnackbarService.Add *@
-    @*     ( *@
-    @*         @<div class="pa-1"> *@
-    @*             <h3>Updating Database</h3> *@
-    @*             <MudProgressLinear Class="mt-3" Color="Color.Info" Indeterminate></MudProgressLinear> *@
-    @*         </div>, *@
-    @*         Severity.Normal, *@
-    @*         options => *@
-    @*         { *@
-    @*             options.HideIcon = true; *@
-    @*             options.RequireInteraction = true; *@
-    @*             options.ShowCloseIcon = false; *@
-    @*             options.ShowTransitionDuration = 0; *@
-    @*         }); *@
-    @* } *@
-
-    private struct SearchOptions
-    {
-        public bool Commodities { get; set; }
-        public bool Ships { get; set; }
-        public bool Vehicles { get; set; }
-        public bool Items { get; set; }
-        public bool Locations { get; set; }
-    }
-
-    private async Task DoSearch(string searchText)
-    {
-        if (searchText.Length < 3) return;
-        var (processedSearchText, searchOptions) = ProcessSearchTokens(searchText.ToLower());
-
-        Logger.LogDebug(
-            "Processed Search Tokens: {searchText}, {searchOptions}",
-            processedSearchText, searchOptions
-        );
-
-        if (searchOptions.Commodities)
-        {
-            Commodities = await SearchCommodities(processedSearchText).ConfigureAwait(false);
-        }
-        else
-        {
-            Commodities = [];
-        }
-        
-        if (searchOptions.Items)
-        {
-            Items = await SearchItems(processedSearchText).ConfigureAwait(false);
-        }
-        else {
-            Items = [];
-        }
-
-        if (searchOptions.Ships || searchOptions.Vehicles)
-        {
-            Vehicles = await SearchVehicles(processedSearchText, searchOptions.Ships, searchOptions.Vehicles)
-                .ConfigureAwait(false);
-        }
-        else
-        {
-            Vehicles = [];
-        }
-    }
-
-    private async Task<List<CommodityEntity>> SearchCommodities(string searchText)
-    {
-        return await UEXContext.Commodities.Where(
-            commodity =>
-                commodity.Name != null &&
-                commodity.Name.ToLower().Contains(searchText)
-        ).ToListAsync().ConfigureAwait(true);
-    }
-
-    private async Task<List<ItemsPricesAllEntity>> SearchItemsPricesAll(string searchText)
-    {
-        return await UEXContext.ItemsPricesAll.Where(
-            item =>
-                item.ItemName != null &&
-                item.ItemName.ToLower().Contains(searchText)
-        )
-        .OrderBy(entity => entity.ItemName)
-        .ToListAsync().ConfigureAwait(true);
-    }
-    
-    private async Task<List<ItemEntity>> SearchItems(string searchText)
-    {
-        return await UEXContext.Items.Where(
-            item =>
-                item.Name != null &&
-                item.Name.ToLower().Contains(searchText)
-        ).ToListAsync().ConfigureAwait(true);
-    }
-
-    private async Task<List<VehicleEntity>> SearchVehicles(string searchText, bool includeShips, bool includeVehicles)
-    {
-        var both = !(includeShips ^ includeVehicles);
-
-        return await UEXContext.Vehicles.Where(
-            vehicle =>
-                (vehicle.IsSpaceship == (both || includeShips)
-                 || vehicle.IsGroundVehicle == (both || includeVehicles))
-                && vehicle.NameFull != null
-                && vehicle.NameFull.ToLower().Contains(searchText)
-        ).ToListAsync().ConfigureAwait(false);
-    }
-
-    private Tuple<string, SearchOptions> ProcessSearchTokens(string searchText)
-    {
-        var textTokens = new List<string>();
-        var searchOptions = new SearchOptions();
-        var hasFilterTokens = false;
-
-        foreach (var token in searchText.Split(" "))
-        {
-            if (!Regex.IsMatch(token, @":\w"))
+        try
+        {   
+            if (string.IsNullOrWhiteSpace(SearchText))
             {
-                textTokens.Add(token);
-                continue;
+                SearchResults = null;
+                return;
             }
 
-            hasFilterTokens = true;
-            switch (token[1])
-            {
-                case 'c':
-                    searchOptions.Commodities = true; break;
-                case 's':
-                    searchOptions.Ships = true; break;
-                case 'v':
-                    searchOptions.Vehicles = true; break;
-                case 'i':
-                    searchOptions.Items = true; break;
-                case 'l':
-                    searchOptions.Locations = true; break;
-            }
+            SearchResults = await SearchService.SearchAsync(SearchText).ConfigureAwait(false);
+            StateHasChanged();
         }
-
-        // if no tokens were specified, we include all
-        if (!hasFilterTokens)
+        catch (Exception ex)
         {
-            searchOptions = new SearchOptions()
-            {
-                Commodities = true,
-                Ships = true,
-                Vehicles = true,
-                Items = true,
-                Locations = true
-            };
+            Logger.LogError(ex, "Error during search");
         }
-
-        return new(string.Join(' ', textTokens), searchOptions);
     }
 
+    // private async Task OnResultClick(SearchResult result)
+    // {
+    //     // var detailedPrices = await SearchService.GetDetailedPricesAsync(result.EntityType, result.Name).ConfigureAwait(false);
+    //     // TODO: Show detailed prices in a dialog or expand the list item
+    // }
+
+    // private async Task OnSearchKeyDown(KeyboardEventArgs args)
+    // {
+    //     if (args.Key == "Enter" && SearchResults?.Any() == true)
+    //     {
+    //         // await OnResultClick(SearchResults.First()).ConfigureAwait(false);
+    //     }
+    // }
 }

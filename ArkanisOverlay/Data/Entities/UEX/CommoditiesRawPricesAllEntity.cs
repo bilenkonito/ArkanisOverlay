@@ -1,10 +1,19 @@
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArkanisOverlay.Data.Entities.UEX;
 
 public class CommoditiesRawPricesAllEntity: BaseEntity
 {
-    [JsonPropertyName("id_commodity")] public int IdCommodity { get; set; }
+    [ForeignKey(nameof(Commodity))]
+    [JsonPropertyName("id_commodity")] 
+    public int IdCommodity { get; set; }
+    
+    // Navigation property
+    [JsonIgnore]
+    public virtual CommodityEntity Commodity { get; set; } = null!;
+
     [JsonPropertyName("id_terminal")] public int IdTerminal { get; set; }
     [JsonPropertyName("price_sell")] public decimal PriceSell { get; set; }
     [JsonPropertyName("price_sell_avg")] public decimal PriceSellAvg { get; set; }

@@ -14,7 +14,7 @@
 }
 
 .badge-container {
-    position: absolute;
+    position: fixed;
 
     bottom: 25px;
 

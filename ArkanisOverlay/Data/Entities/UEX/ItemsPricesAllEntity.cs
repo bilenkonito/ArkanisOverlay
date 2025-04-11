@@ -1,10 +1,15 @@
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArkanisOverlay.Data.Entities.UEX;
 
 public class ItemsPricesAllEntity : BaseEntity
 {
-    [JsonPropertyName("id_item")] public int IdItem { get; set; }
+    [ForeignKey(nameof(Item))]
+    [JsonPropertyName("id_item")] 
+    public int IdItem { get; set; }
+    
     [JsonPropertyName("id_parent")] public int IdParent { get; set; }
     [JsonPropertyName("id_category")] public int IdCategory { get; set; }
     [JsonPropertyName("id_vehicle")] public int IdVehicle { get; set; }
@@ -60,4 +65,8 @@ public class ItemsPricesAllEntity : BaseEntity
     [JsonPropertyName("terminal_name")] public string? TerminalName { get; set; }
     [JsonPropertyName("terminal_code")] public string? TerminalCode { get; set; }
     [JsonPropertyName("terminal_is_player_owned")] public int TerminalIsPlayerOwned { get; set; }
+
+    // Navigation property for Item
+    [JsonIgnore]
+    public virtual ItemEntity Item { get; set; } = null!;
 }

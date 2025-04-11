@@ -1,4 +1,7 @@
 using System.Text.Json.Serialization;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArkanisOverlay.Data.Entities.UEX;
 
@@ -33,4 +36,8 @@ public class ItemEntity : BaseEntity
     // public json attributes {get;set;} // json // deprecated, replaced by items_attributes
     // [JsonPropertyName("notification")]
     // public json notification {get;set;} // json // heads up about an item, such as known bugs, etc.
+
+    // Navigation property for prices
+    [JsonIgnore]
+    public virtual ICollection<ItemsPricesAllEntity> ItemsPricesAll { get; set; } = new List<ItemsPricesAllEntity>();
 }
