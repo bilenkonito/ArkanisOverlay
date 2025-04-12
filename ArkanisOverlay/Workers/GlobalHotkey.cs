@@ -111,9 +111,16 @@ public class GlobalHotkey : IDisposable
         var hookStruct = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lparam);
 
         if (wparam != PInvoke.WM_KEYUP && wparam != PInvoke.WM_SYSKEYUP) return;
-        if (hookStruct.vkCode != (uint)VIRTUAL_KEY.VK_S) return;
+        // if (hookStruct.vkCode != (uint)VIRTUAL_KEY.VK_S) return;
 
-        if (!IsKeyDown(VIRTUAL_KEY.VK_LSHIFT) || !IsKeyDown(VIRTUAL_KEY.VK_LMENU)) return;
+        if (
+            !IsKeyDown(VIRTUAL_KEY.VK_LSHIFT)
+            || !IsKeyDown(VIRTUAL_KEY.VK_LMENU)
+            || !IsKeyDown(VIRTUAL_KEY.VK_S)
+        )
+        {
+            return;
+        }
         
         Logger.LogDebug("Hotkey pressed.");
         TabKeyPressed?.Invoke(null, EventArgs.Empty);
