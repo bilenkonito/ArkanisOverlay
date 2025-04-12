@@ -1,9 +1,7 @@
 @page "/"
 @page "/overlay"
-@using System.Text.RegularExpressions
 @using ArkanisOverlay.Data.Entities.Overlay
 @using ArkanisOverlay.Data.Enums
-@using ArkanisOverlay.Data.Structs
 @using ArkanisOverlay.Services
 @using ArkanisOverlay.UI.Windows
 @using Microsoft.Extensions.Logging
@@ -168,6 +166,10 @@
 
         @if (SearchResults?.Any() == true)
         {
+            <MudChip T="string" Variant="Variant.Text">
+                Found @(SearchResults.Count()) results in @SearchDurationMs ms
+            </MudChip>
+
             <MudStack Class="mt-10" Style="width: 100%; min-height: 20vh;">
                 @foreach (var result in SearchResults)
                 {
@@ -226,7 +228,7 @@
                                 };
 
                                 <MudDivider Vertical="true" FlexItem="true"/>
-                                <MudIconButton Icon="@buttonIcon" Class="focus" tabindex="1" Disabled=@(price == 0) />
+                                <MudIconButton Icon="@buttonIcon" Class="focus" tabindex="1" Disabled=@(price == 0)/>
                             }
                         </MudStack>
                     </MudPaper>
@@ -251,21 +253,22 @@
     public static MudTextField<string>? SearchBox { get; private set; }
     public string SearchText { get; set; } = "";
     private IEnumerable<SearchResult>? SearchResults { get; set; }
-    
+    private long SearchDurationMs { get; set; }
+
     [JSInvokable("ClickAwayHide")]
     public static void ClickAwayHide() => OverlayWindow.Instance?.Collapse();
 
     private async Task SearchAsync()
     {
         try
-        {   
+        {
             if (string.IsNullOrWhiteSpace(SearchText))
             {
                 SearchResults = null;
                 return;
             }
 
-            SearchResults = await SearchService.SearchAsync(SearchText).ConfigureAwait(false);
+            (SearchResults, SearchDurationMs) = await SearchService.SearchAsync(SearchText).ConfigureAwait(false);
             StateHasChanged();
         }
         catch (Exception ex)

@@ -6,20 +6,20 @@ using ArkanisOverlay.Data.Records;
 using ArkanisOverlay.Data.Structs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace ArkanisOverlay.Services;
 
 public interface ISearchService
 {
-    Task<IEnumerable<SearchResult>>
-        SearchAsync(string query, bool includeDetailedPrices = false);
+    Task<Tuple<IEnumerable<SearchResult>, long>> SearchAsync(string query, bool includeDetailedPrices = false);
 
     Task<IEnumerable<LocationPrice>> GetDetailedPricesAsync(EntityType entityType, string name,
         PriceType? priceType = null,
         string? location = null);
 }
 
-public partial class SearchService(IMemoryCache cache, UEXContext dbContext) : ISearchService
+public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILogger<SearchService> logger) : ISearchService
 {
     private const int CACHE_DURATION_MINUTES = 15;
     
@@ -69,9 +69,10 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext) : I
         return new(string.Join(' ', textTokens), searchOptions);
     }
 
-    public async Task<IEnumerable<SearchResult>> SearchAsync(string searchText, 
+    public async Task<Tuple<IEnumerable<SearchResult>, long>> SearchAsync(string searchText, 
         bool includeDetailedPrices = false)
     {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var (query, options) = ProcessSearchTokens(searchText);   
         
         var cacheKey = $"search_{searchText.ToLower()}_{includeDetailedPrices}";
@@ -101,7 +102,11 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext) : I
             return results.OrderBy(r => r.EntityType).ThenBy(r => r.Name).ToList();
         }).ConfigureAwait(false);
 
-        return result ?? [];
+        stopwatch.Stop();
+        logger.LogDebug("Search for '{Query}' completed in {Duration}ms with {ResultCount} results", 
+            searchText, stopwatch.ElapsedMilliseconds, result?.Count() ?? 0);
+
+        return new Tuple<IEnumerable<SearchResult>, long>(result ?? [], stopwatch.ElapsedMilliseconds);
     }
 
     public Task<IEnumerable<LocationPrice>> GetDetailedPricesAsync(EntityType entityType, string name,
