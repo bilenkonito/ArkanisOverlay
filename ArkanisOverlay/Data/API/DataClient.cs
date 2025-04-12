@@ -2,7 +2,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using ArkanisOverlay.Data.API.Converters;
-using ArkanisOverlay.Options;
+using ArkanisOverlay.Data.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

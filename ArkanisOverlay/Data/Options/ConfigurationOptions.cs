@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ArkanisOverlay.Options;
+namespace ArkanisOverlay.Data.Options;
 
 public class ConfigurationOptions
 {   

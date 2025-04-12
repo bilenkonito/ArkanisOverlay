@@ -1,7 +1,7 @@
 using ArkanisOverlay.Data.API;
 using ArkanisOverlay.Data.Contexts;
+using ArkanisOverlay.Data.Options;
 using ArkanisOverlay.Helpers;
-using ArkanisOverlay.Options;
 using ArkanisOverlay.Services;
 using ArkanisOverlay.UI;
 using ArkanisOverlay.UI.Windows;
