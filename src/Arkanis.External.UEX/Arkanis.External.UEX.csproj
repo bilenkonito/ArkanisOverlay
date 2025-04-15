@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <RootNamespace>Arkanis.External.UEX</RootNamespace>
+        <AssemblyName>Arkanis.External.UEX</AssemblyName>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <GeneratedClientConfig>$(MSBuildProjectDirectory)/nswag.json</GeneratedClientConfig>
+        <GeneratedClientDir>$(MSBuildProjectDirectory)</GeneratedClientDir>
+    </PropertyGroup>
+
+    <Target Name="GenerateAPIClient"
+            Inputs="$(GeneratedClientApiSpec);$(GeneratedClientConfig)"
+            Outputs="$(GeneratedClientDir)"
+            BeforeTargets="BeforeBuild">
+        <Message Text="Generating API client from $(GeneratedClientApiSpec) using $(GeneratedClientConfig)" Importance="high" />
+        <Exec Command="dotnet nswag run $(GeneratedClientConfig)" />
+    </Target>
+
+</Project>

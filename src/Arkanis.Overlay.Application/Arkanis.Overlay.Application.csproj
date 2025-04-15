@@ -75,4 +75,8 @@
       </ApplicationDefinition>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Arkanis.External.UEX\Arkanis.External.UEX.csproj" />
+    </ItemGroup>
+
 </Project>
