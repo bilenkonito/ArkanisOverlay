@@ -1,0 +1,130 @@
+# Arkanis Overlay
+
+**A Next-Generation Overlay Companion for Star Citizen**  
+Created by **FatalMerlin**, co-founder of the in-game organization **Arkanis Corporation**
+
+---
+
+## 🚀 What is Arkanis Overlay?
+
+**Arkanis Overlay** is a usability-focused, in-game companion overlay for **Star Citizen**. It aims to provide players with direct access to essential tools and information without having to leave the game or juggle external websites. Inspired by the *RatScanner* project from the Tarkov community, this project is built with a strong focus on reliability, extensibility, and community collaboration.
+
+The overlay is currently in **active development** and driven by a clear mission:  
+> **Minimize friction, maximize immersion.**
+
+---
+
+## ✨ Key Features (MVP)
+
+- 🔍 **In-Game Search Tool**  
+  Find general and commonly-needed game information fast — no more alt-tabbing to search websites.
+  
+- ⚙️ **WPF-Hosted Blazor App**  
+  Built in C# using modern UI technologies for smooth performance and extensibility.
+
+- 📦 **Integrated Community Data**  
+  Seamlessly connected with [UEX](https://uexcorp.space) and other community tools to enrich in-game decision-making.
+
+- 🧪 **Community-Driven Development**  
+  Built in collaboration with players and devs who actively use and shape the tools.
+
+---
+
+## 🔮 Roadmap & Planned Features
+
+We're dreaming big — here's what's ahead:
+
+### 🧩 Core Enhancements
+- Self-updater and installer support (in progress)
+- Improved reliability and usability
+- Configurable display: Overlay layout, themes, behavior
+- Global keyboard shortcuts for quick access
+
+### 🔎 Smarter Search
+- Full-text **fuzzy search** across item databases
+- Improved result ranking and filtering
+
+### 🔗 Integrations & Tools
+- [UEX CLI](https://github.com/UEXCorp/UEX-CLI) and MFD screen integration
+- Embedded tools and services (SPViewer, Erkul, Regolith, etc.) — permissions required
+- API-driven data enrichment from the community (Wiki, JSON exports, etc.)
+
+### 🔍 OCR-Driven Intelligence
+- Stage 1: UEX data extraction
+- Stage 2: Regolith integration
+- Stage 3: Player location-based map awareness and contextual recommendations
+
+### 🧭 Long-Term Vision
+- Gameplay enhancement tools:
+  - Task & progress tracking
+  - Party, squad, and org management utilities
+  - Note-taking & planning aids
+- **Plugin support** for third-party extensions (exploration stage)
+
+---
+
+## 💡 Philosophy
+
+Star Citizen is vast — and at times, frustratingly so.  
+**Arkanis Overlay** doesn't aim to change the game, but to make the *experience better*. It’s your always-on wingman — helpful, seamless, and never in the way.
+
+Key principles:
+- **Reliable UX**: The overlay *must* be stable. The game has enough bugs already.
+- **Incremental growth**: Release early, improve often.
+- **No exploits**: This project will *never* include cheats, automation, or game-breaking features.
+
+---
+
+## 🧑‍💻 Development Status
+
+> Project Lead: [FatalMerlin](https://github.com/FatalMerlin)  
+> Language: C#  
+> Frameworks: **WPF**, **Blazor (WebView2)**
+
+Currently developed in bursts due to time constraints (because, you know… real life).  
+We are now a small dev team — progress is slow but deliberate. A Minimum Viable Product (MVP) is nearing readiness!
+
+---
+
+## 🙌 Community & Support
+
+Big shout-out to:
+- **UEX Dev Team** for their continued support, testing, and future collaboration.
+- Everyone in the **Arkanis Corporation** and broader SC community who has provided feedback and ideas.
+
+Want to contribute, suggest features, or test?  
+Open an issue or contact [@FatalMerlin](https://github.com/FatalMerlin) — we’d love your input!
+
+---
+
+## 🧭 Why "Arkanis"?
+
+The name pays tribute to the **Arkanis Sector**, a frontier region of bold explorers — just like the users of this tool.  
+We aim to embody the same spirit: discovery, utility, and frontier innovation.
+
+---
+
+## 🛠️ Getting Started (Coming Soon)
+
+> Detailed build and deployment instructions will be added after the MVP is finalized. Stay tuned.
+
+---
+
+## 📜 License
+
+*To be defined.*  
+Expected to be a community-friendly open-source license (likely MIT or similar).
+
+---
+
+## 🌌 Final Words
+
+This is only the beginning.  
+**Arkanis Overlay** is designed to grow with the game and the community.  
+Let’s make Star Citizen a little smoother — together.
+
+> *“A ship is only as good as its crew.”*  
+> — Unknown
+
+---
+
