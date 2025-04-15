@@ -76,7 +76,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Arkanis.External.UEX\Arkanis.External.UEX.csproj" />
+      <ProjectReference Include="..\Arkanis.Common\Arkanis.Common.csproj" />
+      <ProjectReference Include="..\Arkanis.External.UEX\Arkanis.External.UEX.csproj" />
     </ItemGroup>
 
 </Project>

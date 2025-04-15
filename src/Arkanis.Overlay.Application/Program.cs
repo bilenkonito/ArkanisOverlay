@@ -1,3 +1,4 @@
+using Arkanis.External.UEX;
 using Arkanis.Overlay.Application.Data.API;
 using Arkanis.Overlay.Application.Data.Contexts;
 using Arkanis.Overlay.Application.Data.Options;
@@ -85,6 +86,8 @@ public static class Program
             });
             services.AddSingleton<IServiceProvider>(sp => sp);
             services.AddHttpClient();
+
+            services.AddAllExternalUexApiClients();
 
             // Data
             services.AddScoped<UEXContext>();

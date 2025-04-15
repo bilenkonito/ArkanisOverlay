@@ -4,6 +4,10 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <NoWarn>
+            $(NoWarn);
+            CS8618; <!-- Non-nullable property 'VehicleName' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. -->
+        </NoWarn>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -15,6 +19,10 @@
         <GeneratedClientConfig>$(MSBuildProjectDirectory)/nswag.json</GeneratedClientConfig>
         <GeneratedClientDir>$(MSBuildProjectDirectory)</GeneratedClientDir>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Arkanis.Common\Arkanis.Common.csproj" />
+    </ItemGroup>
 
     <Target Name="GenerateAPIClient"
             Inputs="$(GeneratedClientApiSpec);$(GeneratedClientConfig)"
