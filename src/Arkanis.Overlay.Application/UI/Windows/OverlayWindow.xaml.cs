@@ -1,10 +1,19 @@
 ﻿using static Windows.Win32.PInvoke;
-using Index = Arkanis.Overlay.Application.UI.Pages.Overlay.Index;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace Arkanis.Overlay.Application.UI.Windows;
 
+using System.IO;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Interop;
+using global::Windows.Win32.Foundation;
+using global::Windows.Win32.UI.WindowsAndMessaging;
 using Helpers;
+using Microsoft.AspNetCore.Components.WebView;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Web.WebView2.Core;
 using Workers;
 
 /// <summary>
@@ -66,62 +75,51 @@ public partial class OverlayWindow
         var currentThreadId = GetCurrentThreadId();
         AttachThreadInput(windowThreadProcessId, currentThreadId, true);
         BringWindowToTop(mainWindowHandle);
-        this.Show();
+        Show();
         // PInvoke.ShowWindow((HWND)MainWindowHandle, SHOW_WINDOW_CMD.SW_SHOW);
         AttachThreadInput(windowThreadProcessId, currentThreadId, false);
 
         // only works when window is visible
         _blurHelper.EnableBlur(this, 1);
 
-        var result = this.Activate();
+        var result = Activate();
         _logger.LogDebug("ShowOverlay(): Activate Window: {result}", result);
 
         BlazorWebView.WebView.Focus();
-
-        // blazorWebView.Focusable = true;
-        // result = blazorWebView.Focus();
-        // _logger.LogDebug("ShowOverlay(): Focus WebView: {result}", result);
-
-        // Keyboard.Focus(blazorWebView);
-        // Mouse.Capture(blazorWebView);
-
-        // Index.SearchBox.FocusAsync();
-        Index.SearchBox?.SelectAsync();
-        // Index.Instance?.ShowSnackbar();
     }
 
     private void SetupWorkerEventListeners()
     {
         _windowTracker.WindowFound +=
-            (_, hWnd) => this.Dispatcher.Invoke(() => { _currentWindowHWnd = hWnd; });
+            (_, hWnd) => Dispatcher.Invoke(() => { _currentWindowHWnd = hWnd; });
         _windowTracker.WindowLost +=
-            (_, _) => this.Dispatcher.Invoke(() => { _currentWindowHWnd = HWND.Null; });
-        _windowTracker.WindowPositionChanged += (_, position) => this.Dispatcher.Invoke
+            (_, _) => Dispatcher.Invoke(() => { _currentWindowHWnd = HWND.Null; });
+        _windowTracker.WindowPositionChanged += (_, position) => Dispatcher.Invoke
         (
             () =>
             {
                 _logger.LogDebug("Overlay: WindowPositionChanged: {position}", position.ToString());
-                this.Top = position.Y;
-                this.Left = position.X;
+                Top = position.Y;
+                Left = position.X;
             }
         );
-        _windowTracker.WindowSizeChanged += (_, size) => this.Dispatcher.Invoke
+        _windowTracker.WindowSizeChanged += (_, size) => Dispatcher.Invoke
         (
             () =>
             {
                 _logger.LogDebug("Overlay: WindowSizeChanged: {size}", size.ToString());
-                this.Width = size.Width;
-                this.Height = size.Height;
+                Width = size.Width;
+                Height = size.Height;
             }
         );
 
-        _globalHotkey.TabKeyPressed += (_, _) => this.Dispatcher.Invoke
+        _globalHotkey.TabKeyPressed += (_, _) => Dispatcher.Invoke
         (
             () =>
             {
                 Console.WriteLine("Overlay: HotKeyPressed");
 
-                if (this.Visibility == Visibility.Visible)
+                if (Visibility == Visibility.Visible)
                 {
                     HideOverlay();
                     return;
@@ -172,7 +170,7 @@ public partial class OverlayWindow
         BlazorWebView.WebView.DefaultBackgroundColor = Color.Transparent;
         BlazorWebView.WebView.NavigationCompleted += WebView_Loaded;
         BlazorWebView.WebView.CoreWebView2InitializationCompleted += CoreWebView_Loaded;
-        this.Visibility = Visibility.Collapsed;
+        Visibility = Visibility.Collapsed;
     }
 
     private void BlazorWebView_Initializing(object? sender, BlazorWebViewInitializingEventArgs e)
@@ -199,7 +197,7 @@ public partial class OverlayWindow
     /// </summary>
     public void Collapse()
     {
-        this.Visibility = Visibility.Collapsed;
+        Visibility = Visibility.Collapsed;
         // we switch focus back to Star Citizen because
         // otherwise the previously active window will
         // receive focus instead for some reason

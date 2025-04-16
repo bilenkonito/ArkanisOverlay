@@ -1,6 +1,11 @@
 namespace Arkanis.Overlay.Application.Workers;
 
-using Windows.Win32;
+using System.Runtime.InteropServices;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Input.KeyboardAndMouse;
+using Windows.Win32.UI.WindowsAndMessaging;
+using Microsoft.Extensions.Logging;
+using PInvoke = Windows.Win32.PInvoke;
 
 /**
  * Captures global hotkeys.

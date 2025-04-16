@@ -1,9 +1,18 @@
 namespace Arkanis.Overlay.Application;
 
-using Data.API;
-using Data.Contexts;
-using Data.Options;
+using Dapplo.Microsoft.Extensions.Hosting.AppServices;
+using Dapplo.Microsoft.Extensions.Hosting.Wpf;
+using External.UEX;
 using Helpers;
+using Infrastructure;
+using Infrastructure.Data;
+using Infrastructure.Data.Extensions;
+using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using MudBlazor.Services;
 using Services;
 using UI;
 using UI.Windows;
@@ -47,7 +56,7 @@ public static class Program
             .UseConsoleLifetime()
             .Build();
 
-        await host.Services.GetRequiredService<UEXContext>().Database.MigrateAsync().ConfigureAwait(false);
+        await host.MigrateDatabaseAsync<UEXContext>().ConfigureAwait(false);
         await host.RunAsync().ConfigureAwait(false);
     }
 
@@ -72,15 +81,7 @@ public static class Program
         (
             (context, services) =>
             {
-                //* Add non-singleton Windows here
-                // Example:
-                // services.AddTransient<OtherWindow>();
-
-                services
-                    .AddOptions<ConfigurationOptions>()
-                    .BindConfiguration(ConfigurationOptions.Section)
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
+                services.AddInfrastructureConfiguration(context.Configuration);
 
                 services.AddWpfBlazorWebView();
                 services.AddMudServices
@@ -97,18 +98,17 @@ public static class Program
                 services.AddAllExternalUexApiClients();
 
                 // Data
-                services.AddScoped<UEXContext>();
+                services
+                    .AddWindowOverlayControls()
+                    .AddInfrastructure()
+                    .AddInfrastructureHostedServices();
 
                 // Hosted Services
                 services.AddHostedService<EndpointManager>();
 
                 // Singleton Services
                 services.AddSingleton<BlurHelper>();
-                services.AddSingleton<DataClient>();
                 services.AddMemoryCache();
-
-                // Scoped Services
-                services.AddScoped<ISearchService, SearchService>();
 
                 // Workers
                 services.AddSingleton<WindowTracker>();

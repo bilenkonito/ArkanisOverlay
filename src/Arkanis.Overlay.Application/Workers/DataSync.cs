@@ -1,8 +1,11 @@
 namespace Arkanis.Overlay.Application.Workers;
 
-using Data.API;
-using Data.Contexts;
-using Data.Entities.UEX;
+using Infrastructure.API;
+using Infrastructure.Data;
+using Infrastructure.Data.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 public class DataSync(ILogger<DataSync> logger, DataClient dataClient, IServiceProvider serviceProvider)
 {

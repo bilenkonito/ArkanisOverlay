@@ -1,5 +1,11 @@
 namespace Arkanis.Overlay.Application.Helpers;
 
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Interop;
+using Windows.Win32.Foundation;
+using Microsoft.Extensions.Logging;
+
 /// <summary>
 ///     Helper class for setting window composition attributes to enable blur effects.
 ///     Based on:

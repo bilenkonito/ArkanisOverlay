@@ -3,7 +3,9 @@
 
 namespace Windows.Win32;
 
-internal class PInvoke
+using Foundation;
+
+internal partial class PInvoke
 {
     /**
      * Workaround for unsafe pointer access.

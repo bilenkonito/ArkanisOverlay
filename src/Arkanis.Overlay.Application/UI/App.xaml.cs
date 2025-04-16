@@ -1,7 +1,12 @@
 ﻿namespace Arkanis.Overlay.Application.UI;
 
+using System.Diagnostics;
+using System.IO;
+using System.Windows;
 using Windows;
-using Data.Contexts;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 ///     Interaction logic for Overlay.xaml
@@ -41,15 +46,7 @@ public partial class App
             Directory.CreateDirectory(Constants.LocalAppDataPath);
         }
 
-        using (var context = new UEXContext())
-        {
-            context.Database.Migrate();
-        }
-
-        // var serviceCollection = new ServiceCollection();
-        // ConfigureServices(serviceCollection);
-        // _serviceProvider = serviceCollection.BuildServiceProvider();
-        this.Resources.Add("services", _serviceProvider);
+        Resources.Add("services", _serviceProvider);
 
         var overlayWindow = _serviceProvider.GetRequiredService<OverlayWindow>();
         Current.MainWindow = overlayWindow;
