@@ -1,8 +1,9 @@
 # Arkanis Overlay
 
 **A Next-Generation Overlay Companion for Star Citizen**  
-Created by **FatalMerlin**, co-founder of the in-game organization **Arkanis Corporation**
-and **[TheKronnY](https://discord.com/users/224580858432978944)**, [an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg)
+Created by **[FatalMerlin](https://discord.com/users/174617873182883841)**, 
+co-founder of the in-game organization **[Arkanis Corporation](https://join.arkanis.cc/)**,
+and **[TheKronnY](https://discord.com/users/224580858432978944)**, [an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg).
 
 ---
 
@@ -100,7 +101,7 @@ Big shout-out to:
 - Everyone in the **Arkanis Corporation** and broader SC community who has provided feedback and ideas.
 
 Want to contribute, suggest features, or test?  
-[Open an issue](https://github.com/ArkanisCorporation/ArkanisOverlay/issues) or contact [@FatalMerlin](https://github.com/FatalMerlin) — we’d love your input!
+[Open an issue](https://github.com/ArkanisCorporation/ArkanisOverlay/issues) or contact [@FatalMerlin](https://discord.com/users/174617873182883841) — we’d love your input!
 
 ---
 
