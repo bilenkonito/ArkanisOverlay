@@ -25,13 +25,14 @@ The overlay is currently in **active development** and driven by a clear mission
 - 📦 **Integrated Community Data**  
   Seamlessly connected with [UEX](https://uexcorp.space) and other community tools to enrich in-game decision-making.
 
-## 🖥️ Solution Features
+## 🤝 Community Focus
+- 🧪 **Community-Driven Development**  
+  Built in collaboration with players and devs who actively use and shape the tools.
+
+## 🖥️ Tech Stack
 
 - ⚙️ **WPF-Hosted Blazor App**  
   Built in C# using modern UI technologies for smooth performance and extensibility.
-
-- 🧪 **Community-Driven Development**  
-  Built in collaboration with players and devs who actively use and shape the tools.
 
 ---
 
