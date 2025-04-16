@@ -2,6 +2,7 @@
 
 **A Next-Generation Overlay Companion for Star Citizen**  
 Created by **FatalMerlin**, co-founder of the in-game organization **Arkanis Corporation**
+and **[TheKronnY](https://discord.com/users/224580858432978944)**, [an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg)
 
 ---
 
