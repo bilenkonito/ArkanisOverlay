@@ -101,7 +101,7 @@ Big shout-out to:
 - Everyone in the **Arkanis Corporation** and broader SC community who has provided feedback and ideas.
 
 Want to contribute, suggest features, or test?  
-[Open an issue](https://github.com/ArkanisCorporation/ArkanisOverlay/issues) or contact [@FatalMerlin](https://discord.com/users/174617873182883841) — we’d love your input!
+[Open an issue](https://github.com/ArkanisCorporation/ArkanisOverlay/issues/new/choose) or contact [@FatalMerlin](https://discord.com/users/174617873182883841) — we’d love your input!
 
 ---
 
