@@ -3,6 +3,7 @@ namespace Arkanis.Overlay.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 public class ClientUexDbContextFactory(IServiceProvider serviceProvider, IConfiguration configuration) : IDbContextFactory<UEXContext>
@@ -13,11 +14,18 @@ public class ClientUexDbContextFactory(IServiceProvider serviceProvider, IConfig
     {
         var connectionString = configuration.GetConnectionString(ConnectionName);
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+        var hostEnvironment = serviceProvider.GetRequiredService<IHostEnvironment>();
 
         var optionsBuilder = new DbContextOptionsBuilder<UEXContext>();
         optionsBuilder.UseApplicationServiceProvider(serviceProvider);
         optionsBuilder.UseLoggerFactory(loggerFactory);
         optionsBuilder.UseSqlite(connectionString);
+
+        if (hostEnvironment.IsDevelopment())
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+            optionsBuilder.EnableDetailedErrors();
+        }
 
         return new UEXContext(optionsBuilder.Options);
     }
