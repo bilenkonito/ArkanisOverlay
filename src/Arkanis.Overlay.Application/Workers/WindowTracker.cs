@@ -358,14 +358,14 @@ public class WindowTracker
     {
         var hWnd = PInvoke.GetForegroundWindow();
         var isFocused = _currentWindowHWnd != HWND.Null && hWnd == _currentWindowHWnd;
-        
+
 #if DEBUG
         var windowTitle = GetWindowText(hWnd);
         // allows for convenient debugging
         // this way the DevTools window counts as the window being focused
         isFocused |= Debugger.IsAttached && windowTitle.StartsWith("DevTools");
 #endif
-        
+
         return isFocused;
     }
 

@@ -1,3 +1,4 @@
+using Arkanis.External.UEX;
 using Arkanis.Overlay.Application.Data.API;
 using Arkanis.Overlay.Application.Data.Contexts;
 using Arkanis.Overlay.Application.Data.Options;
@@ -8,6 +9,7 @@ using Arkanis.Overlay.Application.UI.Windows;
 using Arkanis.Overlay.Application.Workers;
 using Dapplo.Microsoft.Extensions.Hosting.AppServices;
 using Dapplo.Microsoft.Extensions.Hosting.Wpf;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,7 +22,7 @@ namespace Arkanis.Overlay.Application;
 public static class Program
 {
     [STAThread]
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var host = Host.CreateDefaultBuilder(args)
             .ConfigureLogging()
@@ -47,7 +49,8 @@ public static class Program
             .UseConsoleLifetime()
             .Build();
 
-        host.Run();
+        await host.Services.GetRequiredService<UEXContext>().Database.MigrateAsync().ConfigureAwait(false);
+        await host.RunAsync().ConfigureAwait(false);
     }
 
     private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder) =>
@@ -83,6 +86,8 @@ public static class Program
             });
             services.AddSingleton<IServiceProvider>(sp => sp);
             services.AddHttpClient();
+
+            services.AddAllExternalUexApiClients();
 
             // Data
             services.AddScoped<UEXContext>();
