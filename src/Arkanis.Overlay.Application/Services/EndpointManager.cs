@@ -1,14 +1,10 @@
-using Arkanis.Overlay.Application.Data.API;
-using Arkanis.Overlay.Application.Data.Contexts;
-using Arkanis.Overlay.Application.Data.Entities.UEX;
-using Arkanis.Overlay.Application.Utils;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Timer = System.Threading.Timer;
 
 namespace Arkanis.Overlay.Application.Services;
+
+using Data.API;
+using Data.Contexts;
+using Data.Entities.UEX;
 
 public interface IEndpointManager
 {
@@ -19,8 +15,11 @@ public interface IEndpointManager
     void RegisterEndpoint<T>(string apiPath, string cacheTtl, Func<string, IEnumerable<string>>? mapper = null)
         where T : BaseEntity, new();
 
-    void RegisterDependantEndpoint<T, TDependency>(string apiPath, string cacheTtl,
-        Func<string, List<TDependency>, IEnumerable<string>> mapper)
+    void RegisterDependantEndpoint<T, TDependency>(
+        string apiPath,
+        string cacheTtl,
+        Func<string, List<TDependency>, IEnumerable<string>> mapper
+    )
         where T : BaseEntity, new()
         where TDependency : BaseEntity, new();
 
@@ -36,47 +35,11 @@ public interface IEndpointManager
 public sealed class EndpointManager(
     ILogger<EndpointManager> logger,
     DataClient dataClient,
-    IServiceProvider serviceProvider)
+    IServiceProvider serviceProvider
+)
     : IEndpointManager, IHostedService, IDisposable
 {
     private readonly Dictionary<Type, EndpointConfig> _endpoints = new();
-
-    public Task StartAsync(CancellationToken cancellationToken)
-    {
-        RegisterEndpoint<CommodityEntity>("commodities", "00.01:00:00");
-        RegisterEndpoint<VehicleEntity>("vehicles", "00.12:00:00");
-        RegisterEndpoint<CategoryEntity>("categories", "01.00:00:00");
-        RegisterEndpoint<ItemsPricesAllEntity>("items_prices_all", "00.12:00:00");
-        RegisterEndpoint<CommoditiesPricesAllEntity>("commodities_prices_all", "00.00:30:00");
-        RegisterEndpoint<CommoditiesRawPricesAllEntity>("commodities_raw_prices_all", "00.00:30:00");
-        RegisterEndpoint<VehiclesPurchasesPricesAllEntity>("vehicles_purchases_prices_all", "00.12:00:00");
-        RegisterEndpoint<VehiclesRentalsPricesAllEntity>("vehicles_rentals_prices_all", "00.12:00:00");
-
-        RegisterDependantEndpoint<ItemEntity, CategoryEntity>("items", "01.00:00:00",
-            (apiPath, c) =>
-                c.Where(e => e.Type == "item")
-                    .Select(e => $"{apiPath}?id_category={e.Id}"));
-
-        return Task.CompletedTask;
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        foreach (var (_, config) in _endpoints)
-        {
-            config.Timer?.Change(Timeout.Infinite, Timeout.Infinite);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public void Dispose()
-    {
-        foreach (var (_, config) in _endpoints)
-        {
-            config.Timer?.Dispose();
-        }
-    }
 
     public TimeSpan GetTimeUntilNextUpdate<T>() where T : BaseEntity, new()
     {
@@ -92,7 +55,10 @@ public sealed class EndpointManager(
             .Select(e => e.LastUpdated)
             .FirstOrDefault();
 
-        if (lastUpdated == default) return TimeSpan.Zero;
+        if (lastUpdated == default)
+        {
+            return TimeSpan.Zero;
+        }
 
         var nextUpdate = lastUpdated + config.CacheTtl - DateTime.UtcNow;
         return nextUpdate < TimeSpan.Zero ? TimeSpan.Zero : nextUpdate;
@@ -116,9 +82,11 @@ public sealed class EndpointManager(
 
         dbSet.AddOrUpdate(cacheInfo);
 
-        logger.LogInformation(
+        logger.LogInformation
+        (
             "Marked {type} as updated, next update in {timeUntilNextUpdate}",
-            type.Name, config.CacheTtl
+            type.Name,
+            config.CacheTtl
         );
 
         dbContext.SaveChanges();
@@ -129,8 +97,12 @@ public sealed class EndpointManager(
     {
         if (_endpoints.ContainsKey(typeof(T)))
         {
-            logger.LogError("Cannot register endpoint {endpoint} for type {type} because it is already registered",
-                apiPath, typeof(T).Name);
+            logger.LogError
+            (
+                "Cannot register endpoint {endpoint} for type {type} because it is already registered",
+                apiPath,
+                typeof(T).Name
+            );
             throw new InvalidOperationException("Cannot register endpoint because it is already registered");
         }
 
@@ -138,18 +110,26 @@ public sealed class EndpointManager(
         _endpoints.Add(typeof(T), config);
 
         var timeUntilNextUpdate = GetTimeUntilNextUpdate<T>();
-        config.Timer = new Timer(
-            _ => Task.Run(UpdateEndpoint<T>), null,
-            timeUntilNextUpdate, config.CacheTtl
+        config.Timer = new Timer
+        (
+            _ => Task.Run(UpdateEndpoint<T>),
+            null,
+            timeUntilNextUpdate,
+            config.CacheTtl
         );
 
-        logger.LogInformation("Registered endpoint {endpoint} for type {type} - Next update in {timeUntilNextUpdate}",
-            apiPath, typeof(T).Name, timeUntilNextUpdate
+        logger.LogInformation
+        (
+            "Registered endpoint {endpoint} for type {type} - Next update in {timeUntilNextUpdate}",
+            apiPath,
+            typeof(T).Name,
+            timeUntilNextUpdate
         );
     }
 
     public void RegisterDependantEndpoint<T, TDependency>(
-        string apiPath, string cacheTtl,
+        string apiPath,
+        string cacheTtl,
         Func<string, List<TDependency>, IEnumerable<string>> mapper
     )
         where T : BaseEntity, new()
@@ -160,14 +140,15 @@ public sealed class EndpointManager(
 
         if (!_endpoints.TryGetValue(dependencyType, out var dependencyConfig))
         {
-            logger.LogError(
-                "Cannot register dependant endpoint {endpoint} for type {type} because the " +
-                "dependency type {dependency} is not registered",
-                apiPath, type.Name, dependencyType.Name);
-
-            throw new InvalidOperationException(
-                "Cannot register dependant endpoint because the dependency type is not registered"
+            logger.LogError
+            (
+                "Cannot register dependant endpoint {endpoint} for type {type} because the " + "dependency type {dependency} is not registered",
+                apiPath,
+                type.Name,
+                dependencyType.Name
             );
+
+            throw new InvalidOperationException("Cannot register dependant endpoint because the dependency type is not registered");
         }
 
         RegisterEndpoint<T>(apiPath, cacheTtl, WrappedMapper);
@@ -238,10 +219,19 @@ public sealed class EndpointManager(
 
     public async Task<IEnumerable<T>> FetchEndpoint<T>(IEnumerable<string> apiPaths) where T : BaseEntity, new()
     {
-        var tasks = apiPaths.Select(
-            apiPath =>
-                dataClient.Get<List<T>>(apiPath).ContinueWith(e => e.Result ?? (List<T>) [])
-        ).ToArray();
+        var tasks = apiPaths.Select
+            (
+                apiPath =>
+                    dataClient.Get<List<T>>(apiPath)
+                        .ContinueWith
+                        (
+                            e => e.Result
+                                 ?? (List<T>)
+                                 [
+                                 ]
+                        )
+            )
+            .ToArray();
 
         var results = await Task.WhenAll(tasks).ConfigureAwait(false);
 
@@ -255,7 +245,9 @@ public sealed class EndpointManager(
         var config = _endpoints[dependencyType];
 
         if (config.Dependents.Count == 0)
+        {
             return;
+        }
 
         var dependantEndpoints = config.Dependents.Select(e => _endpoints[e]).ToList();
 
@@ -265,22 +257,70 @@ public sealed class EndpointManager(
             endpoint.Timer?.Change(TimeSpan.Zero, endpoint.CacheTtl);
         }
     }
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        RegisterEndpoint<CommodityEntity>("commodities", "00.01:00:00");
+        RegisterEndpoint<VehicleEntity>("vehicles", "00.12:00:00");
+        RegisterEndpoint<CategoryEntity>("categories", "01.00:00:00");
+        RegisterEndpoint<ItemsPricesAllEntity>("items_prices_all", "00.12:00:00");
+        RegisterEndpoint<CommoditiesPricesAllEntity>("commodities_prices_all", "00.00:30:00");
+        RegisterEndpoint<CommoditiesRawPricesAllEntity>("commodities_raw_prices_all", "00.00:30:00");
+        RegisterEndpoint<VehiclesPurchasesPricesAllEntity>("vehicles_purchases_prices_all", "00.12:00:00");
+        RegisterEndpoint<VehiclesRentalsPricesAllEntity>("vehicles_rentals_prices_all", "00.12:00:00");
+
+        RegisterDependantEndpoint<ItemEntity, CategoryEntity>
+        (
+            "items",
+            "01.00:00:00",
+            (apiPath, c) =>
+                c.Where(e => e.Type == "item")
+                    .Select(e => $"{apiPath}?id_category={e.Id}")
+        );
+
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        foreach (var (_, config) in _endpoints)
+        {
+            config.Timer?.Change(Timeout.Infinite, Timeout.Infinite);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        foreach (var (_, config) in _endpoints)
+        {
+            config.Timer?.Dispose();
+        }
+    }
 }
 
 internal class EndpointConfig(
     string apiPath,
     string cacheTtl,
-    Func<string, IEnumerable<string>>? mapper = null)
+    Func<string, IEnumerable<string>>? mapper = null
+)
 {
-    public IEnumerable<string> ApiPaths =>
-        mapper == null
-            ? [apiPath]
+    public readonly List<Type> Dependents =
+    [
+    ];
+
+    public IEnumerable<string> ApiPaths
+        => mapper == null
+            ?
+            [
+                apiPath,
+            ]
             : mapper(apiPath);
 
-    public string ApiPath => apiPath;
+    public string ApiPath
+        => apiPath;
 
     public TimeSpan CacheTtl { get; } = TimeSpan.Parse(cacheTtl);
     public Timer? Timer { get; set; }
-
-    public readonly List<Type> Dependents = [];
 }

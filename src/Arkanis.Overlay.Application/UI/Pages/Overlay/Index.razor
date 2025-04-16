@@ -4,7 +4,6 @@
 @using Arkanis.Overlay.Application.Data.Enums
 @using Arkanis.Overlay.Application.Services
 @using Arkanis.Overlay.Application.UI.Windows
-@using Microsoft.Extensions.Logging
 @layout OverlayLayout
 
 @inject ILogger<Index> Logger
@@ -185,7 +184,7 @@
                                     EntityType.Item => Icons.Material.Outlined.Category,
                                     EntityType.SpaceShip => Icons.Material.Outlined.Rocket,
                                     // EntityType.Location => Icons.Material.Outlined.LocationOn,
-                                    _ => throw new ArgumentOutOfRangeException()
+                                    _ => throw new ArgumentOutOfRangeException(),
                                 };
                             }
 
@@ -200,7 +199,7 @@
                                     PriceType.Buy => "lightskyblue",
                                     PriceType.Sell => "sandybrown",
                                     PriceType.Rent => "sandybrown",
-                                    _ => throw new ArgumentOutOfRangeException()
+                                    _ => throw new ArgumentOutOfRangeException(),
                                 };
 
                                 <MudStack Style=@($"width: 8em; color: {color};") AlignItems="AlignItems.Center"
@@ -224,7 +223,7 @@
                                     PriceType.Buy => MaterialSymbols.Outlined.AddShoppingCart,
                                     PriceType.Sell => MaterialSymbols.Outlined.RemoveShoppingCart,
                                     PriceType.Rent => MaterialSymbols.Outlined.CarRental,
-                                    _ => throw new ArgumentOutOfRangeException()
+                                    _ => throw new ArgumentOutOfRangeException(),
                                 };
 
                                 <MudDivider Vertical="true" FlexItem="true"/>

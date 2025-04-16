@@ -1,8 +1,5 @@
 @using Arkanis.Overlay.Application.Data.Contexts
 @using Arkanis.Overlay.Application.Data.Entities.UEX
-@using Microsoft.EntityFrameworkCore
-@using Microsoft.Extensions.Logging
-
 @inject UEXContext UEXContext
 @inject ILogger<Index> Logger
 
@@ -51,11 +48,18 @@
     private List<VehiclesPurchasesPricesAllEntity> _prices = [];
     private List<VehiclesRentalsPricesAllEntity> _rentals = [];
 
-    private decimal _avgBuyPrice = 0;
-    private decimal _avgRentPrice = 0;
+    private decimal _avgBuyPrice;
+    private decimal _avgRentPrice;
 
-    private decimal GetAvgBuyPrice() => _prices.Count == 0 ? 0 : _prices.Average(price => price.PriceBuy);
-    private decimal GetAvgRentPrice() => _rentals.Count == 0 ? 0 : _rentals.Average(price => price.PriceRent);
+    private decimal GetAvgBuyPrice()
+    {
+        return _prices.Count == 0 ? 0 : _prices.Average(price => price.PriceBuy);
+    }
+
+    private decimal GetAvgRentPrice()
+    {
+        return _rentals.Count == 0 ? 0 : _rentals.Average(price => price.PriceRent);
+    }
 
     protected override async Task OnInitializedAsync()
     {

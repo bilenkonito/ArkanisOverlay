@@ -1,11 +1,8 @@
-using Arkanis.Overlay.Application.Data.API;
-using Arkanis.Overlay.Application.Data.Contexts;
-using Arkanis.Overlay.Application.Data.Entities.UEX;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
 namespace Arkanis.Overlay.Application.Workers;
+
+using Data.API;
+using Data.Contexts;
+using Data.Entities.UEX;
 
 public class DataSync(ILogger<DataSync> logger, DataClient dataClient, IServiceProvider serviceProvider)
 {
@@ -20,7 +17,10 @@ public class DataSync(ILogger<DataSync> logger, DataClient dataClient, IServiceP
         {
             var result = await dataClient.Get<List<T>>(endpoint).ConfigureAwait(false);
 
-            if (result == null) return;
+            if (result == null)
+            {
+                return;
+            }
 
             var dbSet = dbContext.Set<T>();
             // we are synchronizing the database from the API

@@ -1,28 +1,22 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Windows;
-using Arkanis.Overlay.Application.Data.Contexts;
-using Arkanis.Overlay.Application.UI.Windows;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+﻿namespace Arkanis.Overlay.Application.UI;
 
-namespace Arkanis.Overlay.Application.UI;
+using Windows;
+using Data.Contexts;
 
 /// <summary>
-/// Interaction logic for Overlay.xaml
+///     Interaction logic for Overlay.xaml
 /// </summary>
-public partial class App : System.Windows.Application
+public partial class App
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly ILogger<App> _logger;
-   
+    private readonly IServiceProvider _serviceProvider;
+
 
     // workaround to fix compiler error because of
     // generated Main method in `App.g.cs`
-    private App() => throw new NotSupportedException();
+    private App()
+        => throw new NotSupportedException();
 
     // ReSharper disable once UnusedMember.Global
     public App(ILogger<App> logger, IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime)
@@ -31,7 +25,7 @@ public partial class App : System.Windows.Application
         _serviceProvider = serviceProvider;
         _hostApplicationLifetime = hostApplicationLifetime;
     }
-    
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -41,7 +35,7 @@ public partial class App : System.Windows.Application
             var splashScreen = new SplashScreen("Resources\\ArkanisTransparent_512x512.png");
             splashScreen.Show(true, true);
         }
-        
+
         if (!Directory.Exists(Constants.LocalAppDataPath))
         {
             Directory.CreateDirectory(Constants.LocalAppDataPath);
@@ -55,7 +49,7 @@ public partial class App : System.Windows.Application
         // var serviceCollection = new ServiceCollection();
         // ConfigureServices(serviceCollection);
         // _serviceProvider = serviceCollection.BuildServiceProvider();
-        Resources.Add("services", _serviceProvider);
+        this.Resources.Add("services", _serviceProvider);
 
         var overlayWindow = _serviceProvider.GetRequiredService<OverlayWindow>();
         Current.MainWindow = overlayWindow;
@@ -82,7 +76,7 @@ public partial class App : System.Windows.Application
         {
             _logger.LogError(ex, "Error during shutdown.");
         }
-        
+
         base.OnExit(exitEventArgs);
         _hostApplicationLifetime.StopApplication();
     }

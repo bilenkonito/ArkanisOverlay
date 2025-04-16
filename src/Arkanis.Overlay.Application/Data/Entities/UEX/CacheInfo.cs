@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Arkanis.Overlay.Application.Data.Entities.UEX;
 
 [PrimaryKey("TypeName")]

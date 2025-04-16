@@ -1,7 +1,7 @@
-using Microsoft.Extensions.DependencyInjection;
-using Arkanis.External.UEX.Abstractions;
-
 namespace Arkanis.External.UEX;
+
+using Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {

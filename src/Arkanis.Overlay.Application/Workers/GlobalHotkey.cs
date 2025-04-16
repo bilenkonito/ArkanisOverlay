@@ -1,11 +1,6 @@
-using System.Runtime.InteropServices;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.UI.Input.KeyboardAndMouse;
-using Windows.Win32.UI.WindowsAndMessaging;
-using Microsoft.Extensions.Logging;
-
 namespace Arkanis.Overlay.Application.Workers;
+
+using Windows.Win32;
 
 /**
  * Captures global hotkeys.
@@ -15,20 +10,21 @@ public class GlobalHotkey : IDisposable
 {
     private static HOOKPROC? _proc;
     private static HHOOK _hookId = HHOOK.Null;
-    private ILogger Logger { get; }
 
     private Thread? _thread;
-
-    /**
-     *
-     */
-    public event EventHandler? TabKeyPressed;
 
     public GlobalHotkey(ILogger<GlobalHotkey> logger)
     {
         Logger = logger;
         _proc = HookProc;
     }
+
+    private ILogger Logger { get; }
+
+    /**
+     *
+     */
+    public event EventHandler? TabKeyPressed;
 
     public void Start()
     {
@@ -37,7 +33,7 @@ public class GlobalHotkey : IDisposable
             // ensures that the application can exit
             // regardless of this thread
             // see: https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread.isbackground?view=net-9.0
-            IsBackground = true
+            IsBackground = true,
         };
         _thread.Start();
     }
@@ -68,13 +64,16 @@ public class GlobalHotkey : IDisposable
             Logger.LogWarning("Failed to set hook; {errorCode}", errorCode);
             return;
         }
-        
+
         _hookId = hook;
     }
 
     private void Unhook()
     {
-        if (_hookId == HHOOK.Null) return;
+        if (_hookId == HHOOK.Null)
+        {
+            return;
+        }
 
         var result = PInvoke.UnhookWindowsHookEx(_hookId);
         if (!result)
@@ -97,10 +96,16 @@ public class GlobalHotkey : IDisposable
      */
     private LRESULT HookProc(int nCode, WPARAM wparam, LPARAM lparam)
     {
-        if (nCode < 0) return PInvoke.CallNextHookEx(_hookId, nCode, wparam, lparam);
-        
+        if (nCode < 0)
+        {
+            return PInvoke.CallNextHookEx(_hookId, nCode, wparam, lparam);
+        }
+
         HandleKeyEvent(wparam, lparam, out var handled);
-        if (handled) return (LRESULT)1;
+        if (handled)
+        {
+            return (LRESULT)1;
+        }
 
         return PInvoke.CallNextHookEx(_hookId, nCode, wparam, lparam);
     }
@@ -110,7 +115,10 @@ public class GlobalHotkey : IDisposable
         handled = false;
         var hookStruct = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lparam);
 
-        if (wparam != PInvoke.WM_KEYUP && wparam != PInvoke.WM_SYSKEYUP) return;
+        if (wparam != PInvoke.WM_KEYUP && wparam != PInvoke.WM_SYSKEYUP)
+        {
+            return;
+        }
         // if (hookStruct.vkCode != (uint)VIRTUAL_KEY.VK_S) return;
 
         if (
@@ -121,15 +129,14 @@ public class GlobalHotkey : IDisposable
         {
             return;
         }
-        
+
         Logger.LogDebug("Hotkey pressed.");
         TabKeyPressed?.Invoke(null, EventArgs.Empty);
     }
-    
-    private bool IsKeyDown(VIRTUAL_KEY vkCode) => (PInvoke.GetAsyncKeyState((int)vkCode) & 0x8000) != 0;
+
+    private bool IsKeyDown(VIRTUAL_KEY vkCode)
+        => (PInvoke.GetAsyncKeyState((int)vkCode) & 0x8000) != 0;
 
     public void Dispose()
-    {
-        Unhook();
-    }
+        => Unhook();
 }

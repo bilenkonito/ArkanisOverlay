@@ -1,14 +1,28 @@
-using System.Diagnostics;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.UI.Accessibility;
-using Microsoft.Extensions.Logging;
-
 namespace Arkanis.Overlay.Application.Workers;
+
+using Windows.Win32;
 
 public class WindowTracker
 {
+    private static Dictionary<IntPtr, WINEVENTPROC> _registeredHooksDictionary = new();
+    private HWND _currentWindowHWnd;
+
+    private Thread? _thread;
+
+    public WindowTracker(ILogger<WindowTracker> logger)
+    {
+        Logger = logger;
+        WindowClass = Constants.WindowClass;
+        WindowName = Constants.WindowName;
+
+        WindowFound += OnWindowFound;
+        WindowLost += OnWindowLost;
+    }
+
     private ILogger Logger { get; }
+
+    private string? WindowClass { get; }
+    private string? WindowName { get; }
 
     /**
      * Raised when the window was found.
@@ -38,24 +52,6 @@ public class WindowTracker
      */
     public event EventHandler<Size>? WindowSizeChanged;
 
-    private string? WindowClass { get; }
-    private string? WindowName { get; }
-
-    private static Dictionary<IntPtr, WINEVENTPROC> _registeredHooksDictionary = new();
-    private HWND _currentWindowHWnd;
-
-    private Thread? _thread;
-
-    public WindowTracker(ILogger<WindowTracker> logger)
-    {
-        Logger = logger;
-        WindowClass = Constants.WindowClass;
-        WindowName = Constants.WindowName;
-
-        WindowFound += OnWindowFound;
-        WindowLost += OnWindowLost;
-    }
-
     public void Start()
     {
         _thread = new Thread(Run)
@@ -63,7 +59,7 @@ public class WindowTracker
             // ensures that the application can exit
             // regardless of this thread
             // see: https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread.isbackground?view=net-9.0
-            IsBackground = true
+            IsBackground = true,
         };
         _thread.Start();
     }
@@ -83,7 +79,8 @@ public class WindowTracker
         }
         else
         {
-            RegisterWinEventHook(
+            RegisterWinEventHook
+            (
                 PInvoke.EVENT_OBJECT_CREATE,
                 PInvoke.EVENT_OBJECT_CREATE,
                 Handler_WindowCreated,
@@ -109,9 +106,11 @@ public class WindowTracker
         WINEVENTPROC pfnWinEventProc,
         uint idProcess,
         uint idThread,
-        uint dwFlags)
+        uint dwFlags
+    )
     {
-        var eventHookHandle = PInvoke.SetWinEventHook(
+        var eventHookHandle = PInvoke.SetWinEventHook
+        (
             eventMin,
             eventMax,
             null,
@@ -131,7 +130,8 @@ public class WindowTracker
         int idObject,
         int idChild,
         uint idEventThread,
-        uint dwmsEventTime)
+        uint dwmsEventTime
+    )
     {
         if (_registeredHooksDictionary.TryGetValue(hWinEventHook, out var hookHandler))
         {
@@ -195,7 +195,10 @@ public class WindowTracker
     {
         var point = new Point(0, 0);
         var success = PInvoke.ClientToScreen(_currentWindowHWnd, ref point);
-        if (success) return point;
+        if (success)
+        {
+            return point;
+        }
 
         Logger.LogWarning("Failed to get window position");
         return new Point(0, 0); // return value might be zero
@@ -225,7 +228,8 @@ public class WindowTracker
         var threadId = PInvoke.GetWindowThreadProcessId(_currentWindowHWnd, out var processId);
 
         // register event listeners for window changes
-        RegisterWinEventHook(
+        RegisterWinEventHook
+        (
             PInvoke.EVENT_OBJECT_DESTROY,
             PInvoke.EVENT_OBJECT_DESTROY,
             Handler_WindowDestroyed,
@@ -234,7 +238,8 @@ public class WindowTracker
             PInvoke.WINEVENT_OUTOFCONTEXT | PInvoke.WINEVENT_SKIPOWNPROCESS
         );
 
-        RegisterWinEventHook(
+        RegisterWinEventHook
+        (
             PInvoke.EVENT_OBJECT_LOCATIONCHANGE,
             PInvoke.EVENT_OBJECT_LOCATIONCHANGE,
             Handler_WindowMovedOrResized,
@@ -272,7 +277,8 @@ public class WindowTracker
         _currentWindowHWnd = default;
 
         // start waiting for new window
-        RegisterWinEventHook(
+        RegisterWinEventHook
+        (
             PInvoke.EVENT_OBJECT_CREATE,
             PInvoke.EVENT_OBJECT_CREATE,
             Handler_WindowCreated,
@@ -290,11 +296,16 @@ public class WindowTracker
         int idObject,
         int idChild,
         uint idEventThread,
-        uint dwmsEventTime)
+        uint dwmsEventTime
+    )
     {
         if (hWnd == 0)
         {
-            Logger.LogWarning("Received window created event but window hWnd is 0: {hWinEventHook}", hWinEventHook);
+            Logger.LogWarning
+            (
+                "Received window created event but window hWnd is 0: {hWinEventHook}",
+                hWinEventHook
+            );
             return;
         }
 
@@ -306,7 +317,9 @@ public class WindowTracker
             return;
         }
 
-        Logger.LogDebug("Window found: WindowTitle = '{windowTitle}', WindowClass = '{windowClass}'",
+        Logger.LogDebug
+        (
+            "Window found: WindowTitle = '{windowTitle}', WindowClass = '{windowClass}'",
             windowTitle,
             windowClass
         );
@@ -327,7 +340,8 @@ public class WindowTracker
         int idObject,
         int idChild,
         uint idEventThread,
-        uint dwmsEventTime)
+        uint dwmsEventTime
+    )
     {
         // hWnd will be Null / 0 because there is no window handle
         // for a destroyed window :)
@@ -345,10 +359,14 @@ public class WindowTracker
         int idObject,
         int idChild,
         uint idEventThread,
-        uint dwmsEventTime)
+        uint dwmsEventTime
+    )
     {
         // safety precaution
-        if (hWnd == HWND.Null) return;
+        if (hWnd == HWND.Null)
+        {
+            return;
+        }
 
         WindowPositionChanged?.Invoke(this, GetWindowPosition());
         WindowSizeChanged?.Invoke(this, GetWindowSize());

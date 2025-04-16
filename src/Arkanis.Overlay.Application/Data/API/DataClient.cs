@@ -1,18 +1,13 @@
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
-using Arkanis.Overlay.Application.Data.API.Converters;
-using Arkanis.Overlay.Application.Data.Options;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
 namespace Arkanis.Overlay.Application.Data.API;
+
+using Converters;
+using Options;
 
 public class DataClient
 {
-    private readonly ILogger<DataClient> _logger;
-    private readonly HttpClient _client;
     private readonly string _baseUrl;
+    private readonly HttpClient _client;
+    private readonly ILogger<DataClient> _logger;
 
     private readonly JsonSerializerOptions _options = new()
     {
@@ -21,35 +16,50 @@ public class DataClient
             new BoolConverter(),
             // hotfix for UEX float -> string issue
             new StringToNumberConverter<decimal>(),
-        }
+        },
     };
 
-    public DataClient(ILogger<DataClient> logger, HttpClient client, IOptions<ConfigurationOptions> configurationOptions)
+    public DataClient(
+        ILogger<DataClient> logger,
+        HttpClient client,
+        IOptions<ConfigurationOptions> configurationOptions
+    )
     {
         _logger = logger;
         _client = client;
         _baseUrl = configurationOptions.Value.UexBaseUrl;
 
-        if (!_baseUrl.EndsWith('/')) throw new Exception("BaseUrl must end with '/'.");
+        if (!_baseUrl.EndsWith('/'))
+        {
+            throw new Exception("BaseUrl must end with '/'.");
+        }
     }
 
     public async Task<T?> Get<T>(string endpoint)
     {
         try
         {
-            var response = await _client.GetFromJsonAsync<ApiResponse<T>>($"{_baseUrl}{endpoint}", _options)
+            var response = await _client
+                .GetFromJsonAsync<ApiResponse<T>>($"{_baseUrl}{endpoint}", _options)
                 .ConfigureAwait(false);
-            
+
             switch (response)
             {
                 case null:
                     throw new Exception("Response is `null`.");
-                case { IsSuccess: true }:
+                case
+                {
+                    IsSuccess: true,
+                }:
                     return response.Data;
                 default:
-                    _logger.LogError(
+                    _logger.LogError
+                    (
                         "Failed to fetch {Endpoint}. HttpCode: {HttpCode}. Status: {Status}. Message: {Message}.",
-                        endpoint, response.HttpCode, response.Status, response.Message
+                        endpoint,
+                        response.HttpCode,
+                        response.Status,
+                        response.Message
                     );
                     break;
             }

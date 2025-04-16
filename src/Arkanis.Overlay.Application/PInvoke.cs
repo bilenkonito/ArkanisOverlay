@@ -1,10 +1,9 @@
-using Windows.Win32.Foundation;
-
 // ? Namespace is required to extend generated PInvoke class
 // ReSharper disable once CheckNamespace
+
 namespace Windows.Win32;
 
-internal partial class PInvoke
+internal class PInvoke
 {
     /**
      * Workaround for unsafe pointer access.
@@ -13,6 +12,8 @@ internal partial class PInvoke
     internal static unsafe uint GetWindowThreadProcessId(HWND hWnd, out uint processId)
     {
         fixed (uint* lpdwProcessId = &processId)
+        {
             return GetWindowThreadProcessId(hWnd, lpdwProcessId);
+        }
     }
 }
