@@ -3,7 +3,8 @@
     "defaultVariables": "OutputDir=.",
     "documentGenerator": {
         "fromDocument": {
-            "url": "./api-spec.yaml",
+//            "url": "https://raw.githubusercontent.com/dolejska-daniel/uexcorp-openapi/refs/heads/master/openapi.yaml",
+            "url": "https://raw.githubusercontent.com/dolejska-daniel/uexcorp-openapi/2016df9673d23fa8c9f2c8779ff4d3f58def67ed/openapi.yaml",
             "newLineBehavior": "LF"
         }
     },
