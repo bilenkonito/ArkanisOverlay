@@ -48,10 +48,10 @@ public sealed class EndpointManager(
         }
 
         var nextUpdate = lastUpdated + config.CacheTtl - DateTime.UtcNow;
-        return nextUpdate < TimeSpan.Zero ? TimeSpan.Zero : nextUpdate;
+        return nextUpdate <= TimeSpan.Zero ? TimeSpan.Zero : nextUpdate;
     }
 
-    public void MarkAsUpdated<T>() where T : BaseEntity, new()
+    public async Task MarkAsUpdatedAsync<T>() where T : BaseEntity, new()
     {
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<UEXContext>();
@@ -76,10 +76,10 @@ public sealed class EndpointManager(
             config.CacheTtl
         );
 
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync().ConfigureAwait(false);
     }
 
-    public void RegisterEndpoint<T>(string apiPath, string cacheTtl, Func<string, IEnumerable<string>>? mapper = null)
+    public async Task RegisterEndpointAsync<T>(string apiPath, string cacheTtl, Func<string, IEnumerable<string>>? mapper = null)
         where T : BaseEntity, new()
     {
         if (_endpoints.ContainsKey(typeof(T)))
@@ -97,6 +97,12 @@ public sealed class EndpointManager(
         _endpoints.Add(typeof(T), config);
 
         var timeUntilNextUpdate = GetTimeUntilNextUpdate<T>();
+        if (timeUntilNextUpdate <= TimeSpan.Zero)
+        {
+            await UpdateEndpoint<T>().ConfigureAwait(false);
+            timeUntilNextUpdate = GetTimeUntilNextUpdate<T>();
+        }
+
         config.Timer = new Timer
         (
             _ => Task.Run(UpdateEndpoint<T>),
@@ -114,7 +120,7 @@ public sealed class EndpointManager(
         );
     }
 
-    public void RegisterDependantEndpoint<T, TDependency>(
+    public async Task RegisterDependantEndpoint<T, TDependency>(
         string apiPath,
         string cacheTtl,
         Func<string, List<TDependency>, IEnumerable<string>> mapper
@@ -138,7 +144,7 @@ public sealed class EndpointManager(
             throw new InvalidOperationException("Cannot register dependant endpoint because the dependency type is not registered");
         }
 
-        RegisterEndpoint<T>(apiPath, cacheTtl, WrappedMapper);
+        await RegisterEndpointAsync<T>(apiPath, cacheTtl, WrappedMapper).ConfigureAwait(false);
         // add the dependency type as a dependant AFTER registering the endpoint
         // because `RegisterEndpoint` prevents duplicate registrations
         dependencyConfig.Dependents.Add(type);
@@ -165,7 +171,6 @@ public sealed class EndpointManager(
             return;
         }
 
-
         try
         {
             using var scope = serviceProvider.CreateScope();
@@ -182,7 +187,7 @@ public sealed class EndpointManager(
             // dbContext.ChangeTracker.Clear();
 
             logger.LogInformation("Updated {type} with {count} entities", type.Name, entityList.Count);
-            MarkAsUpdated<T>();
+            await MarkAsUpdatedAsync<T>().ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -206,19 +211,7 @@ public sealed class EndpointManager(
 
     public async Task<IEnumerable<T>> FetchEndpoint<T>(IEnumerable<string> apiPaths) where T : BaseEntity, new()
     {
-        var tasks = apiPaths.Select
-            (
-                apiPath =>
-                    dataClient.Get<List<T>>(apiPath)
-                        .ContinueWith
-                        (
-                            e => e.Result
-                                 ??
-                                 [
-                                 ]
-                        )
-            )
-            .ToArray();
+        var tasks = apiPaths.Select(apiPath => dataClient.Get<List<T>>(apiPath).ContinueWith(e => e.Result ?? [])).ToArray();
 
         var results = await Task.WhenAll(tasks).ConfigureAwait(false);
 
@@ -245,27 +238,23 @@ public sealed class EndpointManager(
         }
     }
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        RegisterEndpoint<CommodityEntity>("commodities", "00.01:00:00");
-        RegisterEndpoint<VehicleEntity>("vehicles", "00.12:00:00");
-        RegisterEndpoint<CategoryEntity>("categories", "01.00:00:00");
-        RegisterEndpoint<ItemsPricesAllEntity>("items_prices_all", "00.12:00:00");
-        RegisterEndpoint<CommoditiesPricesAllEntity>("commodities_prices_all", "00.00:30:00");
-        RegisterEndpoint<CommoditiesRawPricesAllEntity>("commodities_raw_prices_all", "00.00:30:00");
-        RegisterEndpoint<VehiclesPurchasesPricesAllEntity>("vehicles_purchases_prices_all", "00.12:00:00");
-        RegisterEndpoint<VehiclesRentalsPricesAllEntity>("vehicles_rentals_prices_all", "00.12:00:00");
-
-        RegisterDependantEndpoint<ItemEntity, CategoryEntity>
+        await RegisterEndpointAsync<CategoryEntity>("categories", "01.00:00:00").ConfigureAwait(false);
+        await RegisterDependantEndpoint<ItemEntity, CategoryEntity>
         (
             "items",
             "01.00:00:00",
-            (apiPath, c) =>
-                c.Where(e => e.Type == "item")
-                    .Select(e => $"{apiPath}?id_category={e.Id}")
-        );
+            (apiPath, c) => c.Where(e => e.Type == "item").Select(e => $"{apiPath}?id_category={e.Id}")
+        ).ConfigureAwait(false);
 
-        return Task.CompletedTask;
+        await RegisterEndpointAsync<CommodityEntity>("commodities", "00.01:00:00").ConfigureAwait(false);
+        await RegisterEndpointAsync<VehicleEntity>("vehicles", "00.12:00:00").ConfigureAwait(false);
+        await RegisterEndpointAsync<ItemsPricesAllEntity>("items_prices_all", "00.12:00:00").ConfigureAwait(false);
+        await RegisterEndpointAsync<CommoditiesPricesAllEntity>("commodities_prices_all", "00.00:30:00").ConfigureAwait(false);
+        await RegisterEndpointAsync<CommoditiesRawPricesAllEntity>("commodities_raw_prices_all", "00.00:30:00").ConfigureAwait(false);
+        await RegisterEndpointAsync<VehiclesPurchasesPricesAllEntity>("vehicles_purchases_prices_all", "00.12:00:00").ConfigureAwait(false);
+        await RegisterEndpointAsync<VehiclesRentalsPricesAllEntity>("vehicles_rentals_prices_all", "00.12:00:00").ConfigureAwait(false);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

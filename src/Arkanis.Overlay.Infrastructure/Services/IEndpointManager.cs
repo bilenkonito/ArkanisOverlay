@@ -6,12 +6,12 @@ public interface IEndpointManager
 {
     TimeSpan GetTimeUntilNextUpdate<T>() where T : BaseEntity, new();
 
-    void MarkAsUpdated<T>() where T : BaseEntity, new();
+    Task MarkAsUpdatedAsync<T>() where T : BaseEntity, new();
 
-    void RegisterEndpoint<T>(string apiPath, string cacheTtl, Func<string, IEnumerable<string>>? mapper = null)
+    Task RegisterEndpointAsync<T>(string apiPath, string cacheTtl, Func<string, IEnumerable<string>>? mapper = null)
         where T : BaseEntity, new();
 
-    void RegisterDependantEndpoint<T, TDependency>(
+    Task RegisterDependantEndpoint<T, TDependency>(
         string apiPath,
         string cacheTtl,
         Func<string, List<TDependency>, IEnumerable<string>> mapper
