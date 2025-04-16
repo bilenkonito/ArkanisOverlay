@@ -1,0 +1,61 @@
+@using System.Globalization
+@using Arkanis.Overlay.Domain.Options
+@using Microsoft.Extensions.Options
+@inject IOptions<UserOptions> UserOptions
+
+<MudDialog>
+    <TitleContent>
+        User Configuration
+    </TitleContent>
+    <DialogContent>
+        <MudSelect @bind-Value="@Options.CustomRegionInfo"
+                   Clearable>
+            @foreach (var region in _regions)
+            {
+                <MudSelectItem Value="@region">
+                    @region.EnglishName <code>(@region.ThreeLetterISORegionName)</code>
+                </MudSelectItem>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Cancel">Cancel</MudButton>
+        <MudButton Color="@Color.Primary" OnClick="@SubmitAsync">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+
+    private static RegionInfo[] _regions = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
+        .Select(culture => new RegionInfo(culture.Name))
+        .Where(region => !string.IsNullOrWhiteSpace(region.ThreeLetterISORegionName))
+        .OrderBy(region => region.Name)
+        .Distinct()
+        .ToArray();
+
+    private UserOptions Options => UserOptions.Value;
+
+    [CascadingParameter]
+    public required IMudDialogInstance MudDialog { get; set; }
+
+    private async Task SubmitAsync()
+    {
+        // TODO: Persist new user configuration
+        await Task.CompletedTask;
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public static async Task<DialogResult> ShowAsync(IDialogService dialogService)
+    {
+        var dialogRef = await dialogService.ShowAsync<UserOptionsEditDialog>(null, new DialogOptions
+        {
+            FullWidth = true,
+            MaxWidth = MaxWidth.Small,
+        });
+        return await dialogRef.Result ?? DialogResult.Cancel();
+    }
+
+}
