@@ -1,0 +1,7 @@
+<Project>
+    <PropertyGroup>
+        <NoWarn>
+            CA1848; <!-- For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogError(ILogger, string?, params object?[])' -->
+        </NoWarn>
+    </PropertyGroup>
+</Project>
