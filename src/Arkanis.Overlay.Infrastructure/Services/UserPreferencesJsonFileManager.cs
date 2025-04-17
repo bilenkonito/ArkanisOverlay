@@ -2,6 +2,7 @@ namespace Arkanis.Overlay.Infrastructure.Services;
 
 using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Common;
 using Common.Converters.Json;
 using Domain.Abstractions.Services;
@@ -19,6 +20,7 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
             new KeyboardShortcut.JsonConverter(),
             new RegionInfoJsonConverter(),
             new CultureInfoJsonConverter(),
+            new JsonStringEnumConverter(),
         },
     };
 
