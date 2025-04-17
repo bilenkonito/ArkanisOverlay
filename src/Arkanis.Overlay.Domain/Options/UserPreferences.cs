@@ -1,16 +1,18 @@
 namespace Arkanis.Overlay.Domain.Options;
 
 using System.Globalization;
-using Common.Abstractions;
+using System.Text.Json.Serialization;
 using Models.Keyboard;
 
-public class UserOptions : ISelfBindableOptions
+public record UserPreferences
 {
+    [JsonIgnore]
     public CultureInfo ActiveCultureInfo
         => CustomRegionInfo is not null
             ? CultureInfo.GetCultureInfo($"{ActiveCulture.TwoLetterISOLanguageName}-{CustomRegionInfo.TwoLetterISORegionName}")
             : ActiveCulture;
 
+    [JsonIgnore]
     private CultureInfo ActiveCulture
         => CustomCultureInfo ?? CultureInfo.CurrentCulture;
 
@@ -23,7 +25,4 @@ public class UserOptions : ISelfBindableOptions
     public RegionInfo? CustomRegionInfo { get; set; }
 
     public KeyboardShortcut LaunchShortcut { get; set; } = KeyboardShortcut.None;
-
-    public string SectionPath
-        => "User";
 }

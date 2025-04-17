@@ -14,7 +14,8 @@ public static class DependencyInjection
         => services
             .AddSearchServices()
             .AddCustomUexApiServices()
-            .AddUexDatabaseServices();
+            .AddUexDatabaseServices()
+            .AddUserPreferencesFileManagerServices();
 
     public static IServiceCollection AddInfrastructureHostedServices(this IServiceCollection services)
         => services

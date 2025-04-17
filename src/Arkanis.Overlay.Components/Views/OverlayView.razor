@@ -15,6 +15,7 @@
 
 <script>
     window.onkeydown = ev => {
+        return;
         console.debug("KeyDown", ev);
         if (ev.key === "Escape") {
             DotNet.invokeMethodAsync("@((MarkupString)nameof(Arkanis))", "ClickAwayHide");
@@ -145,7 +146,8 @@
 </div>
 
 <MudIconButton
-    Icon="@MaterialSymbols.Outlined.SettingsApplications"
+    Color="@Color.Primary"
+    Icon="@MaterialSymbols.Outlined.Settings"
     OnClick="@OpenUserOptionsDialogAsync"
     Style="position: absolute; top: 2rem; right: 2rem"/>
 
@@ -199,7 +201,7 @@
                                     }
                                     else
                                     {
-                                        <p>@price.ToString("N0") @Constants.CurrencyAbbr</p>
+                                        <p>@price.ToString("N0") @ApplicationConstants.CurrencyAbbr</p>
                                     }
                                 </MudStack>
                             }
@@ -265,5 +267,5 @@
     }
 
     private async Task OpenUserOptionsDialogAsync()
-        => await UserOptionsEditDialog.ShowAsync(DialogService);
+        => await UserPreferencesEditDialog.ShowAsync(DialogService);
 }

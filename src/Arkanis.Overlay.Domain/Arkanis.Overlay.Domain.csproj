@@ -10,8 +10,4 @@
         <ProjectReference Include="..\Arkanis.Common\Arkanis.Common.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Abstractions\"/>
-    </ItemGroup>
-
 </Project>
