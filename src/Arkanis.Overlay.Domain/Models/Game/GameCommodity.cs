@@ -4,7 +4,7 @@ using Abstractions.Game;
 using Enums;
 using Trade;
 
-public class GameCommodity(string fullName, string code) : GameEntity(GameEntityCategory.Commodity), IGameTradable
+public class GameCommodity(string fullName, string code) : GameEntity(StringGameEntityId.Create(code), GameEntityCategory.Commodity), IGameTradable
 {
     protected override string SearchName { get; } = $"{code} {fullName}";
 
@@ -15,5 +15,5 @@ public class GameCommodity(string fullName, string code) : GameEntity(GameEntity
     public required Bounds<PriceTag> LatestSellPrices { get; set; }
 
     public GameTerminalType TerminalType
-        => GameTerminalType.Item;
+        => GameTerminalType.Commodity;
 }

@@ -5,7 +5,7 @@ using Enums;
 using Trade;
 
 public class GameVehicle(string fullName, string shortName, GameCompany manufacturer)
-    : GameEntity(GameEntityCategory.Vehicle),
+    : GameEntity(StringGameEntityId.Create(fullName), GameEntityCategory.Vehicle),
         IGameManufactured,
         IGamePurchasable
 {

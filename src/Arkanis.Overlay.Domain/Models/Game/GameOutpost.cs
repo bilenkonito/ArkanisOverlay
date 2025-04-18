@@ -10,7 +10,7 @@ public sealed class GameOutpost : GameLocationEntity<GameLocationEntity>
     {
     }
 
-    private GameOutpost(string fullName, string shortName, GameLocationEntity location) : base(location)
+    private GameOutpost(string fullName, string shortName, GameLocationEntity location) : base(StringGameEntityId.Create(shortName), location)
     {
         SearchName = fullName;
         Name = new GameEntityName(new GameEntityName.NameWithShortVariant(fullName, shortName));

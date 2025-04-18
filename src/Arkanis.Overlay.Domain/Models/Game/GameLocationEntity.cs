@@ -3,7 +3,7 @@ namespace Arkanis.Overlay.Domain.Models.Game;
 using Abstractions.Game;
 using Enums;
 
-public abstract class GameLocationEntity(GameLocationEntity? parent) : GameEntity(GameEntityCategory.Location), IGameLocation
+public abstract class GameLocationEntity(IGameEntityId id, GameLocationEntity? parent) : GameEntity(id, GameEntityCategory.Location), IGameLocation
 {
     public GameLocationEntity? Parent { get; } = parent;
 
@@ -11,7 +11,7 @@ public abstract class GameLocationEntity(GameLocationEntity? parent) : GameEntit
         => Parent;
 }
 
-public abstract class GameLocationEntity<T>(T? parent) : GameLocationEntity(parent)
+public abstract class GameLocationEntity<T>(IGameEntityId id, T? parent) : GameLocationEntity(id, parent)
     where T : GameLocationEntity
 {
     public new T? Parent { get; } = parent;

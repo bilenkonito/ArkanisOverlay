@@ -10,7 +10,7 @@ public sealed class GameCity : GameLocationEntity<GameLocationEntity>
     {
     }
 
-    private GameCity(string fullName, string codeName, GameLocationEntity location) : base(location)
+    private GameCity(string fullName, string codeName, GameLocationEntity location) : base(StringGameEntityId.Create(codeName), location)
     {
         SearchName = $"{codeName} {fullName}";
         Name = new GameEntityName(new GameEntityName.NameWithCode(fullName, codeName));

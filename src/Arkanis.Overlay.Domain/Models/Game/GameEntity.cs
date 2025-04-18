@@ -4,10 +4,12 @@ using Abstractions;
 using Abstractions.Game;
 using Enums;
 
-public abstract class GameEntity(GameEntityCategory entityCategory) : IGameEntity, ISearchable
+public abstract class GameEntity(IGameEntityId id, GameEntityCategory entityCategory) : IGameEntity, ISearchable
 {
     protected abstract string SearchName { get; }
     public abstract GameEntityName Name { get; }
+
+    public IGameEntityId Id { get; } = id;
 
     string ISearchable.SearchName
         => SearchName;

@@ -4,5 +4,7 @@ using Models.Game;
 
 public interface IGameEntity
 {
+    IGameEntityId Id { get; }
+
     GameEntityName Name { get; }
 }
