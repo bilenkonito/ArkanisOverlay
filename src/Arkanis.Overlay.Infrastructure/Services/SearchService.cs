@@ -69,7 +69,7 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
             "Search for '{Query}' completed in {Duration}ms with {ResultCount} results",
             searchText,
             stopwatch.ElapsedMilliseconds,
-            result?.Count() ?? 0
+            result?.Count ?? 0
         );
 
         return new Tuple<IEnumerable<SearchResult>, long>(

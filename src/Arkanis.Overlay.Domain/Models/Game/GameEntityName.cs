@@ -10,16 +10,21 @@ public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts)
 
     public abstract record Reference(GameEntity ReferencedEntity) : Part
     {
-        public GameEntityName Name
+        public GameEntityName EntityName
             => ReferencedEntity.Name;
 
         public static Reference Create(GameEntity referencedEntity)
             => referencedEntity switch
             {
+                GameCompany company => new CompanyReference(company),
+                GameLocationEntity location => new LocationReference(location),
+                _ => throw new ArgumentException($"Cannot create name reference for: {referencedEntity.GetType()}"),
             };
     }
 
-    public sealed record CompanyReference(GameEntity ReferencedEntity) : Reference(ReferencedEntity);
+    public sealed record CompanyReference(GameCompany Company) : Reference(Company);
+
+    public sealed record LocationReference(GameLocationEntity Location) : Reference(Location);
 
     public sealed record Separator(string Content) : Part;
 
