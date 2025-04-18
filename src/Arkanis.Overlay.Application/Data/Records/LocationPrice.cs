@@ -1,9 +1,10 @@
-using Arkanis.Overlay.Application.Data.Enums;
-
 namespace Arkanis.Overlay.Application.Data.Records;
+
+using Enums;
 
 public record LocationPrice(
     string Location,
     PriceType Type,
     decimal Price,
-    DateTime LastUpdated);
+    DateTime LastUpdated
+);

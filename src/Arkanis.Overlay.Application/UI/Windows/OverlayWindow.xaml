@@ -38,7 +38,7 @@
             IconSource="../../Resources/favicon.ico"
             NotificationServiceMemberPath="NotificationService"
             ContextMenuVariation="ContextMenuStrip">
-            
+
             <icon:TrayIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Exit" Click="OnExitCommand" />

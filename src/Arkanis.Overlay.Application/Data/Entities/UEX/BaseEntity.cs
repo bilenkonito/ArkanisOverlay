@@ -1,9 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using Arkanis.Overlay.Application.Data.API.Converters;
-
 namespace Arkanis.Overlay.Application.Data.Entities.UEX;
+
+using API.Converters;
 
 public abstract class BaseEntity
 {

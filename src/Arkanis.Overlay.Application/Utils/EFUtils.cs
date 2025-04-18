@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-
 namespace Arkanis.Overlay.Application.Utils;
 
 public static class EfUtils

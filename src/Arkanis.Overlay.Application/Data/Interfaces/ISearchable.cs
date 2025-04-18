@@ -1,7 +1,7 @@
-using Arkanis.Overlay.Application.Data.Enums;
-using Arkanis.Overlay.Application.Data.Records;
-
 namespace Arkanis.Overlay.Application.Data.Interfaces;
+
+using Enums;
+using Records;
 
 public interface ISearchable
 {

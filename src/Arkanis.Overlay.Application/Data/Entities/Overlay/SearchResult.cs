@@ -1,8 +1,8 @@
-using Arkanis.Overlay.Application.Data.Enums;
-using Arkanis.Overlay.Application.Data.Interfaces;
-using Arkanis.Overlay.Application.Data.Records;
-
 namespace Arkanis.Overlay.Application.Data.Entities.Overlay;
+
+using Enums;
+using Interfaces;
+using Records;
 
 public class SearchResult : ISearchable
 {

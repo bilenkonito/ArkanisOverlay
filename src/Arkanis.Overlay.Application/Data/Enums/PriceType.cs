@@ -4,5 +4,5 @@ public enum PriceType
 {
     Buy,
     Sell,
-    Rent
+    Rent,
 }

@@ -1,19 +1,22 @@
 # Arkanis Overlay
 
 **A Next-Generation Overlay Companion for Star Citizen**  
-Created by **[FatalMerlin](https://discord.com/users/174617873182883841)**, 
+Created by **[FatalMerlin](https://discord.com/users/174617873182883841)**,
 co-founder of the in-game organization **[Arkanis Corporation](https://join.arkanis.cc/)**,
-and **[TheKronnY](https://discord.com/users/224580858432978944)**, [an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg).
+and **[TheKronnY](https://discord.com/users/224580858432978944)
+**, [an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg).
 
 ---
 
 ## 🚀 What is Arkanis Overlay?
 
 **Arkanis Overlay** is a usability-focused, in-game companion overlay for **Star Citizen**.
-It aims to provide players with direct access to essential tools and information without having to leave the game or juggle external websites.
-Inspired by the *[RatScanner](https://ratscanner.com/)* project from the Tarkov community, this project is built with a strong focus on reliability, extensibility, and community collaboration.
+It aims to provide players with direct access to essential tools and information without having to leave the game or
+juggle external websites.
+Inspired by the *[RatScanner](https://ratscanner.com/)* project from the Tarkov community, this project is built with a
+strong focus on reliability, extensibility, and community collaboration.
 
-The overlay is currently in **active development** and driven by a clear mission:  
+The overlay is currently in **active development** and driven by a clear mission:
 > **Minimize friction, maximize immersion.**
 
 ---
@@ -27,6 +30,7 @@ The overlay is currently in **active development** and driven by a clear mission
   Seamlessly connected with [UEX](https://uexcorp.space) and other community tools to enrich in-game decision-making.
 
 ## 🤝 Community Focus
+
 - 🧪 **Community-Driven Development**  
   Built in collaboration with players and devs who actively use and shape the tools.
 
@@ -42,30 +46,37 @@ The overlay is currently in **active development** and driven by a clear mission
 We're dreaming big — here's what's ahead:
 
 ### 🧩 Core Enhancements
+
 - [ ] Self-updater and installer support (in progress)
 - [ ] Improved reliability and usability
 - [ ] Configurable display: Overlay layout, themes, behavior
 - [ ] Global keyboard shortcuts for quick access
 
 ### 🔎 Smarter Search
+
 - [ ] Full-text **fuzzy search** across item databases
 - [ ] Improved result ranking and filtering
 
 ### 🔗 Integrations & Tools
+
 - [ ] [UEX CLI](https://github.com/UEXCorp/UEX-CLI) and MFD screen integration
-- [ ] Embedded tools and services ([SPViewer](https://www.spviewer.eu/), [Erkul](https://www.erkul.games/), [Regolith Co.](https://regolith.rocks/), etc.) — permissions required
+- [ ] Embedded tools and
+  services ([SPViewer](https://www.spviewer.eu/), [Erkul](https://www.erkul.games/), [Regolith Co.](https://regolith.rocks/),
+  etc.) — permissions required
 - [ ] API-driven data enrichment from the community (Wiki, JSON exports, etc.)
 
 ### 🔍 OCR-Driven Intelligence
+
 - [ ] Stage 1: UEX data extraction (prices for commodities, items, fuel, ores, etc.)
 - [ ] Stage 2: [Regolith Co.](https://regolith.rocks/) integration
 - [ ] Stage 3: Player location-based map awareness and contextual recommendations
 
 ### 🧭 Long-Term Vision
+
 - Gameplay enhancement tools:
-  - Task & progress tracking
-  - Party, squad, and org management utilities
-  - Note-taking & planning aids
+    - Task & progress tracking
+    - Party, squad, and org management utilities
+    - Note-taking & planning aids
 - **Plugin support** for third-party extensions (exploration stage)
 
 ---
@@ -77,6 +88,7 @@ Star Citizen is vast — and at times, frustratingly so.
 It’s your always-on wingman — helpful, seamless, and never in the way.
 
 Key principles:
+
 - **Reliable UX**: The overlay *must* be stable. The game has enough bugs already.
 - **Incremental growth**: Release early, improve often.
 - **No exploits**: This project will *never* include cheats, automation, or game-breaking features.
@@ -97,17 +109,20 @@ We are now a small dev team — progress is slow but deliberate. A Minimum Viabl
 ## 🙌 Community & Support
 
 Big shout-out to:
+
 - **UEX Dev Team** for their continued support, testing, and future collaboration.
 - Everyone in the **Arkanis Corporation** and broader SC community who has provided feedback and ideas.
 
 Want to contribute, suggest features, or test?  
-[Open an issue](https://github.com/ArkanisCorporation/ArkanisOverlay/issues/new/choose) or contact [@FatalMerlin](https://discord.com/users/174617873182883841) — we’d love your input!
+[Open an issue](https://github.com/ArkanisCorporation/ArkanisOverlay/issues/new/choose) or
+contact [@FatalMerlin](https://discord.com/users/174617873182883841) — we’d love your input!
 
 ---
 
 ## 🧭 Why "Arkanis"?
 
-The name pays tribute to the **Arkanis Sector**, a frontier region of bold explorers — just like the users of this tool.  
+The name pays tribute to the **Arkanis Sector**, a frontier region of bold explorers — just like the users of this
+tool.  
 We aim to embody the same spirit: discovery, utility, and frontier innovation.
 
 ---

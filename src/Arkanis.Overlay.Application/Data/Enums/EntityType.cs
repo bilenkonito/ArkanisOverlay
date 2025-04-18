@@ -5,5 +5,5 @@ public enum EntityType
     Commodity,
     Item,
     Vehicle,
-    SpaceShip
+    SpaceShip,
 }
