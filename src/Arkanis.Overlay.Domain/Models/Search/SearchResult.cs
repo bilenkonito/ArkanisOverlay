@@ -1,7 +1,7 @@
 namespace Arkanis.Overlay.Domain.Models.Search;
 
+using Abstractions;
 using Enums;
-using Interfaces;
 
 public class SearchResult : ISearchable
 {

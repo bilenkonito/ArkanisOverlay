@@ -1,4 +1,4 @@
-namespace Arkanis.Overlay.Domain.Interfaces;
+namespace Arkanis.Overlay.Domain.Abstractions;
 
 using Enums;
 using Models;
