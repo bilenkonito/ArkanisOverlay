@@ -1,10 +1,18 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
-public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts)
+using System.Collections;
+
+public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IEnumerable<GameEntityName.Part>
 {
     public GameEntityName(params Part[] parts) : this(parts.AsEnumerable())
     {
     }
+
+    public IEnumerator<Part> GetEnumerator()
+        => Parts.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator()
+        => GetEnumerator();
 
     public record Part;
 

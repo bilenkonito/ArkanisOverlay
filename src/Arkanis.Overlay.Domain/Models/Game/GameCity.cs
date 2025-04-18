@@ -1,22 +1,9 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
-public sealed class GameCity : GameLocationEntity<GameLocationEntity>
+public sealed class GameCity(string fullName, string codeName, GameLocationEntity location)
+    : GameLocationEntity(StringGameEntityId.Create(codeName), location)
 {
-    public GameCity(string fullName, string codeName, GameMoon moon) : this(fullName, codeName, (GameLocationEntity)moon)
-    {
-    }
+    protected override string SearchName { get; } = $"{codeName} {fullName}";
 
-    public GameCity(string fullName, string codeName, GamePlanet planet) : this(fullName, codeName, (GameLocationEntity)planet)
-    {
-    }
-
-    private GameCity(string fullName, string codeName, GameLocationEntity location) : base(StringGameEntityId.Create(codeName), location)
-    {
-        SearchName = $"{codeName} {fullName}";
-        Name = new GameEntityName(new GameEntityName.NameWithCode(fullName, codeName));
-    }
-
-    protected override string SearchName { get; }
-
-    public override GameEntityName Name { get; }
+    public override GameEntityName Name { get; } = new(new GameEntityName.NameWithCode(fullName, codeName));
 }

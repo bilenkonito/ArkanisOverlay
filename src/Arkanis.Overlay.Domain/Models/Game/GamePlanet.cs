@@ -1,7 +1,7 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
-public sealed class GamePlanet(string fullName, string codeName, GameStarSystem starSystem)
-    : GameLocationEntity<GameStarSystem>(StringGameEntityId.Create(codeName), starSystem)
+public sealed class GamePlanet(string fullName, string codeName, GameLocationEntity location)
+    : GameLocationEntity(StringGameEntityId.Create(codeName), location)
 {
     protected override string SearchName { get; } = $"{codeName} {fullName}";
 

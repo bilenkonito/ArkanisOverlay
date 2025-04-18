@@ -10,9 +10,3 @@ public abstract class GameLocationEntity(IGameEntityId id, GameLocationEntity? p
     IGameLocation? IGameLocation.ParentLocation
         => Parent;
 }
-
-public abstract class GameLocationEntity<T>(IGameEntityId id, T? parent) : GameLocationEntity(id, parent)
-    where T : GameLocationEntity
-{
-    public new T? Parent { get; } = parent;
-}

@@ -1,22 +1,9 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
-public sealed class GameOutpost : GameLocationEntity<GameLocationEntity>
+public sealed class GameOutpost(string fullName, string shortName, GameLocationEntity location)
+    : GameLocationEntity(StringGameEntityId.Create(shortName), location)
 {
-    public GameOutpost(string fullName, string shortName, GameMoon moon) : this(fullName, shortName, (GameLocationEntity)moon)
-    {
-    }
+    protected override string SearchName { get; } = fullName;
 
-    public GameOutpost(string fullName, string shortName, GamePlanet planet) : this(fullName, shortName, (GameLocationEntity)planet)
-    {
-    }
-
-    private GameOutpost(string fullName, string shortName, GameLocationEntity location) : base(StringGameEntityId.Create(shortName), location)
-    {
-        SearchName = fullName;
-        Name = new GameEntityName(new GameEntityName.NameWithShortVariant(fullName, shortName));
-    }
-
-    protected override string SearchName { get; }
-
-    public override GameEntityName Name { get; }
+    public override GameEntityName Name { get; } = new(new GameEntityName.NameWithShortVariant(fullName, shortName));
 }

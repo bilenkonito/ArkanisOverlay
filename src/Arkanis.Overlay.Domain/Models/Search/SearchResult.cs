@@ -6,7 +6,6 @@ using Enums;
 public class SearchResult : ISearchable
 {
     public required Dictionary<PriceType, decimal> AveragePrices { get; set; }
-    public IEnumerable<LocationPrice> LocationPrices { get; set; }
     public GameEntityCategory EntityCategory { get; set; }
     public required string SearchName { get; set; }
 }
