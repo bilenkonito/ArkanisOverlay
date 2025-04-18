@@ -1,5 +1,7 @@
 namespace Arkanis.Overlay.Application.Data.Options;
 
+using System.ComponentModel.DataAnnotations;
+
 public class ConfigurationOptions
 {
     public const string Section = "Configuration";

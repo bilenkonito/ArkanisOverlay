@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.15"/>
+        <PackageReference Include="MudBlazor" Version="8.5.1"/>
+        <PackageReference Include="MudBlazor.FontIcons.MaterialSymbols" Version="1.2.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Arkanis.Overlay.Domain\Arkanis.Overlay.Domain.csproj"/>
+        <ProjectReference Include="..\Arkanis.Overlay.Infrastructure\Arkanis.Overlay.Infrastructure.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Resource Include="wwwroot\assets\img\uex-api-badge-powered.png"/>
+    </ItemGroup>
+
+</Project>

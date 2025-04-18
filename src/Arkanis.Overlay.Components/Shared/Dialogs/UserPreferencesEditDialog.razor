@@ -1,0 +1,143 @@
+@using System.Globalization
+@using Arkanis.Common.Extensions
+@using Arkanis.Overlay.Domain.Abstractions.Services
+@using Arkanis.Overlay.Domain.Options
+@inject IUserPreferencesManager UserPreferencesManager
+
+<MudDialog>
+    <TitleContent>
+        Preferences
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_form">
+            <MudGrid>
+                <MudItem xs="12" sm="12" lg="6">
+                    <MudSwitch
+                        @bind-Value="@Preferences.TerminateOnGameExit"
+                        Color="@Color.Success"
+                        Label="Terminate on game exit"/>
+                </MudItem>
+                <MudItem xs="12" sm="12" lg="6">
+                    <MudSwitch
+                        @bind-Value="@Preferences.AutoStartWithBoot"
+                        Color="@Color.Success"
+                        Label="Auto-start on system boot"/>
+                </MudItem>
+                <MudItem xs="12" sm="12" lg="6">
+                    <MudAutocomplete T="CultureInfo"
+                                     Label="Overlay language"
+                                     AdornmentIcon="@MaterialSymbols.Outlined.Language"
+                                     @bind-Value="@Preferences.CustomCultureInfo"
+                                     Text="@Preferences.CustomCultureInfo?.EnglishName"
+                                     HelperText="@CultureSelectHelpText"
+                                     SearchFunc="SearchCulture"
+                                     ToStringFunc="@(culture => culture?.EnglishName)"
+                                     Clearable
+                                     Dense>
+                        <ItemTemplate Context="culture">
+                            <MudSelectItem Value="@culture">
+                                @culture.EnglishName <code>(@culture.ThreeLetterISOLanguageName)</code>
+                            </MudSelectItem>
+                        </ItemTemplate>
+                    </MudAutocomplete>
+                </MudItem>
+                <MudItem xs="12" sm="12" lg="6">
+                    <MudAutocomplete T="RegionInfo"
+                                     Label="Display format region"
+                                     AdornmentIcon="@MaterialSymbols.Outlined.Globe"
+                                     @bind-Value="@Preferences.CustomRegionInfo"
+                                     SearchFunc="SearchRegion"
+                                     ToStringFunc="@(region => region?.EnglishName)"
+                                     Clearable
+                                     Dense>
+                        <ItemTemplate Context="region">
+                            <MudSelectItem Value="@region">
+                                @region.EnglishName <code>(@region.ThreeLetterISORegionName)</code>
+                            </MudSelectItem>
+                        </ItemTemplate>
+                    </MudAutocomplete>
+                </MudItem>
+                <MudItem xs="12">
+                    <KeyboardShortcutInput
+                        Label="Overlay toggle shortcut"
+                        @bind-Value="@Preferences.LaunchShortcut"/>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Cancel">Cancel</MudButton>
+        <MudButton Color="@Color.Primary" OnClick="@SubmitAsync" Disabled="@(!IsValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+
+    private MudForm? _form;
+
+    private static CultureInfo[] _cultures = CultureInfo.GetCultures(CultureTypes.NeutralCultures)
+        .Where(culture => !string.IsNullOrWhiteSpace(culture.ThreeLetterISOLanguageName))
+        .OrderBy(culture => culture.EnglishName)
+        .Distinct()
+        .ToArray();
+
+    private static RegionInfo[] _regions = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
+        .Select(culture => new RegionInfo(culture.Name))
+        .Where(region => !string.IsNullOrWhiteSpace(region.ThreeLetterISORegionName))
+        .OrderBy(region => region.EnglishName)
+        .Distinct()
+        .ToArray();
+
+    private UserPreferences Preferences { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Preferences = UserPreferencesManager.CurrentPreferences with { };
+    }
+
+    [CascadingParameter] public required IMudDialogInstance MudDialog { get; set; }
+
+    public string CultureSelectHelpText
+        => Preferences.CustomCultureInfo is null
+            ? $"Using system culture {Preferences.ActiveCultureInfo.EnglishName}"
+            : $"Using {Preferences.ActiveCultureInfo.EnglishName}";
+
+    public bool IsValid
+        => _form?.IsValid ?? false;
+
+    private Task<IEnumerable<CultureInfo>> SearchCulture(string? searchTerm, CancellationToken ct)
+        => Task.FromResult(_cultures.FuzzySearch(culture => culture.EnglishName, searchTerm ?? string.Empty));
+
+    private Task<IEnumerable<RegionInfo>> SearchRegion(string? searchTerm, CancellationToken ct)
+        => Task.FromResult(_regions.FuzzySearch(culture => culture.EnglishName, searchTerm ?? string.Empty));
+
+    private async Task SubmitAsync()
+    {
+        if (_form is not null)
+        {
+            await _form.Validate();
+            if (!IsValid)
+            {
+                return;
+            }
+        }
+
+        await UserPreferencesManager.SaveAndApplyUserPreferencesAsync(Preferences);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public static async Task<DialogResult> ShowAsync(IDialogService dialogService)
+    {
+        var dialogRef = await dialogService.ShowAsync<UserPreferencesEditDialog>(null, new DialogOptions
+        {
+            FullWidth = true,
+            MaxWidth = MaxWidth.Small,
+        });
+        return await dialogRef.Result ?? DialogResult.Cancel();
+    }
+
+}

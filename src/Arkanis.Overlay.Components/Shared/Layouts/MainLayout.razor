@@ -1,0 +1,29 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_currentTheme" IsDarkMode="true"/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<ErrorBoundary>
+    <ChildContent>
+        @Body
+    </ChildContent>
+    <ErrorContent>
+        <h1>Sorry, an unrecoverable error has occured</h1>
+        <pre>@context.ToString()</pre>
+    </ErrorContent>
+</ErrorBoundary>
+
+@code
+{
+
+    readonly MudTheme _currentTheme = new()
+    {
+        PaletteDark = new PaletteDark
+        {
+            Surface = "#0e0f0f",
+        },
+    };
+
+}

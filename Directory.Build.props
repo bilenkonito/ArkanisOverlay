@@ -1,0 +1,13 @@
+<Project>
+    <PropertyGroup>
+        <LangVersion>preview</LangVersion>
+        <NoWarn>
+            CA1848; <!-- For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogError(ILogger, string?, params object?[])' -->
+        </NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="$(AssemblyName).UnitTests"/>
+        <InternalsVisibleTo Include="$(AssemblyName).IntegrationTests"/>
+    </ItemGroup>
+</Project>
