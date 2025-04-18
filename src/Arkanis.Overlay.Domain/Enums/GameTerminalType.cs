@@ -1,10 +1,11 @@
 namespace Arkanis.Overlay.Domain.Enums;
 
-public enum EntityType
+public enum GameTerminalType
 {
     Undefined,
     Commodity,
     Item,
-    Vehicle,
-    SpaceShip,
+    Fuel,
+    VehicleBuy,
+    VehicleRent,
 }

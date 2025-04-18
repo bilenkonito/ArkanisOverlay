@@ -25,8 +25,7 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
 
         var cacheKey = $"search_{searchText.ToLower()}_{includeDetailedPrices}";
 
-        var result = await cache.GetOrCreateAsync
-            (
+        var result = await cache.GetOrCreateAsync(
                 cacheKey,
                 async entry =>
                 {
@@ -60,32 +59,28 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
                     await Task.WhenAll(tasks).ConfigureAwait(false);
                     results.AddRange(tasks.SelectMany(t => t.Result));
 
-                    return results.OrderBy(r => r.EntityType).ThenBy(r => r.Name).ToList();
+                    return results.OrderBy(r => r.EntityCategory).ThenBy(r => r.SearchName).ToList();
                 }
             )
             .ConfigureAwait(false);
 
         stopwatch.Stop();
-        logger.LogDebug
-        (
+        logger.LogDebug(
             "Search for '{Query}' completed in {Duration}ms with {ResultCount} results",
             searchText,
             stopwatch.ElapsedMilliseconds,
             result?.Count() ?? 0
         );
 
-        return new Tuple<IEnumerable<SearchResult>, long>
-        (
+        return new Tuple<IEnumerable<SearchResult>, long>(
             result
-            ??
-            [
-            ],
+            ?? [],
             stopwatch.ElapsedMilliseconds
         );
     }
 
     public Task<IEnumerable<LocationPrice>> GetDetailedPricesAsync(
-        EntityType entityType,
+        GameEntityCategory entityCategory,
         string name,
         PriceType? priceType = null,
         string? location = null
@@ -147,9 +142,7 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
     {
         var results = await dbContext.Items
             .Where(i => EF.Functions.Like(i.Name, $"%{query}%"))
-            .Select
-            (
-                i => new
+            .Select(i => new
                 {
                     i.Id,
                     i.Name,
@@ -160,19 +153,17 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
             .ToListAsync()
             .ConfigureAwait(false);
 
-        return results.Select
-        (
-            i =>
-                new SearchResult
+        return results.Select(i =>
+            new SearchResult
+            {
+                EntityCategory = GameEntityCategory.Item,
+                SearchName = i.Name ?? $"Unnamed Item #{i.Id}",
+                AveragePrices = new Dictionary<PriceType, decimal>
                 {
-                    EntityType = EntityType.Item,
-                    Name = i.Name ?? $"Unnamed Item #{i.Id}",
-                    AveragePrices = new Dictionary<PriceType, decimal>
-                    {
-                        [PriceType.Buy] = (decimal)i.AverageBuyPrice,
-                        [PriceType.Sell] = (decimal)i.AverageSellPrice,
-                    },
-                }
+                    [PriceType.Buy] = (decimal)i.AverageBuyPrice,
+                    [PriceType.Sell] = (decimal)i.AverageSellPrice,
+                },
+            }
         );
     }
 
@@ -187,16 +178,12 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
         var both = !(includeShips ^ includeVehicles);
 
         var result = await dbContext.Vehicles
-            .Where
-            (
-                vehicle =>
-                    (vehicle.IsSpaceship == (both || includeShips)
-                     || vehicle.IsGroundVehicle == (both || includeVehicles))
-                    && EF.Functions.Like(vehicle.NameFull, $"%{query}%")
+            .Where(vehicle =>
+                (vehicle.IsSpaceship == (both || includeShips)
+                 || vehicle.IsGroundVehicle == (both || includeVehicles))
+                && EF.Functions.Like(vehicle.NameFull, $"%{query}%")
             )
-            .Select
-            (
-                i => new
+            .Select(i => new
                 {
                     i.Id,
                     i.NameFull,
@@ -209,19 +196,17 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
             .ToListAsync()
             .ConfigureAwait(false);
 
-        return result.Select
-        (
-            i =>
-                new SearchResult
+        return result.Select(i =>
+            new SearchResult
+            {
+                EntityCategory = GameEntityCategory.Vehicle,
+                SearchName = i.NameFull ?? $"Unnamed Vehicle #{i.Id}",
+                AveragePrices = new Dictionary<PriceType, decimal>
                 {
-                    EntityType = i.IsSpaceship ? EntityType.SpaceShip : EntityType.Vehicle,
-                    Name = i.NameFull ?? $"Unnamed Vehicle #{i.Id}",
-                    AveragePrices = new Dictionary<PriceType, decimal>
-                    {
-                        [PriceType.Buy] = (decimal)i.AverageBuyPrice,
-                        [PriceType.Rent] = (decimal)i.AverageRentPrice,
-                    },
-                }
+                    [PriceType.Buy] = (decimal)i.AverageBuyPrice,
+                    [PriceType.Rent] = (decimal)i.AverageRentPrice,
+                },
+            }
         );
     }
 
@@ -229,9 +214,7 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
     {
         var result = await dbContext.Commodities
             .Where(i => EF.Functions.Like(i.Name, $"%{query}%"))
-            .Select
-            (
-                i => new
+            .Select(i => new
                 {
                     i.Id,
                     i.Name,
@@ -246,19 +229,17 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
             .ToListAsync()
             .ConfigureAwait(false);
 
-        return result.Select
-        (
-            i =>
-                new SearchResult
+        return result.Select(i =>
+            new SearchResult
+            {
+                EntityCategory = GameEntityCategory.Commodity,
+                SearchName = i.Name ?? $"Unnamed Commodity #{i.Id}",
+                AveragePrices = new Dictionary<PriceType, decimal>
                 {
-                    EntityType = EntityType.Commodity,
-                    Name = i.Name ?? $"Unnamed Commodity #{i.Id}",
-                    AveragePrices = new Dictionary<PriceType, decimal>
-                    {
-                        [PriceType.Buy] = (decimal)i.AverageBuyPrice,
-                        [PriceType.Sell] = (decimal)i.AverageSellPrice,
-                    },
-                }
+                    [PriceType.Buy] = (decimal)i.AverageBuyPrice,
+                    [PriceType.Sell] = (decimal)i.AverageSellPrice,
+                },
+            }
         );
     }
 

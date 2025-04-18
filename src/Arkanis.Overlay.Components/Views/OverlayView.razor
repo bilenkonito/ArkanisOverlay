@@ -178,9 +178,9 @@
                         <MudStack Row="true" Style="width: 100%"
                                   Class="justify-center align-center align-content-center">
 
-                            <MudIcon Icon="@IconPicker.PickIconFor(result.EntityType)"></MudIcon>
+                            <MudIcon Icon="@IconPicker.PickIconFor(result.EntityCategory)"></MudIcon>
                             <MudDivider Vertical="true" FlexItem="true"></MudDivider>
-                            <h1 class="flex-1">@result.Name</h1>
+                            <h1 class="flex-1">@result.SearchName</h1>
 
                             @foreach (var (priceType, price) in result.AveragePrices)
                             {

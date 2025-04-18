@@ -22,20 +22,19 @@ public class IconPicker : IIconPicker
             _ => DefaultIcon,
         };
 
-    public static string PickIconFor(EntityType value)
+    public static string PickIconFor(GameEntityCategory value)
         => value switch
         {
-            EntityType.Commodity => Icons.Material.Outlined.Diamond,
-            EntityType.Vehicle => Icons.Material.Outlined.AirportShuttle,
-            EntityType.Item => Icons.Material.Outlined.Category,
-            EntityType.SpaceShip => Icons.Material.Outlined.Rocket,
+            GameEntityCategory.Commodity => Icons.Material.Outlined.Diamond,
+            GameEntityCategory.Vehicle => Icons.Material.Outlined.CarRental,
+            GameEntityCategory.Item => Icons.Material.Outlined.Category,
             _ => DefaultIcon,
         };
 
     public static string PickIconFor<T>(T value)
         => value switch
         {
-            EntityType x => PickIconFor(x),
+            GameEntityCategory x => PickIconFor(x),
             PriceType x => PickIconFor(x),
             _ => DefaultIcon,
         };

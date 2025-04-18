@@ -8,5 +8,10 @@ public interface ISearchService
 {
     Task<Tuple<IEnumerable<SearchResult>, long>> SearchAsync(string query, bool includeDetailedPrices = false);
 
-    Task<IEnumerable<LocationPrice>> GetDetailedPricesAsync(EntityType entityType, string name, PriceType? priceType = null, string? location = null);
+    Task<IEnumerable<LocationPrice>> GetDetailedPricesAsync(
+        GameEntityCategory entityCategory,
+        string name,
+        PriceType? priceType = null,
+        string? location = null
+    );
 }
