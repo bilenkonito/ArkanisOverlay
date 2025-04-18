@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.API.Converters;
 
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -10,7 +11,7 @@ public class StringConverter : JsonConverter<string>
         {
             JsonTokenType.String => reader.GetString(),
             // Workaround for `crew` being returned as int right now
-            JsonTokenType.Number => reader.GetInt16().ToString(),
+            JsonTokenType.Number => reader.GetInt16().ToString(CultureInfo.InvariantCulture),
             _ => "",
         };
 

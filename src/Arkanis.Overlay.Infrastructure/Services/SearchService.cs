@@ -23,7 +23,7 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
         var stopwatch = Stopwatch.StartNew();
         var (query, options) = ProcessSearchTokens(searchText);
 
-        var cacheKey = $"search_{searchText.ToLower()}_{includeDetailedPrices}";
+        var cacheKey = $"search_{searchText.ToLowerInvariant()}_{includeDetailedPrices}";
 
         var result = await cache.GetOrCreateAsync(
                 cacheKey,
@@ -146,8 +146,8 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
                 {
                     i.Id,
                     i.Name,
-                    AverageBuyPrice = i.ItemsPricesAll.Any() ? i.ItemsPricesAll.Average(p => (double)p.PriceBuy) : 0.0,
-                    AverageSellPrice = i.ItemsPricesAll.Any() ? i.ItemsPricesAll.Average(p => (double)p.PriceSell) : 0.0,
+                    AverageBuyPrice = i.ItemsPricesAll.Count != 0 ? i.ItemsPricesAll.Average(p => (double)p.PriceBuy) : 0.0,
+                    AverageSellPrice = i.ItemsPricesAll.Count != 0 ? i.ItemsPricesAll.Average(p => (double)p.PriceSell) : 0.0,
                 }
             )
             .ToListAsync()
@@ -189,8 +189,8 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
                     i.NameFull,
                     i.IsSpaceship,
                     AverageBuyPrice =
-                        i.PurchasePricesAll.Any() ? i.PurchasePricesAll.Average(p => (double)p.PriceBuy) : 0.0,
-                    AverageRentPrice = i.RentalPricesAll.Any() ? i.RentalPricesAll.Average(p => (double)p.PriceRent) : 0.0,
+                        i.PurchasePricesAll.Count != 0 ? i.PurchasePricesAll.Average(p => (double)p.PriceBuy) : 0.0,
+                    AverageRentPrice = i.RentalPricesAll.Count != 0 ? i.RentalPricesAll.Average(p => (double)p.PriceRent) : 0.0,
                 }
             )
             .ToListAsync()
@@ -218,10 +218,10 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
                 {
                     i.Id,
                     i.Name,
-                    AverageBuyPrice = i.CommoditiesPricesAll.Any()
+                    AverageBuyPrice = i.CommoditiesPricesAll.Count != 0
                         ? i.CommoditiesPricesAll.Average(p => (double)p.PriceBuy)
                         : 0.0,
-                    AverageSellPrice = i.CommoditiesPricesAll.Any()
+                    AverageSellPrice = i.CommoditiesPricesAll.Count != 0
                         ? i.CommoditiesPricesAll.Average(p => (double)p.PriceSell)
                         : 0.0,
                 }

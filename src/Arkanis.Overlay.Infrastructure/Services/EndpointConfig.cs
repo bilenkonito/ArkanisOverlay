@@ -1,5 +1,7 @@
 namespace Arkanis.Overlay.Infrastructure.Services;
 
+using System.Globalization;
+
 internal class EndpointConfig(
     string apiPath,
     string cacheTtl,
@@ -21,6 +23,6 @@ internal class EndpointConfig(
     public string ApiPath
         => apiPath;
 
-    public TimeSpan CacheTtl { get; } = TimeSpan.Parse(cacheTtl);
+    public TimeSpan CacheTtl { get; } = TimeSpan.Parse(cacheTtl, CultureInfo.InvariantCulture);
     public Timer? Timer { get; set; }
 }
