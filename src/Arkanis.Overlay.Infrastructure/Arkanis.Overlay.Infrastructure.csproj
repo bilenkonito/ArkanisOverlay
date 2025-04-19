@@ -14,6 +14,9 @@
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.13"/>
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1"/>
+        <PackageReference Include="Quartz" Version="3.14.0"/>
+        <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.14.0"/>
+        <PackageReference Include="Quartz.Jobs" Version="3.14.0"/>
         <PackageReference Include="Scrutor" Version="6.0.1"/>
     </ItemGroup>
 

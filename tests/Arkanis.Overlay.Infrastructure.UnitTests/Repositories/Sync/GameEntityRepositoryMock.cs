@@ -2,8 +2,10 @@ namespace Arkanis.Overlay.Infrastructure.UnitTests.Repositories.Sync;
 
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
+using Domain.Models;
+using Domain.Models.Game;
 
-internal class GameEntityLocalRepositoryMock<T>(IGameEntityExternalSyncRepository<T> repository) : IGameEntityLocalRepository<T> where T : class, IGameEntity
+internal class GameEntityRepositoryMock<T>(IGameEntityExternalSyncRepository<T> repository) : IGameEntityRepository<T> where T : class, IGameEntity
 {
     private readonly TaskCompletionSource _completionSource = new();
 
@@ -15,7 +17,12 @@ internal class GameEntityLocalRepositoryMock<T>(IGameEntityExternalSyncRepositor
     public Task<T?> GetAsync(IGameEntityId id, CancellationToken cancellationToken = default)
         => repository.GetAsync(id, cancellationToken);
 
-    public async Task UpdateAllAsync(IAsyncEnumerable<T> entities, CancellationToken cancellationToken = default)
+    public ValueTask<AppDataState> GetDataStateAsync(GameDataState gameDataState, CancellationToken cancellationToken = default)
+        => Entities.Count == 0
+            ? ValueTask.FromResult(AppDataMissing.Instance)
+            : ValueTask.FromResult<AppDataState>(new AppDataUpToDate(gameDataState));
+
+    public async Task UpdateAllAsync(IAsyncEnumerable<T> entities, GameDataState gameDataState, CancellationToken cancellationToken = default)
     {
         Entities = await entities.ToListAsync(cancellationToken);
         _completionSource.TrySetResult();

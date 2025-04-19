@@ -4,8 +4,8 @@ using Data.Mappers;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 
-internal class UexStarSystemRepository(IUexGameApi gameApi, UexApiDtoMapper mapper)
-    : UexGameEntityRepositoryBase<UniverseStarSystemDTO, GameStarSystem>(mapper)
+internal class UexStarSystemRepository(IUexGameApi gameApi, IUexStaticApi staticApi, UexApiDtoMapper mapper)
+    : UexGameEntityRepositoryBase<UniverseStarSystemDTO, GameStarSystem>(staticApi, mapper)
 {
     protected override async Task<ICollection<UniverseStarSystemDTO>> GetAllInternalAsync(CancellationToken cancellationToken)
     {

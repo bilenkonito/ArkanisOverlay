@@ -1,12 +1,12 @@
-namespace Arkanis.Overlay.Infrastructure.Repositories.Local;
+namespace Arkanis.Overlay.Infrastructure.Services;
 
 using Domain.Abstractions;
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
-using Exceptions;
 using Microsoft.Extensions.DependencyInjection;
+using Repositories.Exceptions;
 
-internal sealed class GameEntityLocalRepositoryDependencyResolver(IServiceProvider serviceProvider)
+internal sealed class GameEntityRepositoryDependencyResolver(IServiceProvider serviceProvider)
 {
     public Context DependsOn<T>() where T : class, IGameEntity
         => CreateDependencyContextOn<T>();
@@ -21,11 +21,11 @@ internal sealed class GameEntityLocalRepositoryDependencyResolver(IServiceProvid
         => CreateDependencyContext(CreateDependencyOn(gameEntityType));
 
     private IDependable CreateDependencyOn<T>() where T : class, IGameEntity
-        => serviceProvider.GetRequiredService<IGameEntityLocalRepository<T>>();
+        => serviceProvider.GetRequiredService<IGameEntityRepository<T>>();
 
     private IDependable CreateDependencyOn(Type gameEntityType)
     {
-        var repositoryType = typeof(IGameEntityLocalRepository<>).MakeGenericType(gameEntityType);
+        var repositoryType = typeof(IGameEntityRepository<>).MakeGenericType(gameEntityType);
         var service = serviceProvider.GetRequiredService(repositoryType);
         var repository = service as IDependable ?? throw new InvalidOperationException($"failed to resolve {repositoryType} for {gameEntityType}.");
         return repository;
@@ -34,7 +34,7 @@ internal sealed class GameEntityLocalRepositoryDependencyResolver(IServiceProvid
     private Context CreateDependencyContext(IDependable dependable)
         => new(this, dependable);
 
-    public sealed class Context(GameEntityLocalRepositoryDependencyResolver resolver, params IEnumerable<IDependable> dependencies) : IDependable
+    public sealed class Context(GameEntityRepositoryDependencyResolver resolver, params IEnumerable<IDependable> dependencies) : IDependable
     {
         private readonly List<IDependable> _dependencies = dependencies.ToList();
 

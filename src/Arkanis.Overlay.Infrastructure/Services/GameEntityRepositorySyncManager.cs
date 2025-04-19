@@ -1,0 +1,28 @@
+namespace Arkanis.Overlay.Infrastructure.Services;
+
+using Domain.Abstractions.Game;
+using Domain.Abstractions.Services;
+using Domain.Models;
+using Microsoft.Extensions.Logging;
+
+internal sealed class GameEntityRepositorySyncManager<T>(
+    IGameEntityExternalSyncRepository<T> syncRepository,
+    IGameEntityRepository<T> repository,
+    ILogger<GameEntityRepositorySyncManager<T>> logger
+) where T : class, IGameEntity
+{
+    public async Task UpdateIfNecessaryAsync(CancellationToken cancellationToken)
+    {
+        var gameDataState = await syncRepository.LoadCurrentDataState(cancellationToken);
+        var currentLocalState = await repository.GetDataStateAsync(gameDataState, cancellationToken);
+        if (currentLocalState is AppDataUpToDate)
+        {
+            // TODO: Initialize mapper cache if empty
+            logger.LogDebug("Current data of {EntityType} repository are up to date: {AppDataState}", typeof(T), currentLocalState);
+            return;
+        }
+
+        logger.LogDebug("Updating data of {EntityType} repository: {CurrentAppDataState} -> {NewAppDataState}", typeof(T), currentLocalState, gameDataState);
+        await repository.UpdateAllAsync(syncRepository.GetAllAsync(cancellationToken), gameDataState, cancellationToken);
+    }
+}

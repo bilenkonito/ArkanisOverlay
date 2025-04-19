@@ -4,8 +4,8 @@ using Data.Mappers;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 
-internal class UexCommodityRepository(IUexCommoditiesApi commoditiesApi, UexApiDtoMapper mapper)
-    : UexGameEntityRepositoryBase<CommodityDTO, GameCommodity>(mapper)
+internal class UexCommodityRepository(IUexCommoditiesApi commoditiesApi, IUexStaticApi staticApi, UexApiDtoMapper mapper)
+    : UexGameEntityRepositoryBase<CommodityDTO, GameCommodity>(staticApi, mapper)
 {
     protected override async Task<ICollection<CommodityDTO>> GetAllInternalAsync(CancellationToken cancellationToken)
     {

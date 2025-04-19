@@ -12,7 +12,7 @@ public class UexSyncRepositoryTestFixture : TestBedFixture
     protected override void AddServices(IServiceCollection services, IConfiguration? configuration)
         => services
             .AddHttpClient()
-            .AddSingleton(typeof(IGameEntityLocalRepository<>), typeof(GameEntityLocalRepositoryMock<>))
+            .AddSingleton(typeof(IGameEntityRepository<>), typeof(GameEntityRepositoryMock<>))
             .AddUexSyncRepositoryServices();
 
     protected override IEnumerable<TestAppSettings> GetTestAppSettings()

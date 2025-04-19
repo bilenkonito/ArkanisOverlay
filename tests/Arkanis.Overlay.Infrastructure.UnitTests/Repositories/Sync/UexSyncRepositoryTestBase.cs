@@ -2,6 +2,7 @@ namespace Arkanis.Overlay.Infrastructure.UnitTests.Repositories.Sync;
 
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
+using Domain.Models;
 using Domain.Models.Game;
 using Shouldly;
 using Xunit.Abstractions;
@@ -16,8 +17,8 @@ public abstract class UexSyncRepositoryTestBase<T>(ITestOutputHelper testOutputH
     protected CancellationToken TestCancellationToken
         => TestCancellation.Token;
 
-    protected IGameEntityLocalRepository<TEntity> ResolveRepositoryFor<TEntity>() where TEntity : class, IGameEntity
-        => _fixture.GetService<IGameEntityLocalRepository<TEntity>>(_testOutputHelper).ShouldNotBeNull();
+    protected IGameEntityRepository<TEntity> ResolveRepositoryFor<TEntity>() where TEntity : class, IGameEntity
+        => _fixture.GetService<IGameEntityRepository<TEntity>>(_testOutputHelper).ShouldNotBeNull();
 
     protected IGameEntityExternalSyncRepository<T> ResolveSyncRepositoryFor()
         => _fixture.GetService<IGameEntityExternalSyncRepository<T>>(_testOutputHelper).ShouldNotBeNull();
@@ -35,7 +36,8 @@ public abstract class UexSyncRepositoryTestBase<T>(ITestOutputHelper testOutputH
     protected async Task LoadDependenciesAsync<TEntity>(CancellationToken cancellationToken) where TEntity : class, IGameEntity
     {
         var planetRepository = ResolveRepositoryFor<TEntity>();
-        await planetRepository.UpdateAllAsync(planetRepository.GetAllAsync(cancellationToken), cancellationToken);
+        var gameDataState = new GameDataState(StarCitizenVersion.Create("4.1.0"), DateTimeOffset.UtcNow);
+        await planetRepository.UpdateAllAsync(planetRepository.GetAllAsync(cancellationToken), gameDataState, cancellationToken);
     }
 
     protected virtual Task LoadDependenciesAsync(CancellationToken cancellationToken)

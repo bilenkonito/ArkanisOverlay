@@ -4,10 +4,14 @@ using Data.Mappers;
 using Domain.Abstractions;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
-using Local;
+using Services;
 
-internal class UexSpaceStationRepository(GameEntityLocalRepositoryDependencyResolver dependencyResolver, IUexGameApi gameApi, UexApiDtoMapper mapper)
-    : UexGameEntityRepositoryBase<UniverseSpaceStationDTO, GameSpaceStation>(mapper)
+internal class UexSpaceStationRepository(
+    GameEntityRepositoryDependencyResolver dependencyResolver,
+    IUexGameApi gameApi,
+    IUexStaticApi staticApi,
+    UexApiDtoMapper mapper
+) : UexGameEntityRepositoryBase<UniverseSpaceStationDTO, GameSpaceStation>(staticApi, mapper)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver

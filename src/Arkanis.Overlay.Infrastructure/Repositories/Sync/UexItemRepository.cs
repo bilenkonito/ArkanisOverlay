@@ -7,14 +7,15 @@ using Domain.Abstractions.Services;
 using Domain.Enums;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
-using Local;
+using Services;
 
 internal class UexItemRepository(
-    GameEntityLocalRepositoryDependencyResolver dependencyResolver,
-    IGameEntityLocalRepository<GameProductCategory> itemCategoryRepository,
+    GameEntityRepositoryDependencyResolver dependencyResolver,
+    IGameEntityRepository<GameProductCategory> itemCategoryRepository,
     IUexItemsApi itemsApi,
+    IUexStaticApi staticApi,
     UexApiDtoMapper mapper
-) : UexGameEntityRepositoryBase<ItemDTO, GameItem>(mapper)
+) : UexGameEntityRepositoryBase<ItemDTO, GameItem>(staticApi, mapper)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver.DependsOn<GameProductCategory>();

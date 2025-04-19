@@ -9,8 +9,10 @@ using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
 using Domain.Models;
 using Domain.Models.Game;
+using External.UEX.Abstractions;
 
-internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(UexApiDtoMapper mapper) : IGameEntityExternalSyncRepository<TDomain>
+internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(IUexStaticApi staticApi, UexApiDtoMapper mapper)
+    : IGameEntityExternalSyncRepository<TDomain>
     where TSource : class
     where TDomain : class, IGameEntity
 {
@@ -31,6 +33,13 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(UexApiDtoM
         return result is not null
             ? MapToDomain(result)
             : null;
+    }
+
+    public async ValueTask<GameDataState> LoadCurrentDataState(CancellationToken cancellationToken = default)
+    {
+        var parameters = await staticApi.GetDataParametersAsync(cancellationToken);
+        var gameVersion = StarCitizenVersion.Create(parameters.Result.Data?.Global?.Game_version ?? "unknown");
+        return new GameDataState(gameVersion, DateTimeOffset.Now);
     }
 
     protected virtual IDependable GetDependencies()

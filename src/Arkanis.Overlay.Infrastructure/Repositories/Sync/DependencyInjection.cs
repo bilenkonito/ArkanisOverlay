@@ -4,8 +4,8 @@ using Data.Mappers;
 using Domain.Abstractions.Services;
 using Domain.Models.Game;
 using External.UEX;
-using Local;
 using Microsoft.Extensions.DependencyInjection;
+using Services;
 
 public static class DependencyInjection
 {
@@ -17,7 +17,8 @@ public static class DependencyInjection
         => services
             .AddUexApiMappers()
             .AddAllUexApiClients()
-            .AddSingleton<GameEntityLocalRepositoryDependencyResolver>()
+            .AddSingleton<GameEntityRepositoryDependencyResolver>()
+            .AddSingleton(typeof(GameEntityRepositorySyncManager<>))
             .Scan(scan => scan
                 .FromAssembliesOf(ReferenceSourceType)
                 .AddClasses(type => type.InNamespaceOf(ReferenceSourceType), false)

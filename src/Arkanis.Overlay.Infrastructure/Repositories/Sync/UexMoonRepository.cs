@@ -4,10 +4,14 @@ using Data.Mappers;
 using Domain.Abstractions;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
-using Local;
+using Services;
 
-internal class UexMoonRepository(GameEntityLocalRepositoryDependencyResolver dependencyResolver, IUexGameApi gameApi, UexApiDtoMapper mapper)
-    : UexGameEntityRepositoryBase<UniverseMoonDTO, GameMoon>(mapper)
+internal class UexMoonRepository(
+    GameEntityRepositoryDependencyResolver dependencyResolver,
+    IUexGameApi gameApi,
+    IUexStaticApi staticApi,
+    UexApiDtoMapper mapper
+) : UexGameEntityRepositoryBase<UniverseMoonDTO, GameMoon>(staticApi, mapper)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver
