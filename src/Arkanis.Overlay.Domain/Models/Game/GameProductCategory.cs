@@ -2,7 +2,7 @@ namespace Arkanis.Overlay.Domain.Models.Game;
 
 using Enums;
 
-public sealed class GameItemCategory(int id, string fullName, string section)
+public sealed class GameProductCategory(int id, string fullName, string section)
     : GameEntity(UexApiGameEntityId.Create(id), GameEntityCategory.ItemCategory)
 {
     protected override string SearchName { get; } = $"{section} {fullName}";

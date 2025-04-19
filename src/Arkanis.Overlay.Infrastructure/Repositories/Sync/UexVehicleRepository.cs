@@ -1,0 +1,18 @@
+namespace Arkanis.Overlay.Infrastructure.Repositories.Sync;
+
+using Data.Mappers;
+using Domain.Models.Game;
+using External.UEX.Abstractions;
+
+internal class UexVehicleRepository(IUexGameApi gameApi, UexApiDtoMapper mapper)
+    : UexGameEntityRepositoryBase<VehicleDTO, GameVehicle>(mapper)
+{
+    protected override async Task<ICollection<VehicleDTO>> GetAllInternalAsync(CancellationToken cancellationToken)
+    {
+        var response = await gameApi.GetVehiclesAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.Result.Data ?? ThrowCouldNotParseResponse();
+    }
+
+    protected override double? GetSourceApiId(VehicleDTO source)
+        => source.Id;
+}

@@ -6,6 +6,7 @@ using Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Options;
+using Repositories.Sync;
 using Services;
 
 public static class DependencyInjection
@@ -15,6 +16,7 @@ public static class DependencyInjection
             .AddSearchServices()
             .AddCustomUexApiServices()
             .AddUexDatabaseServices()
+            .AddUexSyncRepositoryServices()
             .AddUserPreferencesFileManagerServices();
 
     public static IServiceCollection AddInfrastructureHostedServices(this IServiceCollection services)

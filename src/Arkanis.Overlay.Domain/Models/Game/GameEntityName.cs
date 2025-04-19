@@ -27,14 +27,14 @@ public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IE
         public static Reference Create(GameEntity referencedEntity)
             => referencedEntity switch
             {
-                GameItemCategory category => new ItemCategoryReference(category),
+                GameProductCategory category => new ItemCategoryReference(category),
                 GameCompany company => new CompanyReference(company),
                 GameLocationEntity location => new LocationReference(location),
                 _ => throw new ArgumentException($"Cannot create name reference for: {referencedEntity.GetType()}"),
             };
     }
 
-    public sealed record ItemCategoryReference(GameItemCategory Category) : Reference(Category);
+    public sealed record ItemCategoryReference(GameProductCategory Category) : Reference(Category);
 
     public sealed record CompanyReference(GameCompany Company) : Reference(Company);
 

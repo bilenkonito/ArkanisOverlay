@@ -86,7 +86,7 @@ public static class ExternalUexDTOFixture
         Nickname = "Shubin SCD-1",
     };
 
-    public static UniverseTerminalDTO OutpostTerminal { get; } = new()
+    public static UniverseTerminalDTO OutpostCommodityTerminal { get; } = new()
     {
         Id = 79,
         Id_star_system = StarSystem.Id,

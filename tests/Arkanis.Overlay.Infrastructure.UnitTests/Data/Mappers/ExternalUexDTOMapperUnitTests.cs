@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.UnitTests.Data.Mappers;
 
+using Domain.Enums;
 using Domain.Models.Game;
 using Infrastructure.Data.Exceptions;
 using Infrastructure.Data.Mappers;
@@ -30,10 +31,15 @@ public class ExternalUexDTOMapperUnitTests
         mapper.ToGameEntity(ExternalUexDTOFixture.Moon);
         mapper.ToGameEntity(ExternalUexDTOFixture.Outpost);
 
-        var source = ExternalUexDTOFixture.OutpostTerminal;
+        var source = ExternalUexDTOFixture.OutpostCommodityTerminal;
         var result = mapper.ToGameEntity(source);
 
-        result.Parent.ShouldNotBeNull();
+        result.Type.ShouldBe(GameTerminalType.Commodity);
+        result.EntityCategory.ShouldBe(GameEntityCategory.Location);
+        result.Parent.ShouldNotBeNull() // outpost
+            .Parent.ShouldNotBeNull() // moon
+            .Parent.ShouldNotBeNull() // planet
+            .Parent.ShouldNotBeNull(); // star system
     }
 
     [Fact]
@@ -46,7 +52,7 @@ public class ExternalUexDTOMapperUnitTests
         mapper.ToGameEntity(ExternalUexDTOFixture.Planet);
         mapper.ToGameEntity(ExternalUexDTOFixture.Moon);
 
-        var source = ExternalUexDTOFixture.OutpostTerminal;
+        var source = ExternalUexDTOFixture.OutpostCommodityTerminal;
         Should.Throw<ObjectMappingMissingDependentObjectException>(() => mapper.ToGameEntity(source));
     }
 
@@ -60,7 +66,10 @@ public class ExternalUexDTOMapperUnitTests
         mapper.ToGameEntity(ExternalUexDTOFixture.ItemHatsCategory);
 
         var source = ExternalUexDTOFixture.Item;
-        Should.Throw<ObjectMappingMissingDependentObjectException>(() => mapper.ToGameEntity(source));
+        var result = mapper.ToGameEntity(source);
+        result.Manufacturer.ShouldNotBeNull();
+        result.TerminalType.ShouldBe(GameTerminalType.Item);
+        result.EntityCategory.ShouldBe(GameEntityCategory.Item);
     }
 
     [Fact]
