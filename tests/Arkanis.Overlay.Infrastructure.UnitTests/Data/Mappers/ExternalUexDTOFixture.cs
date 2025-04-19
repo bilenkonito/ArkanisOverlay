@@ -67,6 +67,16 @@ public static class ExternalUexDTOFixture
         Code = "ORIS",
     };
 
+    public static UniverseSpaceStationDTO SpaceStation { get; } = new()
+    {
+        Id = 27,
+        Id_star_system = StarSystem.Id,
+        Id_planet = Planet.Id,
+        Id_city = City.Id,
+        Name = "Seraphim Station",
+        Nickname = "Seraphim",
+    };
+
     public static UniverseOutpostDTO Outpost { get; } = new()
     {
         Id = 48,

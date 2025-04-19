@@ -12,9 +12,27 @@ using Riok.Mapperly.Abstractions;
 
 [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.Target)]
 [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
-internal partial class ExternalUexDTOMapper
+internal partial class UexApiDtoMapper
 {
     internal readonly Dictionary<string, GameEntity> CachedGameEntities = [];
+
+    public GameEntity ToGameEntity<TSource>(TSource source)
+        => source switch
+        {
+            UniverseStarSystemDTO system => ToGameEntity(system),
+            UniversePlanetDTO planet => ToGameEntity(planet),
+            UniverseMoonDTO moon => ToGameEntity(moon),
+            UniverseSpaceStationDTO spaceStation => ToGameEntity(spaceStation),
+            UniverseCityDTO city => ToGameEntity(city),
+            UniverseOutpostDTO outpost => ToGameEntity(outpost),
+            UniverseTerminalDTO terminal => ToGameEntity(terminal),
+            CommodityDTO commodity => ToGameEntity(commodity),
+            ItemDTO item => ToGameEntity(item),
+            CompanyDTO company => ToGameEntity(company),
+            CategoryDTO category => ToGameEntity(category),
+            VehicleDTO vehicle => ToGameEntity(vehicle),
+            _ => throw new ArgumentOutOfRangeException(nameof(source), source, "Cannot map to game entity from unsupported source type."),
+        };
 
     [UserMapping(Default = true)]
     public GameStarSystem ToGameEntity(UniverseStarSystemDTO source)
@@ -44,7 +62,15 @@ internal partial class ExternalUexDTOMapper
     public GameCity ToGameEntity(UniverseCityDTO source)
     {
         var result = MapInternal(source);
-        CacheGameEntityId<GameOutpost>(source.Id, result);
+        CacheGameEntityId<GameCity>(source.Id, result);
+        return result;
+    }
+
+    [UserMapping(Default = true)]
+    public GameSpaceStation ToGameEntity(UniverseSpaceStationDTO source)
+    {
+        var result = MapInternal(source);
+        CacheGameEntityId<GameSpaceStation>(source.Id, result);
         return result;
     }
 
@@ -84,7 +110,7 @@ internal partial class ExternalUexDTOMapper
     public GameCompany ToGameEntity(CompanyDTO source)
     {
         var result = MapInternal(source);
-        CacheGameEntityId<GameItem>(source.Id, result);
+        CacheGameEntityId<GameCompany>(source.Id, result);
         return result;
     }
 
@@ -92,7 +118,15 @@ internal partial class ExternalUexDTOMapper
     public GameItemCategory ToGameEntity(CategoryDTO source)
     {
         var result = MapInternal(source);
-        CacheGameEntityId<GameItem>(source.Id, result);
+        CacheGameEntityId<GameItemCategory>(source.Id, result);
+        return result;
+    }
+
+    [UserMapping(Default = true)]
+    public GameVehicle ToGameEntity(VehicleDTO source)
+    {
+        var result = MapInternal(source);
+        CacheGameEntityId<GameVehicle>(source.Id, result);
         return result;
     }
 
@@ -108,41 +142,41 @@ internal partial class ExternalUexDTOMapper
     internal static string CreateCacheEntityKey<T>(double? sourceId)
         => $"{typeof(T).Name}-{sourceId}";
 
-    [MapperIgnoreTarget(nameof(GameEntity.Id))]
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(UniverseStarSystemDTO.Name), "fullName")]
     [MapProperty(nameof(UniverseStarSystemDTO.Code), "codeName")]
     private partial GameStarSystem MapInternal(UniverseStarSystemDTO source);
 
-    [MapperIgnoreTarget(nameof(GameEntity.Id))]
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(UniversePlanetDTO.Name), "fullName")]
     [MapProperty(nameof(UniversePlanetDTO.Code), "codeName")]
     [MapPropertyFromSource("location", Use = nameof(GetGameLocationForPlanet))]
     private partial GamePlanet MapInternal(UniversePlanetDTO source);
 
-    [MapperIgnoreTarget(nameof(GameEntity.Id))]
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(UniverseMoonDTO.Name), "fullName")]
     [MapProperty(nameof(UniverseMoonDTO.Code), "codeName")]
     [MapPropertyFromSource("location", Use = nameof(GetGameLocationForMoon))]
     private partial GameMoon MapInternal(UniverseMoonDTO source);
 
-    [MapperIgnoreTarget(nameof(GameEntity.Id))]
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapProperty(nameof(UniverseSpaceStationDTO.Name), "fullName")]
+    [MapProperty(nameof(UniverseSpaceStationDTO.Nickname), "shortName")]
+    [MapPropertyFromSource("location", Use = nameof(GetGameLocationForSpaceStation))]
+    private partial GameSpaceStation MapInternal(UniverseSpaceStationDTO source);
+
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(UniverseCityDTO.Name), "fullName")]
     [MapProperty(nameof(UniverseCityDTO.Code), "codeName")]
     [MapPropertyFromSource("location", Use = nameof(GetGameLocationForCity))]
     private partial GameCity MapInternal(UniverseCityDTO source);
 
-    [MapperIgnoreTarget(nameof(GameEntity.Id))]
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(UniverseOutpostDTO.Name), "fullName")]
     [MapProperty(nameof(UniverseOutpostDTO.Nickname), "shortName")]
     [MapPropertyFromSource("location", Use = nameof(GetGameLocationForOutpost))]
     private partial GameOutpost MapInternal(UniverseOutpostDTO source);
 
-    [MapperIgnoreTarget(nameof(GameEntity.Id))]
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(UniverseTerminalDTO.Name), "fullName")]
     [MapProperty(nameof(UniverseTerminalDTO.Nickname), "shortName")]
@@ -150,7 +184,6 @@ internal partial class ExternalUexDTOMapper
     [MapPropertyFromSource("location", Use = nameof(GetGameLocationForTerminal))]
     private partial GameTerminal MapInternal(UniverseTerminalDTO source);
 
-    [MapperIgnoreTarget(nameof(GameEntity.Id))]
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(CommodityDTO.Name), "fullName")]
     [MapProperty(nameof(CommodityDTO.Code), "codeName")]
@@ -158,25 +191,30 @@ internal partial class ExternalUexDTOMapper
     [MapPropertyFromSource(nameof(GameCommodity.LatestSellPrices), Use = nameof(GetLatestSellPricesForCommodity))]
     private partial GameCommodity MapInternal(CommodityDTO source);
 
-    [MapperIgnoreTarget(nameof(GameEntity.Id))]
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
-    [MapProperty(nameof(ItemDTO.Uuid), "uuid")]
     [MapProperty(nameof(ItemDTO.Name), "fullName")]
     [MapPropertyFromSource("manufacturer", Use = nameof(GetCompanyForItem))]
+    [MapPropertyFromSource("category", Use = nameof(GetCategoryForItem))]
     [MapPropertyFromSource(nameof(GameItem.LatestBuyPrices), Use = nameof(GetLatestBuyPricesForItem))]
     private partial GameItem MapInternal(ItemDTO source);
 
-    [MapperIgnoreTarget(nameof(GameEntity.Id))]
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(CompanyDTO.Name), "fullName")]
     [MapProperty(nameof(CompanyDTO.Nickname), "shortName")]
     private partial GameCompany MapInternal(CompanyDTO source);
 
-    [MapperIgnoreTarget(nameof(GameEntity.Id))]
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(CategoryDTO.Name), "fullName")]
     [MapProperty(nameof(CategoryDTO.Section), "section")]
+    [MapProperty(nameof(CategoryDTO.Type), nameof(GameItemCategory.CategoryType))]
     private partial GameItemCategory MapInternal(CategoryDTO source);
+
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapProperty(nameof(VehicleDTO.Name_full), "fullName")]
+    [MapProperty(nameof(VehicleDTO.Name), "shortName")]
+    [MapPropertyFromSource("manufacturer", Use = nameof(GetCompanyForVehicle))]
+    [MapPropertyFromSource(nameof(GameVehicle.LatestBuyPrices), Use = nameof(GetLatestBuyPricesForVehicle))]
+    private partial GameVehicle MapInternal(VehicleDTO source);
 
     [UserMapping(Default = true)]
     private static GameTerminalType MapInternal(string source)
@@ -205,6 +243,13 @@ internal partial class ExternalUexDTOMapper
            ?? ResolveCachedGameEntity<GameStarSystem>(moon.Id_star_system)
            ?? ThrowInvalidCacheException<GameStarSystem>(moon.Id_star_system);
 
+    private GameLocationEntity GetGameLocationForSpaceStation(UniverseSpaceStationDTO spaceStation)
+        => ResolveCachedGameEntity<GameCity>(spaceStation.Id_city) as GameLocationEntity
+           ?? ResolveCachedGameEntity<GamePlanet>(spaceStation.Id_planet) as GameLocationEntity
+           ?? ResolveCachedGameEntity<GamePlanet>(spaceStation.Id_moon) as GameLocationEntity
+           ?? ResolveCachedGameEntity<GameStarSystem>(spaceStation.Id_star_system)
+           ?? ThrowInvalidCacheException<GameStarSystem>(spaceStation.Id_star_system);
+
     private GameLocationEntity GetGameLocationForCity(UniverseCityDTO city)
         => ResolveCachedGameEntity<GamePlanet>(city.Id_planet) as GameLocationEntity
            ?? ResolveCachedGameEntity<GameMoon>(city.Id_moon)
@@ -224,7 +269,18 @@ internal partial class ExternalUexDTOMapper
         => ResolveCachedGameEntity<GameCompany>(item.Id_company)
            ?? ThrowInvalidCacheException<GameCompany>(item.Id_company);
 
+    private GameCompany GetCompanyForVehicle(VehicleDTO vehicle)
+        => ResolveCachedGameEntity<GameCompany>(vehicle.Id_company)
+           ?? ThrowInvalidCacheException<GameCompany>(vehicle.Id_company);
+
+    private GameItemCategory GetCategoryForItem(ItemDTO item)
+        => ResolveCachedGameEntity<GameItemCategory>(item.Id_category)
+           ?? ThrowInvalidCacheException<GameItemCategory>(item.Id_category);
+
     private Bounds<PriceTag> GetLatestBuyPricesForItem(ItemDTO item)
+        => new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
+
+    private Bounds<PriceTag> GetLatestBuyPricesForVehicle(VehicleDTO vehicle)
         => new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
 
     private Bounds<PriceTag> GetLatestBuyPricesForCommodity(CommodityDTO commodity)

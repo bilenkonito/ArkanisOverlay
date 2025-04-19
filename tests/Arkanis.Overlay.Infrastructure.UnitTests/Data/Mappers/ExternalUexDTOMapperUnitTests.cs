@@ -10,7 +10,7 @@ public class ExternalUexDTOMapperUnitTests
     [Fact]
     public void UniverseStartSystemDTO_ToGameEntity_Should_Correctly_Map_Without_Dependencies()
     {
-        var mapper = new ExternalUexDTOMapper();
+        var mapper = new UexApiDtoMapper();
         var source = ExternalUexDTOFixture.StarSystem;
 
         var result = mapper.ToGameEntity(source);
@@ -22,7 +22,7 @@ public class ExternalUexDTOMapperUnitTests
     [Fact]
     public void UniverseTerminalDTO_ToGameEntity_Should_Correctly_Map_And_Link_Dependencies()
     {
-        var mapper = new ExternalUexDTOMapper();
+        var mapper = new UexApiDtoMapper();
 
         // cache dependencies, order is important
         mapper.ToGameEntity(ExternalUexDTOFixture.StarSystem);
@@ -39,7 +39,7 @@ public class ExternalUexDTOMapperUnitTests
     [Fact]
     public void UniverseTerminalDTO_ToGameEntity_Should_Throw_When_Parent_Is_Missing()
     {
-        var mapper = new ExternalUexDTOMapper();
+        var mapper = new UexApiDtoMapper();
 
         // cache dependencies
         mapper.ToGameEntity(ExternalUexDTOFixture.StarSystem);
@@ -53,7 +53,7 @@ public class ExternalUexDTOMapperUnitTests
     [Fact]
     public void ItemDTO_ToGameEntity_Should_Correctly_Map_And_Link_Dependencies()
     {
-        var mapper = new ExternalUexDTOMapper();
+        var mapper = new UexApiDtoMapper();
 
         // cache dependencies, order is important
         mapper.ToGameEntity(ExternalUexDTOFixture.ItemCompany);
@@ -66,7 +66,7 @@ public class ExternalUexDTOMapperUnitTests
     [Fact]
     public void ItemDTO_ToGameEntity_Should_Throw_When_Parent_Is_Missing()
     {
-        var mapper = new ExternalUexDTOMapper();
+        var mapper = new UexApiDtoMapper();
 
         // cache dependencies
         mapper.ToGameEntity(ExternalUexDTOFixture.StarSystem);

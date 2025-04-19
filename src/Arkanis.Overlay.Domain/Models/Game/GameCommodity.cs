@@ -4,7 +4,8 @@ using Abstractions.Game;
 using Enums;
 using Trade;
 
-public class GameCommodity(string fullName, string codeName) : GameEntity(StringGameEntityId.Create(codeName), GameEntityCategory.Commodity), IGameTradable
+public class GameCommodity(int id, string fullName, string codeName)
+    : GameEntity(UexApiGameEntityId.Create(id), GameEntityCategory.Commodity), IGameTradable
 {
     protected override string SearchName { get; } = $"{codeName} {fullName}";
 

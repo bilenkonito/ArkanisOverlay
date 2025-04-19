@@ -4,8 +4,8 @@ using Abstractions.Game;
 using Enums;
 using Trade;
 
-public class GameVehicle(string fullName, string shortName, GameCompany manufacturer)
-    : GameEntity(StringGameEntityId.Create(fullName), GameEntityCategory.Vehicle), IGameManufactured, IGamePurchasable
+public class GameVehicle(int id, string fullName, string shortName, GameCompany manufacturer)
+    : GameEntity(UexApiGameEntityId.Create(id), GameEntityCategory.Vehicle), IGameManufactured, IGamePurchasable
 {
     protected override string SearchName { get; } = fullName;
 

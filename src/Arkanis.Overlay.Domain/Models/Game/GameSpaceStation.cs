@@ -1,6 +1,6 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
-public sealed class GameOutpost(int id, string fullName, string shortName, GameLocationEntity location)
+public sealed class GameSpaceStation(int id, string fullName, string shortName, GameLocationEntity location)
     : GameLocationEntity(UexApiGameEntityId.Create(id), location)
 {
     protected override string SearchName { get; } = fullName;

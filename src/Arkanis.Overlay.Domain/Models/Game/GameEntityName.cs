@@ -14,6 +14,9 @@ public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IE
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
 
+    public static Reference ReferenceTo(GameEntity entity)
+        => Reference.Create(entity);
+
     public record Part;
 
     public abstract record Reference(GameEntity ReferencedEntity) : Part
@@ -24,11 +27,14 @@ public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IE
         public static Reference Create(GameEntity referencedEntity)
             => referencedEntity switch
             {
+                GameItemCategory category => new ItemCategoryReference(category),
                 GameCompany company => new CompanyReference(company),
                 GameLocationEntity location => new LocationReference(location),
                 _ => throw new ArgumentException($"Cannot create name reference for: {referencedEntity.GetType()}"),
             };
     }
+
+    public sealed record ItemCategoryReference(GameItemCategory Category) : Reference(Category);
 
     public sealed record CompanyReference(GameCompany Company) : Reference(Company);
 

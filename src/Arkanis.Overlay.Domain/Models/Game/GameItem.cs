@@ -4,17 +4,14 @@ using Abstractions.Game;
 using Enums;
 using Trade;
 
-public class GameItem(Guid uuid, string fullName, GameCompany manufacturer)
-    : GameEntity(GuidGameEntityId.Create(uuid), GameEntityCategory.Commodity), IGameManufactured, IGamePurchasable
+public class GameItem(int id, string fullName, GameCompany manufacturer, GameItemCategory category)
+    : GameEntity(UexApiGameEntityId.Create(id), GameEntityCategory.Commodity), IGameManufactured, IGamePurchasable
 {
-    public GameItem(string uuid, string fullName, GameCompany manufacturer) : this(Guid.Parse(uuid), fullName, manufacturer)
-    {
-    }
-
     protected override string SearchName { get; } = fullName;
 
     public override GameEntityName Name { get; } = new(
-        new GameEntityName.CompanyReference(manufacturer),
+        GameEntityName.ReferenceTo(category),
+        GameEntityName.ReferenceTo(manufacturer),
         new GameEntityName.Name(fullName)
     );
 
