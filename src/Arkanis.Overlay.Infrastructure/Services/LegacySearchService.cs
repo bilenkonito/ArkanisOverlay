@@ -5,19 +5,19 @@ using System.Text.RegularExpressions;
 using Data;
 using Domain.Abstractions.Services;
 using Domain.Enums;
-using Domain.Models;
 using Domain.Models.Search;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
-public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILogger<SearchService> logger) : ISearchService
+public partial class LegacySearchService(IMemoryCache cache, UEXContext dbContext, ILogger<LegacySearchService> logger) : ISearchService
 {
     private const int CACHE_DURATION_MINUTES = 15;
 
     public async Task<Tuple<IEnumerable<SearchResult>, long>> SearchAsync(
         string searchText,
-        bool includeDetailedPrices = false
+        bool includeDetailedPrices = false,
+        CancellationToken cancellationToken = default
     )
     {
         var stopwatch = Stopwatch.StartNew();
@@ -78,14 +78,6 @@ public partial class SearchService(IMemoryCache cache, UEXContext dbContext, ILo
             stopwatch.ElapsedMilliseconds
         );
     }
-
-    public Task<IEnumerable<LocationPrice>> GetDetailedPricesAsync(
-        GameEntityCategory entityCategory,
-        string name,
-        PriceType? priceType = null,
-        string? location = null
-    )
-        => throw new NotImplementedException();
 
     private Tuple<string, SearchOptions> ProcessSearchTokens(string searchText)
     {
