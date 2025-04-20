@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Data.Mappers;
 
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Domain.Models;
@@ -17,7 +18,7 @@ using Riok.Mapperly.Abstractions;
 [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
 internal partial class UexApiDtoMapper
 {
-    internal readonly Dictionary<string, GameEntity> CachedGameEntities = [];
+    internal readonly ConcurrentDictionary<string, GameEntity> CachedGameEntities = [];
 
     public GameEntity ToGameEntity<TSource>(TSource source)
         => source switch

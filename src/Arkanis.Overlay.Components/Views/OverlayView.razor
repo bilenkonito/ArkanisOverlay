@@ -1,14 +1,15 @@
-@using Arkanis.Common
 @using Arkanis.Overlay.Components.Helpers
 @using Arkanis.Overlay.Components.Shared.Dialogs
+@using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Abstractions.Services
-@using Arkanis.Overlay.Domain.Enums
+@using Arkanis.Overlay.Domain.Models.Game
 @using Arkanis.Overlay.Domain.Models.Search
+@using Humanizer
 @using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @layout OverlayLayout
 
-@inject ILogger<Index> Logger
+@inject ILogger<OverlayView> Logger
 @inject IDialogService DialogService
 @inject IOverlayControls OverlayControls
 @inject ISearchService SearchService
@@ -154,76 +155,43 @@
 <MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
     <MudFocusTrap DefaultFocus="@DefaultFocus.FirstChild">
         <MudPaper>
-            <MudTextField id="searchBox" @ref="SearchBox" T="string" @bind-Value="SearchText" Variant="Variant.Outlined"
+            <MudTextField id="searchBox"
+                          @ref="SearchBox"
+                          T="string"
+                          @bind-Value="SearchText"
+                          @bind-Value:after="SearchAsync"
+                          Variant="Variant.Outlined"
                           Adornment="Adornment.End"
                           AdornmentIcon="@Icons.Material.Filled.Search"
                           AdornmentColor="Color.Secondary"
                           HelperText=":c Commodities, :s Ships, :v Vehicles, :i Items, :l Locations"
-                          AutoFocus="true"
-                          Immediate="true"
-                          DebounceInterval="300"
-                          OnDebounceIntervalElapsed="@SearchAsync"/>
+                          AutoFocus
+                          Immediate/>
         </MudPaper>
 
-        @if (SearchResults?.Any() == true)
+        @if (SearchResults.GameEntities.Count > 0)
         {
-            <MudChip T="string" Variant="Variant.Text">
-                Found @(SearchResults.Count()) results in @SearchDurationMs ms
+            <MudChip T="string" Variant="@Variant.Text">
+                Found @SearchResults.GameEntities.Count results in @SearchResults.SearchTime.Humanize()
             </MudChip>
 
             <MudStack Class="mt-10" Style="width: 100%; min-height: 20vh;">
-                @foreach (var result in SearchResults.Take(20))
+                @foreach (var result in SearchResults.GameEntities)
                 {
-                    <MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0">
+                    var entity = result.TypedSubject;
+                    <MudPaper @key="@result.TypedSubject.GetHashCode()"
+                              Style="width: 100%"
+                              Class="search-result px-4 py-2 focus" tabindex="0">
                         <MudStack Row="true" Style="width: 100%"
                                   Class="justify-center align-center align-content-center">
 
-                            <MudIcon Icon="@IconPicker.PickIconFor(result.EntityCategory)"></MudIcon>
+                            <MudIcon Icon="@IconPicker.PickIconFor(entity.EntityCategory)"></MudIcon>
                             <MudDivider Vertical="true" FlexItem="true"></MudDivider>
-                            <h1 class="flex-1">@result.SearchName</h1>
+                            <h1 class="flex-1">@(entity.Name.Parts.OfType<GameEntityName.Name>().First().FullName)</h1>
 
-                            @foreach (var (priceType, price) in result.AveragePrices)
-                            {
-                                var color = priceType switch
-                                {
-                                    PriceType.Buy => "lightskyblue",
-                                    PriceType.Sell => "sandybrown",
-                                    PriceType.Rent => "sandybrown",
-                                    _ => throw new ArgumentOutOfRangeException(),
-                                };
-
-                                <MudStack Style=@($"width: 8em; color: {color};") AlignItems="AlignItems.Center"
-                                          Spacing="2">
-                                    <p>Avg. @priceType.ToString():</p>
-                                    @if (price == 0)
-                                    {
-                                        <p>—</p>
-                                    }
-                                    else
-                                    {
-                                        <p>@price.ToString("N0") @ApplicationConstants.CurrencyAbbr</p>
-                                    }
-                                </MudStack>
-                            }
-
-                            @foreach (var (priceType, price) in result.AveragePrices)
-                            {
-                                <MudDivider Vertical="true" FlexItem="true"/>
-                                <MudIconButton Icon="@IconPicker.PickIconFor(priceType)" Class="focus" tabindex="1"
-                                               Disabled=@(price == 0)/>
-                            }
+                            <p>@result.TopMatch?.TargetAttribute @result.TopMatch?.Score</p>
                         </MudStack>
                     </MudPaper>
-
-                    @* <MudListItem @key="@result.Name" Class="search-result" OnClick="@(() => OnResultClick(result))"> *@
-                    @*     <MudText>@result.Name (@result.EntityType)</MudText> *@
-                    @*     <MudText> *@
-                    @*         @foreach (var price in result.AveragePrices) *@
-                    @*         { *@
-                    @*             <span class="mr-2">@price.Key: @price.Value.ToString("N0") aUEC</span> *@
-                    @*         } *@
-                    @*     </MudText> *@
-                    @* </MudListItem> *@
                 }
 
             </MudStack>
@@ -233,11 +201,11 @@
 
 @code
 {
-    public static MudTextField<string>? SearchBox { get; private set; }
-    public string SearchText { get; set; } = "";
+    private static CancellationTokenSource _searchCancellation = new();
+    private static MudTextField<string>? SearchBox { get; set; }
+    private string SearchText { get; set; } = "";
 
-    private IEnumerable<SearchResult>? SearchResults { get; set; }
-    private long SearchDurationMs { get; set; }
+    private GameEntitySearchResults SearchResults { get; set; } = GameEntitySearchResults.Empty;
 
     [JSInvokable("ClickAwayHide")]
     public void ClickAwayHide() => OverlayControls.HideAsync();
@@ -248,11 +216,23 @@
         {
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                SearchResults = null;
+                Logger.LogDebug("Search text is empty, no search performed");
+                SearchResults = GameEntitySearchResults.Empty;
                 return;
             }
 
-            (SearchResults, SearchDurationMs) = await SearchService.SearchAsync(SearchText);
+            var searchQueries = new List<SearchQuery>
+            {
+                new FuzzyStringSearch(SearchText),
+            };
+
+            await _searchCancellation.CancelAsync();
+            _searchCancellation = new CancellationTokenSource();
+            SearchResults = await SearchService.SearchAsync(searchQueries, _searchCancellation.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // search has been cancelled (possibly by another search)
         }
         catch (Exception ex)
         {
@@ -260,7 +240,7 @@
         }
     }
 
-    private async Task OnResultClick(SearchResult result)
+    private async Task OnResultClick(SearchMatchResult<IGameEntity> result)
     {
         // TODO: Show detailed prices in a dialog or expand the list item
     }

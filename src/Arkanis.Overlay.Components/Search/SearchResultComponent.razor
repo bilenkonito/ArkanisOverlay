@@ -1,47 +1,41 @@
-@using Arkanis.Common
 @using Arkanis.Overlay.Components.Helpers
-@using Arkanis.Overlay.Infrastructure.Data
-@using Microsoft.Extensions.Logging
-@inject UEXContext Context
-@inject ILogger<SearchResultComponent> Logger
-
+@using Arkanis.Overlay.Domain.Models.Game
 <MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0">
-    <MudStack Row="true" Style="width: 100%"
-              Class="justify-center align-center align-content-center">
-        <MudIcon Icon="@IconPicker.PickIconFor(SearchResult.EntityCategory)"></MudIcon>
-        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
-        <h1 class="flex-1">@(SearchResult.Name ?? "NO NAME")</h1>
-        <MudStack Style="width: 8em; color: lightskyblue;" AlignItems="AlignItems.Center" Spacing="2">
-            <p>Avg. Buy:</p>
-            @if (SearchResult.AvgPriceBuy == 0)
-            {
-                <p>—</p>
-            }
-            else
-            {
-                <p>@SearchResult.AvgPriceBuy.ToString("N0") @ApplicationConstants.CurrencyAbbr</p>
-            }
-        </MudStack>
-        <MudStack Style="width: 8em; color: sandybrown;" AlignItems="AlignItems.Center" Spacing="2">
-            <p>Avg. @(SearchResult.IsRent ? "Rent" : "Sell")</p>
-            @if (SearchResult.AvgPriceSell == 0)
-            {
-                <p>—</p>
-            }
-            else
-            {
-                <p>@SearchResult.AvgPriceSell.ToString("N0") @ApplicationConstants.CurrencyAbbr</p>
-            }
-        </MudStack>
-        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
-        <MudIconButton Icon="@MaterialSymbols.Outlined.AddShoppingCart" Class="focus"
-                       tabindex="1">
-        </MudIconButton>
-        <MudDivider Vertical="true" FlexItem="true"></MudDivider>
-        <MudIconButton
-            Icon="@(SearchResult.IsRent ? MaterialSymbols.Outlined.CarRental : MaterialSymbols.Outlined.AddShoppingCart)"
-            Class="focus"
-            tabindex="1">
-        </MudIconButton>
+    <MudStack Class="justify-center align-center align-content-center w-100" Row>
+        <MudIcon Icon="@IconPicker.PickIconFor(SearchResult)"/>
+        <MudDivider Vertical="true" FlexItem="true"/>
+        <h1 class="flex-1">@(GameEntity.Name.OfType<GameEntityName.Name>().First().FullName)</h1>
+        @* <MudStack Style="width: 8em; color: lightskyblue;" AlignItems="AlignItems.Center" Spacing="2"> *@
+        @*     <p>Avg. Buy:</p> *@
+        @*     @if (SearchResult.AvgPriceBuy == 0) *@
+        @*     { *@
+        @*         <p>—</p> *@
+        @*     } *@
+        @*     else *@
+        @*     { *@
+        @*         <p>@SearchResult.AvgPriceBuy.ToString("N0") @ApplicationConstants.CurrencyAbbr</p> *@
+        @*     } *@
+        @* </MudStack> *@
+        @* <MudStack Style="width: 8em; color: sandybrown;" AlignItems="AlignItems.Center" Spacing="2"> *@
+        @*     <p>Avg. @(SearchResult.IsRent ? "Rent" : "Sell")</p> *@
+        @*     @if (SearchResult.AvgPriceSell == 0) *@
+        @*     { *@
+        @*         <p>—</p> *@
+        @*     } *@
+        @*     else *@
+        @*     { *@
+        @*         <p>@SearchResult.AvgPriceSell.ToString("N0") @ApplicationConstants.CurrencyAbbr</p> *@
+        @*     } *@
+        @* </MudStack> *@
+        @* <MudDivider Vertical="true" FlexItem="true"></MudDivider> *@
+        @* <MudIconButton Icon="@MaterialSymbols.Outlined.AddShoppingCart" Class="focus" *@
+        @*                tabindex="1"> *@
+        @* </MudIconButton> *@
+        @* <MudDivider Vertical="true" FlexItem="true"></MudDivider> *@
+        @* <MudIconButton *@
+        @*     Icon="@(SearchResult.IsRent ? MaterialSymbols.Outlined.CarRental : MaterialSymbols.Outlined.AddShoppingCart)" *@
+        @*     Class="focus" *@
+        @*     tabindex="1"> *@
+        @* </MudIconButton> *@
     </MudStack>
 </MudPaper>

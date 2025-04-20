@@ -5,9 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddLegacySearchServices(this IServiceCollection services)
-        => services.AddScoped<ISearchService, LegacySearchService>();
-
     public static IServiceCollection AddInMemorySearchServices(this IServiceCollection services)
         => services.AddScoped<ISearchService, InMemorySearchService>();
 

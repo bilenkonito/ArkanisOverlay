@@ -1,9 +1,21 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
+using Search;
+
 public sealed class GameSpaceStation(int id, string fullName, string shortName, GameLocationEntity location)
     : GameLocationEntity(UexApiGameEntityId.Create(id), location)
 {
-    protected override string SearchName { get; } = fullName;
+    public override IEnumerable<SearchableAttribute> SearchableAttributes
+    {
+        get
+        {
+            yield return new SearchableName(fullName);
+            foreach (var searchableAttribute in base.SearchableAttributes)
+            {
+                yield return searchableAttribute;
+            }
+        }
+    }
 
     public override GameEntityName Name { get; } = new(
         GameEntityName.ReferenceTo(location),

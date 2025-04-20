@@ -2,12 +2,24 @@ namespace Arkanis.Overlay.Domain.Models.Game;
 
 using Abstractions.Game;
 using Enums;
+using Search;
 using Trade;
 
 public class GameItem(int id, string fullName, GameCompany manufacturer, GameProductCategory category)
     : GameEntity(UexApiGameEntityId.Create(id), GameEntityCategory.Item), IGameManufactured, IGamePurchasable
 {
-    protected override string SearchName { get; } = fullName;
+    public override IEnumerable<SearchableAttribute> SearchableAttributes
+    {
+        get
+        {
+            yield return new SearchableName(fullName);
+            yield return new SearchableManufacturer(manufacturer);
+            foreach (var searchableAttribute in base.SearchableAttributes)
+            {
+                yield return searchableAttribute;
+            }
+        }
+    }
 
     public override GameEntityName Name { get; } = new(
         GameEntityName.ReferenceTo(category),

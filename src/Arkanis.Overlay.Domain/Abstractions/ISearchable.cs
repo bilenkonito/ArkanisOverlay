@@ -1,9 +1,8 @@
 namespace Arkanis.Overlay.Domain.Abstractions;
 
-using Enums;
+using Models.Search;
 
 public interface ISearchable
 {
-    string SearchName { get; }
-    GameEntityCategory EntityCategory { get; }
+    IEnumerable<SearchableAttribute> SearchableAttributes { get; }
 }
