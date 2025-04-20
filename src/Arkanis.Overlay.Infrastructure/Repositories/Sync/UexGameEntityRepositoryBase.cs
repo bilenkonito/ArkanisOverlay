@@ -1,7 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Repositories.Sync;
 
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using Data.Exceptions;
 using Data.Mappers;
 using Domain.Abstractions;
@@ -10,20 +9,25 @@ using Domain.Abstractions.Services;
 using Domain.Models;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
+using External.UEX.Extensions;
+using Local;
 
-internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(IUexStaticApi staticApi, UexApiDtoMapper mapper)
+internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(UexGameDataStateProvider stateProvider, UexApiDtoMapper mapper)
     : IGameEntityExternalSyncRepository<TDomain>
     where TSource : class
     where TDomain : class, IGameEntity
 {
-    public async IAsyncEnumerable<TDomain> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public virtual async ValueTask<GameDataState> LoadCurrentDataState(CancellationToken cancellationToken = default)
+        => await stateProvider.LoadCurrentDataState(cancellationToken);
+
+    public async ValueTask<GameEntitySyncData<TDomain>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         await GetDependencies().WaitUntilReadyAsync(cancellationToken);
-        var items = await GetAllInternalAsync(cancellationToken).ConfigureAwait(false);
-        foreach (var item in items)
-        {
-            yield return MapToDomain(item);
-        }
+        var response = await GetInternalResponseAsync(cancellationToken).ConfigureAwait(false);
+        var cacheUntil = response.CreateResponseHeaders().GetCacheUntil();
+        var domainEntities = response.Result.Select(MapToDomain).ToAsyncEnumerable();
+        var dataState = await LoadCurrentDataState(cancellationToken);
+        return new GameEntitySyncData<TDomain>(domainEntities, dataState, cacheUntil);
     }
 
     public async Task<TDomain?> GetAsync(IGameEntityId id, CancellationToken cancellationToken = default)
@@ -35,13 +39,6 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(IUexStatic
             : null;
     }
 
-    public async ValueTask<GameDataState> LoadCurrentDataState(CancellationToken cancellationToken = default)
-    {
-        var parameters = await staticApi.GetDataParametersAsync(cancellationToken);
-        var gameVersion = StarCitizenVersion.Create(parameters.Result.Data?.Global?.Game_version ?? "unknown");
-        return new GameDataState(gameVersion, DateTimeOffset.Now);
-    }
-
     protected virtual IDependable GetDependencies()
         => NoDependency.Instance;
 
@@ -49,7 +46,12 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(IUexStatic
     protected static ICollection<TSource> ThrowCouldNotParseResponse()
         => throw new ExternalApiResponseProcessingException($"Failed to parse response for {typeof(TSource)} from UEX API.");
 
-    protected abstract Task<ICollection<TSource>> GetAllInternalAsync(CancellationToken cancellationToken);
+    protected static UexApiResponse<ICollection<TSource>> CreateResponse(UexApiResponse? response, ICollection<TSource>? items)
+        => response is not null
+            ? new UexApiResponse<ICollection<TSource>>(response.StatusCode, response.Headers, items ?? ThrowCouldNotParseResponse())
+            : new UexApiResponse<ICollection<TSource>>(0, new Dictionary<string, IEnumerable<string>>(), []);
+
+    protected abstract Task<UexApiResponse<ICollection<TSource>>> GetInternalResponseAsync(CancellationToken cancellationToken);
 
     protected abstract double? GetSourceApiId(TSource source);
 
@@ -60,8 +62,8 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(IUexStatic
             throw new NotSupportedException($"UEX API request cannot be performed based on entity ID of: {id.GetType()}");
         }
 
-        var entities = await GetAllInternalAsync(cancellationToken).ConfigureAwait(false);
-        return entities.FirstOrDefault(source => uexApiId.Equals(GetSourceApiId(source)));
+        var response = await GetInternalResponseAsync(cancellationToken).ConfigureAwait(false);
+        return response.Result.FirstOrDefault(source => uexApiId.Equals(GetSourceApiId(source)));
     }
 
     private TDomain MapToDomain(TSource source)

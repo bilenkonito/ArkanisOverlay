@@ -4,14 +4,15 @@ using Data.Mappers;
 using Domain.Abstractions;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
+using Local;
 using Services;
 
 internal class UexTerminalRepository(
     GameEntityRepositoryDependencyResolver dependencyResolver,
     IUexGameApi gameApi,
-    IUexStaticApi staticApi,
+    UexGameDataStateProvider stateProvider,
     UexApiDtoMapper mapper
-) : UexGameEntityRepositoryBase<UniverseTerminalDTO, GameTerminal>(staticApi, mapper)
+) : UexGameEntityRepositoryBase<UniverseTerminalDTO, GameTerminal>(stateProvider, mapper)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver
@@ -19,10 +20,10 @@ internal class UexTerminalRepository(
             .AlsoDependencyOn<GameOutpost>()
             .AlsoDependencyOn<GameSpaceStation>();
 
-    protected override async Task<ICollection<UniverseTerminalDTO>> GetAllInternalAsync(CancellationToken cancellationToken)
+    protected override async Task<UexApiResponse<ICollection<UniverseTerminalDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
         var response = await gameApi.GetTerminalsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-        return response.Result.Data?.Where(x => x.Is_available > 0).ToList() ?? ThrowCouldNotParseResponse();
+        return CreateResponse(response, response.Result.Data?.Where(x => x.Is_available > 0).ToList());
     }
 
     protected override double? GetSourceApiId(UniverseTerminalDTO source)

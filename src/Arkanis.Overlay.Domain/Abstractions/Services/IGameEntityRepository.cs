@@ -4,10 +4,10 @@ using Game;
 using Models;
 using Models.Game;
 
-public interface IGameEntityRepository<T> : IGameEntitySimpleReadOnlyRepository<T>, IDependable
+public interface IGameEntityRepository<T> : IGameEntityReadOnlyRepository<T>, IDependable
     where T : class, IGameEntity
 {
     ValueTask<AppDataState> GetDataStateAsync(GameDataState gameDataState, CancellationToken cancellationToken = default);
 
-    Task UpdateAllAsync(IAsyncEnumerable<T> entities, GameDataState gameDataState, CancellationToken cancellationToken = default);
+    Task UpdateAllAsync(GameEntitySyncData<T> syncData, CancellationToken cancellationToken = default);
 }

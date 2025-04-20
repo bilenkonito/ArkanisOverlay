@@ -22,7 +22,14 @@ internal sealed class GameEntityRepositorySyncManager<T>(
             return;
         }
 
-        logger.LogDebug("Updating data of {EntityType} repository: {CurrentAppDataState} -> {NewAppDataState}", typeof(T), currentLocalState, gameDataState);
-        await repository.UpdateAllAsync(syncRepository.GetAllAsync(cancellationToken), gameDataState, cancellationToken);
+        var syncData = await syncRepository.GetAllAsync(cancellationToken);
+        logger.LogDebug(
+            "Updating data of {EntityType} repository: {CurrentAppDataState} -> {NewAppDataState}",
+            typeof(T),
+            currentLocalState,
+            syncData.DataState
+        );
+
+        await repository.UpdateAllAsync(syncData, cancellationToken);
     }
 }

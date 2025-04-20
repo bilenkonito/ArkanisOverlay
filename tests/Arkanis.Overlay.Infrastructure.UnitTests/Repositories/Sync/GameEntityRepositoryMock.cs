@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.UnitTests.Repositories.Sync;
 
+using System.Runtime.CompilerServices;
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
 using Domain.Models;
@@ -9,10 +10,17 @@ internal class GameEntityRepositoryMock<T>(IGameEntityExternalSyncRepository<T> 
 {
     private readonly TaskCompletionSource _completionSource = new();
 
+    internal GameDataState CurrentDataState { get; private set; } = MissingGameDataState.Instance;
     internal List<T> Entities { get; set; } = [];
 
-    public IAsyncEnumerable<T> GetAllAsync(CancellationToken cancellationToken = default)
-        => repository.GetAllAsync(cancellationToken);
+    public async IAsyncEnumerable<T> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var syncData = await repository.GetAllAsync(cancellationToken);
+        await foreach (var gameEntity in syncData.GameEntities.WithCancellation(cancellationToken))
+        {
+            yield return gameEntity;
+        }
+    }
 
     public Task<T?> GetAsync(IGameEntityId id, CancellationToken cancellationToken = default)
         => repository.GetAsync(id, cancellationToken);
@@ -22,9 +30,9 @@ internal class GameEntityRepositoryMock<T>(IGameEntityExternalSyncRepository<T> 
             ? ValueTask.FromResult(AppDataMissing.Instance)
             : ValueTask.FromResult<AppDataState>(new AppDataUpToDate(gameDataState));
 
-    public async Task UpdateAllAsync(IAsyncEnumerable<T> entities, GameDataState gameDataState, CancellationToken cancellationToken = default)
+    public async Task UpdateAllAsync(GameEntitySyncData<T> syncData, CancellationToken cancellationToken = default)
     {
-        Entities = await entities.ToListAsync(cancellationToken);
+        Entities = await syncData.GameEntities.ToListAsync(cancellationToken);
         _completionSource.TrySetResult();
     }
 
