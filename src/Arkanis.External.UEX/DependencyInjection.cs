@@ -10,11 +10,7 @@ public static class DependencyInjection
             .AddSingleton<IUexCrewApi, UexCrewApi>()
             .AddSingleton<IUexCommoditiesApi, UexCommoditiesApi>()
             .AddSingleton<IUexFuelApi, UexFuelApi>()
-            .AddSingleton<IUexGameApi, UexGameApi>(x => new UexGameApi(x.GetRequiredService<HttpClient>())
-                {
-                    ReadResponseAsString = true,
-                }
-            )
+            .AddSingleton<IUexGameApi, UexGameApi>()
             .AddSingleton<IUexItemsApi, UexItemsApi>()
             .AddSingleton<IUexMarketplaceApi, UexMarketplaceApi>()
             .AddSingleton<IUexOrganizationsApi, UexOrganizationsApi>()
