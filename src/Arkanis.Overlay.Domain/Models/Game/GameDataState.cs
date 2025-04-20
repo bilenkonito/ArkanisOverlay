@@ -7,4 +7,8 @@ public sealed record SyncedGameDataState(StarCitizenVersion Version, DateTimeOff
 public sealed record MissingGameDataState : GameDataState
 {
     public static readonly GameDataState Instance = new MissingGameDataState();
+
+    private MissingGameDataState()
+    {
+    }
 }

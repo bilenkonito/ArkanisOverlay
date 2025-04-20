@@ -4,9 +4,14 @@ using Data.Mappers;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 using Local;
+using Microsoft.Extensions.Logging;
 
-internal class UexCommodityRepository(IUexCommoditiesApi commoditiesApi, UexGameDataStateProvider stateProvider, UexApiDtoMapper mapper)
-    : UexGameEntityRepositoryBase<CommodityDTO, GameCommodity>(stateProvider, mapper)
+internal class UexCommodityRepository(
+    IUexCommoditiesApi commoditiesApi,
+    UexGameDataStateProvider stateProvider,
+    UexApiDtoMapper mapper,
+    ILogger<UexCommodityRepository> logger
+) : UexGameEntityRepositoryBase<CommodityDTO, GameCommodity>(stateProvider, mapper, logger)
 {
     protected override async Task<UexApiResponse<ICollection<CommodityDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {

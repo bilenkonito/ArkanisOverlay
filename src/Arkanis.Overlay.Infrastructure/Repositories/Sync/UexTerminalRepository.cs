@@ -5,14 +5,16 @@ using Domain.Abstractions;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 using Local;
+using Microsoft.Extensions.Logging;
 using Services;
 
 internal class UexTerminalRepository(
     GameEntityRepositoryDependencyResolver dependencyResolver,
     IUexGameApi gameApi,
     UexGameDataStateProvider stateProvider,
-    UexApiDtoMapper mapper
-) : UexGameEntityRepositoryBase<UniverseTerminalDTO, GameTerminal>(stateProvider, mapper)
+    UexApiDtoMapper mapper,
+    ILogger<UexTerminalRepository> logger
+) : UexGameEntityRepositoryBase<UniverseTerminalDTO, GameTerminal>(stateProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver

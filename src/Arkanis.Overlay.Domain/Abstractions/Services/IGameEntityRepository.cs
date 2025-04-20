@@ -4,6 +4,8 @@ using Game;
 using Models;
 using Models.Game;
 
+public interface IGameEntityRepository : IGameEntityReadOnlyRepository<IGameEntity>, IDependable;
+
 public interface IGameEntityRepository<T> : IGameEntityReadOnlyRepository<T>, IDependable
     where T : class, IGameEntity
 {

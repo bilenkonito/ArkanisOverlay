@@ -4,9 +4,14 @@ using Data.Mappers;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 using Local;
+using Microsoft.Extensions.Logging;
 
-internal class UexStarSystemRepository(IUexGameApi gameApi, UexGameDataStateProvider stateProvider, UexApiDtoMapper mapper)
-    : UexGameEntityRepositoryBase<UniverseStarSystemDTO, GameStarSystem>(stateProvider, mapper)
+internal class UexStarSystemRepository(
+    IUexGameApi gameApi,
+    UexGameDataStateProvider stateProvider,
+    UexApiDtoMapper mapper,
+    ILogger<UexStarSystemRepository> logger
+) : UexGameEntityRepositoryBase<UniverseStarSystemDTO, GameStarSystem>(stateProvider, mapper, logger)
 {
     protected override async Task<UexApiResponse<ICollection<UniverseStarSystemDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {

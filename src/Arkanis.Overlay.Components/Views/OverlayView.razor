@@ -252,8 +252,7 @@
                 return;
             }
 
-            (SearchResults, SearchDurationMs) = await SearchService.SearchAsync(SearchText).ConfigureAwait(false);
-            StateHasChanged();
+            (SearchResults, SearchDurationMs) = await SearchService.SearchAsync(SearchText);
         }
         catch (Exception ex)
         {

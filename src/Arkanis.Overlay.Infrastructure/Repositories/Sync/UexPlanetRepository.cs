@@ -5,14 +5,16 @@ using Domain.Abstractions;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 using Local;
+using Microsoft.Extensions.Logging;
 using Services;
 
 internal class UexPlanetRepository(
     GameEntityRepositoryDependencyResolver dependencyResolver,
     IUexGameApi gameApi,
     UexGameDataStateProvider stateProvider,
-    UexApiDtoMapper mapper
-) : UexGameEntityRepositoryBase<UniversePlanetDTO, GamePlanet>(stateProvider, mapper)
+    UexApiDtoMapper mapper,
+    ILogger<UexPlanetRepository> logger
+) : UexGameEntityRepositoryBase<UniversePlanetDTO, GamePlanet>(stateProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver.DependsOn<GameStarSystem>();

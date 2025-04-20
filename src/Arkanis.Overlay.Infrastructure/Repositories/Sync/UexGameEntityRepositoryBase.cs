@@ -11,23 +11,38 @@ using Domain.Models.Game;
 using External.UEX.Abstractions;
 using External.UEX.Extensions;
 using Local;
+using Microsoft.Extensions.Logging;
 
-internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(UexGameDataStateProvider stateProvider, UexApiDtoMapper mapper)
-    : IGameEntityExternalSyncRepository<TDomain>
+internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
+    UexGameDataStateProvider stateProvider,
+    UexApiDtoMapper mapper,
+    ILogger logger
+) : IGameEntityExternalSyncRepository<TDomain>
     where TSource : class
     where TDomain : class, IGameEntity
 {
+    protected ILogger Logger { get; } = logger;
+
     public virtual async ValueTask<GameDataState> LoadCurrentDataState(CancellationToken cancellationToken = default)
         => await stateProvider.LoadCurrentDataState(cancellationToken);
 
     public async ValueTask<GameEntitySyncData<TDomain>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         await GetDependencies().WaitUntilReadyAsync(cancellationToken);
-        var response = await GetInternalResponseAsync(cancellationToken).ConfigureAwait(false);
-        var cacheUntil = response.CreateResponseHeaders().GetCacheUntil();
-        var domainEntities = response.Result.Select(MapToDomain).ToAsyncEnumerable();
-        var dataState = await LoadCurrentDataState(cancellationToken);
-        return new GameEntitySyncData<TDomain>(domainEntities, dataState, cacheUntil);
+        try
+        {
+            var response = await GetInternalResponseAsync(cancellationToken).ConfigureAwait(false);
+            var cacheUntil = response.CreateResponseHeaders().GetCacheUntil();
+            var domainEntities = response.Result.Select(MapToDomain).ToAsyncEnumerable();
+            var dataState = await LoadCurrentDataState(cancellationToken);
+            return new GameEntitySyncData<TDomain>(domainEntities, dataState, cacheUntil);
+        }
+        catch (ExternalApiResponseProcessingException ex)
+        {
+            Logger.LogError(ex, "Failed processing response from remote API");
+            var entities = new List<TDomain>();
+            return new GameEntitySyncData<TDomain>(entities.ToAsyncEnumerable(), MissingGameDataState.Instance, DateTimeOffset.Now + TimeSpan.FromMinutes(15));
+        }
     }
 
     public async Task<TDomain?> GetAsync(IGameEntityId id, CancellationToken cancellationToken = default)

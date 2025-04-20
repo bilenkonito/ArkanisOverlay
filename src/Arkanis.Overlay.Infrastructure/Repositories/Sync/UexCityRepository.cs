@@ -5,14 +5,16 @@ using Domain.Abstractions;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 using Local;
+using Microsoft.Extensions.Logging;
 using Services;
 
 internal class UexCityRepository(
     GameEntityRepositoryDependencyResolver dependencyResolver,
     IUexGameApi gameApi,
     UexGameDataStateProvider stateProvider,
-    UexApiDtoMapper mapper
-) : UexGameEntityRepositoryBase<UniverseCityDTO, GameCity>(stateProvider, mapper)
+    UexApiDtoMapper mapper,
+    ILogger<UexCityRepository> logger
+) : UexGameEntityRepositoryBase<UniverseCityDTO, GameCity>(stateProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver

@@ -8,6 +8,7 @@ using Domain.Enums;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 using Local;
+using Microsoft.Extensions.Logging;
 using Services;
 
 internal class UexItemRepository(
@@ -15,8 +16,9 @@ internal class UexItemRepository(
     IGameEntityRepository<GameProductCategory> itemCategoryRepository,
     IUexItemsApi itemsApi,
     UexGameDataStateProvider stateProvider,
-    UexApiDtoMapper mapper
-) : UexGameEntityRepositoryBase<ItemDTO, GameItem>(stateProvider, mapper)
+    UexApiDtoMapper mapper,
+    ILogger<UexItemRepository> logger
+) : UexGameEntityRepositoryBase<ItemDTO, GameItem>(stateProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver.DependsOn<GameProductCategory>();

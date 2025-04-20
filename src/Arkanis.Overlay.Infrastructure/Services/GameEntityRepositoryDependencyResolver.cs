@@ -8,6 +8,9 @@ using Repositories.Exceptions;
 
 internal sealed class GameEntityRepositoryDependencyResolver(IServiceProvider serviceProvider)
 {
+    public Context DependsOn(IEnumerable<IDependable> dependencies)
+        => CreateDependencyContext(dependencies);
+
     public Context DependsOn<T>() where T : class, IGameEntity
         => CreateDependencyContextOn<T>();
 
@@ -31,8 +34,8 @@ internal sealed class GameEntityRepositoryDependencyResolver(IServiceProvider se
         return repository;
     }
 
-    private Context CreateDependencyContext(IDependable dependable)
-        => new(this, dependable);
+    private Context CreateDependencyContext(params IEnumerable<IDependable> dependencies)
+        => new(this, dependencies);
 
     public sealed class Context(GameEntityRepositoryDependencyResolver resolver, params IEnumerable<IDependable> dependencies) : IDependable
     {

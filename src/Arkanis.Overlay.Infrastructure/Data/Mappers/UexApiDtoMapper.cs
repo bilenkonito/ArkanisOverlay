@@ -261,7 +261,8 @@ internal partial class UexApiDtoMapper
     private GameLocationEntity GetGameLocationForTerminal(UniverseTerminalDTO terminal)
         => ResolveCachedGameEntity<GameCity>(terminal.Id_city) as GameLocationEntity
            ?? ResolveCachedGameEntity<GameOutpost>(terminal.Id_outpost) as GameLocationEntity
-           ?? ResolveCachedGameEntity<GameSpaceStation>(terminal.Id_space_station)
+           ?? ResolveCachedGameEntity<GameSpaceStation>(terminal.Id_space_station) as GameLocationEntity
+           ?? ResolveCachedGameEntity<GameStarSystem>(terminal.Id_star_system)
            ?? ThrowMissingMappingException<GameLocationEntity, UniverseTerminalDTO>(terminal.Id);
 
     private GameCompany GetCompanyForItem(ItemDTO item)

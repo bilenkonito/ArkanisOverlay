@@ -5,14 +5,16 @@ using Domain.Abstractions;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 using Local;
+using Microsoft.Extensions.Logging;
 using Services;
 
 internal class UexMoonRepository(
     GameEntityRepositoryDependencyResolver dependencyResolver,
     IUexGameApi gameApi,
     UexGameDataStateProvider stateProvider,
-    UexApiDtoMapper mapper
-) : UexGameEntityRepositoryBase<UniverseMoonDTO, GameMoon>(stateProvider, mapper)
+    UexApiDtoMapper mapper,
+    ILogger<UexMoonRepository> logger
+) : UexGameEntityRepositoryBase<UniverseMoonDTO, GameMoon>(stateProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver

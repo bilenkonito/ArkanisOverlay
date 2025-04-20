@@ -5,8 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddSearchServices(this IServiceCollection services)
-        => services.AddScoped<ISearchService, SearchService>();
+    public static IServiceCollection AddLegacySearchServices(this IServiceCollection services)
+        => services.AddScoped<ISearchService, LegacySearchService>();
+
+    public static IServiceCollection AddInMemorySearchServices(this IServiceCollection services)
+        => services.AddScoped<ISearchService, InMemorySearchService>();
 
     public static IServiceCollection AddEndpointManagerHostedService(this IServiceCollection services)
         => services.AddHostedService<EndpointManager>();
