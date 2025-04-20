@@ -1,4 +1,4 @@
-namespace Arkanis.Overlay.Infrastructure.UnitTests.Repositories.Sync;
+namespace Arkanis.Overlay.Infrastructure.UnitTests.Repositories.Sync.Live;
 
 using Domain.Models.Game;
 using Xunit.Abstractions;
