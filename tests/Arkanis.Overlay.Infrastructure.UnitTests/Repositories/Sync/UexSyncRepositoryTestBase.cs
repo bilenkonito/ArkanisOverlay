@@ -8,23 +8,24 @@ using Shouldly;
 using Xunit.Abstractions;
 using Xunit.Microsoft.DependencyInjection.Abstracts;
 
-public abstract class UexSyncRepositoryTestBase<T>(ITestOutputHelper testOutputHelper, UexSyncRepositoryTestFixture fixture)
-    : TestBed<UexSyncRepositoryTestFixture>(testOutputHelper, fixture)
-    where T : GameEntity
+public abstract class UexSyncRepositoryTestBase<TEntity, TFixture>(ITestOutputHelper testOutputHelper, TFixture fixture)
+    : TestBed<TFixture>(testOutputHelper, fixture)
+    where TEntity : GameEntity where TFixture : TestBedFixture
 {
     protected CancellationTokenSource TestCancellation { get; } = new(TimeSpan.FromSeconds(5));
 
     protected CancellationToken TestCancellationToken
         => TestCancellation.Token;
 
-    protected IGameEntityRepository<TEntity> ResolveRepositoryFor<TEntity>() where TEntity : class, IGameEntity
-        => _fixture.GetService<IGameEntityRepository<TEntity>>(_testOutputHelper).ShouldNotBeNull();
+    protected IGameEntityRepository<TOtherEntity> ResolveRepositoryFor<TOtherEntity>()
+        where TOtherEntity : class, IGameEntity
+        => _fixture.GetService<IGameEntityRepository<TOtherEntity>>(_testOutputHelper).ShouldNotBeNull();
 
-    protected IGameEntityExternalSyncRepository<T> ResolveSyncRepositoryFor()
-        => _fixture.GetService<IGameEntityExternalSyncRepository<T>>(_testOutputHelper).ShouldNotBeNull();
+    protected IGameEntityExternalSyncRepository<TEntity> ResolveSyncRepositoryFor()
+        => _fixture.GetService<IGameEntityExternalSyncRepository<TEntity>>(_testOutputHelper).ShouldNotBeNull();
 
     [Fact]
-    public async Task GetAllAsync_Should_Correctly_Map_All_Items()
+    public async Task GetAllAsync_Should_Correctly_Map_Items()
     {
         var repositorySUT = ResolveSyncRepositoryFor();
 
@@ -35,12 +36,12 @@ public abstract class UexSyncRepositoryTestBase<T>(ITestOutputHelper testOutputH
         entities.ShouldNotBeEmpty();
     }
 
-    protected async Task LoadDependenciesAsync<TEntity>(CancellationToken cancellationToken) where TEntity : class, IGameEntity
+    protected async Task LoadDependenciesAsync<TOtherEntity>(CancellationToken cancellationToken) where TOtherEntity : class, IGameEntity
     {
-        var planetRepository = ResolveRepositoryFor<TEntity>();
+        var planetRepository = ResolveRepositoryFor<TOtherEntity>();
         var gameDataState = new SyncedGameDataState(StarCitizenVersion.Create("4.1.0"), DateTimeOffset.UtcNow);
         var cacheUntil = gameDataState.UpdatedAt + TimeSpan.FromMinutes(10);
-        var syncData = new GameEntitySyncData<TEntity>(planetRepository.GetAllAsync(cancellationToken), gameDataState, cacheUntil);
+        var syncData = new GameEntitySyncData<TOtherEntity>(planetRepository.GetAllAsync(cancellationToken), gameDataState, cacheUntil);
         await planetRepository.UpdateAllAsync(syncData, cancellationToken);
     }
 
