@@ -4,9 +4,20 @@ using System.Collections;
 
 public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IEnumerable<GameEntityName.Part>
 {
+    private readonly Part[] _parts = Parts.ToArray();
+
     public GameEntityName(params Part[] parts) : this(parts.AsEnumerable())
     {
     }
+
+    public Name MainContent
+        => _parts.OfType<Name>().First();
+
+    public CompanyReference? Company
+        => _parts.OfType<CompanyReference>().FirstOrDefault();
+
+    public LocationReference? Location
+        => _parts.OfType<LocationReference>().FirstOrDefault();
 
     public IEnumerator<Part> GetEnumerator()
         => Parts.GetEnumerator();
@@ -34,19 +45,27 @@ public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IE
             };
     }
 
+    public interface IHasCode
+    {
+        string Code { get; }
+    }
+
+    public interface IHasShortName
+    {
+        string ShortName { get; }
+    }
+
     public sealed record ItemCategoryReference(GameProductCategory Category) : Reference(Category);
 
     public sealed record CompanyReference(GameCompany Company) : Reference(Company);
 
     public sealed record LocationReference(GameLocationEntity Location) : Reference(Location);
 
-    public sealed record Separator(string Content) : Part;
-
     public record Name(string FullName) : Part;
 
-    public sealed record NameWithCode(string FullName, string Code) : Name(FullName);
+    public record NameWithCode(string FullName, string Code) : Name(FullName), IHasCode;
 
-    public sealed record NameWithCodeAndShortVariant(string FullName, string Code, string ShortName) : Name(FullName);
+    public sealed record NameWithCodeAndShortVariant(string FullName, string Code, string ShortName) : NameWithCode(FullName, Code), IHasShortName;
 
-    public sealed record NameWithShortVariant(string FullName, string ShortName) : Name(FullName);
+    public sealed record NameWithShortVariant(string FullName, string ShortName) : Name(FullName), IHasShortName;
 }

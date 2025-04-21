@@ -191,7 +191,9 @@
                             <MudIcon Icon="@IconPicker.PickIconFor(entity.EntityCategory)"></MudIcon>
                             <MudDivider Vertical="true" FlexItem="true"></MudDivider>
 
-                            <h1 class="flex-1">@name</h1>
+                            <div class="my-n2">
+                                <GameEntityNameLabel Model="@entity.Name"/>
+                            </div>
                         </MudStack>
                     </MudPaper>
                 </MudVirtualize>

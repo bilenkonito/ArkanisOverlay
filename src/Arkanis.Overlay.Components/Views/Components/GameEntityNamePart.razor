@@ -1,0 +1,43 @@
+@using Arkanis.Overlay.Domain.Models.Game
+<MudStack AlignItems="@AlignItems.Center" Row>
+    <MudText Typo="@NameTypo" Style="@NameCss">
+        @if (Model is GameEntityName.IHasShortName shortVariant)
+        {
+            @shortVariant.ShortName
+        }
+        else
+        {
+            @Model.FullName
+        }
+    </MudText>
+    @if (!Embedded && Model is GameEntityName.IHasCode codeVariant)
+    {
+        <MudText HtmlTag="code"
+                 Color="@Color.Secondary"
+                 Style="@CodeCss">
+            @codeVariant.Code
+        </MudText>
+    }
+</MudStack>
+
+@code
+{
+
+    private string CodeCss
+        => $"font-family: monospace; {NameCss}";
+
+    private string NameCss
+        => !Embedded
+            ? "font-weight: bold"
+            : "font-weight: lighter";
+
+    private Typo NameTypo
+        => !Embedded
+            ? Typo.h5
+            : Typo.overline;
+
+    [Parameter] public required GameEntityName.Name Model { get; set; }
+
+    [Parameter] public bool Embedded { get; set; }
+
+}

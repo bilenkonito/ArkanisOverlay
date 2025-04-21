@@ -10,7 +10,11 @@ public abstract class GameLocationEntity(IGameEntityId id, GameLocationEntity? p
     public GameLocationEntity? Parent { get; } = parent;
 
     public HashSet<IGameEntityId> ParentIds { get; } = parent is not null
-        ? [parent.Id, ..parent.ParentIds]
+        ?
+        [
+            parent.Id,
+            ..parent.ParentIds,
+        ]
         : [];
 
     IGameLocation? IGameLocation.ParentLocation
@@ -30,5 +34,15 @@ public abstract class GameLocationEntity(IGameEntityId id, GameLocationEntity? p
                 yield return searchableAttribute;
             }
         }
+    }
+
+    public IEnumerable<GameLocationEntity> CreatePathToRoot()
+    {
+        foreach (var parent in Parent?.CreatePathToRoot() ?? [])
+        {
+            yield return parent;
+        }
+
+        yield return this;
     }
 }
