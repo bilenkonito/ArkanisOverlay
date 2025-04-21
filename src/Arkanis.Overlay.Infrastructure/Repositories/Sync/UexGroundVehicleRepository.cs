@@ -8,13 +8,13 @@ using Local;
 using Microsoft.Extensions.Logging;
 using Services;
 
-internal class UexVehicleRepository(
+internal class UexGroundVehicleRepository(
     GameEntityRepositoryDependencyResolver dependencyResolver,
     IUexGameApi gameApi,
     UexGameDataStateProvider stateProvider,
     UexApiDtoMapper mapper,
-    ILogger<UexVehicleRepository> logger
-) : UexGameEntityRepositoryBase<VehicleDTO, GameVehicle>(stateProvider, mapper, logger)
+    ILogger<UexGroundVehicleRepository> logger
+) : UexGameEntityRepositoryBase<VehicleDTO, GameGroundVehicle>(stateProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver.DependsOn<GameCompany>();
@@ -27,4 +27,7 @@ internal class UexVehicleRepository(
 
     protected override double? GetSourceApiId(VehicleDTO source)
         => source.Id;
+
+    protected override bool IncludeSourceModel(VehicleDTO sourceModel)
+        => sourceModel is { Is_spaceship: 0, Is_ground_vehicle: 1 };
 }

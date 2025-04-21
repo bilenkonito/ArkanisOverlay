@@ -210,9 +210,10 @@
 
     private readonly Dictionary<string, EntityCategorySearch> _categorySearchShortcuts = new()
     {
-        [":c"] = new EntityCategorySearch(GameEntityCategory.Commodity),
-        [":v"] = new EntityCategorySearch(GameEntityCategory.Vehicle),
         [":i"] = new EntityCategorySearch(GameEntityCategory.Item),
+        [":c"] = new EntityCategorySearch(GameEntityCategory.Commodity),
+        [":s"] = new EntityCategorySearch(GameEntityCategory.SpaceShip),
+        [":g"] = new EntityCategorySearch(GameEntityCategory.GroundVehicle),
         [":l"] = new EntityCategorySearch(GameEntityCategory.Location),
         [":f"] = new EntityCategorySearch(GameEntityCategory.Company),
     };

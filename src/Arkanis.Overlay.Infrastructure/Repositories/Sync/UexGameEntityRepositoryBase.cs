@@ -33,7 +33,7 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
         {
             var response = await GetInternalResponseAsync(cancellationToken).ConfigureAwait(false);
             var cacheUntil = response.CreateResponseHeaders().GetCacheUntil();
-            var domainEntities = response.Result.Select(MapToDomain).ToAsyncEnumerable();
+            var domainEntities = response.Result.Where(IncludeSourceModel).Select(MapToDomain).ToAsyncEnumerable();
             var dataState = await LoadCurrentDataState(cancellationToken);
             return new GameEntitySyncData<TDomain>(domainEntities, dataState, cacheUntil);
         }
@@ -53,6 +53,9 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
             ? MapToDomain(result)
             : null;
     }
+
+    protected virtual bool IncludeSourceModel(TSource sourceModel)
+        => true;
 
     protected virtual IDependable GetDependencies()
         => NoDependency.Instance;

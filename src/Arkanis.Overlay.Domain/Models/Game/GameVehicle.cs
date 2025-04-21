@@ -5,8 +5,13 @@ using Enums;
 using Search;
 using Trade;
 
-public class GameVehicle(int id, string fullName, string shortName, GameCompany manufacturer)
-    : GameEntity(UexApiGameEntityId.Create(id), GameEntityCategory.Vehicle), IGameManufactured, IGamePurchasable
+public abstract class GameVehicle(
+    int id,
+    string fullName,
+    string shortName,
+    GameCompany manufacturer,
+    GameEntityCategory vehicleCategory
+) : GameEntity(UexApiGameEntityId.Create(id), vehicleCategory), IGameManufactured, IGamePurchasable
 {
     public override IEnumerable<SearchableTrait> SearchableAttributes
     {
@@ -34,3 +39,19 @@ public class GameVehicle(int id, string fullName, string shortName, GameCompany 
     public GameTerminalType TerminalType
         => GameTerminalType.Item;
 }
+
+public class GameSpaceShip(int id, string fullName, string shortName, GameCompany manufacturer) : GameVehicle(
+    id,
+    fullName,
+    shortName,
+    manufacturer,
+    GameEntityCategory.SpaceShip
+);
+
+public class GameGroundVehicle(int id, string fullName, string shortName, GameCompany manufacturer) : GameVehicle(
+    id,
+    fullName,
+    shortName,
+    manufacturer,
+    GameEntityCategory.GroundVehicle
+);

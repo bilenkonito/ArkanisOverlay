@@ -129,7 +129,12 @@ internal partial class UexApiDtoMapper
     [UserMapping(Default = true)]
     public GameVehicle ToGameEntity(VehicleDTO source)
     {
-        var result = MapInternal(source);
+        GameVehicle result = source switch
+        {
+            { Is_spaceship: 1 } => MapInternalSpaceShip(source),
+            { Is_ground_vehicle: 1 } => MapInternalGroundVehicle(source),
+            _ => throw new ArgumentOutOfRangeException(nameof(source), source, "Unable to select corresponding vehicle type."),
+        };
         CacheGameEntityId<GameVehicle>(source.Id, result);
         return result;
     }
@@ -221,7 +226,14 @@ internal partial class UexApiDtoMapper
     [MapProperty(nameof(VehicleDTO.Name), "shortName")]
     [MapPropertyFromSource("manufacturer", Use = nameof(GetCompanyForVehicle))]
     [MapPropertyFromSource(nameof(GameVehicle.LatestBuyPrices), Use = nameof(GetLatestBuyPricesForVehicle))]
-    private partial GameVehicle MapInternal(VehicleDTO source);
+    private partial GameSpaceShip MapInternalSpaceShip(VehicleDTO source);
+
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapProperty(nameof(VehicleDTO.Name_full), "fullName")]
+    [MapProperty(nameof(VehicleDTO.Name), "shortName")]
+    [MapPropertyFromSource("manufacturer", Use = nameof(GetCompanyForVehicle))]
+    [MapPropertyFromSource(nameof(GameVehicle.LatestBuyPrices), Use = nameof(GetLatestBuyPricesForVehicle))]
+    private partial GameGroundVehicle MapInternalGroundVehicle(VehicleDTO source);
 
     [DoesNotReturn]
     private static T ThrowInvalidCacheException<T>(double? sourceId, [CallerArgumentExpression("sourceId")] string sourceIdExpression = "")
