@@ -30,7 +30,7 @@ public class GameItem(int id, string fullName, GameCompany manufacturer, GamePro
     public GameCompany Manufacturer
         => manufacturer;
 
-    public required Bounds<PriceTag> LatestBuyPrices { get; set; }
+    public Bounds<PriceTag> LatestBuyPrices { get; } = new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
 
     public GameTerminalType TerminalType
         => GameTerminalType.Item;

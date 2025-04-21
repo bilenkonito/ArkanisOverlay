@@ -23,9 +23,9 @@ public class GameCommodity(int id, string fullName, string codeName)
 
     public override GameEntityName Name { get; } = new(new GameEntityName.NameWithCode(fullName, codeName));
 
-    public required Bounds<PriceTag> LatestBuyPrices { get; set; }
+    public Bounds<PriceTag> LatestBuyPrices { get; } = new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
 
-    public required Bounds<PriceTag> LatestSellPrices { get; set; }
+    public Bounds<PriceTag> LatestSellPrices { get; } = new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
 
     public GameTerminalType TerminalType
         => GameTerminalType.Commodity;
