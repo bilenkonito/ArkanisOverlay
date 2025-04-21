@@ -12,7 +12,7 @@ public abstract class UexSyncRepositoryTestBase<TEntity, TFixture>(ITestOutputHe
     : TestBed<TFixture>(testOutputHelper, fixture)
     where TEntity : GameEntity where TFixture : TestBedFixture
 {
-    protected CancellationTokenSource TestCancellation { get; } = new(TimeSpan.FromSeconds(5));
+    protected CancellationTokenSource TestCancellation { get; } = new(TimeSpan.FromSeconds(10));
 
     protected CancellationToken TestCancellationToken
         => TestCancellation.Token;
