@@ -156,7 +156,7 @@
     <MudFocusTrap DefaultFocus="@DefaultFocus.FirstChild">
         <MudPaper>
             <MudTextField id="searchBox"
-                          @ref="SearchBox"
+                          @ref="_searchBox"
                           T="string"
                           @bind-Value="SearchText"
                           @bind-Value:after="SearchAsync"
@@ -175,11 +175,13 @@
                 Found @SearchResults.GameEntities.Count results in @SearchResults.SearchTime.Humanize()
             </MudChip>
 
-            <MudStack Class="mt-10" Style="width: 100%; min-height: 20vh;">
-                @foreach (var result in SearchResults.GameEntities)
-                {
-                    var entity = result.TypedSubject;
-                    <MudPaper @key="@result.TypedSubject.GetHashCode()"
+            <MudStack Class="mt-10 w-100">
+                <MudVirtualize Items="@SearchResults.GameEntities" ItemSize="66" Enabled>
+                    @{
+                        var entity = context.TypedSubject;
+                        var name = entity.Name.Parts.OfType<GameEntityName.Name>().First().FullName;
+                    }
+                    <MudPaper @key="@context.TypedSubject.GetHashCode()"
                               Style="width: 100%"
                               Class="search-result px-4 py-2 focus" tabindex="0">
                         <MudStack Row="true" Style="width: 100%"
@@ -187,13 +189,11 @@
 
                             <MudIcon Icon="@IconPicker.PickIconFor(entity.EntityCategory)"></MudIcon>
                             <MudDivider Vertical="true" FlexItem="true"></MudDivider>
-                            <h1 class="flex-1">@(entity.Name.Parts.OfType<GameEntityName.Name>().First().FullName)</h1>
 
-                            <p>@result.TopMatch?.TargetAttribute @result.TopMatch?.Score</p>
+                            <h1 class="flex-1">@name</h1>
                         </MudStack>
                     </MudPaper>
-                }
-
+                </MudVirtualize>
             </MudStack>
         }
     </MudFocusTrap>
@@ -202,13 +202,17 @@
 @code
 {
     private static CancellationTokenSource _searchCancellation = new();
-    private static MudTextField<string>? SearchBox { get; set; }
+    private static MudTextField<string>? _searchBox;
+
     private string SearchText { get; set; } = "";
 
     private GameEntitySearchResults SearchResults { get; set; } = GameEntitySearchResults.Empty;
 
     [JSInvokable("ClickAwayHide")]
-    public void ClickAwayHide() => OverlayControls.HideAsync();
+    public void ClickAwayHide()
+    {
+        OverlayControls.HideAsync();
+    }
 
     private async Task SearchAsync()
     {
@@ -221,10 +225,11 @@
                 return;
             }
 
-            var searchQueries = new List<SearchQuery>
-            {
-                new FuzzyStringSearch(SearchText),
-            };
+            var searchQueries = SearchText.Split(',')
+                .Select(searchPart => searchPart.Trim())
+                .Where(searchPart => !string.IsNullOrWhiteSpace(searchPart))
+                .Select(FuzzyStringSearch.Create)
+                .ToList();
 
             await _searchCancellation.CancelAsync();
             _searchCancellation = new CancellationTokenSource();
@@ -246,5 +251,7 @@
     }
 
     private async Task OpenUserOptionsDialogAsync()
-        => await UserPreferencesEditDialog.ShowAsync(DialogService);
+    {
+        await UserPreferencesEditDialog.ShowAsync(DialogService);
+    }
 }

@@ -4,7 +4,7 @@ using Search;
 
 public sealed class GameStarSystem(int id, string fullName, string codeName) : GameLocationEntity(UexApiGameEntityId.Create(id), null)
 {
-    public override IEnumerable<SearchableAttribute> SearchableAttributes
+    public override IEnumerable<SearchableTrait> SearchableAttributes
     {
         get
         {

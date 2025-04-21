@@ -5,7 +5,7 @@ using Search;
 public sealed class GameMoon(int id, string fullName, string codeName, GameLocationEntity location)
     : GameLocationEntity(UexApiGameEntityId.Create(id), location)
 {
-    public override IEnumerable<SearchableAttribute> SearchableAttributes
+    public override IEnumerable<SearchableTrait> SearchableAttributes
     {
         get
         {

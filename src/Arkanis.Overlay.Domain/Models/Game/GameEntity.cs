@@ -8,7 +8,7 @@ public abstract class GameEntity(IGameEntityId id, GameEntityCategory entityCate
 {
     public GameEntityCategory EntityCategory { get; } = entityCategory;
 
-    public virtual IEnumerable<SearchableAttribute> SearchableAttributes { get; } = [new SearchableEntityCategory(entityCategory)];
+    public virtual IEnumerable<SearchableTrait> SearchableAttributes { get; } = [new SearchableEntityCategory(entityCategory)];
 
     public abstract GameEntityName Name { get; }
 

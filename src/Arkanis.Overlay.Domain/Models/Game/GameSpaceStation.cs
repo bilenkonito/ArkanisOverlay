@@ -5,7 +5,7 @@ using Search;
 public sealed class GameSpaceStation(int id, string fullName, string shortName, GameLocationEntity location)
     : GameLocationEntity(UexApiGameEntityId.Create(id), location)
 {
-    public override IEnumerable<SearchableAttribute> SearchableAttributes
+    public override IEnumerable<SearchableTrait> SearchableAttributes
     {
         get
         {

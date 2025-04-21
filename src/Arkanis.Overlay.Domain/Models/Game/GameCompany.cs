@@ -6,7 +6,7 @@ using Search;
 public sealed class GameCompany(int id, string fullName, string shortName)
     : GameEntity(UexApiGameEntityId.Create(id), GameEntityCategory.Company)
 {
-    public override IEnumerable<SearchableAttribute> SearchableAttributes
+    public override IEnumerable<SearchableTrait> SearchableAttributes
     {
         get
         {

@@ -16,7 +16,7 @@ public abstract class GameLocationEntity(IGameEntityId id, GameLocationEntity? p
     IGameLocation? IGameLocation.ParentLocation
         => Parent;
 
-    public override IEnumerable<SearchableAttribute> SearchableAttributes
+    public override IEnumerable<SearchableTrait> SearchableAttributes
     {
         get
         {

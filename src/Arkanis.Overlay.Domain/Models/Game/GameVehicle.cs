@@ -8,7 +8,7 @@ using Trade;
 public class GameVehicle(int id, string fullName, string shortName, GameCompany manufacturer)
     : GameEntity(UexApiGameEntityId.Create(id), GameEntityCategory.Vehicle), IGameManufactured, IGamePurchasable
 {
-    public override IEnumerable<SearchableAttribute> SearchableAttributes
+    public override IEnumerable<SearchableTrait> SearchableAttributes
     {
         get
         {

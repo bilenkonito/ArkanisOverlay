@@ -11,7 +11,7 @@ public sealed class GameTerminal(
     GameLocationEntity location
 ) : GameLocationEntity(UexApiGameEntityId.Create(id), location)
 {
-    public override IEnumerable<SearchableAttribute> SearchableAttributes
+    public override IEnumerable<SearchableTrait> SearchableAttributes
     {
         get
         {

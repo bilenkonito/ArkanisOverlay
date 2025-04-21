@@ -4,18 +4,25 @@ using Abstractions;
 
 public record SearchMatchResult(ISearchable Subject, List<SearchMatch> Matches) : IComparable<SearchMatchResult>
 {
-    public ScoredMatch? TopMatch { get; } = Matches.OfType<ScoredMatch>().FirstOrDefault();
+    public IEnumerable<ScoredMatch> ScoredMatches
+        => Matches.OfType<ScoredMatch>();
 
-    public bool IsExcluded { get; } = Matches.OfType<ExcludeMatch>().Any();
+    public double ScoreTotal
+        => ScoredMatches.Select((match, index) => match.NormalizedScore / double.Pow(2, index)).Sum();
+
+    public bool IsExplicitlyExcluded { get; } = Matches.OfType<ExcludeMatch>().Any();
+
+    public bool ShouldBeCutOff
+        => IsExplicitlyExcluded || ScoreTotal == 0;
 
     public int CompareTo(SearchMatchResult? other)
     {
-        if (IsExcluded)
+        if (IsExplicitlyExcluded)
         {
             return -1;
         }
 
-        return TopMatch?.CompareTo(other?.TopMatch) ?? 0;
+        return ScoreTotal.CompareTo(other?.ScoreTotal ?? 0);
     }
 
     public T Merge<T>(T other) where T : SearchMatchResult
@@ -25,8 +32,14 @@ public record SearchMatchResult(ISearchable Subject, List<SearchMatch> Matches) 
             throw new InvalidOperationException("Cannot merge match result of two different subjects.");
         }
 
-        other.Matches.AddRange(Matches);
-        return other;
+        return other with
+        {
+            Matches = other.Matches.Concat(Matches)
+                .OrderDescending()
+                .GroupBy(match => match.TargetTrait)
+                .Select(group => group.Max() ?? group.First())
+                .ToList(),
+        };
     }
 
     public static SearchMatchResult Create(ISearchable subject, IEnumerable<SearchMatch> matches)

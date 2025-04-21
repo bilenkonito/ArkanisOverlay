@@ -20,10 +20,9 @@ public class InMemorySearchService(
                 .Select(query => query.Match(entity))
                 .Aggregate((result1, result2) => result1.Merge(result2))
             )
-            .Where(result => result.IsExcluded == false)
+            .Where(result => result.ShouldBeCutOff == false)
+            .OrderByDescending(result => result)
             .ToListAsync(cancellationToken);
-
-        matches.Sort((a, b) => b.CompareTo(a));
 
         var searchElapsed = stopwatch.Elapsed;
         logger.LogDebug("Search yielded {SearchMatches} results in {SearchLengthMs}ms", matches.Count, searchElapsed.TotalMilliseconds);
