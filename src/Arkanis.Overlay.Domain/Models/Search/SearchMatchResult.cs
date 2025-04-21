@@ -2,7 +2,7 @@ namespace Arkanis.Overlay.Domain.Models.Search;
 
 using Abstractions;
 
-public record SearchMatchResult(ISearchable Subject, List<SearchMatch> Matches) : IComparable<SearchMatchResult>
+public abstract record SearchMatchResult(List<SearchMatch> Matches) : IComparable<SearchMatchResult>
 {
     public IEnumerable<ScoredMatch> ScoredMatches
         => Matches.OfType<ScoredMatch>();
@@ -31,14 +31,41 @@ public record SearchMatchResult(ISearchable Subject, List<SearchMatch> Matches) 
         return ScoreTotal.CompareTo(other?.ScoreTotal ?? 0);
     }
 
-    public T Merge<T>(T other) where T : SearchMatchResult
-    {
-        if (Subject != other.Subject)
-        {
-            throw new InvalidOperationException("Cannot merge match result of two different subjects.");
-        }
+    public static SearchMatchResult<T> Create<T>(T subject, IEnumerable<SearchMatch> matches) where T : ISearchable
+        => new(subject, PreprocessMatches(matches));
 
-        return other with
+    public static SearchMatchResult<T> CreateEmpty<T>(T subject) where T : ISearchable
+        => new(subject, []);
+
+    private static List<SearchMatch> PreprocessMatches(IEnumerable<SearchMatch> matches)
+        => matches
+            .Where(match => match is not NoMatch)
+            .Where(match => match is not ScoredMatch { Score: 0 })
+            .OrderDescending()
+            .ToList();
+
+    public static bool operator <(SearchMatchResult left, SearchMatchResult right)
+        => ReferenceEquals(left, null)
+            ? !ReferenceEquals(right, null)
+            : left.CompareTo(right) < 0;
+
+    public static bool operator <=(SearchMatchResult left, SearchMatchResult right)
+        => ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
+
+    public static bool operator >(SearchMatchResult left, SearchMatchResult right)
+        => !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
+
+    public static bool operator >=(SearchMatchResult left, SearchMatchResult right)
+        => ReferenceEquals(left, null)
+            ? ReferenceEquals(right, null)
+            : left.CompareTo(right) >= 0;
+}
+
+public record SearchMatchResult<T>(T Subject, List<SearchMatch> Matches)
+    : SearchMatchResult(Matches) where T : ISearchable
+{
+    public SearchMatchResult<T> Merge(SearchMatchResult other)
+        => this with
         {
             Matches = other.Matches.Concat(Matches)
                 .GroupBy(match => (match.GetType(), match.TargetTrait))
@@ -46,25 +73,4 @@ public record SearchMatchResult(ISearchable Subject, List<SearchMatch> Matches) 
                 .OrderDescending()
                 .ToList(),
         };
-    }
-
-    public static SearchMatchResult Create(ISearchable subject, IEnumerable<SearchMatch> matches)
-        => new(subject, PreprocessMatches(matches));
-
-    public static SearchMatchResult<T> Create<T>(T subject, IEnumerable<SearchMatch> matches) where T : ISearchable
-        => new(subject, PreprocessMatches(matches));
-
-    private static List<SearchMatch> PreprocessMatches(IEnumerable<SearchMatch> matches)
-        => matches
-            .Where(match => match is not NoMatch)
-            .Where(match => match is not ScoredMatch
-                {
-                    Score: 0,
-                }
-            )
-            .OrderDescending()
-            .ToList();
 }
-
-public record SearchMatchResult<T>(T TypedSubject, List<SearchMatch> Matches)
-    : SearchMatchResult(TypedSubject, Matches) where T : ISearchable;

@@ -1,6 +1,7 @@
 @using System.Text
 @using Arkanis.Overlay.Components.Helpers
 @using Arkanis.Overlay.Components.Shared.Dialogs
+@using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Abstractions.Services
 @using Arkanis.Overlay.Domain.Enums
@@ -178,14 +179,14 @@
             <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
                 <MudVirtualize Items="@SearchResults.GameEntities" ItemSize="66" Enabled>
                     @{
-                        var entity = context.TypedSubject;
-                        var name = entity.Name.Parts.OfType<GameEntityName.Name>().First().FullName;
+                        var entity = context.Subject;
                     }
-                    <MudPaper @key="@context.TypedSubject.GetHashCode()"
-                              Style="width: 100%"
-                              Class="search-result px-4 py-2 focus" tabindex="0">
-                        <MudStack Row="true" Style="width: 100%"
-                                  Class="justify-center align-center align-content-center">
+                    <MudPaper @key="@context.Subject.GetHashCode()"
+                              Class="w-100 search-result px-4 py-2 focus" tabindex="0">
+                        <MudStack Class="w-100"
+                                  Justify="@Justify.FlexStart"
+                                  AlignItems="@AlignItems.Center"
+                                  Row>
 
                             <MudIcon Icon="@IconPicker.PickIconFor(entity.EntityCategory)"></MudIcon>
                             <MudDivider Vertical="true" FlexItem="true"></MudDivider>

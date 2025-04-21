@@ -10,5 +10,5 @@ public partial class SearchResultComponent : ComponentBase
     public required SearchMatchResult<IGameEntity> SearchResult { get; set; }
 
     private IGameEntity GameEntity
-        => SearchResult.TypedSubject;
+        => SearchResult.Subject;
 }
