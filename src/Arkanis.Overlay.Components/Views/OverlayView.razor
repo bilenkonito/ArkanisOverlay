@@ -1,11 +1,9 @@
 @using System.Text
 @using Arkanis.Overlay.Components.Helpers
 @using Arkanis.Overlay.Components.Shared.Dialogs
-@using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Abstractions.Services
 @using Arkanis.Overlay.Domain.Enums
-@using Arkanis.Overlay.Domain.Models.Game
 @using Arkanis.Overlay.Domain.Models.Search
 @using Humanizer
 @using Microsoft.Extensions.Logging
@@ -99,7 +97,7 @@
 
         .mud-input-control {
             margin: 0;
-            width: 60vw;
+            min-width: 60vw;
         }
 
         .mud-input,
@@ -149,7 +147,7 @@
     Color="@Color.Primary"
     Icon="@MaterialSymbols.Outlined.Settings"
     OnClick="@OpenUserOptionsDialogAsync"
-    Style="position: absolute; top: 2rem; right: 2rem"/>
+    Style="position: fixed; top: 6px; right: 6px; z-index: 100"/>
 
 <MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
     <div style="padding: 7.5vh"></div>
@@ -194,6 +192,9 @@
                             <div class="my-n2">
                                 <GameEntityNameLabel Model="@entity.Name"/>
                             </div>
+
+                            <GameEntitySearchDetails Model="@entity"/>
+                            <GameEntitySearchControls Model="@entity"/>
                         </MudStack>
                     </MudPaper>
                 </MudVirtualize>

@@ -12,19 +12,12 @@
     </MudText>
     @if (!Embedded && Model is GameEntityName.IHasCode codeVariant)
     {
-        <MudText HtmlTag="code"
-                 Color="@Color.Secondary"
-                 Style="@CodeCss">
-            @codeVariant.Code
-        </MudText>
+        <GameEntityNameCodePart Model="@codeVariant"/>
     }
 </MudStack>
 
 @code
 {
-
-    private string CodeCss
-        => $"font-family: monospace; {NameCss}";
 
     private string NameCss
         => !Embedded

@@ -1,0 +1,36 @@
+@using Arkanis.Overlay.Domain.Abstractions.Game
+<MudStack Class="flex-1"
+          Spacing="4"
+          AlignItems="@AlignItems.Center"
+          Justify="@Justify.FlexEnd"
+          Style="height: 46px;"
+          Row>
+    @if (Model is IGamePurchasable purchasable)
+    {
+        <PriceTagInfo
+            Label="Min buy"
+            Model="@purchasable.LatestBuyPrices.Min"
+            Color="lightskyblue"/>
+    }
+    @if (Model is IGameSellable sellable)
+    {
+        <PriceTagInfo
+            Label="Max sell"
+            Model="@sellable.LatestSellPrices.Max"
+            Color="sandybrown"/>
+    }
+    @if (Model is IGameRentable rentable)
+    {
+        <PriceTagInfo
+            Label="Min rent"
+            Model="@rentable.LatestRentPrices.Min"
+            Color="sandybrown"/>
+    }
+</MudStack>
+
+@code
+{
+
+    [Parameter] public required IGameEntity Model { get; set; }
+
+}
