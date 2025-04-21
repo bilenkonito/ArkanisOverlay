@@ -28,6 +28,10 @@ internal class UexGroundVehicleRepository(
     protected override double? GetSourceApiId(VehicleDTO source)
         => source.Id;
 
+    /// <remarks>
+    ///     Only ground vehicles must be processed by this repository.
+    ///     Exception is raised otherwise on type disparity after domain object mapping.
+    /// </remarks>
     protected override bool IncludeSourceModel(VehicleDTO sourceModel)
         => sourceModel is { Is_spaceship: 0, Is_ground_vehicle: 1 };
 }

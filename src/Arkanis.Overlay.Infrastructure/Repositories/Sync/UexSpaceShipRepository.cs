@@ -28,6 +28,10 @@ internal class UexSpaceShipRepository(
     protected override double? GetSourceApiId(VehicleDTO source)
         => source.Id;
 
+    /// <remarks>
+    ///     Only space ships must be processed by this repository.
+    ///     Exception is raised otherwise on type disparity after domain object mapping.
+    /// </remarks>
     protected override bool IncludeSourceModel(VehicleDTO sourceModel)
         => sourceModel is { Is_spaceship: 1, Is_ground_vehicle: 0 };
 }
