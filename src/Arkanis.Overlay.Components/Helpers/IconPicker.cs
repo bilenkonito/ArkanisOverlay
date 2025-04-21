@@ -26,8 +26,11 @@ public class IconPicker : IIconPicker
         => value switch
         {
             GameEntityCategory.Commodity => Icons.Material.Outlined.Diamond,
-            GameEntityCategory.Vehicle => Icons.Material.Outlined.CarRental,
+            GameEntityCategory.Vehicle => Icons.Material.Outlined.Rocket, // or more generic "van" - LocalShipping
             GameEntityCategory.Item => Icons.Material.Outlined.Category,
+            GameEntityCategory.ItemCategory => Icons.Material.Outlined.Topic,
+            GameEntityCategory.Company => Icons.Material.Outlined.Domain,
+            GameEntityCategory.Location => Icons.Material.Outlined.Public,
             _ => DefaultIcon,
         };
 
