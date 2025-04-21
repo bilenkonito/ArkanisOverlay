@@ -1,7 +1,9 @@
+@using System.Text
 @using Arkanis.Overlay.Components.Helpers
 @using Arkanis.Overlay.Components.Shared.Dialogs
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Abstractions.Services
+@using Arkanis.Overlay.Domain.Enums
 @using Arkanis.Overlay.Domain.Models.Game
 @using Arkanis.Overlay.Domain.Models.Search
 @using Humanizer
@@ -91,11 +93,7 @@
     }
 
     #searchContainer {
-        position: relative;
-        top: 20%;
-        left: 50%;
-        transform: translate(-50%, 0%);
-        width: fit-content;
+        position: sticky;
         z-index: 1;
 
         .mud-input-control {
@@ -153,20 +151,22 @@
     Style="position: absolute; top: 2rem; right: 2rem"/>
 
 <MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
+    <div style="padding: 7.5vh"></div>
     <MudFocusTrap DefaultFocus="@DefaultFocus.FirstChild">
-        <MudPaper>
-            <MudTextField id="searchBox"
-                          @ref="_searchBox"
-                          T="string"
-                          @bind-Value="SearchText"
-                          @bind-Value:after="SearchAsync"
-                          Variant="Variant.Outlined"
-                          Adornment="Adornment.End"
-                          AdornmentIcon="@Icons.Material.Filled.Search"
-                          AdornmentColor="Color.Secondary"
-                          HelperText=":c Commodities, :s Ships, :v Vehicles, :i Items, :l Locations"
-                          AutoFocus
-                          Immediate/>
+        <MudPaper Style="position: sticky; top: 0; z-index: 10">
+            <MudTextField
+                id="searchBox"
+                @ref="_searchBox"
+                T="string"
+                @bind-Value="SearchText"
+                @bind-Value:after="SearchAsync"
+                Variant="Variant.Outlined"
+                Adornment="Adornment.End"
+                AdornmentIcon="@Icons.Material.Filled.Search"
+                AdornmentColor="Color.Secondary"
+                HelperText="@ShortcutsText"
+                AutoFocus
+                Immediate/>
         </MudPaper>
 
         @if (SearchResults.GameEntities.Count > 0)
@@ -175,7 +175,7 @@
                 Found @SearchResults.GameEntities.Count results in @SearchResults.SearchTime.Humanize()
             </MudChip>
 
-            <MudStack Class="mt-10 w-100">
+            <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
                 <MudVirtualize Items="@SearchResults.GameEntities" ItemSize="66" Enabled>
                     @{
                         var entity = context.TypedSubject;
@@ -201,8 +201,24 @@
 
 @code
 {
+    private const StringSplitOptions SplittingOptions
+        = StringSplitOptions.RemoveEmptyEntries
+          | StringSplitOptions.TrimEntries;
+
     private static CancellationTokenSource _searchCancellation = new();
     private static MudTextField<string>? _searchBox;
+
+    private readonly Dictionary<string, EntityCategorySearch> _categorySearchShortcuts = new()
+    {
+        [":c"] = new EntityCategorySearch(GameEntityCategory.Commodity),
+        [":v"] = new EntityCategorySearch(GameEntityCategory.Vehicle),
+        [":i"] = new EntityCategorySearch(GameEntityCategory.Item),
+        [":l"] = new EntityCategorySearch(GameEntityCategory.Location),
+        [":f"] = new EntityCategorySearch(GameEntityCategory.Company),
+    };
+
+    private string ShortcutsText
+        => new StringBuilder().AppendJoin(", ", _categorySearchShortcuts.Select(search => $"{search.Key} {search.Value.Category.Humanize().Pluralize()}")).ToString();
 
     private string SearchText { get; set; } = "";
 
@@ -225,10 +241,15 @@
                 return;
             }
 
-            var searchQueries = SearchText.Split(',')
-                .Select(searchPart => searchPart.Trim())
-                .Where(searchPart => !string.IsNullOrWhiteSpace(searchPart))
-                .Select(FuzzyStringSearch.Create)
+            var searchQueries = SearchText.Split(',', SplittingOptions)
+                .SelectMany(searchPart => searchPart.StartsWith(':')
+                    ? searchPart.Split(' ', 2, SplittingOptions)
+                    : [searchPart]
+                )
+                .Select(searchPart => searchPart.StartsWith(':')
+                    ? _categorySearchShortcuts.GetValueOrDefault(searchPart) ?? EmptySearch.Instance
+                    : FuzzyStringSearch.Create(searchPart))
+                .Where(search => search is not EmptySearch)
                 .ToList();
 
             await _searchCancellation.CancelAsync();
