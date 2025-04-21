@@ -91,13 +91,19 @@
         overflow: hidden;
     }
 
+    #currentLocation + .mud-input-control.mud-input-input-control {
+        fieldset.mud-input-outlined-border {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }
+
     #searchContainer {
         position: sticky;
         z-index: 1;
 
         .mud-input-control {
             margin: 0;
-            min-width: 60vw;
         }
 
         .mud-input,
@@ -152,59 +158,82 @@
 <MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
     <div style="padding: 7.5vh"></div>
     <MudFocusTrap DefaultFocus="@DefaultFocus.FirstChild">
-        <MudPaper Style="position: sticky; top: 0; z-index: 10">
-            <MudTextField
-                id="searchBox"
-                @ref="_searchBox"
-                T="string"
-                @bind-Value="SearchText"
-                @bind-Value:after="SearchAsync"
-                Variant="Variant.Outlined"
-                Adornment="Adornment.End"
-                AdornmentIcon="@Icons.Material.Filled.Search"
-                AdornmentColor="Color.Secondary"
-                HelperText="@ShortcutsText"
-                AutoFocus
-                Immediate/>
+        <MudPaper Elevation="8"
+                  Style="position: sticky; top: 0; z-index: 10; min-width: 60vw;">
+            <MudStack Spacing="0"
+                      AlignItems="@AlignItems.Center">
+                <MudStack Spacing="0"
+                          Class="w-100"
+                          Row>
+                    @if (_searchContext.CurrentLocation is { } currentLocation)
+                    {
+                        <div class="px-4 d-flex align-center"
+                             id="currentLocation"
+                             style="border: 1px solid var(--mud-palette-lines-inputs); border-radius: var(--mud-default-borderradius); border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                            <GameEntityNameLabel
+                                Model="@currentLocation.Name"/>
+                        </div>
+                    }
+                    <MudTextField
+                        id="searchBox"
+                        @ref="_searchBox"
+                        T="string"
+                        Style="border-bottom-left-radius: 0; border-top-left-radius: 0"
+                        @bind-Value="@SearchText"
+                        @bind-Value:after="@SearchAsync"
+                        Variant="Variant.Outlined"
+                        Adornment="@Adornment.End"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        AdornmentColor="@Color.Secondary"
+                        AutoFocus
+                        Immediate/>
+                </MudStack>
+                <MudText Typo="@Typo.overline" Class="text-secondary">
+                    @ShortcutsText
+                </MudText>
+            </MudStack>
         </MudPaper>
 
-        @if (SearchResults.GameEntities.Count > 0)
-        {
-            <MudChip T="string" Variant="@Variant.Text">
-                Found @SearchResults.GameEntities.Count results in @SearchResults.SearchTime.Humanize()
-            </MudChip>
+        <CascadingValue Value="@_searchContext" IsFixed>
+            @if (SearchResults.GameEntities.Count > 0)
+            {
+                <MudChip T="string" Variant="@Variant.Text">
+                    Found @SearchResults.GameEntities.Count results in @SearchResults.SearchTime.Humanize()
+                </MudChip>
 
-            <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
-                <MudVirtualize Items="@SearchResults.GameEntities" ItemSize="66" Enabled>
-                    @{
-                        var entity = context.Subject;
-                    }
-                    <MudPaper @key="@context.Subject.GetHashCode()"
-                              Class="w-100 search-result px-4 py-2 focus" tabindex="0">
-                        <MudStack Class="w-100"
-                                  Justify="@Justify.FlexStart"
-                                  AlignItems="@AlignItems.Center"
-                                  Row>
+                <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
+                    <MudVirtualize Items="@SearchResults.GameEntities" ItemSize="66" Enabled>
+                        @{
+                            var entity = context.Subject;
+                        }
+                        <MudPaper @key="@context.Subject.GetHashCode()"
+                                  Class="w-100 search-result px-4 py-2 focus" tabindex="0">
+                            <MudStack Class="w-100"
+                                      Justify="@Justify.FlexStart"
+                                      AlignItems="@AlignItems.Center"
+                                      Row>
 
-                            <MudIcon Icon="@IconPicker.PickIconFor(entity.EntityCategory)"></MudIcon>
-                            <MudDivider Vertical="true" FlexItem="true"></MudDivider>
+                                <MudIcon Icon="@IconPicker.PickIconFor(entity.EntityCategory)"></MudIcon>
+                                <MudDivider Vertical="true" FlexItem="true"></MudDivider>
 
-                            <div class="my-n2">
-                                <GameEntityNameLabel Model="@entity.Name"/>
-                            </div>
+                                <div class="my-n2">
+                                    <GameEntityNameLabel Model="@entity.Name"/>
+                                </div>
 
-                            <GameEntitySearchDetails Model="@entity"/>
-                            <GameEntitySearchControls Model="@entity"/>
-                        </MudStack>
-                    </MudPaper>
-                </MudVirtualize>
-            </MudStack>
-        }
+                                <GameEntitySearchDetails Model="@entity"/>
+                                <GameEntitySearchControls Model="@entity"/>
+                            </MudStack>
+                        </MudPaper>
+                    </MudVirtualize>
+                </MudStack>
+            }
+        </CascadingValue>
     </MudFocusTrap>
 </MudStack>
 
 @code
 {
+
     private const StringSplitOptions SplittingOptions
         = StringSplitOptions.RemoveEmptyEntries
           | StringSplitOptions.TrimEntries;
@@ -221,6 +250,23 @@
         [":l"] = new EntityCategorySearch(GameEntityCategory.Location),
         [":f"] = new EntityCategorySearch(GameEntityCategory.Company),
     };
+
+    private OverlaySearchContext _searchContext = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _searchContext = new OverlaySearchContext
+        {
+            ConfigChanged = EventCallback.Factory.Create<OverlaySearchContext>(this, OnSearchContextChange),
+        };
+    }
+
+    private async Task OnSearchContextChange(OverlaySearchContext newContext)
+    {
+        await SearchAsync();
+        await InvokeAsync(StateHasChanged);
+    }
 
     private string ShortcutsText
         => new StringBuilder().AppendJoin(", ", _categorySearchShortcuts.Select(search => $"{search.Key} {search.Value.Category.Humanize().Pluralize()}")).ToString();
@@ -256,6 +302,11 @@
                     : FuzzyStringSearch.Create(searchPart))
                 .Where(search => search is not EmptySearch)
                 .ToList();
+
+            if (_searchContext.CurrentLocation is { } location)
+            {
+                searchQueries.Add(new LocationSearch(location));
+            }
 
             await _searchCancellation.CancelAsync();
             _searchCancellation = new CancellationTokenSource();
