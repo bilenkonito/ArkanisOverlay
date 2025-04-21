@@ -29,12 +29,20 @@ internal class UexItemRepository(
         var items = new List<ItemDTO>();
 
         UexApiResponse<GetItemsOkResponse>? response = null;
+        var responseDetectedAsNull = false;
         foreach (var category in categories.Where(x => x.CategoryType == GameItemCategoryType.Item))
         {
             var categoryEntityId = category.Id as UexApiGameEntityId;
             var categoryId = (categoryEntityId?.Identity ?? 0).ToString(CultureInfo.InvariantCulture);
             response = await itemsApi.GetItemsByCategoryAsync(categoryId, cancellationToken).ConfigureAwait(false);
-            items.AddRange(response.Result.Data ?? ThrowCouldNotParseResponse());
+            responseDetectedAsNull |= response.Result.Data is null;
+            items.AddRange(response.Result.Data ?? []);
+        }
+
+        if (items.Count == 0 && responseDetectedAsNull)
+        {
+            // temporary workaround, some responses return Result.Data=null
+            ThrowCouldNotParseResponse();
         }
 
         return CreateResponse(response, items);
@@ -42,4 +50,11 @@ internal class UexItemRepository(
 
     protected override double? GetSourceApiId(ItemDTO source)
         => source.Id;
+
+    /// <remarks>
+    ///     Some items do not have company ID defined.
+    ///     Typical example are centurion/imperator subscriber items.
+    /// </remarks>
+    protected override bool IncludeSourceModel(ItemDTO sourceModel)
+        => sourceModel.Id_company > 0;
 }
