@@ -10,11 +10,7 @@ public abstract class GameLocationEntity(IGameEntityId id, GameLocationEntity? p
     public GameLocationEntity? Parent { get; } = parent;
 
     public HashSet<IGameEntityId> ParentIds { get; } = parent is not null
-        ?
-        [
-            parent.Id,
-            ..parent.ParentIds,
-        ]
+        ? [parent.Id, ..parent.ParentIds]
         : [];
 
     IGameLocation? IGameLocation.ParentLocation
@@ -26,7 +22,7 @@ public abstract class GameLocationEntity(IGameEntityId id, GameLocationEntity? p
         {
             if (Parent is not null)
             {
-                yield return new SearchableLocation(Parent);
+                yield return new SearchableLocation(this);
             }
 
             foreach (var searchableAttribute in base.SearchableAttributes)
