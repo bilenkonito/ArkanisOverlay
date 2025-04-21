@@ -9,6 +9,9 @@ public interface IGameLocation : IGameEntity, ISearchableRecursively
     ISearchableRecursively? ISearchableRecursively.Parent
         => ParentLocation;
 
+    bool IsOrContains(IGameLocation location)
+        => this == location || Contains(location);
+
     bool Contains(IGameLocation location)
-        => location.ParentIds.Contains(Id) || location.ParentIds.Overlaps(ParentIds);
+        => location.ParentIds.Contains(Id);
 }

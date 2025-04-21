@@ -54,7 +54,7 @@ public sealed record LocationSearch(IGameLocation Location) : SearchQuery
     public override IEnumerable<SearchMatch> Match(SearchableTrait trait, int depth = 0)
         => trait switch
         {
-            SearchableLocation attr => attr.Location == Location || attr.Location.Contains(Location)
+            SearchableLocation attr => Location.IsOrContains(attr.Location)
                 ? [new SoftMatch(trait)]
                 : [new ExcludeMatch(trait)],
             _ => [new NoMatch(trait)],
