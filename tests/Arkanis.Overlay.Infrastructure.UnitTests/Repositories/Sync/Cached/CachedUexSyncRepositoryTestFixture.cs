@@ -12,5 +12,8 @@ public class CachedUexSyncRepositoryTestFixture : LiveUexSyncRepositoryTestFixtu
     {
         base.AddServices(services, configuration);
         services.Decorate<IUexGameApi, UexGameApiCacheDecorator>();
+        services.Decorate<IUexItemsApi, UexItemsApiCacheDecorator>();
+        services.Decorate<IUexStaticApi, UexStaticApiCacheDecorator>();
+        services.Decorate<IUexVehiclesApi, UexVehiclesApiCacheDecorator>();
     }
 }
