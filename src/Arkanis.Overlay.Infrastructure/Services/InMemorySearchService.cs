@@ -20,7 +20,7 @@ public class InMemorySearchService(
                 .Select(query => query.Match(entity))
                 .Aggregate((result1, result2) => result1.Merge(result2))
             )
-            .Where(result => result.ShouldBeCutOff == false)
+            .Where(result => result.ShouldBeExcluded == false)
             .OrderByDescending(result => result)
             .ToListAsync(cancellationToken);
 

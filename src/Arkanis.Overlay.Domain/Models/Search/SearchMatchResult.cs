@@ -10,10 +10,16 @@ public record SearchMatchResult(ISearchable Subject, List<SearchMatch> Matches) 
     public double ScoreTotal
         => ScoredMatches.Select((match, index) => match.NormalizedScore / double.Pow(2, index)).Sum();
 
-    public bool IsExplicitlyExcluded { get; } = Matches.OfType<ExcludeMatch>().Any();
+    public bool IsExplicitlyExcluded
+        => Matches.OfType<ExcludeMatch>().Any();
 
-    public bool ShouldBeCutOff
-        => IsExplicitlyExcluded || ScoreTotal == 0;
+    public bool ShouldBeExcluded
+        => IsExplicitlyExcluded
+           || (ScoreTotal == 0 && !HasMatched);
+
+    private bool HasMatched
+        => Matches.OfType<SoftMatch>().Any()
+           || Matches.OfType<ExactMatch>().Any();
 
     public int CompareTo(SearchMatchResult? other)
     {
@@ -35,9 +41,9 @@ public record SearchMatchResult(ISearchable Subject, List<SearchMatch> Matches) 
         return other with
         {
             Matches = other.Matches.Concat(Matches)
+                .GroupBy(match => (match.GetType(), match.TargetTrait))
+                .Select(group => group.Max()!)
                 .OrderDescending()
-                .GroupBy(match => match.TargetTrait)
-                .Select(group => group.Max() ?? group.First())
                 .ToList(),
         };
     }
@@ -51,9 +57,9 @@ public record SearchMatchResult(ISearchable Subject, List<SearchMatch> Matches) 
     private static List<SearchMatch> PreprocessMatches(IEnumerable<SearchMatch> matches)
         => matches
             .Where(match => match is not NoMatch)
-            .Where(match => match is ScoredMatch
+            .Where(match => match is not ScoredMatch
                 {
-                    Score: > 0,
+                    Score: 0,
                 }
             )
             .OrderDescending()

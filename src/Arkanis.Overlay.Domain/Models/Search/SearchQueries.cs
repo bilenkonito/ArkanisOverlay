@@ -19,6 +19,18 @@ public abstract record SearchQuery
     public abstract IEnumerable<SearchMatch> Match(SearchableTrait trait, int depth = 0);
 }
 
+public sealed record EmptySearch : SearchQuery
+{
+    private EmptySearch()
+    {
+    }
+
+    public static SearchQuery Instance { get; } = new EmptySearch();
+
+    public override IEnumerable<SearchMatch> Match(SearchableTrait trait, int depth = 0)
+        => [];
+}
+
 public sealed record FuzzyStringSearch(string Content) : SearchQuery
 {
     private readonly string _normalizedContent = Content.ToLowerInvariant();
