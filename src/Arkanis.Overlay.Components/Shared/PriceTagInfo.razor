@@ -11,9 +11,20 @@
     @if (Model is UserPriceTag userPriceTag)
     {
         <span>@userPriceTag.Price.ToString("N0")</span>
-        <GameEntityNameCodePart Model="@(userPriceTag.Location.Name.Parts.OfType<GameEntityName.IHasCode>().First())">
+        <GameEntityNameCodePart Model="@(userPriceTag.Location.Name.MainContent as GameEntityName.IHasCode)"
+                                Style="font-size: 12px">
             <PrefixContent>
-                <span class="text-secondary mr-1">at</span>
+                <span class="text-secondary mr-1" style="font-weight: lighter">@@</span>
+            </PrefixContent>
+        </GameEntityNameCodePart>
+    }
+    else if (Model is MissingPriceTag missingPriceTag)
+    {
+        <span class="text-secondary">Missing</span>
+        <GameEntityNameCodePart Model="@(missingPriceTag.Location.Name.MainContent as GameEntityName.IHasCode)"
+                                Style="font-size: 12px">
+            <PrefixContent>
+                <span class="text-secondary mr-1" style="font-weight: lighter">in</span>
             </PrefixContent>
         </GameEntityNameCodePart>
     }
@@ -23,7 +34,7 @@
     }
     else
     {
-        <MudSkeleton SkeletonType="@SkeletonType.Text" Width="6em"/>
+        <MudSkeleton SkeletonType="@SkeletonType.Text" Width="4em"/>
     }
 </MudStack>
 
