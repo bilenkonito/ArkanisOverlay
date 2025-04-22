@@ -152,14 +152,14 @@ dotnet_diagnostic.ide0059.severity = suggestion
 
 # .NET formatting rules
 # https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#net-formatting-rules
-[*.{cs,csx,cake,vb,vbx}]
+[*.{cs,csx,cake,vb,vbx,razor}]
 # Organize using directives
 dotnet_sort_system_directives_first = true
 dotnet_separate_import_directive_groups = false
 
 # C# formatting rules
 # https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#c-formatting-rules
-[*.{cs,csx,cake}]
+[*.{cs,csx,cake,razor}]
 # Newline options
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-formatting-conventions#new-line-options
 csharp_new_line_before_open_brace = all
@@ -211,7 +211,7 @@ csharp_preserve_single_line_blocks = true
 # https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/naming-rules
 ##########################################
 
-[*.{cs,csx,cake,vb,vbx}]
+[*.{cs,csx,cake,vb,vbx,razor}]
 
 ##########################################
 # Styles
@@ -363,11 +363,11 @@ resharper_max_initializer_elements_on_line = 1
 resharper_method_or_operator_body = expression_body
 resharper_nested_ternary_style = expanded
 resharper_place_accessorholder_attribute_on_same_line = false
-resharper_place_accessor_attribute_on_same_line = if_owner_is_single_line
+resharper_place_accessor_attribute_on_same_line = false
 resharper_place_attribute_on_same_line = false
 resharper_place_expr_method_on_single_line = false
 resharper_place_expr_property_on_single_line = false
-resharper_place_field_attribute_on_same_line = true
+resharper_place_field_attribute_on_same_line = false
 resharper_place_record_field_attribute_on_same_line = if_owner_is_single_line
 resharper_place_simple_embedded_statement_on_same_line = false
 resharper_place_simple_list_pattern_on_single_line = true
