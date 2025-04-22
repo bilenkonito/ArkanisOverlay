@@ -38,12 +38,13 @@ public sealed record FuzzyStringSearch(string Content) : SearchQuery
     public override IEnumerable<SearchMatch> Match(SearchableTrait trait, int depth = 0)
         => trait switch
         {
-            SearchableCode data => [new ScoredMatch(Fuzz.Ratio(Content, data.Code), depth, trait)],
-            SearchableEntityCategory data => [new ScoredMatch(Fuzz.Ratio(_normalizedContent, data.Category.ToString("G").ToLowerInvariant()), depth, trait)],
+            SearchableCode data => [new ScoredMatch(Fuzz.Ratio(Content, data.Code), depth, trait, this)],
+            SearchableEntityCategory data
+                => [new ScoredMatch(Fuzz.Ratio(_normalizedContent, data.Category.ToString("G").ToLowerInvariant()), depth, trait, this)],
             SearchableManufacturer data => Match(data.Manufacturer.SearchableAttributes.OfType<SearchableTextTrait>(), depth + 1),
             SearchableLocation data => Match(data.Location.Parent?.SearchableAttributes.OfType<SearchableTextTrait>() ?? [], depth + 1),
-            SearchableName data => [new ScoredMatch(Fuzz.TokenSortRatio(Content, data.Name), depth, trait)],
-            _ => [new NoMatch(trait)],
+            SearchableName data => [new ScoredMatch(Fuzz.TokenSortRatio(Content, data.Name), depth, trait, this)],
+            _ => [new NoMatch(trait, this)],
         };
 
     public static SearchQuery Create(string content)
@@ -56,9 +57,9 @@ public sealed record LocationSearch(IGameLocation Location) : SearchQuery
         => trait switch
         {
             SearchableLocation data => Location.IsOrContains(data.Location)
-                ? [new SoftMatch(trait)]
-                : [new ExcludeMatch(trait)],
-            _ => [new NoMatch(trait)],
+                ? [new SoftMatch(trait, this)]
+                : [new ExcludeMatch(trait, this)],
+            _ => [new NoMatch(trait, this)],
         };
 }
 
@@ -68,8 +69,8 @@ public sealed record EntityCategorySearch(GameEntityCategory Category) : SearchQ
         => trait switch
         {
             SearchableEntityCategory data => data.Category == Category
-                ? [new SoftMatch(trait)]
-                : [new ExcludeMatch(trait)],
-            _ => [new NoMatch(trait)],
+                ? [new SoftMatch(trait, this)]
+                : [new ExcludeMatch(trait, this)],
+            _ => [new NoMatch(trait, this)],
         };
 }

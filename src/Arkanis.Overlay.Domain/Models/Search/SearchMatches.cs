@@ -1,6 +1,6 @@
 namespace Arkanis.Overlay.Domain.Models.Search;
 
-public abstract record SearchMatch(SearchableTrait TargetTrait) : IComparable<SearchMatch>
+public abstract record SearchMatch(SearchableTrait TargetTrait, SearchQuery Source) : IComparable<SearchMatch>
 {
     public abstract int CompareTo(SearchMatch? other);
 
@@ -21,10 +21,8 @@ public abstract record SearchMatch(SearchableTrait TargetTrait) : IComparable<Se
             : left.CompareTo(right) >= 0;
 }
 
-public sealed record ScoredMatch(int Score, int Depth, SearchableTrait TargetTrait) : SearchMatch(TargetTrait)
+public sealed record ScoredMatch(int Score, int Depth, SearchableTrait TargetTrait, SearchQuery Source) : SearchMatch(TargetTrait, Source)
 {
-    public static readonly ScoredMatch Zero = new(0, 1, UnknownTrait.Instance);
-
     public double NormalizedScore { get; init; } = Score / Math.Pow(2, Depth);
 
     public override int CompareTo(SearchMatch? other)
@@ -35,7 +33,7 @@ public sealed record ScoredMatch(int Score, int Depth, SearchableTrait TargetTra
         };
 }
 
-public sealed record ExactMatch(SearchableTrait TargetTrait) : SearchMatch(TargetTrait)
+public sealed record ExactMatch(SearchableTrait TargetTrait, SearchQuery Source) : SearchMatch(TargetTrait, Source)
 {
     public override int CompareTo(SearchMatch? other)
         => other switch
@@ -46,7 +44,7 @@ public sealed record ExactMatch(SearchableTrait TargetTrait) : SearchMatch(Targe
         };
 }
 
-public sealed record SoftMatch(SearchableTrait TargetTrait) : SearchMatch(TargetTrait)
+public sealed record SoftMatch(SearchableTrait TargetTrait, SearchQuery Source) : SearchMatch(TargetTrait, Source)
 {
     public override int CompareTo(SearchMatch? other)
         => other switch
@@ -58,7 +56,7 @@ public sealed record SoftMatch(SearchableTrait TargetTrait) : SearchMatch(Target
         };
 }
 
-public sealed record NoMatch(SearchableTrait TargetTrait) : SearchMatch(TargetTrait)
+public sealed record NoMatch(SearchableTrait TargetTrait, SearchQuery Source) : SearchMatch(TargetTrait, Source)
 {
     public override int CompareTo(SearchMatch? other)
         => other switch
@@ -69,7 +67,7 @@ public sealed record NoMatch(SearchableTrait TargetTrait) : SearchMatch(TargetTr
         };
 }
 
-public sealed record ExcludeMatch(SearchableTrait TargetTrait) : SearchMatch(TargetTrait)
+public sealed record ExcludeMatch(SearchableTrait TargetTrait, SearchQuery Source) : SearchMatch(TargetTrait, Source)
 {
     public override int CompareTo(SearchMatch? other)
         => other switch
