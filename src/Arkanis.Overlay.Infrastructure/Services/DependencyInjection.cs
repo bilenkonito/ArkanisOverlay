@@ -5,6 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {
+    public static IServiceCollection AddFakePriceProviders(this IServiceCollection services)
+        => services
+            .AddSingleton<IPriceProvider, FakePriceProvider>()
+            .AddSingleton<IPurchasePriceProvider>(provider => provider.GetRequiredService<IPriceProvider>())
+            .AddSingleton<ISellPriceProvider>(provider => provider.GetRequiredService<IPriceProvider>())
+            .AddSingleton<IRentPriceProvider>(provider => provider.GetRequiredService<IPriceProvider>());
+
     public static IServiceCollection AddInMemorySearchServices(this IServiceCollection services)
         => services.AddScoped<ISearchService, InMemorySearchService>();
 

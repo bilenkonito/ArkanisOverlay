@@ -6,7 +6,7 @@ using NodaMoney;
 
 public abstract record PriceTag : IComparable<PriceTag>
 {
-    public static readonly UnknownPriceTag Unknown = new();
+    public static readonly PriceTag Unknown = new UnknownPriceTag();
 
     public int CompareTo(PriceTag? other)
         => this is UserPriceTag userPriceTag && other is UserPriceTag otherUserPriceTag
@@ -29,8 +29,8 @@ public abstract record PriceTag : IComparable<PriceTag>
             ? ReferenceEquals(right, null)
             : left.CompareTo(right) >= 0;
 
-    public static MissingPriceTag MissingFor(IGameLocation location)
-        => new(location);
+    public static PriceTag MissingFor(IGameLocation location)
+        => new MissingPriceTag(location);
 }
 
 public sealed record UnknownPriceTag : PriceTag;
