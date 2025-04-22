@@ -65,14 +65,14 @@
 
         if (Model is IGameSellable sellable)
         {
-            PurchasePriceTag = SearchContext.CurrentLocation is { } location
+            SellPriceTag = SearchContext.CurrentLocation is { } location
                 ? await SellPriceProvider.GetPriceTagAtAsync(sellable, location)
                 : sellable.LatestSellPrices.Min;
         }
 
         if (Model is IGameRentable rentable)
         {
-            PurchasePriceTag = SearchContext.CurrentLocation is { } location
+            RentPriceTag = SearchContext.CurrentLocation is { } location
                 ? await RentPriceProvider.GetPriceTagAtAsync(rentable, location)
                 : rentable.LatestRentPrices.Min;
         }
