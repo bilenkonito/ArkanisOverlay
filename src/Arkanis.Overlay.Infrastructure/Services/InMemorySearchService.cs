@@ -1,6 +1,7 @@
 namespace Arkanis.Overlay.Infrastructure.Services;
 
 using System.Diagnostics;
+using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
 using Domain.Models.Search;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,7 @@ public class InMemorySearchService(
                 .Aggregate((result1, result2) => result1.Merge(result2))
             )
             .Where(result => result.ShouldBeExcluded == false)
+            .Where(result => !result.ContainsUnmatched<LocationSearch>(where => where.Subject is not (IGamePurchasable or IGameSellable or IGameRentable)))
             .OrderByDescending(result => result)
             .ToListAsync(cancellationToken);
 
