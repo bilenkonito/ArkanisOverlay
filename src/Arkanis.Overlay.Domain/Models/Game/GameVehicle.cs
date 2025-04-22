@@ -11,7 +11,7 @@ public abstract class GameVehicle(
     string shortName,
     GameCompany manufacturer,
     GameEntityCategory vehicleCategory
-) : GameEntity(UexApiGameEntityId.Create(id), vehicleCategory), IGameManufactured, IGamePurchasable, IGameRentable
+) : GameEntity(UexApiGameEntityId.Create<GameVehicle>(id), vehicleCategory), IGameManufactured, IGamePurchasable, IGameRentable
 {
     public override IEnumerable<SearchableTrait> SearchableAttributes
     {

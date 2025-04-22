@@ -4,7 +4,7 @@ using Abstractions.Game;
 using Enums;
 using Search;
 
-public abstract class GameEntity(IGameEntityId id, GameEntityCategory entityCategory) : IGameEntity
+public abstract class GameEntity(UexApiGameEntityId id, GameEntityCategory entityCategory) : IGameEntity
 {
     public GameEntityCategory EntityCategory { get; } = entityCategory;
 
@@ -12,5 +12,5 @@ public abstract class GameEntity(IGameEntityId id, GameEntityCategory entityCate
 
     public abstract GameEntityName Name { get; }
 
-    public IGameEntityId Id { get; } = id;
+    public UexApiGameEntityId Id { get; } = id;
 }

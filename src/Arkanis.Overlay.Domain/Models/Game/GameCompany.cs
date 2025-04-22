@@ -4,7 +4,7 @@ using Enums;
 using Search;
 
 public sealed class GameCompany(int id, string fullName, string shortName)
-    : GameEntity(UexApiGameEntityId.Create(id), GameEntityCategory.Company)
+    : GameEntity(UexApiGameEntityId.Create<GameCompany>(id), GameEntityCategory.Company)
 {
     public override IEnumerable<SearchableTrait> SearchableAttributes
     {

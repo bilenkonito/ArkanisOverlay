@@ -25,18 +25,24 @@ internal class UexItemRepository(
 
     protected override async Task<UexApiResponse<ICollection<ItemDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
-        var categories = await itemCategoryRepository.GetAllAsync(cancellationToken).ToListAsync(cancellationToken).ConfigureAwait(false);
-        var items = new List<ItemDTO>();
+        var categories = itemCategoryRepository.GetAllAsync(cancellationToken)
+            .Where(x => x.CategoryType == GameItemCategoryType.Item)
+            .Where(category => category.Id.Identity > 0);
 
-        UexApiResponse<GetItemsOkResponse>? response = null;
+        var items = new List<ItemDTO>();
         var responseDetectedAsNull = false;
-        foreach (var category in categories.Where(x => x.CategoryType == GameItemCategoryType.Item))
+        UexApiResponse<GetItemsOkResponse>? response = null;
+
+        await foreach (var category in categories)
         {
-            var categoryEntityId = category.Id as UexApiGameEntityId;
+            var categoryEntityId = category.Id;
             var categoryId = (categoryEntityId?.Identity ?? 0).ToString(CultureInfo.InvariantCulture);
             response = await itemsApi.GetItemsByCategoryAsync(categoryId, cancellationToken).ConfigureAwait(false);
             responseDetectedAsNull |= response.Result.Data is null;
             items.AddRange(response.Result.Data ?? []);
+#if DEBUG
+            break;
+#endif
         }
 
         if (items.Count == 0 && responseDetectedAsNull)

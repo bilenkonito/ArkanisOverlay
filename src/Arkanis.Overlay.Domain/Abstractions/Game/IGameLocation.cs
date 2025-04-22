@@ -1,8 +1,10 @@
 namespace Arkanis.Overlay.Domain.Abstractions.Game;
 
+using Models.Game;
+
 public interface IGameLocation : IGameEntity, ISearchableRecursively
 {
-    HashSet<IGameEntityId> ParentIds { get; }
+    HashSet<UexApiGameEntityId> ParentIds { get; }
 
     IGameLocation? ParentLocation { get; }
 

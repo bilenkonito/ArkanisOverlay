@@ -6,7 +6,7 @@ using Search;
 using Trade;
 
 public class GameCommodity(int id, string fullName, string codeName)
-    : GameEntity(UexApiGameEntityId.Create(id), GameEntityCategory.Commodity), IGameTradable
+    : GameEntity(UexApiGameEntityId.Create<GameCommodity>(id), GameEntityCategory.Commodity), IGameTradable
 {
     public override IEnumerable<SearchableTrait> SearchableAttributes
     {

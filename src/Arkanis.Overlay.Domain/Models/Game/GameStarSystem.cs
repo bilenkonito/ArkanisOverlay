@@ -2,7 +2,8 @@ namespace Arkanis.Overlay.Domain.Models.Game;
 
 using Search;
 
-public sealed class GameStarSystem(int id, string fullName, string codeName) : GameLocationEntity(UexApiGameEntityId.Create(id), null)
+public sealed class GameStarSystem(int id, string fullName, string codeName)
+    : GameLocationEntity(UexApiGameEntityId.Create<GameStarSystem>(id), null)
 {
     public override IEnumerable<SearchableTrait> SearchableAttributes
     {

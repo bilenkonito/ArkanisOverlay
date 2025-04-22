@@ -9,7 +9,7 @@ public sealed class GameTerminal(
     string shortName,
     string codeName,
     GameLocationEntity location
-) : GameLocationEntity(UexApiGameEntityId.Create(id), location)
+) : GameLocationEntity(UexApiGameEntityId.Create<GameTerminal>(id), location)
 {
     public override IEnumerable<SearchableTrait> SearchableAttributes
     {

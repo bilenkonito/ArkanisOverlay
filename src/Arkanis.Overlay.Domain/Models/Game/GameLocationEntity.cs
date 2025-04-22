@@ -4,12 +4,12 @@ using Abstractions.Game;
 using Enums;
 using Search;
 
-public abstract class GameLocationEntity(IGameEntityId id, GameLocationEntity? parent)
+public abstract class GameLocationEntity(UexApiGameEntityId id, GameLocationEntity? parent)
     : GameEntity(id, GameEntityCategory.Location), IGameLocation
 {
     public GameLocationEntity? Parent { get; } = parent;
 
-    public HashSet<IGameEntityId> ParentIds { get; } = parent is not null
+    public HashSet<UexApiGameEntityId> ParentIds { get; } = parent is not null
         ? [parent.Id, ..parent.ParentIds]
         : [];
 

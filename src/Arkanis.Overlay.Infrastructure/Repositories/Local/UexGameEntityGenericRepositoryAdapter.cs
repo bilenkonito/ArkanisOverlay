@@ -12,6 +12,6 @@ public class UexGameEntityGenericRepositoryAdapter<T>(IGameEntityRepository<T> r
     public IAsyncEnumerable<IGameEntity> GetAllAsync(CancellationToken cancellationToken = default)
         => repository.GetAllAsync(cancellationToken);
 
-    public async Task<IGameEntity?> GetAsync(IGameEntityId id, CancellationToken cancellationToken = default)
+    public async Task<IGameEntity?> GetAsync(IDomainId id, CancellationToken cancellationToken = default)
         => await repository.GetAsync(id, cancellationToken);
 }

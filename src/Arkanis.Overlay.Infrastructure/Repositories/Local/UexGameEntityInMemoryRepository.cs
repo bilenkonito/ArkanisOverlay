@@ -12,7 +12,7 @@ public class UexGameEntityInMemoryRepository<T> : IGameEntityRepository<T> where
 
     internal DateTimeOffset CachedUntil { get; set; } = DateTimeOffset.UtcNow;
     internal GameDataState CurrentDataState { get; set; } = MissingGameDataState.Instance;
-    internal Dictionary<IGameEntityId, T> Entities { get; set; } = [];
+    internal Dictionary<UexApiGameEntityId, T> Entities { get; set; } = [];
 
     public Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => _initialization.Task;
@@ -27,8 +27,10 @@ public class UexGameEntityInMemoryRepository<T> : IGameEntityRepository<T> where
         }
     }
 
-    public Task<T?> GetAsync(IGameEntityId id, CancellationToken cancellationToken = default)
-        => Task.FromResult(Entities.GetValueOrDefault(id));
+    public Task<T?> GetAsync(IDomainId id, CancellationToken cancellationToken = default)
+        => id is UexApiGameEntityId uexApiId
+            ? Task.FromResult(Entities.GetValueOrDefault(uexApiId))
+            : Task.FromResult<T?>(null);
 
     public ValueTask<AppDataState> GetDataStateAsync(GameDataState gameDataState, CancellationToken cancellationToken = default)
     {

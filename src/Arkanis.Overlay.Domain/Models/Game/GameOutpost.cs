@@ -3,7 +3,7 @@ namespace Arkanis.Overlay.Domain.Models.Game;
 using Search;
 
 public sealed class GameOutpost(int id, string fullName, string shortName, GameLocationEntity location)
-    : GameLocationEntity(UexApiGameEntityId.Create(id), location)
+    : GameLocationEntity(UexApiGameEntityId.Create<GameOutpost>(id), location)
 {
     public override IEnumerable<SearchableTrait> SearchableAttributes
     {
