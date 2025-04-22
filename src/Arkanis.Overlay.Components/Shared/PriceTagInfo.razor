@@ -21,6 +21,10 @@
     {
         <i class="text-secondary">Unknown</i>
     }
+    else
+    {
+        <MudSkeleton SkeletonType="@SkeletonType.Text" Width="6em"/>
+    }
 </MudStack>
 
 @code
@@ -31,10 +35,14 @@
             ? $"color: {Color}"
             : string.Empty;
 
-    [Parameter] [EditorRequired] public required PriceTag Model { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public PriceTag? Model { get; set; }
 
-    [Parameter] public string? Label { get; set; }
+    [Parameter]
+    public string? Label { get; set; }
 
-    [Parameter] public string? Color { get; set; } = "lightskyblue";
+    [Parameter]
+    public string? Color { get; set; } = "lightskyblue";
 
 }

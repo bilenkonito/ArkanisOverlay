@@ -1,5 +1,4 @@
 @using System.Text
-@using Arkanis.Overlay.Components.Helpers
 @using Arkanis.Overlay.Components.Shared.Dialogs
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Abstractions.Services
@@ -155,7 +154,7 @@
     OnClick="@OpenUserOptionsDialogAsync"
     Style="position: fixed; top: 6px; right: 6px; z-index: 100"/>
 
-<MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
+<MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1">
     <div style="padding: 7.5vh"></div>
     <MudFocusTrap DefaultFocus="@DefaultFocus.FirstChild">
         <MudPaper Elevation="8"
