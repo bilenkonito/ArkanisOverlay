@@ -1,3 +1,4 @@
+@using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Models.Game
 @using Arkanis.Overlay.Domain.Models.Trade
 <MudStack Style="@PriceTagCss"
@@ -14,7 +15,9 @@
         <GameEntityNameCodePart Model="@(userPriceTag.Location.Name.MainContent as GameEntityName.IHasCode)"
                                 Style="font-size: 12px">
             <PrefixContent>
-                <span class="text-secondary mr-1" style="font-weight: lighter">@@</span>
+                <span class="text-secondary mr-1" style="font-weight: lighter">
+                    @SelectLocationPrefix(userPriceTag.Location)
+                </span>
             </PrefixContent>
         </GameEntityNameCodePart>
     }
@@ -24,7 +27,9 @@
         <GameEntityNameCodePart Model="@(missingPriceTag.Location.Name.MainContent as GameEntityName.IHasCode)"
                                 Style="font-size: 12px">
             <PrefixContent>
-                <span class="text-secondary mr-1" style="font-weight: lighter">in</span>
+                <span class="text-secondary mr-1" style="font-weight: lighter">
+                    @SelectLocationPrefix(missingPriceTag.Location)
+                </span>
             </PrefixContent>
         </GameEntityNameCodePart>
     }
@@ -56,4 +61,10 @@
     [Parameter]
     public string? Color { get; set; } = "lightskyblue";
 
+    private string SelectLocationPrefix(IGameLocation location)
+        => location switch
+        {
+            GameTerminal => "@",
+            _ => "within",
+        };
 }
