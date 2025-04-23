@@ -1,6 +1,6 @@
 # Arkanis Overlay
 
-**A Next-Generation Overlay Companion for Star Citizen**  
+**A Next-Generation Overlay Companion for Star Citizen**
 Created by **[FatalMerlin](https://discord.com/users/174617873182883841)**,
 co-founder of the in-game organization **[Arkanis Corporation](https://join.arkanis.cc/)**,
 and **[TheKronnY](https://discord.com/users/224580858432978944)
@@ -23,20 +23,20 @@ The overlay is currently in **active development** and driven by a clear mission
 
 ## ✨ Key User Features (MVP)
 
-- 🔍 **In-Game Search Tool**  
+- 🔍 **In-Game Search Tool**
   Find general and commonly-needed game information fast — no more alt-tabbing to search websites.
 
-- 📦 **Integrated Community Data**  
+- 📦 **Integrated Community Data**
   Seamlessly connected with [UEX](https://uexcorp.space) and other community tools to enrich in-game decision-making.
 
 ## 🤝 Community Focus
 
-- 🧪 **Community-Driven Development**  
+- 🧪 **Community-Driven Development**
   Built in collaboration with players and devs who actively use and shape the tools.
 
 ## 🖥️ Tech Stack
 
-- ⚙️ **WPF-Hosted Blazor App**  
+- ⚙️ **WPF-Hosted Blazor App**
   Built in C# using modern UI technologies for smooth performance and extensibility.
 
 ---
@@ -83,7 +83,7 @@ We're dreaming big — here's what's ahead:
 
 ## 💡 Philosophy
 
-Star Citizen is vast — and at times, frustratingly so.  
+Star Citizen is vast — and at times, frustratingly so.
 **Arkanis Overlay** doesn't aim to change the game, but to make the *experience better*.
 It’s your always-on wingman — helpful, seamless, and never in the way.
 
@@ -97,11 +97,11 @@ Key principles:
 
 ## 🧑‍💻 Development Status
 
-> Project Lead: [FatalMerlin](https://github.com/FatalMerlin)  
-> Language: C#  
+> Project Lead: [FatalMerlin](https://github.com/FatalMerlin)
+> Language: C#
 > Frameworks: **WPF**, **Blazor (WebView2)**
 
-Currently developed in bursts due to time constraints (because, you know… real life).  
+Currently developed in bursts due to time constraints (because, you know… real life).
 We are now a small dev team — progress is slow but deliberate. A Minimum Viable Product (MVP) is nearing readiness!
 
 ---
@@ -157,7 +157,7 @@ Big shout-out to:
 - **UEX Dev Team** for their continued support, testing, and future collaboration.
 - Everyone in the **Arkanis Corporation** and broader SC community who has provided feedback and ideas.
 
-Want to contribute, suggest features, or test?  
+Want to contribute, suggest features, or test?
 [Open an issue](https://github.com/ArkanisCorporation/ArkanisOverlay/issues/new/choose) or
 contact [@FatalMerlin](https://discord.com/users/174617873182883841) — we’d love your input!
 
@@ -166,7 +166,7 @@ contact [@FatalMerlin](https://discord.com/users/174617873182883841) — we’d 
 ## 🧭 Why "Arkanis"?
 
 The name pays tribute to the **Arkanis Sector**, a frontier region of bold explorers — just like the users of this
-tool.  
+tool.
 We aim to embody the same spirit: discovery, utility, and frontier innovation.
 
 ---
@@ -179,18 +179,18 @@ We aim to embody the same spirit: discovery, utility, and frontier innovation.
 
 ## 📜 License
 
-*To be defined.*  
+*To be defined.*
 Expected to be a community-friendly open-source license (likely MIT or similar).
 
 ---
 
 ## 🌌 Final Words
 
-This is only the beginning.  
-**Arkanis Overlay** is designed to grow with the game and the community.  
+This is only the beginning.
+**Arkanis Overlay** is designed to grow with the game and the community.
 Let’s make Star Citizen a little smoother — together.
 
-> *“A ship is only as good as its crew.”*  
+> *“A ship is only as good as its crew.”*
 > — Unknown
 
 ---
