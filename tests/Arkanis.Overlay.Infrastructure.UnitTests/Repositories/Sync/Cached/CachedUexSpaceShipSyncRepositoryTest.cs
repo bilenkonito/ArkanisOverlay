@@ -3,7 +3,8 @@ namespace Arkanis.Overlay.Infrastructure.UnitTests.Repositories.Sync.Cached;
 using Domain.Models.Game;
 using Xunit.Abstractions;
 
-[Collection("Cached UEX API")]
+[Trait(nameof(TestConstants.Traits.DataSource), TestConstants.Traits.DataSource.ExternalApi)]
+[Trait(nameof(TestConstants.Traits.DataState), TestConstants.Traits.DataState.Cached)]
 public class CachedUexSpaceShipSyncRepositoryTest(ITestOutputHelper testOutputHelper, CachedUexSyncRepositoryTestFixture fixture)
     : UexSyncRepositoryTestBase<GameSpaceShip, CachedUexSyncRepositoryTestFixture>(testOutputHelper, fixture)
 {
