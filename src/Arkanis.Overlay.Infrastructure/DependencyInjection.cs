@@ -9,6 +9,7 @@ using Options;
 using Repositories;
 using Services;
 using Services.Hosted;
+using Services.Hydration;
 
 public static class DependencyInjection
 {
@@ -21,7 +22,8 @@ public static class DependencyInjection
             .AddInMemorySearchServices()
             .AddUexInMemoryGameEntityServices()
             .AddUserPreferencesFileManagerServices()
-            .AddGameEntityPriceHydratationServices();
+            .AddUexPriceProviders()
+            .AddUexHydrationServices();
 
     public static IServiceCollection AddInfrastructureHostedServices(this IServiceCollection services)
         => services
