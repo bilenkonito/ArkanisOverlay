@@ -1,0 +1,22 @@
+@using Arkanis.Overlay.Domain.Models.Game
+@if (Model.Traits.OfType<GameItem.Grade>().FirstOrDefault() is { } itemGrade)
+{
+    <GameItemTraitDetail
+        Model="@itemGrade"
+        Value="@itemGrade.Content"/>
+}
+
+@if (Model.Traits.OfType<GameItem.ClassTrait>().FirstOrDefault() is { } itemClass)
+{
+    <GameItemTraitDetail
+        Model="@itemClass"
+        Value="@itemClass.Content"/>
+}
+
+@code
+{
+
+    [Parameter]
+    public required GameItem Model { get; set; }
+
+}

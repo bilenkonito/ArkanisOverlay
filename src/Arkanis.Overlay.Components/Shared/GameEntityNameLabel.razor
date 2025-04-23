@@ -13,18 +13,32 @@
         }
         <GameEntityNamePart Model="@Model.MainContent" Embedded="@Embedded"/>
     </MudStack>
+    @if (Model.Properties is { } properties && !Embedded)
+    {
+        <MudStack Style="height: 16px;" Class="mt-n2" Row>
+            @foreach (var property in properties)
+            {
+                <MudStack Spacing="2" Row>
+                    <span style="font-weight: lighter">@property.Key</span>
+                    <b>@property.Value</b>
+                </MudStack>
+            }
+        </MudStack>
+    }
 </MudStack>
 
 @code
 {
 
     private string MainContentStyle
-        => Model.Location is not null
+        => Model.Location is not null || Model.Properties is not null
             ? "height: 40px;"
             : "height: 56px;";
 
-    [Parameter] public required GameEntityName Model { get; set; }
+    [Parameter]
+    public required GameEntityName Model { get; set; }
 
-    [Parameter] public bool Embedded { get; set; }
+    [Parameter]
+    public bool Embedded { get; set; }
 
 }

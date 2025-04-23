@@ -19,6 +19,9 @@ public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IE
     public LocationReference? Location
         => _parts.OfType<LocationReference>().FirstOrDefault();
 
+    public PropertyCollection? Properties
+        => _parts.OfType<PropertyCollection>().FirstOrDefault();
+
     public IEnumerator<Part> GetEnumerator()
         => Parts.GetEnumerator();
 
@@ -28,7 +31,7 @@ public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IE
     public static Reference ReferenceTo(GameEntity entity)
         => Reference.Create(entity);
 
-    public record Part;
+    public abstract record Part;
 
     public abstract record Reference(GameEntity ReferencedEntity) : Part
     {
@@ -68,4 +71,15 @@ public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IE
     public sealed record NameWithCodeAndShortVariant(string FullName, string Code, string ShortName) : NameWithCode(FullName, Code), IHasShortName;
 
     public sealed record NameWithShortVariant(string FullName, string ShortName) : Name(FullName), IHasShortName;
+
+    public sealed record PropertyCollection(params PropertyCollection.Item[] Items) : Part, IEnumerable<PropertyCollection.Item>
+    {
+        public IEnumerator<Item> GetEnumerator()
+            => Items.AsEnumerable().GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
+
+        public sealed record Item(string Key, string Value);
+    }
 }
