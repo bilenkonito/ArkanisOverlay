@@ -1,10 +1,9 @@
 namespace Arkanis.Overlay.Infrastructure.Data.Mappers;
 
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using Domain.Models;
 using Domain.Models.Game;
-using Domain.Models.Trade;
 using Exceptions;
 using External.UEX.Abstractions;
 using Riok.Mapperly.Abstractions;
@@ -17,7 +16,7 @@ using Riok.Mapperly.Abstractions;
 [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
 internal partial class UexApiDtoMapper
 {
-    internal readonly Dictionary<string, GameEntity> CachedGameEntities = [];
+    internal readonly ConcurrentDictionary<string, GameEntity> CachedGameEntities = [];
 
     public GameEntity ToGameEntity<TSource>(TSource source)
         => source switch
@@ -128,15 +127,20 @@ internal partial class UexApiDtoMapper
     [UserMapping(Default = true)]
     public GameVehicle ToGameEntity(VehicleDTO source)
     {
-        var result = MapInternal(source);
+        GameVehicle result = source switch
+        {
+            { Is_spaceship: 1 } => MapInternalSpaceShip(source),
+            { Is_ground_vehicle: 1 } => MapInternalGroundVehicle(source),
+            _ => throw new ArgumentOutOfRangeException(nameof(source), source, "Unable to select corresponding vehicle type."),
+        };
         CacheGameEntityId<GameVehicle>(source.Id, result);
         return result;
     }
 
-    internal void CacheGameEntityId<T>(double? sourceId, GameEntity result) where T : GameEntity
+    private void CacheGameEntityId<T>(double? sourceId, GameEntity result) where T : GameEntity
         => CachedGameEntities[CreateCacheEntityKey<T>(sourceId)] = result;
 
-    internal T? ResolveCachedGameEntity<T>(double? sourceId, [CallerArgumentExpression("sourceId")] string sourceIdExpression = "") where T : GameEntity
+    private T? ResolveCachedGameEntity<T>(double? sourceId, [CallerArgumentExpression("sourceId")] string sourceIdExpression = "") where T : GameEntity
     {
         var cacheEntityKey = CreateCacheEntityKey<T>(sourceId);
         var cachedEntity = CachedGameEntities.GetValueOrDefault(cacheEntityKey) as T;
@@ -145,7 +149,7 @@ internal partial class UexApiDtoMapper
             : cachedEntity;
     }
 
-    internal static string CreateCacheEntityKey<T>(double? sourceId)
+    private static string CreateCacheEntityKey<T>(double? sourceId)
         => $"{typeof(T).Name}-{sourceId}";
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
@@ -193,15 +197,12 @@ internal partial class UexApiDtoMapper
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(CommodityDTO.Name), "fullName")]
     [MapProperty(nameof(CommodityDTO.Code), "codeName")]
-    [MapPropertyFromSource(nameof(GameCommodity.LatestBuyPrices), Use = nameof(GetLatestBuyPricesForCommodity))]
-    [MapPropertyFromSource(nameof(GameCommodity.LatestSellPrices), Use = nameof(GetLatestSellPricesForCommodity))]
     private partial GameCommodity MapInternal(CommodityDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(ItemDTO.Name), "fullName")]
     [MapPropertyFromSource("manufacturer", Use = nameof(GetCompanyForItem))]
     [MapPropertyFromSource("category", Use = nameof(GetCategoryForItem))]
-    [MapPropertyFromSource(nameof(GameItem.LatestBuyPrices), Use = nameof(GetLatestBuyPricesForItem))]
     private partial GameItem MapInternal(ItemDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
@@ -219,8 +220,13 @@ internal partial class UexApiDtoMapper
     [MapProperty(nameof(VehicleDTO.Name_full), "fullName")]
     [MapProperty(nameof(VehicleDTO.Name), "shortName")]
     [MapPropertyFromSource("manufacturer", Use = nameof(GetCompanyForVehicle))]
-    [MapPropertyFromSource(nameof(GameVehicle.LatestBuyPrices), Use = nameof(GetLatestBuyPricesForVehicle))]
-    private partial GameVehicle MapInternal(VehicleDTO source);
+    private partial GameSpaceShip MapInternalSpaceShip(VehicleDTO source);
+
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapProperty(nameof(VehicleDTO.Name_full), "fullName")]
+    [MapProperty(nameof(VehicleDTO.Name), "shortName")]
+    [MapPropertyFromSource("manufacturer", Use = nameof(GetCompanyForVehicle))]
+    private partial GameGroundVehicle MapInternalGroundVehicle(VehicleDTO source);
 
     [DoesNotReturn]
     private static T ThrowInvalidCacheException<T>(double? sourceId, [CallerArgumentExpression("sourceId")] string sourceIdExpression = "")
@@ -276,16 +282,4 @@ internal partial class UexApiDtoMapper
     private GameProductCategory GetCategoryForItem(ItemDTO item)
         => ResolveCachedGameEntity<GameProductCategory>(item.Id_category)
            ?? ThrowMissingMappingException<GameProductCategory, ItemDTO>(item.Id);
-
-    private Bounds<PriceTag> GetLatestBuyPricesForItem(ItemDTO item)
-        => new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
-
-    private Bounds<PriceTag> GetLatestBuyPricesForVehicle(VehicleDTO vehicle)
-        => new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
-
-    private Bounds<PriceTag> GetLatestBuyPricesForCommodity(CommodityDTO commodity)
-        => new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
-
-    private Bounds<PriceTag> GetLatestSellPricesForCommodity(CommodityDTO commodity)
-        => new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
 }

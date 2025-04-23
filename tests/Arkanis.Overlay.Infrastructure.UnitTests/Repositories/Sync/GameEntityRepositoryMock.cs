@@ -22,7 +22,7 @@ internal class GameEntityRepositoryMock<T>(IGameEntityExternalSyncRepository<T> 
         }
     }
 
-    public Task<T?> GetAsync(IGameEntityId id, CancellationToken cancellationToken = default)
+    public Task<T?> GetAsync(IDomainId id, CancellationToken cancellationToken = default)
         => repository.GetAsync(id, cancellationToken);
 
     public ValueTask<AppDataState> GetDataStateAsync(GameDataState gameDataState, CancellationToken cancellationToken = default)

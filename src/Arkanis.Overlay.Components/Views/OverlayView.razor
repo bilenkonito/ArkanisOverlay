@@ -1,14 +1,15 @@
-@using Arkanis.Common
-@using Arkanis.Overlay.Components.Helpers
+@using System.Text
 @using Arkanis.Overlay.Components.Shared.Dialogs
+@using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Abstractions.Services
 @using Arkanis.Overlay.Domain.Enums
 @using Arkanis.Overlay.Domain.Models.Search
+@using Humanizer
 @using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @layout OverlayLayout
 
-@inject ILogger<Index> Logger
+@inject ILogger<OverlayView> Logger
 @inject IDialogService DialogService
 @inject IOverlayControls OverlayControls
 @inject ISearchService SearchService
@@ -89,17 +90,19 @@
         overflow: hidden;
     }
 
+    #currentLocation + .mud-input-control.mud-input-input-control {
+        fieldset.mud-input-outlined-border {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }
+
     #searchContainer {
-        position: relative;
-        top: 20%;
-        left: 50%;
-        transform: translate(-50%, 0%);
-        width: fit-content;
+        position: sticky;
         z-index: 1;
 
         .mud-input-control {
             margin: 0;
-            width: 60vw;
         }
 
         .mud-input,
@@ -149,98 +152,133 @@
     Color="@Color.Primary"
     Icon="@MaterialSymbols.Outlined.Settings"
     OnClick="@OpenUserOptionsDialogAsync"
-    Style="position: absolute; top: 2rem; right: 2rem"/>
+    Style="position: fixed; top: 6px; right: 6px; z-index: 100"/>
 
-<MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1" Elevation="0">
+<MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1">
+    <div style="padding: 7.5vh"></div>
     <MudFocusTrap DefaultFocus="@DefaultFocus.FirstChild">
-        <MudPaper>
-            <MudTextField id="searchBox" @ref="SearchBox" T="string" @bind-Value="SearchText" Variant="Variant.Outlined"
-                          Adornment="Adornment.End"
-                          AdornmentIcon="@Icons.Material.Filled.Search"
-                          AdornmentColor="Color.Secondary"
-                          HelperText=":c Commodities, :s Ships, :v Vehicles, :i Items, :l Locations"
-                          AutoFocus="true"
-                          Immediate="true"
-                          DebounceInterval="300"
-                          OnDebounceIntervalElapsed="@SearchAsync"/>
+        <MudPaper Elevation="8"
+                  Style="position: sticky; top: 0; z-index: 10; min-width: 60vw;">
+            <MudStack Spacing="0"
+                      AlignItems="@AlignItems.Center">
+                <MudStack Spacing="0"
+                          Class="w-100"
+                          Row>
+                    @if (_searchContext.CurrentLocation is { } currentLocation)
+                    {
+                        <div class="px-4 d-flex align-center"
+                             id="currentLocation"
+                             style="border: 1px solid var(--mud-palette-lines-inputs); border-radius: var(--mud-default-borderradius); border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                            <GameEntityNameLabel
+                                Model="@currentLocation.Name"/>
+                        </div>
+                    }
+                    <MudTextField
+                        id="searchBox"
+                        @ref="_searchBox"
+                        T="string"
+                        Style="border-bottom-left-radius: 0; border-top-left-radius: 0"
+                        @bind-Value="@SearchText"
+                        @bind-Value:after="@SearchAsync"
+                        Variant="Variant.Outlined"
+                        Adornment="@Adornment.End"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        AdornmentColor="@Color.Secondary"
+                        AutoFocus
+                        Immediate/>
+                </MudStack>
+                <MudText Typo="@Typo.overline" Class="text-secondary">
+                    @ShortcutsText
+                </MudText>
+            </MudStack>
         </MudPaper>
 
-        @if (SearchResults?.Any() == true)
-        {
-            <MudChip T="string" Variant="Variant.Text">
-                Found @(SearchResults.Count()) results in @SearchDurationMs ms
-            </MudChip>
+        <CascadingValue Value="@_searchContext" IsFixed>
+            @if (SearchResults.GameEntities.Count > 0)
+            {
+                <MudChip T="string" Variant="@Variant.Text">
+                    Found @SearchResults.GameEntities.Count results in @SearchResults.SearchTime.Humanize()
+                </MudChip>
 
-            <MudStack Class="mt-10" Style="width: 100%; min-height: 20vh;">
-                @foreach (var result in SearchResults.Take(20))
-                {
-                    <MudPaper Style="width: 100%" Class="search-result px-4 py-2 focus" tabindex="0">
-                        <MudStack Row="true" Style="width: 100%"
-                                  Class="justify-center align-center align-content-center">
+                <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
+                    <MudVirtualize Items="@SearchResults.GameEntities" ItemSize="66" Enabled>
+                        @{
+                            var entity = context.Subject;
+                        }
+                        <MudPaper @key="@context.Subject.GetHashCode()"
+                                  Class="w-100 search-result px-4 py-2 focus" tabindex="0">
+                            <MudStack Class="w-100"
+                                      Justify="@Justify.FlexStart"
+                                      AlignItems="@AlignItems.Center"
+                                      Row>
 
-                            <MudIcon Icon="@IconPicker.PickIconFor(result.EntityCategory)"></MudIcon>
-                            <MudDivider Vertical="true" FlexItem="true"></MudDivider>
-                            <h1 class="flex-1">@result.SearchName</h1>
+                                <MudIcon Icon="@IconPicker.PickIconFor(entity.EntityCategory)"></MudIcon>
+                                <MudDivider Vertical="true" FlexItem="true"></MudDivider>
 
-                            @foreach (var (priceType, price) in result.AveragePrices)
-                            {
-                                var color = priceType switch
-                                {
-                                    PriceType.Buy => "lightskyblue",
-                                    PriceType.Sell => "sandybrown",
-                                    PriceType.Rent => "sandybrown",
-                                    _ => throw new ArgumentOutOfRangeException(),
-                                };
+                                <div class="my-n2">
+                                    <GameEntityNameLabel Model="@entity.Name"/>
+                                </div>
 
-                                <MudStack Style=@($"width: 8em; color: {color};") AlignItems="AlignItems.Center"
-                                          Spacing="2">
-                                    <p>Avg. @priceType.ToString():</p>
-                                    @if (price == 0)
-                                    {
-                                        <p>—</p>
-                                    }
-                                    else
-                                    {
-                                        <p>@price.ToString("N0") @ApplicationConstants.CurrencyAbbr</p>
-                                    }
-                                </MudStack>
-                            }
-
-                            @foreach (var (priceType, price) in result.AveragePrices)
-                            {
-                                <MudDivider Vertical="true" FlexItem="true"/>
-                                <MudIconButton Icon="@IconPicker.PickIconFor(priceType)" Class="focus" tabindex="1"
-                                               Disabled=@(price == 0)/>
-                            }
-                        </MudStack>
-                    </MudPaper>
-
-                    @* <MudListItem @key="@result.Name" Class="search-result" OnClick="@(() => OnResultClick(result))"> *@
-                    @*     <MudText>@result.Name (@result.EntityType)</MudText> *@
-                    @*     <MudText> *@
-                    @*         @foreach (var price in result.AveragePrices) *@
-                    @*         { *@
-                    @*             <span class="mr-2">@price.Key: @price.Value.ToString("N0") aUEC</span> *@
-                    @*         } *@
-                    @*     </MudText> *@
-                    @* </MudListItem> *@
-                }
-
-            </MudStack>
-        }
+                                <GameEntitySearchDetails Model="@entity"/>
+                                <GameEntitySearchControls Model="@entity"/>
+                            </MudStack>
+                        </MudPaper>
+                    </MudVirtualize>
+                </MudStack>
+            }
+        </CascadingValue>
     </MudFocusTrap>
 </MudStack>
 
 @code
 {
-    public static MudTextField<string>? SearchBox { get; private set; }
-    public string SearchText { get; set; } = "";
 
-    private IEnumerable<SearchResult>? SearchResults { get; set; }
-    private long SearchDurationMs { get; set; }
+    private const StringSplitOptions SplittingOptions
+        = StringSplitOptions.RemoveEmptyEntries
+          | StringSplitOptions.TrimEntries;
+
+    private static CancellationTokenSource _searchCancellation = new();
+    private static MudTextField<string>? _searchBox;
+
+    private readonly Dictionary<string, EntityCategorySearch> _categorySearchShortcuts = new()
+    {
+        [":i"] = new EntityCategorySearch(GameEntityCategory.Item),
+        [":c"] = new EntityCategorySearch(GameEntityCategory.Commodity),
+        [":s"] = new EntityCategorySearch(GameEntityCategory.SpaceShip),
+        [":g"] = new EntityCategorySearch(GameEntityCategory.GroundVehicle),
+        [":l"] = new EntityCategorySearch(GameEntityCategory.Location),
+        [":f"] = new EntityCategorySearch(GameEntityCategory.Company),
+    };
+
+    private OverlaySearchContext _searchContext = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _searchContext = new OverlaySearchContext
+        {
+            ConfigChanged = EventCallback.Factory.Create<OverlaySearchContext>(this, OnSearchContextChange),
+        };
+    }
+
+    private async Task OnSearchContextChange(OverlaySearchContext newContext)
+    {
+        await SearchAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private string ShortcutsText
+        => new StringBuilder().AppendJoin(", ", _categorySearchShortcuts.Select(search => $"{search.Key} {search.Value.Category.Humanize().Pluralize()}")).ToString();
+
+    private string SearchText { get; set; } = "";
+
+    private GameEntitySearchResults SearchResults { get; set; } = GameEntitySearchResults.Empty;
 
     [JSInvokable("ClickAwayHide")]
-    public void ClickAwayHide() => OverlayControls.HideAsync();
+    public void ClickAwayHide()
+    {
+        OverlayControls.HideAsync();
+    }
 
     private async Task SearchAsync()
     {
@@ -248,11 +286,34 @@
         {
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                SearchResults = null;
+                Logger.LogDebug("Search text is empty, no search performed");
+                SearchResults = GameEntitySearchResults.Empty;
                 return;
             }
 
-            (SearchResults, SearchDurationMs) = await SearchService.SearchAsync(SearchText);
+            var searchQueries = SearchText.Split(',', SplittingOptions)
+                .SelectMany(searchPart => searchPart.StartsWith(':')
+                    ? searchPart.Split(' ', 2, SplittingOptions)
+                    : [searchPart]
+                )
+                .Select(searchPart => searchPart.StartsWith(':')
+                    ? _categorySearchShortcuts.GetValueOrDefault(searchPart) ?? EmptySearch.Instance
+                    : FuzzyStringSearch.Create(searchPart))
+                .Where(search => search is not EmptySearch)
+                .ToList();
+
+            if (_searchContext.CurrentLocation is { } location)
+            {
+                searchQueries.Add(new LocationSearch(location));
+            }
+
+            await _searchCancellation.CancelAsync();
+            _searchCancellation = new CancellationTokenSource();
+            SearchResults = await SearchService.SearchAsync(searchQueries, _searchCancellation.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // search has been cancelled (possibly by another search)
         }
         catch (Exception ex)
         {
@@ -260,11 +321,13 @@
         }
     }
 
-    private async Task OnResultClick(SearchResult result)
+    private async Task OnResultClick(SearchMatchResult<IGameEntity> result)
     {
         // TODO: Show detailed prices in a dialog or expand the list item
     }
 
     private async Task OpenUserOptionsDialogAsync()
-        => await UserPreferencesEditDialog.ShowAsync(DialogService);
+    {
+        await UserPreferencesEditDialog.ShowAsync(DialogService);
+    }
 }

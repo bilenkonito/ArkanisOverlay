@@ -1,0 +1,70 @@
+@using Arkanis.Overlay.Domain.Abstractions.Game
+@using Arkanis.Overlay.Domain.Models.Game
+@using Arkanis.Overlay.Domain.Models.Trade
+<MudStack Style="@PriceTagCss"
+          Spacing="0"
+          Justify="@Justify.Center"
+          AlignItems="@AlignItems.Center">
+    @if (Label is not null)
+    {
+        <b>@Label</b>
+    }
+    @if (Model is UserPriceTag userPriceTag)
+    {
+        <span>@userPriceTag.Price.ToString("N0")</span>
+        <GameEntityNameCodePart Model="@(userPriceTag.Location.Name.MainContent as GameEntityName.IHasCode)"
+                                Style="font-size: 12px">
+            <PrefixContent>
+                <span class="text-secondary mr-1" style="font-weight: lighter">
+                    @SelectLocationPrefix(userPriceTag.Location)
+                </span>
+            </PrefixContent>
+        </GameEntityNameCodePart>
+    }
+    else if (Model is MissingPriceTag missingPriceTag)
+    {
+        <span class="text-secondary">Missing</span>
+        <GameEntityNameCodePart Model="@(missingPriceTag.Location.Name.MainContent as GameEntityName.IHasCode)"
+                                Style="font-size: 12px">
+            <PrefixContent>
+                <span class="text-secondary mr-1" style="font-weight: lighter">
+                    @SelectLocationPrefix(missingPriceTag.Location)
+                </span>
+            </PrefixContent>
+        </GameEntityNameCodePart>
+    }
+    else if (Model is UnknownPriceTag)
+    {
+        <i class="text-secondary">Unknown</i>
+    }
+    else
+    {
+        <MudSkeleton SkeletonType="@SkeletonType.Text" Width="4em"/>
+    }
+</MudStack>
+
+@code
+{
+
+    private string PriceTagCss
+        => Color is not null
+            ? $"color: {Color}"
+            : string.Empty;
+
+    [Parameter]
+    [EditorRequired]
+    public PriceTag? Model { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public string? Color { get; set; } = "lightskyblue";
+
+    private string SelectLocationPrefix(IGameLocation location)
+        => location switch
+        {
+            GameTerminal => "@",
+            _ => "within",
+        };
+}

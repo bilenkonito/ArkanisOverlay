@@ -1,6 +1,7 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
 using Enums;
+using Search;
 
 public sealed class GameTerminal(
     int id,
@@ -8,9 +9,20 @@ public sealed class GameTerminal(
     string shortName,
     string codeName,
     GameLocationEntity location
-) : GameLocationEntity(UexApiGameEntityId.Create(id), location)
+) : GameLocationEntity(UexApiGameEntityId.Create<GameTerminal>(id), location)
 {
-    protected override string SearchName { get; } = fullName;
+    public override IEnumerable<SearchableTrait> SearchableAttributes
+    {
+        get
+        {
+            yield return new SearchableName(fullName);
+            yield return new SearchableCode(codeName);
+            foreach (var searchableAttribute in base.SearchableAttributes)
+            {
+                yield return searchableAttribute;
+            }
+        }
+    }
 
     public override GameEntityName Name { get; } = new(
         GameEntityName.ReferenceTo(location),

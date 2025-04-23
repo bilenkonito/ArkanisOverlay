@@ -1,18 +1,16 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
-using Abstractions;
 using Abstractions.Game;
 using Enums;
+using Search;
 
-public abstract class GameEntity(IGameEntityId id, GameEntityCategory entityCategory) : IGameEntity
+public abstract class GameEntity(UexApiGameEntityId id, GameEntityCategory entityCategory) : IGameEntity
 {
-    protected abstract string SearchName { get; }
+    public GameEntityCategory EntityCategory { get; } = entityCategory;
+
+    public virtual IEnumerable<SearchableTrait> SearchableAttributes { get; } = [new SearchableEntityCategory(entityCategory)];
+
     public abstract GameEntityName Name { get; }
 
-    public IGameEntityId Id { get; } = id;
-
-    string ISearchable.SearchName
-        => SearchName;
-
-    public GameEntityCategory EntityCategory { get; } = entityCategory;
+    public UexApiGameEntityId Id { get; } = id;
 }

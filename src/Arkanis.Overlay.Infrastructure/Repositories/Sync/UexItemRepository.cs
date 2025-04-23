@@ -25,16 +25,30 @@ internal class UexItemRepository(
 
     protected override async Task<UexApiResponse<ICollection<ItemDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
-        var categories = await itemCategoryRepository.GetAllAsync(cancellationToken).ToListAsync(cancellationToken).ConfigureAwait(false);
-        var items = new List<ItemDTO>();
+        var categories = itemCategoryRepository.GetAllAsync(cancellationToken)
+            .Where(x => x.CategoryType == GameItemCategoryType.Item)
+            .Where(category => category.Id.Identity > 0);
 
+        var items = new List<ItemDTO>();
+        var responseDetectedAsNull = false;
         UexApiResponse<GetItemsOkResponse>? response = null;
-        foreach (var category in categories.Where(x => x.CategoryType == GameItemCategoryType.Item))
+
+        await foreach (var category in categories)
         {
-            var categoryEntityId = category.Id as UexApiGameEntityId;
+            var categoryEntityId = category.Id;
             var categoryId = (categoryEntityId?.Identity ?? 0).ToString(CultureInfo.InvariantCulture);
             response = await itemsApi.GetItemsByCategoryAsync(categoryId, cancellationToken).ConfigureAwait(false);
-            items.AddRange(response.Result.Data ?? ThrowCouldNotParseResponse());
+            responseDetectedAsNull |= response.Result.Data is null;
+            items.AddRange(response.Result.Data ?? []);
+#if DEBUG
+            break;
+#endif
+        }
+
+        if (items.Count == 0 && responseDetectedAsNull)
+        {
+            // temporary workaround, some responses return Result.Data=null
+            ThrowCouldNotParseResponse();
         }
 
         return CreateResponse(response, items);
@@ -42,4 +56,11 @@ internal class UexItemRepository(
 
     protected override double? GetSourceApiId(ItemDTO source)
         => source.Id;
+
+    /// <remarks>
+    ///     Some items do not have company ID defined.
+    ///     Typical example are centurion/imperator subscriber items.
+    /// </remarks>
+    protected override bool IncludeSourceModel(ItemDTO sourceModel)
+        => sourceModel.Id_company > 0;
 }

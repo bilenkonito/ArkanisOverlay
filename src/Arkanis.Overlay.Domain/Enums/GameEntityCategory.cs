@@ -5,8 +5,9 @@ public enum GameEntityCategory
     Undefined,
     Commodity,
     Item,
-    Vehicle,
+    ItemCategory,
+    SpaceShip,
+    GroundVehicle,
     Location,
     Company,
-    ItemCategory,
 }

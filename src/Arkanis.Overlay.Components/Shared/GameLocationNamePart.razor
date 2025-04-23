@@ -1,0 +1,20 @@
+@using Arkanis.Overlay.Domain.Models.Game
+@using MoreLinq
+<MudStack Spacing="2" AlignItems="@AlignItems.Center" Row>
+    @foreach (var (index, subLocation) in Model.Location.CreatePathToRoot().Index())
+    {
+        if (index > 0)
+        {
+            <span class="text-secondary">/</span>
+        }
+
+        <GameEntityNamePart Model="@subLocation.Name.MainContent" Embedded/>
+    }
+</MudStack>
+
+@code
+{
+
+    [Parameter] public required GameEntityName.LocationReference Model { get; set; }
+
+}

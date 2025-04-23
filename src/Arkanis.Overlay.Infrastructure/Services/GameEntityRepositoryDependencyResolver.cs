@@ -6,6 +6,10 @@ using Domain.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Repositories.Exceptions;
 
+/// <summary>
+///     Provides support logic for resolving multiple dependencies at once.
+/// </summary>
+/// <param name="serviceProvider">Service provider used for typed service resolution</param>
 internal sealed class GameEntityRepositoryDependencyResolver(IServiceProvider serviceProvider)
 {
     public Context DependsOn(IEnumerable<IDependable> dependencies)

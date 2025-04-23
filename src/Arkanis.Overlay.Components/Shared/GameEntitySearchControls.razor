@@ -1,0 +1,66 @@
+@using Arkanis.Overlay.Domain.Abstractions.Game
+<MudStack Spacing="2"
+          AlignItems="@AlignItems.Center"
+          Justify="@Justify.FlexEnd"
+          Class="mr-n2"
+          Style="height: 46px;"
+          Row>
+    @if (Model is IGameLocation gameLocation)
+    {
+        <MudDivider Vertical FlexItem/>
+        @if (SearchContext.CurrentLocation == gameLocation)
+        {
+            <MudIconButton
+                Icon="@MaterialSymbols.Outlined.FilterAltOff"
+                OnClick="@SearchContext.ClearLocationFilterAsync"
+                Class="focus"
+                tabindex="1"/>
+        }
+        else
+        {
+            <MudIconButton
+                Icon="@MaterialSymbols.Outlined.TravelExplore"
+                OnClick="@(() => SearchContext.SetFilterAsync(gameLocation))"
+                Class="focus"
+                tabindex="1"/>
+        }
+    }
+    @if (Model is IGamePurchasable)
+    {
+        <MudDivider Vertical FlexItem/>
+        <MudIconButton
+            Icon="@MaterialSymbols.Outlined.AddShoppingCart"
+            Class="focus"
+            tabindex="1"
+            Disabled/>
+    }
+    @if (Model is IGameSellable)
+    {
+        <MudDivider Vertical FlexItem/>
+        <MudIconButton
+            Icon="@MaterialSymbols.Outlined.RemoveShoppingCart"
+            Class="focus"
+            tabindex="1"
+            Disabled/>
+    }
+    @if (Model is IGameRentable)
+    {
+        <MudDivider Vertical FlexItem/>
+        <MudIconButton
+            Icon="@MaterialSymbols.Outlined.HourglassTop"
+            Class="focus"
+            tabindex="1"
+            Disabled/>
+    }
+</MudStack>
+
+@code
+{
+
+    [CascadingParameter]
+    public required OverlaySearchContext SearchContext { get; set; }
+
+    [Parameter]
+    public required IGameEntity Model { get; set; }
+
+}

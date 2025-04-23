@@ -1,0 +1,30 @@
+@using Arkanis.Overlay.Domain.Models.Game
+<MudStack Spacing="0">
+    @if (Model.Location is { } locationReference && !Embedded)
+    {
+        <div style="height: 16px;">
+            <GameLocationNamePart Model="@locationReference"/>
+        </div>
+    }
+    <MudStack Style="@MainContentStyle" Spacing="1" Row>
+        @if (Model.Company is { } companyReference)
+        {
+            <GameCompanyNamePart Model="@companyReference"/>
+        }
+        <GameEntityNamePart Model="@Model.MainContent" Embedded="@Embedded"/>
+    </MudStack>
+</MudStack>
+
+@code
+{
+
+    private string MainContentStyle
+        => Model.Location is not null
+            ? "height: 40px;"
+            : "height: 56px;";
+
+    [Parameter] public required GameEntityName Model { get; set; }
+
+    [Parameter] public bool Embedded { get; set; }
+
+}

@@ -1,0 +1,35 @@
+@using Arkanis.Overlay.Domain.Models.Game
+<MudText HtmlTag="code"
+         Color="@Color.Secondary"
+         Style="@CodeCss">
+    @if (PrefixContent is not null)
+    {
+        <span>@PrefixContent</span>
+    }
+    <span>@Model.Code</span>
+</MudText>
+
+@code
+{
+
+    private string CodeCss
+        => $"font-family: monospace; {NameCss}; {Style}";
+
+    private string NameCss
+        => !Embedded
+            ? "font-weight: bold"
+            : "font-weight: lighter";
+
+    [Parameter]
+    public required GameEntityName.IHasCode Model { get; set; }
+
+    [Parameter]
+    public bool Embedded { get; set; }
+
+    [Parameter]
+    public string? Style { get; set; }
+
+    [Parameter]
+    public RenderFragment? PrefixContent { get; set; }
+
+}

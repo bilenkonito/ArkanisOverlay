@@ -3,6 +3,7 @@ namespace Arkanis.Overlay.Infrastructure.UnitTests.Repositories.Sync.Live;
 using Domain.Models.Game;
 using Xunit.Abstractions;
 
-[Collection("Live UEX API")]
+[Trait(nameof(TestConstants.Traits.DataSource), TestConstants.Traits.DataSource.ExternalApi)]
+[Trait(nameof(TestConstants.Traits.DataState), TestConstants.Traits.DataState.Live)]
 public class LiveUexCompanySyncRepositoryTest(ITestOutputHelper testOutputHelper, LiveUexSyncRepositoryTestFixture fixture)
     : UexSyncRepositoryTestBase<GameCompany, LiveUexSyncRepositoryTestFixture>(testOutputHelper, fixture);

@@ -13,6 +13,15 @@ using External.UEX.Extensions;
 using Local;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+///     A generic synchronization repository for game entities sourced from UEX API.
+///     This repository handles shared logic for all UEX API endpoints.
+/// </summary>
+/// <param name="stateProvider">A global UEX game version provider</param>
+/// <param name="mapper">A mapper for the external DTO types</param>
+/// <param name="logger">A logger</param>
+/// <typeparam name="TSource">External DTO type</typeparam>
+/// <typeparam name="TDomain">Internal domain type</typeparam>
 internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
     UexGameDataStateProvider stateProvider,
     UexApiDtoMapper mapper,
@@ -33,7 +42,7 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
         {
             var response = await GetInternalResponseAsync(cancellationToken).ConfigureAwait(false);
             var cacheUntil = response.CreateResponseHeaders().GetCacheUntil();
-            var domainEntities = response.Result.Select(MapToDomain).ToAsyncEnumerable();
+            var domainEntities = response.Result.Where(IncludeSourceModel).Select(MapToDomain).ToAsyncEnumerable();
             var dataState = await LoadCurrentDataState(cancellationToken);
             return new GameEntitySyncData<TDomain>(domainEntities, dataState, cacheUntil);
         }
@@ -45,7 +54,7 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
         }
     }
 
-    public async Task<TDomain?> GetAsync(IGameEntityId id, CancellationToken cancellationToken = default)
+    public async Task<TDomain?> GetAsync(IDomainId id, CancellationToken cancellationToken = default)
     {
         await GetDependencies().WaitUntilReadyAsync(cancellationToken);
         var result = await GetSingleInternalAsync(id, cancellationToken).ConfigureAwait(false);
@@ -53,6 +62,9 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
             ? MapToDomain(result)
             : null;
     }
+
+    protected virtual bool IncludeSourceModel(TSource sourceModel)
+        => true;
 
     protected virtual IDependable GetDependencies()
         => NoDependency.Instance;
@@ -70,7 +82,7 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
 
     protected abstract double? GetSourceApiId(TSource source);
 
-    private async Task<TSource?> GetSingleInternalAsync(IGameEntityId id, CancellationToken cancellationToken)
+    private async Task<TSource?> GetSingleInternalAsync(IDomainId id, CancellationToken cancellationToken)
     {
         if (id is not UexApiGameEntityId uexApiId)
         {
