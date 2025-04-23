@@ -95,16 +95,10 @@ public static class Program
                 services.AddSingleton<IServiceProvider>(sp => sp);
                 services.AddHttpClient();
 
-                services.AddAllExternalUexApiClients();
-
                 // Data
                 services
                     .AddWindowOverlayControls()
-                    .AddInfrastructure()
-                    .AddInfrastructureHostedServices();
-
-                // Hosted Services
-                services.AddHostedService<EndpointManager>();
+                    .AddInfrastructure();
 
                 // Singleton Services
                 services.AddSingleton<BlurHelper>();
@@ -113,7 +107,6 @@ public static class Program
                 // Workers
                 services.AddSingleton<WindowTracker>();
                 services.AddSingleton<GlobalHotkey>();
-                services.AddSingleton<DataSync>();
             }
         );
 }

@@ -20,8 +20,7 @@ builder.Services.AddMudServices();
 
 builder.Services
     .AddServerOverlayControls()
-    .AddInfrastructure()
-    .AddInfrastructureHostedServices();
+    .AddInfrastructure();
 
 var app = builder.Build();
 

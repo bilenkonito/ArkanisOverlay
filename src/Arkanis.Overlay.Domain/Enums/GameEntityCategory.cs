@@ -8,4 +8,5 @@ public enum GameEntityCategory
     Vehicle,
     Location,
     Company,
+    ItemCategory,
 }

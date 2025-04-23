@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddAllExternalUexApiClients(this IServiceCollection services)
+    public static IServiceCollection AddAllUexApiClients(this IServiceCollection services)
         => services
             .AddSingleton<IUexCrewApi, UexCrewApi>()
             .AddSingleton<IUexCommoditiesApi, UexCommoditiesApi>()

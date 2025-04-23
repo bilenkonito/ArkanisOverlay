@@ -29,7 +29,7 @@ namespace Arkanis.External.UEX
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexGameApi : IUexGameApi
+    internal partial class UexGameApi : UexApiClientBase, IUexGameApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -84,8 +84,8 @@ namespace Arkanis.External.UEX
         /// Get a list of item and service categories.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCategoriesOkResponse>> GetCategoriesAsync(string? type = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCategoriesOkResponse>> GetCategoriesAsync(string? type = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -135,14 +135,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCategoriesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCategoriesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCategoriesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -164,8 +164,8 @@ namespace Arkanis.External.UEX
         /// Get attributes from categories (type 'item' only)
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCategoriesAttributesOkResponse>> GetCategoriesAttributesAsync(double? id_category = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCategoriesAttributesOkResponse>> GetCategoriesAttributesAsync(double? id_category = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -215,14 +215,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCategoriesAttributesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCategoriesAttributesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCategoriesAttributesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -244,8 +244,8 @@ namespace Arkanis.External.UEX
         /// Retrieve the list of cities within a star system.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCitiesOkResponse>> GetCitiesAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCitiesOkResponse>> GetCitiesAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -295,14 +295,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCitiesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCitiesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCitiesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -324,8 +324,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all companies in the Star Citizen universe.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCompaniesOkResponse>> GetCompaniesAsync(string? is_item_manufacturer = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCompaniesOkResponse>> GetCompaniesAsync(string? is_item_manufacturer = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -375,14 +375,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCompaniesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCompaniesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCompaniesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -404,8 +404,8 @@ namespace Arkanis.External.UEX
         /// Obtain a list of all known Star Citizen contacts (mission givers)
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetContactsOkResponse>> GetContactsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetContactsOkResponse>> GetContactsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -449,14 +449,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetContactsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetContactsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetContactsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -478,8 +478,8 @@ namespace Arkanis.External.UEX
         /// Obtain a list of all known Star Citizen contacts (mission givers)
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetContractsOkResponse>> GetContractsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetContractsOkResponse>> GetContractsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -523,14 +523,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetContractsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetContractsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetContractsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -552,8 +552,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all known Star Citizen factions
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFactionsOkResponse>> GetFactionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFactionsOkResponse>> GetFactionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -597,14 +597,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFactionsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFactionsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFactionsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -626,8 +626,8 @@ namespace Arkanis.External.UEX
         /// Obtain the Star Citizen versions currently operated by UEX. It may be out of sync with Star Citizen releases sometimes.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetGameVersionsOkResponse>> GetGameVersionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetGameVersionsOkResponse>> GetGameVersionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -671,14 +671,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetGameVersionsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetGameVersionsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetGameVersionsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -700,8 +700,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all jump points in the game
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetJumpPointsOkResponse>> GetJumpPointsAsync(double? id_orbit_origin = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetJumpPointsOkResponse>> GetJumpPointsAsync(double? id_orbit_origin = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -751,14 +751,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetJumpPointsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetJumpPointsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetJumpPointsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -780,8 +780,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all known Star Citizen jurisdictions
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetJurisdictionsOkResponse>> GetJurisdictionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetJurisdictionsOkResponse>> GetJurisdictionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -825,14 +825,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetJurisdictionsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetJurisdictionsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetJurisdictionsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -854,8 +854,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all moons within a star system.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetMoonsOkResponse>> GetMoonsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetMoonsOkResponse>> GetMoonsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -905,14 +905,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetMoonsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetMoonsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetMoonsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -934,8 +934,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all planets, planetoids and lagrange points orbiting a star.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetOrbitsOkResponse>> GetOrbitsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetOrbitsOkResponse>> GetOrbitsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -985,14 +985,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetOrbitsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetOrbitsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetOrbitsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1013,8 +1013,8 @@ namespace Arkanis.External.UEX
         /// <summary>
         /// Obtain the last orbital distances reported by Datarunners
         /// </summary>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse> GetOrbitsDistancesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse> GetOrbitsDistancesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1057,20 +1057,20 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetOrbitsDistancesBadRequestResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new UexException<GetOrbitsDistancesBadRequestResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new UexApiException<GetOrbitsDistancesBadRequestResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
 
                         if (status_ == 200 || status_ == 204)
                         {
-                            return new UexResponse(status_, headers_);
+                            return new UexApiResponse(status_, headers_);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1092,8 +1092,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all outposts within a star system.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetOutpostsOkResponse>> GetOutpostsAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetOutpostsOkResponse>> GetOutpostsAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1143,14 +1143,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetOutpostsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetOutpostsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetOutpostsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1172,8 +1172,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all planets within a star system.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetPlanetsOkResponse>> GetPlanetsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetPlanetsOkResponse>> GetPlanetsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1223,14 +1223,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetPlanetsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetPlanetsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetPlanetsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1252,8 +1252,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of points of interest
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetPoiOkResponse>> GetPoiAsync(double? id_outpost = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetPoiOkResponse>> GetPoiAsync(double? id_outpost = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1303,14 +1303,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetPoiOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetPoiOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetPoiOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1332,8 +1332,8 @@ namespace Arkanis.External.UEX
         /// Output UEX dev notes
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetReleaseNotesOkResponse>> GetReleaseNotesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetReleaseNotesOkResponse>> GetReleaseNotesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1377,14 +1377,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetReleaseNotesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetReleaseNotesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetReleaseNotesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1406,8 +1406,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all space stations within a star system.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetSpaceStationsOkResponse>> GetSpaceStationsAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetSpaceStationsOkResponse>> GetSpaceStationsAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1457,14 +1457,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetSpaceStationsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetSpaceStationsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetSpaceStationsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1486,8 +1486,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all star systems in the Star Citizen universe.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetStarSystemsOkResponse>> GetStarSystemsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetStarSystemsOkResponse>> GetStarSystemsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1531,14 +1531,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetStarSystemsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetStarSystemsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetStarSystemsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1560,8 +1560,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a comprehensive list of all terminals in the game, including trade terminals, item terminals, vehicle rentals, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetTerminalsOkResponse>> GetTerminalsAsync(double? id_outpost = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetTerminalsOkResponse>> GetTerminalsAsync(double? id_outpost = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1611,14 +1611,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetTerminalsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetTerminalsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetTerminalsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1639,8 +1639,8 @@ namespace Arkanis.External.UEX
         /// <summary>
         /// Estimate the distance (in gigameters) between two terminals within the Star Citizen universe.
         /// </summary>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse> GetTerminalsDistancesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse> GetTerminalsDistancesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1683,20 +1683,20 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetTerminalsDistancesBadRequestResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new UexException<GetTerminalsDistancesBadRequestResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new UexApiException<GetTerminalsDistancesBadRequestResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
 
                         if (status_ == 200 || status_ == 204)
                         {
-                            return new UexResponse(status_, headers_);
+                            return new UexApiResponse(status_, headers_);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1718,8 +1718,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of Star Citizen vehicles, including spaceships and ground vehicles.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetVehiclesOkResponse>> GetVehiclesAsync(double? id_company = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetVehiclesOkResponse>> GetVehiclesAsync(double? id_company = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1769,14 +1769,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetVehiclesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetVehiclesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetVehiclesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -1826,7 +1826,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -1842,7 +1842,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -1903,7 +1903,7 @@ namespace Arkanis.External.UEX
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexCommoditiesApi : IUexCommoditiesApi
+    internal partial class UexCommoditiesApi : UexApiClientBase, IUexCommoditiesApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -1958,8 +1958,8 @@ namespace Arkanis.External.UEX
         /// Get a list of all commodities covered by UEX.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesOkResponse>> GetCommoditiesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesOkResponse>> GetCommoditiesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2003,14 +2003,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2032,8 +2032,8 @@ namespace Arkanis.External.UEX
         /// Obtain a list of the latest commodities alerts
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesAlertsOkResponse>> GetCommoditiesAlertsAsync(double? id_commodity = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesAlertsOkResponse>> GetCommoditiesAlertsAsync(double? id_commodity = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2083,14 +2083,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesAlertsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesAlertsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesAlertsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2112,8 +2112,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of average prices and stock data of a specific commodity in the last 15 days. (CAX Index)
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesAveragesOkResponse>> GetCommoditiesAveragesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesAveragesOkResponse>> GetCommoditiesAveragesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_commodity == null)
                 throw new System.ArgumentNullException("id_commodity");
@@ -2162,14 +2162,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesAveragesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesAveragesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesAveragesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2191,8 +2191,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityCodeAsync(string commodity_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityCodeAsync(string commodity_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (commodity_code == null)
                 throw new System.ArgumentNullException("commodity_code");
@@ -2241,14 +2241,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2270,8 +2270,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityNameAsync(string commodity_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityNameAsync(string commodity_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (commodity_name == null)
                 throw new System.ArgumentNullException("commodity_name");
@@ -2320,14 +2320,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2349,8 +2349,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommoditySlugAsync(string commodity_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommoditySlugAsync(string commodity_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (commodity_slug == null)
                 throw new System.ArgumentNullException("commodity_slug");
@@ -2399,14 +2399,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2428,8 +2428,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_commodity == null)
                 throw new System.ArgumentNullException("id_commodity");
@@ -2478,14 +2478,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2507,8 +2507,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_terminal == null)
                 throw new System.ArgumentNullException("id_terminal");
@@ -2557,14 +2557,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2586,8 +2586,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalCodeAsync(string terminal_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalCodeAsync(string terminal_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (terminal_code == null)
                 throw new System.ArgumentNullException("terminal_code");
@@ -2636,14 +2636,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2665,8 +2665,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalNameAsync(string terminal_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalNameAsync(string terminal_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (terminal_name == null)
                 throw new System.ArgumentNullException("terminal_name");
@@ -2715,14 +2715,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2744,8 +2744,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalSlugAsync(string terminal_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalSlugAsync(string terminal_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (terminal_slug == null)
                 throw new System.ArgumentNullException("terminal_slug");
@@ -2794,14 +2794,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2823,8 +2823,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all commodities in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesAllOkResponse>> GetCommoditiesPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesAllOkResponse>> GetCommoditiesPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2868,14 +2868,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesPricesAllOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2897,8 +2897,8 @@ namespace Arkanis.External.UEX
         /// Obtain a price history of a commodity at a specific location
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesHistoryOkResponse>> GetCommoditiesPricesHistoryByTerminalAndCommodityAsync(string id_terminal, string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesHistoryOkResponse>> GetCommoditiesPricesHistoryByTerminalAndCommodityAsync(string id_terminal, string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_terminal == null)
                 throw new System.ArgumentNullException("id_terminal");
@@ -2952,14 +2952,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesPricesHistoryOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesPricesHistoryOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesPricesHistoryOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -2981,8 +2981,8 @@ namespace Arkanis.External.UEX
         /// Retrieves the UEX Commodities Average Index™ Ranking
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesRankingOkResponse>> GetCommoditiesRankingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRankingOkResponse>> GetCommoditiesRankingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3026,14 +3026,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesRankingOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesRankingOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesRankingOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -3055,8 +3055,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of average prices of a specific commodity (raw) in the last 15 days. (CAX Index)
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesRawAveragesOkResponse>> GetCommoditiesRawAveragesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRawAveragesOkResponse>> GetCommoditiesRawAveragesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_commodity == null)
                 throw new System.ArgumentNullException("id_commodity");
@@ -3105,14 +3105,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesRawAveragesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesRawAveragesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesRawAveragesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -3134,8 +3134,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all unrefined (raw/ore) commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesRawPricesOkResponse>> GetCommoditiesRawPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRawPricesOkResponse>> GetCommoditiesRawPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_commodity == null)
                 throw new System.ArgumentNullException("id_commodity");
@@ -3184,14 +3184,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesRawPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesRawPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesRawPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -3213,8 +3213,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all unrefined (raw/ore) commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesRawPricesOkResponse>> GetCommoditiesRawPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRawPricesOkResponse>> GetCommoditiesRawPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_terminal == null)
                 throw new System.ArgumentNullException("id_terminal");
@@ -3263,14 +3263,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesRawPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesRawPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesRawPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -3292,8 +3292,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all raw commodities in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesRawPricesAllOkResponse>> GetCommoditiesRawPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRawPricesAllOkResponse>> GetCommoditiesRawPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3337,14 +3337,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesRawPricesAllOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesRawPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesRawPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -3366,8 +3366,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of common routes calculated based on data reports
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_commodity == null)
                 throw new System.ArgumentNullException("id_commodity");
@@ -3416,14 +3416,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesRoutesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesRoutesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesRoutesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -3445,8 +3445,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of common routes calculated based on data reports
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByOrbitOriginAsync(string id_orbit_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByOrbitOriginAsync(string id_orbit_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_orbit_origin == null)
                 throw new System.ArgumentNullException("id_orbit_origin");
@@ -3495,14 +3495,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesRoutesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesRoutesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesRoutesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -3524,8 +3524,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of common routes calculated based on data reports
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByPlanetOriginAsync(string id_planet_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByPlanetOriginAsync(string id_planet_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_planet_origin == null)
                 throw new System.ArgumentNullException("id_planet_origin");
@@ -3574,14 +3574,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesRoutesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesRoutesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesRoutesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -3603,8 +3603,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of common routes calculated based on data reports
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByTerminalOriginAsync(string id_terminal_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByTerminalOriginAsync(string id_terminal_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_terminal_origin == null)
                 throw new System.ArgumentNullException("id_terminal_origin");
@@ -3653,14 +3653,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesRoutesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesRoutesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesRoutesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -3682,8 +3682,8 @@ namespace Arkanis.External.UEX
         /// Obtain a list of inventory states that are displayed at every trading terminal.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCommoditiesStatusOkResponse>> GetCommoditiesStatusAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesStatusOkResponse>> GetCommoditiesStatusAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3727,14 +3727,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCommoditiesStatusOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCommoditiesStatusOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCommoditiesStatusOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -3784,7 +3784,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -3800,7 +3800,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -3861,7 +3861,7 @@ namespace Arkanis.External.UEX
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexCrewApi : IUexCrewApi
+    internal partial class UexCrewApi : UexApiClientBase, IUexCrewApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -3916,8 +3916,8 @@ namespace Arkanis.External.UEX
         /// Search for users listed in the Crew Directory
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetCrewOkResponse>> GetCrewBySpecializationAsync(string specialization, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetCrewOkResponse>> GetCrewBySpecializationAsync(string specialization, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (specialization == null)
                 throw new System.ArgumentNullException("specialization");
@@ -3966,14 +3966,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetCrewOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetCrewOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetCrewOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -4023,7 +4023,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -4039,7 +4039,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -4100,7 +4100,7 @@ namespace Arkanis.External.UEX
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexStaticApi : IUexStaticApi
+    internal partial class UexStaticApi : UexApiClientBase, IUexStaticApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -4155,8 +4155,8 @@ namespace Arkanis.External.UEX
         /// This command does not require API authentication.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse> GetDataExtractAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse> GetDataExtractAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4196,12 +4196,12 @@ namespace Arkanis.External.UEX
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return new UexResponse(status_, headers_);
+                            return new UexApiResponse(status_, headers_);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -4223,8 +4223,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of specific parameters that UEX uses for managing prices and updates.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetDataParametersOkResponse>> GetDataParametersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetDataParametersOkResponse>> GetDataParametersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4268,14 +4268,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetDataParametersOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetDataParametersOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetDataParametersOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -4325,7 +4325,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -4341,7 +4341,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -4402,7 +4402,7 @@ namespace Arkanis.External.UEX
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexUserApi : IUexUserApi
+    internal partial class UexUserApi : UexApiClientBase, IUexUserApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -4457,8 +4457,8 @@ namespace Arkanis.External.UEX
         /// Obtain user fleet vehicles
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFleetOkResponse>> GetFleetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFleetOkResponse>> GetFleetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4502,14 +4502,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFleetOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFleetOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFleetOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -4531,8 +4531,8 @@ namespace Arkanis.External.UEX
         /// Obtain details from a specific user such as name, avatar, etc.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetUserOkResponse>> GetUserAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetUserOkResponse>> GetUserAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4576,14 +4576,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetUserOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetUserOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetUserOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -4604,8 +4604,8 @@ namespace Arkanis.External.UEX
         /// <summary>
         /// Obtain a list of refinery jobs made by an user
         /// </summary>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse> GetUserRefineriesJobsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse> GetUserRefineriesJobsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4648,20 +4648,20 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetUserRefineriesJobsBadRequestResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new UexException<GetUserRefineriesJobsBadRequestResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new UexApiException<GetUserRefineriesJobsBadRequestResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
 
                         if (status_ == 200 || status_ == 204)
                         {
-                            return new UexResponse(status_, headers_);
+                            return new UexApiResponse(status_, headers_);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -4682,8 +4682,8 @@ namespace Arkanis.External.UEX
         /// <summary>
         /// Obtain a list of trade transactions made by an user
         /// </summary>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse> GetUserTradesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse> GetUserTradesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4726,20 +4726,20 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetUserTradesBadRequestResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new UexException<GetUserTradesBadRequestResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new UexApiException<GetUserTradesBadRequestResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
 
                         if (status_ == 200 || status_ == 204)
                         {
-                            return new UexResponse(status_, headers_);
+                            return new UexApiResponse(status_, headers_);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -4761,8 +4761,8 @@ namespace Arkanis.External.UEX
         /// Retrieve user wallet balance
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetWalletBalanceOkResponse>> GetWalletBalanceAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetWalletBalanceOkResponse>> GetWalletBalanceAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4806,14 +4806,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetWalletBalanceOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetWalletBalanceOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetWalletBalanceOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -4863,7 +4863,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -4879,7 +4879,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -4940,7 +4940,7 @@ namespace Arkanis.External.UEX
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexFuelApi : IUexFuelApi
+    internal partial class UexFuelApi : UexApiClientBase, IUexFuelApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -4995,8 +4995,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityCodeAsync(string commodity_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityCodeAsync(string commodity_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (commodity_code == null)
                 throw new System.ArgumentNullException("commodity_code");
@@ -5045,14 +5045,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFuelPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -5074,8 +5074,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityNameAsync(string commodity_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityNameAsync(string commodity_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (commodity_name == null)
                 throw new System.ArgumentNullException("commodity_name");
@@ -5124,14 +5124,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFuelPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -5153,8 +5153,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommoditySlugAsync(string commodity_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommoditySlugAsync(string commodity_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (commodity_slug == null)
                 throw new System.ArgumentNullException("commodity_slug");
@@ -5203,14 +5203,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFuelPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -5232,8 +5232,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_commodity == null)
                 throw new System.ArgumentNullException("id_commodity");
@@ -5282,14 +5282,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFuelPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -5311,8 +5311,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_terminal == null)
                 throw new System.ArgumentNullException("id_terminal");
@@ -5361,14 +5361,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFuelPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -5390,8 +5390,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalCodeAsync(string terminal_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalCodeAsync(string terminal_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (terminal_code == null)
                 throw new System.ArgumentNullException("terminal_code");
@@ -5440,14 +5440,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFuelPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -5469,8 +5469,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalNameAsync(string terminal_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalNameAsync(string terminal_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (terminal_name == null)
                 throw new System.ArgumentNullException("terminal_name");
@@ -5519,14 +5519,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFuelPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -5548,8 +5548,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalSlugAsync(string terminal_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalSlugAsync(string terminal_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (terminal_slug == null)
                 throw new System.ArgumentNullException("terminal_slug");
@@ -5598,14 +5598,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFuelPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFuelPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -5627,8 +5627,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all fuel prices in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetFuelPricesAllOkResponse>> GetFuelPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesAllOkResponse>> GetFuelPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -5672,14 +5672,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetFuelPricesAllOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetFuelPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetFuelPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -5729,7 +5729,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -5745,7 +5745,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -5806,7 +5806,7 @@ namespace Arkanis.External.UEX
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexItemsApi : IUexItemsApi
+    internal partial class UexItemsApi : UexApiClientBase, IUexItemsApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -5861,8 +5861,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a comprehensive list of Star Citizen items, including ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetItemsOkResponse>> GetItemsByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetItemsOkResponse>> GetItemsByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_category == null)
                 throw new System.ArgumentNullException("id_category");
@@ -5911,14 +5911,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetItemsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetItemsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -5940,8 +5940,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a comprehensive list of Star Citizen items, including ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetItemsOkResponse>> GetItemsByCompanyAsync(string id_company, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetItemsOkResponse>> GetItemsByCompanyAsync(string id_company, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_company == null)
                 throw new System.ArgumentNullException("id_company");
@@ -5990,14 +5990,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetItemsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetItemsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6018,8 +6018,8 @@ namespace Arkanis.External.UEX
         /// <summary>
         /// Retrieve a comprehensive list of Star Citizen items, including ship components, weapons, and more.
         /// </summary>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse> GetItemsBySizeAsync(string size, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse> GetItemsBySizeAsync(string size, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (size == null)
                 throw new System.ArgumentNullException("size");
@@ -6067,20 +6067,20 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsBadRequestResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new UexException<GetItemsBadRequestResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new UexApiException<GetItemsBadRequestResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
 
                         if (status_ == 200 || status_ == 204)
                         {
-                            return new UexResponse(status_, headers_);
+                            return new UexApiResponse(status_, headers_);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6102,8 +6102,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a comprehensive list of Star Citizen items, including ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetItemsOkResponse>> GetItemsByUuidAsync(string uuid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetItemsOkResponse>> GetItemsByUuidAsync(string uuid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (uuid == null)
                 throw new System.ArgumentNullException("uuid");
@@ -6152,14 +6152,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetItemsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetItemsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6181,8 +6181,8 @@ namespace Arkanis.External.UEX
         /// Obtain a list of attributes of a specific item
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_category == null)
                 throw new System.ArgumentNullException("id_category");
@@ -6231,14 +6231,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsAttributesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetItemsAttributesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetItemsAttributesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6260,8 +6260,8 @@ namespace Arkanis.External.UEX
         /// Obtain a list of attributes of a specific item
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByItemAsync(string id_item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByItemAsync(string id_item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_item == null)
                 throw new System.ArgumentNullException("id_item");
@@ -6310,14 +6310,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsAttributesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetItemsAttributesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetItemsAttributesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6339,8 +6339,8 @@ namespace Arkanis.External.UEX
         /// Obtain a list of attributes of a specific item
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByUuidAsync(string uuid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByUuidAsync(string uuid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (uuid == null)
                 throw new System.ArgumentNullException("uuid");
@@ -6389,14 +6389,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsAttributesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetItemsAttributesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetItemsAttributesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6418,8 +6418,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a comprehensive list of prices for all items, including armor, ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetItemsPricesOkResponse>> GetItemsPricesByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetItemsPricesOkResponse>> GetItemsPricesByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_category == null)
                 throw new System.ArgumentNullException("id_category");
@@ -6468,14 +6468,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetItemsPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetItemsPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6497,8 +6497,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a comprehensive list of prices for all items, including armor, ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetItemsPricesOkResponse>> GetItemsPricesByItemAsync(string id_item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetItemsPricesOkResponse>> GetItemsPricesByItemAsync(string id_item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_item == null)
                 throw new System.ArgumentNullException("id_item");
@@ -6547,14 +6547,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetItemsPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetItemsPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6576,8 +6576,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a comprehensive list of prices for all items, including armor, ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetItemsPricesOkResponse>> GetItemsPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetItemsPricesOkResponse>> GetItemsPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_terminal == null)
                 throw new System.ArgumentNullException("id_terminal");
@@ -6626,14 +6626,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetItemsPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetItemsPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6655,8 +6655,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all items in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetItemsPricesAllOkResponse>> GetItemsPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetItemsPricesAllOkResponse>> GetItemsPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -6700,14 +6700,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetItemsPricesAllOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetItemsPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetItemsPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6757,7 +6757,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -6773,7 +6773,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -6834,7 +6834,7 @@ namespace Arkanis.External.UEX
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexMarketplaceApi : IUexMarketplaceApi
+    internal partial class UexMarketplaceApi : UexApiClientBase, IUexMarketplaceApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -6889,8 +6889,8 @@ namespace Arkanis.External.UEX
         /// List all advertisements favorited by an user
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetMarketplaceFavoritesOkResponse>> GetMarketplaceFavoritesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetMarketplaceFavoritesOkResponse>> GetMarketplaceFavoritesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -6934,14 +6934,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetMarketplaceFavoritesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetMarketplaceFavoritesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetMarketplaceFavoritesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -6963,8 +6963,8 @@ namespace Arkanis.External.UEX
         /// List all active marketplace advertisements, limited by 100
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetMarketplaceListingsOkResponse>> GetMarketplaceListingsAsync(string? slug = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetMarketplaceListingsOkResponse>> GetMarketplaceListingsAsync(string? slug = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -7014,14 +7014,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetMarketplaceListingsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetMarketplaceListingsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetMarketplaceListingsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -7071,7 +7071,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -7087,7 +7087,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -7148,7 +7148,7 @@ namespace Arkanis.External.UEX
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexOrganizationsApi : IUexOrganizationsApi
+    internal partial class UexOrganizationsApi : UexApiClientBase, IUexOrganizationsApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -7203,8 +7203,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all organizations added to the UEX website
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetOrganizationsOkResponse>> GetOrganizationsByOrganizationAsync(string id_organization, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetOrganizationsOkResponse>> GetOrganizationsByOrganizationAsync(string id_organization, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_organization == null)
                 throw new System.ArgumentNullException("id_organization");
@@ -7253,14 +7253,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetOrganizationsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetOrganizationsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetOrganizationsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -7282,8 +7282,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all organizations added to the UEX website
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetOrganizationsOkResponse>> GetOrganizationsBySlugAsync(string slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetOrganizationsOkResponse>> GetOrganizationsBySlugAsync(string slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (slug == null)
                 throw new System.ArgumentNullException("slug");
@@ -7332,14 +7332,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetOrganizationsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetOrganizationsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetOrganizationsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -7389,7 +7389,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -7405,7 +7405,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -7466,7 +7466,7 @@ namespace Arkanis.External.UEX
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexRefineriesApi : IUexRefineriesApi
+    internal partial class UexRefineriesApi : UexApiClientBase, IUexRefineriesApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -7521,8 +7521,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all refinery audits submitted by Data Runners.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetRefineriesAuditsOkResponse>> GetRefineriesAuditsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetRefineriesAuditsOkResponse>> GetRefineriesAuditsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -7566,14 +7566,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetRefineriesAuditsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetRefineriesAuditsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetRefineriesAuditsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -7595,8 +7595,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of the estimated capacity percentages for all refineries.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetRefineriesCapacitiesOkResponse>> GetRefineriesCapacitiesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetRefineriesCapacitiesOkResponse>> GetRefineriesCapacitiesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -7640,14 +7640,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetRefineriesCapacitiesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetRefineriesCapacitiesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetRefineriesCapacitiesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -7669,8 +7669,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of the refining methods used by all in-game refineries
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetRefineriesMethodsOkResponse>> GetRefineriesMethodsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetRefineriesMethodsOkResponse>> GetRefineriesMethodsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -7714,14 +7714,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetRefineriesMethodsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetRefineriesMethodsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetRefineriesMethodsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -7743,8 +7743,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all refineries yields bonuses per commodity
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetRefineriesYieldsOkResponse>> GetRefineriesYieldsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetRefineriesYieldsOkResponse>> GetRefineriesYieldsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -7788,14 +7788,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetRefineriesYieldsOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetRefineriesYieldsOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetRefineriesYieldsOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -7845,7 +7845,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -7861,7 +7861,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -7922,7 +7922,7 @@ namespace Arkanis.External.UEX
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal partial class UexVehiclesApi : IUexVehiclesApi
+    internal partial class UexVehiclesApi : UexApiClientBase, IUexVehiclesApi
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -7977,8 +7977,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of Star Citizen vehicles loaners for a specific vehicle ID
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetVehiclesLoanersOkResponse>> GetVehiclesLoanersAsync(double? id_vehicle = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetVehiclesLoanersOkResponse>> GetVehiclesLoanersAsync(double? id_vehicle = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -8028,14 +8028,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetVehiclesLoanersOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetVehiclesLoanersOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetVehiclesLoanersOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -8057,8 +8057,8 @@ namespace Arkanis.External.UEX
         /// Obtain a daily updated list of vehicle prices in CIG's pledge store, managed either automatically by our bot or manually by the staff.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetVehiclesPricesOkResponse>> GetVehiclesPricesAsync(double? id_vehicle = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetVehiclesPricesOkResponse>> GetVehiclesPricesAsync(double? id_vehicle = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -8108,14 +8108,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetVehiclesPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetVehiclesPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetVehiclesPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -8137,8 +8137,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all in-game vehicle purchase prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetVehiclesPurchasesPricesOkResponse>> GetVehiclesPurchasesPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetVehiclesPurchasesPricesOkResponse>> GetVehiclesPurchasesPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_terminal == null)
                 throw new System.ArgumentNullException("id_terminal");
@@ -8187,14 +8187,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetVehiclesPurchasesPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetVehiclesPurchasesPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetVehiclesPurchasesPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -8216,8 +8216,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all vehicles purchases in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetVehiclesPurchasesPricesAllOkResponse>> GetVehiclesPurchasesPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetVehiclesPurchasesPricesAllOkResponse>> GetVehiclesPurchasesPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -8261,14 +8261,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetVehiclesPurchasesPricesAllOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetVehiclesPurchasesPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetVehiclesPurchasesPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -8290,8 +8290,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of all in-game vehicle rental prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetVehiclesRentalsPricesOkResponse>> GetVehiclesRentalsPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetVehiclesRentalsPricesOkResponse>> GetVehiclesRentalsPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id_terminal == null)
                 throw new System.ArgumentNullException("id_terminal");
@@ -8340,14 +8340,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetVehiclesRentalsPricesOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetVehiclesRentalsPricesOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetVehiclesRentalsPricesOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -8369,8 +8369,8 @@ namespace Arkanis.External.UEX
         /// Retrieve a list of prices for all vehicles rentals in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UexResponse<GetVehiclesRentalsPricesAllOkResponse>> GetVehiclesRentalsPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UexApiResponse<GetVehiclesRentalsPricesAllOkResponse>> GetVehiclesRentalsPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -8414,14 +8414,14 @@ namespace Arkanis.External.UEX
                             var objectResponse_ = await ReadObjectResponseAsync<GetVehiclesRentalsPricesAllOkResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
-                                throw new UexException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                                throw new UexApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new UexResponse<GetVehiclesRentalsPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
+                            return new UexApiResponse<GetVehiclesRentalsPricesAllOkResponse>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UexException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                            throw new UexApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -8471,7 +8471,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -8487,7 +8487,7 @@ namespace Arkanis.External.UEX
                 catch (System.Text.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new UexException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new UexApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }

@@ -2,7 +2,7 @@ namespace Arkanis.Overlay.Domain.Abstractions.Game;
 
 using Models.Game;
 
-public interface IGameEntity
+public interface IGameEntity : ISearchable
 {
     IGameEntityId Id { get; }
 

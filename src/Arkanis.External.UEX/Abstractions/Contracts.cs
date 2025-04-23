@@ -35,174 +35,174 @@ namespace Arkanis.External.UEX.Abstractions
         /// Get a list of item and service categories.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCategoriesOkResponse>> GetCategoriesAsync(string? type = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCategoriesOkResponse>> GetCategoriesAsync(string? type = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Get attributes from categories (type 'item' only)
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCategoriesAttributesOkResponse>> GetCategoriesAttributesAsync(double? id_category = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCategoriesAttributesOkResponse>> GetCategoriesAttributesAsync(double? id_category = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve the list of cities within a star system.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCitiesOkResponse>> GetCitiesAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCitiesOkResponse>> GetCitiesAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all companies in the Star Citizen universe.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCompaniesOkResponse>> GetCompaniesAsync(string? is_item_manufacturer = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCompaniesOkResponse>> GetCompaniesAsync(string? is_item_manufacturer = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a list of all known Star Citizen contacts (mission givers)
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetContactsOkResponse>> GetContactsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetContactsOkResponse>> GetContactsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a list of all known Star Citizen contacts (mission givers)
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetContractsOkResponse>> GetContractsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetContractsOkResponse>> GetContractsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all known Star Citizen factions
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFactionsOkResponse>> GetFactionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFactionsOkResponse>> GetFactionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain the Star Citizen versions currently operated by UEX. It may be out of sync with Star Citizen releases sometimes.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetGameVersionsOkResponse>> GetGameVersionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetGameVersionsOkResponse>> GetGameVersionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all jump points in the game
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetJumpPointsOkResponse>> GetJumpPointsAsync(double? id_orbit_origin = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetJumpPointsOkResponse>> GetJumpPointsAsync(double? id_orbit_origin = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all known Star Citizen jurisdictions
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetJurisdictionsOkResponse>> GetJurisdictionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetJurisdictionsOkResponse>> GetJurisdictionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all moons within a star system.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetMoonsOkResponse>> GetMoonsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetMoonsOkResponse>> GetMoonsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all planets, planetoids and lagrange points orbiting a star.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetOrbitsOkResponse>> GetOrbitsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetOrbitsOkResponse>> GetOrbitsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain the last orbital distances reported by Datarunners
         /// </summary>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse> GetOrbitsDistancesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse> GetOrbitsDistancesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all outposts within a star system.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetOutpostsOkResponse>> GetOutpostsAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetOutpostsOkResponse>> GetOutpostsAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all planets within a star system.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetPlanetsOkResponse>> GetPlanetsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetPlanetsOkResponse>> GetPlanetsAsync(double? id_star_system = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of points of interest
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetPoiOkResponse>> GetPoiAsync(double? id_outpost = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetPoiOkResponse>> GetPoiAsync(double? id_outpost = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Output UEX dev notes
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetReleaseNotesOkResponse>> GetReleaseNotesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetReleaseNotesOkResponse>> GetReleaseNotesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all space stations within a star system.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetSpaceStationsOkResponse>> GetSpaceStationsAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetSpaceStationsOkResponse>> GetSpaceStationsAsync(double? id_moon = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all star systems in the Star Citizen universe.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetStarSystemsOkResponse>> GetStarSystemsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetStarSystemsOkResponse>> GetStarSystemsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a comprehensive list of all terminals in the game, including trade terminals, item terminals, vehicle rentals, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetTerminalsOkResponse>> GetTerminalsAsync(double? id_outpost = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetTerminalsOkResponse>> GetTerminalsAsync(double? id_outpost = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Estimate the distance (in gigameters) between two terminals within the Star Citizen universe.
         /// </summary>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse> GetTerminalsDistancesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse> GetTerminalsDistancesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of Star Citizen vehicles, including spaceships and ground vehicles.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetVehiclesOkResponse>> GetVehiclesAsync(double? id_company = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetVehiclesOkResponse>> GetVehiclesAsync(double? id_company = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -215,184 +215,184 @@ namespace Arkanis.External.UEX.Abstractions
         /// Get a list of all commodities covered by UEX.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesOkResponse>> GetCommoditiesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesOkResponse>> GetCommoditiesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a list of the latest commodities alerts
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesAlertsOkResponse>> GetCommoditiesAlertsAsync(double? id_commodity = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesAlertsOkResponse>> GetCommoditiesAlertsAsync(double? id_commodity = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of average prices and stock data of a specific commodity in the last 15 days. (CAX Index)
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesAveragesOkResponse>> GetCommoditiesAveragesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesAveragesOkResponse>> GetCommoditiesAveragesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityCodeAsync(string commodity_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityCodeAsync(string commodity_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityNameAsync(string commodity_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityNameAsync(string commodity_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommoditySlugAsync(string commodity_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommoditySlugAsync(string commodity_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalCodeAsync(string terminal_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalCodeAsync(string terminal_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalNameAsync(string terminal_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalNameAsync(string terminal_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalSlugAsync(string terminal_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesOkResponse>> GetCommoditiesPricesByTerminalSlugAsync(string terminal_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all commodities in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesAllOkResponse>> GetCommoditiesPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesAllOkResponse>> GetCommoditiesPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a price history of a commodity at a specific location
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesPricesHistoryOkResponse>> GetCommoditiesPricesHistoryByTerminalAndCommodityAsync(string id_terminal, string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesPricesHistoryOkResponse>> GetCommoditiesPricesHistoryByTerminalAndCommodityAsync(string id_terminal, string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieves the UEX Commodities Average Index™ Ranking
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesRankingOkResponse>> GetCommoditiesRankingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRankingOkResponse>> GetCommoditiesRankingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of average prices of a specific commodity (raw) in the last 15 days. (CAX Index)
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesRawAveragesOkResponse>> GetCommoditiesRawAveragesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRawAveragesOkResponse>> GetCommoditiesRawAveragesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all unrefined (raw/ore) commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesRawPricesOkResponse>> GetCommoditiesRawPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRawPricesOkResponse>> GetCommoditiesRawPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all unrefined (raw/ore) commodities.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesRawPricesOkResponse>> GetCommoditiesRawPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRawPricesOkResponse>> GetCommoditiesRawPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all raw commodities in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesRawPricesAllOkResponse>> GetCommoditiesRawPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRawPricesAllOkResponse>> GetCommoditiesRawPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of common routes calculated based on data reports
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of common routes calculated based on data reports
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByOrbitOriginAsync(string id_orbit_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByOrbitOriginAsync(string id_orbit_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of common routes calculated based on data reports
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByPlanetOriginAsync(string id_planet_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByPlanetOriginAsync(string id_planet_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of common routes calculated based on data reports
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByTerminalOriginAsync(string id_terminal_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesRoutesOkResponse>> GetCommoditiesRoutesByTerminalOriginAsync(string id_terminal_origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a list of inventory states that are displayed at every trading terminal.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCommoditiesStatusOkResponse>> GetCommoditiesStatusAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCommoditiesStatusOkResponse>> GetCommoditiesStatusAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -405,8 +405,8 @@ namespace Arkanis.External.UEX.Abstractions
         /// Search for users listed in the Crew Directory
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetCrewOkResponse>> GetCrewBySpecializationAsync(string specialization, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetCrewOkResponse>> GetCrewBySpecializationAsync(string specialization, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -419,16 +419,16 @@ namespace Arkanis.External.UEX.Abstractions
         /// This command does not require API authentication.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse> GetDataExtractAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse> GetDataExtractAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of specific parameters that UEX uses for managing prices and updates.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetDataParametersOkResponse>> GetDataParametersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetDataParametersOkResponse>> GetDataParametersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -441,38 +441,38 @@ namespace Arkanis.External.UEX.Abstractions
         /// Obtain user fleet vehicles
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFleetOkResponse>> GetFleetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFleetOkResponse>> GetFleetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain details from a specific user such as name, avatar, etc.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetUserOkResponse>> GetUserAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetUserOkResponse>> GetUserAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a list of refinery jobs made by an user
         /// </summary>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse> GetUserRefineriesJobsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse> GetUserRefineriesJobsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a list of trade transactions made by an user
         /// </summary>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse> GetUserTradesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse> GetUserTradesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve user wallet balance
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetWalletBalanceOkResponse>> GetWalletBalanceAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetWalletBalanceOkResponse>> GetWalletBalanceAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -485,72 +485,72 @@ namespace Arkanis.External.UEX.Abstractions
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityCodeAsync(string commodity_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityCodeAsync(string commodity_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityNameAsync(string commodity_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityNameAsync(string commodity_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommoditySlugAsync(string commodity_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommoditySlugAsync(string commodity_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByCommodityAsync(string id_commodity, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalCodeAsync(string terminal_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalCodeAsync(string terminal_code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalNameAsync(string terminal_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalNameAsync(string terminal_name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all fuel prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalSlugAsync(string terminal_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesOkResponse>> GetFuelPricesByTerminalSlugAsync(string terminal_slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all fuel prices in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetFuelPricesAllOkResponse>> GetFuelPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetFuelPricesAllOkResponse>> GetFuelPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -563,87 +563,87 @@ namespace Arkanis.External.UEX.Abstractions
         /// Retrieve a comprehensive list of Star Citizen items, including ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetItemsOkResponse>> GetItemsByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetItemsOkResponse>> GetItemsByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a comprehensive list of Star Citizen items, including ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetItemsOkResponse>> GetItemsByCompanyAsync(string id_company, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetItemsOkResponse>> GetItemsByCompanyAsync(string id_company, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a comprehensive list of Star Citizen items, including ship components, weapons, and more.
         /// </summary>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse> GetItemsBySizeAsync(string size, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse> GetItemsBySizeAsync(string size, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a comprehensive list of Star Citizen items, including ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetItemsOkResponse>> GetItemsByUuidAsync(string uuid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetItemsOkResponse>> GetItemsByUuidAsync(string uuid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a list of attributes of a specific item
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a list of attributes of a specific item
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByItemAsync(string id_item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByItemAsync(string id_item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a list of attributes of a specific item
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByUuidAsync(string uuid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetItemsAttributesOkResponse>> GetItemsAttributesByUuidAsync(string uuid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a comprehensive list of prices for all items, including armor, ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetItemsPricesOkResponse>> GetItemsPricesByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetItemsPricesOkResponse>> GetItemsPricesByCategoryAsync(string id_category, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a comprehensive list of prices for all items, including armor, ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetItemsPricesOkResponse>> GetItemsPricesByItemAsync(string id_item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetItemsPricesOkResponse>> GetItemsPricesByItemAsync(string id_item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a comprehensive list of prices for all items, including armor, ship components, weapons, and more.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetItemsPricesOkResponse>> GetItemsPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetItemsPricesOkResponse>> GetItemsPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all items in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetItemsPricesAllOkResponse>> GetItemsPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetItemsPricesAllOkResponse>> GetItemsPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -656,16 +656,16 @@ namespace Arkanis.External.UEX.Abstractions
         /// List all advertisements favorited by an user
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetMarketplaceFavoritesOkResponse>> GetMarketplaceFavoritesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetMarketplaceFavoritesOkResponse>> GetMarketplaceFavoritesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// List all active marketplace advertisements, limited by 100
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetMarketplaceListingsOkResponse>> GetMarketplaceListingsAsync(string? slug = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetMarketplaceListingsOkResponse>> GetMarketplaceListingsAsync(string? slug = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -678,16 +678,16 @@ namespace Arkanis.External.UEX.Abstractions
         /// Retrieve a list of all organizations added to the UEX website
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetOrganizationsOkResponse>> GetOrganizationsByOrganizationAsync(string id_organization, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetOrganizationsOkResponse>> GetOrganizationsByOrganizationAsync(string id_organization, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all organizations added to the UEX website
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetOrganizationsOkResponse>> GetOrganizationsBySlugAsync(string slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetOrganizationsOkResponse>> GetOrganizationsBySlugAsync(string slug, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -700,32 +700,32 @@ namespace Arkanis.External.UEX.Abstractions
         /// Retrieve a list of all refinery audits submitted by Data Runners.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetRefineriesAuditsOkResponse>> GetRefineriesAuditsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetRefineriesAuditsOkResponse>> GetRefineriesAuditsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of the estimated capacity percentages for all refineries.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetRefineriesCapacitiesOkResponse>> GetRefineriesCapacitiesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetRefineriesCapacitiesOkResponse>> GetRefineriesCapacitiesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of the refining methods used by all in-game refineries
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetRefineriesMethodsOkResponse>> GetRefineriesMethodsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetRefineriesMethodsOkResponse>> GetRefineriesMethodsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all refineries yields bonuses per commodity
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetRefineriesYieldsOkResponse>> GetRefineriesYieldsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetRefineriesYieldsOkResponse>> GetRefineriesYieldsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -738,48 +738,48 @@ namespace Arkanis.External.UEX.Abstractions
         /// Retrieve a list of Star Citizen vehicles loaners for a specific vehicle ID
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetVehiclesLoanersOkResponse>> GetVehiclesLoanersAsync(double? id_vehicle = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetVehiclesLoanersOkResponse>> GetVehiclesLoanersAsync(double? id_vehicle = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Obtain a daily updated list of vehicle prices in CIG's pledge store, managed either automatically by our bot or manually by the staff.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetVehiclesPricesOkResponse>> GetVehiclesPricesAsync(double? id_vehicle = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetVehiclesPricesOkResponse>> GetVehiclesPricesAsync(double? id_vehicle = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all in-game vehicle purchase prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetVehiclesPurchasesPricesOkResponse>> GetVehiclesPurchasesPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetVehiclesPurchasesPricesOkResponse>> GetVehiclesPurchasesPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all vehicles purchases in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetVehiclesPurchasesPricesAllOkResponse>> GetVehiclesPurchasesPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetVehiclesPurchasesPricesAllOkResponse>> GetVehiclesPurchasesPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of all in-game vehicle rental prices.
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetVehiclesRentalsPricesOkResponse>> GetVehiclesRentalsPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetVehiclesRentalsPricesOkResponse>> GetVehiclesRentalsPricesByTerminalAsync(string id_terminal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Retrieve a list of prices for all vehicles rentals in all terminals, all at once
         /// </summary>
         /// <returns>OK</returns>
-        /// <exception cref="UexException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UexResponse<GetVehiclesRentalsPricesAllOkResponse>> GetVehiclesRentalsPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <exception cref="UexApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UexApiResponse<GetVehiclesRentalsPricesAllOkResponse>> GetVehiclesRentalsPricesAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -2756,7 +2756,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<Data>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<Data>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -2800,7 +2800,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<CategoryDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CategoryDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -2844,7 +2844,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<UniverseCityDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<UniverseCityDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -2888,7 +2888,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<object>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<object>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -2932,7 +2932,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<CommodityAveragePriceDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CommodityAveragePriceDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -2976,7 +2976,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<CommodityDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CommodityDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3020,7 +3020,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<CommodityPriceBriefDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CommodityPriceBriefDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3064,7 +3064,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<HistoricalCommodityPriceDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<HistoricalCommodityPriceDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3108,7 +3108,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<CommodityPriceDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CommodityPriceDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3152,7 +3152,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<CommodityRankingDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CommodityRankingDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3196,7 +3196,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<object>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<object>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3240,7 +3240,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<RawCommodityPriceBriefDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<RawCommodityPriceBriefDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3284,7 +3284,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<RawCommodityPriceDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<RawCommodityPriceDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3328,7 +3328,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<CommodityRouteDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CommodityRouteDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3416,7 +3416,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<CompanyDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CompanyDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3460,7 +3460,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<ContactDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<ContactDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3504,7 +3504,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<ContractDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<ContractDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3548,7 +3548,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<CrewProfileDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CrewProfileDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3636,7 +3636,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<FactionDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<FactionDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3680,7 +3680,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<FleetVehicleDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<FleetVehicleDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3724,7 +3724,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public FuelPriceDTO? Data { get; } = default!;
+        public FuelPriceDTO? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3768,7 +3768,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public FuelPriceBriefDTO? Data { get; } = default!;
+        public FuelPriceBriefDTO? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3856,7 +3856,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<ItemAttributeDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<ItemAttributeDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3944,7 +3944,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<ItemDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<ItemDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -3988,7 +3988,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<ItemPriceBriefDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<ItemPriceBriefDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4032,7 +4032,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<ItemPriceDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<ItemPriceDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4076,7 +4076,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<JumpPointDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<JumpPointDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4120,7 +4120,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<JurisdictionDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<JurisdictionDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4164,7 +4164,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<object>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<object>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4208,7 +4208,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<MarketplaceListingDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<MarketplaceListingDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4252,7 +4252,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<UniverseMoonDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<UniverseMoonDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4340,7 +4340,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<UniverseOrbitDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<UniverseOrbitDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4384,7 +4384,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<OrganizationDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<OrganizationDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4428,7 +4428,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<UniverseOutpostDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<UniverseOutpostDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4472,7 +4472,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<UniversePlanetDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<UniversePlanetDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4516,7 +4516,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<PointOfInterestDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<PointOfInterestDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4560,7 +4560,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<RefineryAuditDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<RefineryAuditDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4604,7 +4604,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<RefineryCapacityDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<RefineryCapacityDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4648,7 +4648,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<RefineryMethodDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<RefineryMethodDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4692,7 +4692,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<RefineryYieldDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<RefineryYieldDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4736,7 +4736,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<ReleaseNotDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<ReleaseNotDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4780,7 +4780,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<UniverseSpaceStationDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<UniverseSpaceStationDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4824,7 +4824,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<UniverseStarSystemDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<UniverseStarSystemDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -4912,7 +4912,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<UniverseTerminalDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<UniverseTerminalDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -5088,7 +5088,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public LoanerVehicleDTO? Data { get; } = default!;
+        public LoanerVehicleDTO? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -5132,7 +5132,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<VehicleDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<VehicleDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -5176,7 +5176,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<VehiclePricesDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<VehiclePricesDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -5220,7 +5220,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<VehiclePurchasePriceBriefDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<VehiclePurchasePriceBriefDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -5264,7 +5264,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<VehiclePurchasePriceDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<VehiclePurchasePriceDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -5308,7 +5308,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<VehicleRentalPriceBriefDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<VehicleRentalPriceBriefDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -5352,7 +5352,7 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("data")]
-        public System.Collections.ObjectModel.Collection<VehicleRentalPriceDTO>? Data { get; } = default!;
+        public System.Collections.ObjectModel.Collection<VehicleRentalPriceDTO>? Data { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("http_code")]
         public double? Http_code { get; set; } = default!;
@@ -9159,10 +9159,10 @@ namespace Arkanis.External.UEX.Abstractions
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("buy")]
-        public System.Collections.ObjectModel.Collection<CommodityStatusDTO>? Buy { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CommodityStatusDTO>? Buy { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("sell")]
-        public System.Collections.ObjectModel.Collection<CommodityStatusDTO>? Sell { get; } = default!;
+        public System.Collections.ObjectModel.Collection<CommodityStatusDTO>? Sell { get; set; } = default!;
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -9346,7 +9346,7 @@ namespace Arkanis.External.UEX.Abstractions
         public double? Is_tractor_beam { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("loaners")]
-        public System.Collections.ObjectModel.Collection<Loaners>? Loaners { get; } = default!;
+        public System.Collections.ObjectModel.Collection<Loaners>? Loaners { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
         public string? Name { get; set; } = default!;
@@ -9364,7 +9364,7 @@ namespace Arkanis.External.UEX.Abstractions
         public string? Url_hotsite { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("url_photos")]
-        public System.Collections.ObjectModel.Collection<string>? Url_photos { get; } = default!;
+        public System.Collections.ObjectModel.Collection<string>? Url_photos { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("url_store")]
         public string? Url_store { get; set; } = default!;
@@ -9757,7 +9757,7 @@ namespace Arkanis.External.UEX.Abstractions
         public string? Url_hotsite { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("url_photos")]
-        public System.Collections.ObjectModel.Collection<string>? Url_photos { get; } = default!;
+        public System.Collections.ObjectModel.Collection<string>? Url_photos { get; set; } = default!;
 
         [System.Text.Json.Serialization.JsonPropertyName("url_store")]
         public string? Url_store { get; set; } = default!;
@@ -9795,13 +9795,13 @@ namespace Arkanis.External.UEX.Abstractions
 
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class UexResponse
+    public partial class UexApiResponse
     {
         public int StatusCode { get; private set; }
 
         public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
 
-        public UexResponse(int statusCode, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers)
+        public UexApiResponse(int statusCode, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers)
         {
             StatusCode = statusCode;
             Headers = headers;
@@ -9809,11 +9809,11 @@ namespace Arkanis.External.UEX.Abstractions
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class UexResponse<TResult> : UexResponse
+    public partial class UexApiResponse<TResult> : UexApiResponse
     {
         public TResult Result { get; private set; }
 
-        public UexResponse(int statusCode, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result)
+        public UexApiResponse(int statusCode, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result)
             : base(statusCode, headers)
         {
             Result = result;
@@ -9822,7 +9822,7 @@ namespace Arkanis.External.UEX.Abstractions
 
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class UexException : System.Exception
+    public partial class UexApiException : System.Exception
     {
         public int StatusCode { get; private set; }
 
@@ -9830,7 +9830,7 @@ namespace Arkanis.External.UEX.Abstractions
 
         public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
 
-        public UexException(string message, int statusCode, string? response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception? innerException)
+        public UexApiException(string message, int statusCode, string? response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception? innerException)
             : base(message + "\n\nStatus: " + statusCode + "\nResponse: \n" + ((response == null) ? "(null)" : response.Substring(0, response.Length >= 512 ? 512 : response.Length)), innerException)
         {
             StatusCode = statusCode;
@@ -9845,11 +9845,11 @@ namespace Arkanis.External.UEX.Abstractions
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class UexException<TResult> : UexException
+    public partial class UexApiException<TResult> : UexApiException
     {
         public TResult Result { get; private set; }
 
-        public UexException(string message, int statusCode, string? response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception? innerException)
+        public UexApiException(string message, int statusCode, string? response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception? innerException)
             : base(message, statusCode, response, headers, innerException)
         {
             Result = result;

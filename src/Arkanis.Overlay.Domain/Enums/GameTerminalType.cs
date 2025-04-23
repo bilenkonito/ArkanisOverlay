@@ -4,6 +4,8 @@ public enum GameTerminalType
 {
     Undefined,
     Commodity,
+    CommodityRaw,
+    Refinery,
     Item,
     Fuel,
     VehicleBuy,
