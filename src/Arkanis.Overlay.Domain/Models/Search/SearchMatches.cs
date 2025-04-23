@@ -21,6 +21,16 @@ public abstract record SearchMatch(SearchableTrait TargetTrait, SearchQuery Sour
             : left.CompareTo(right) >= 0;
 }
 
+public sealed record ExactMatch(SearchableTrait TargetTrait, SearchQuery Source) : SearchMatch(TargetTrait, Source)
+{
+    public override int CompareTo(SearchMatch? other)
+        => other switch
+        {
+            ExactMatch => 0,
+            _ => 1,
+        };
+}
+
 public sealed record ScoredMatch(int Score, int Depth, SearchableTrait TargetTrait, SearchQuery Source) : SearchMatch(TargetTrait, Source)
 {
     public double NormalizedScore { get; init; } = Score / Math.Pow(2, Depth);
@@ -28,18 +38,8 @@ public sealed record ScoredMatch(int Score, int Depth, SearchableTrait TargetTra
     public override int CompareTo(SearchMatch? other)
         => other switch
         {
+            ExactMatch => -1,
             ScoredMatch otherScoredMatch => NormalizedScore.CompareTo(otherScoredMatch.NormalizedScore),
-            _ => 1,
-        };
-}
-
-public sealed record ExactMatch(SearchableTrait TargetTrait, SearchQuery Source) : SearchMatch(TargetTrait, Source)
-{
-    public override int CompareTo(SearchMatch? other)
-        => other switch
-        {
-            ScoredMatch => -1,
-            ExactMatch => 0,
             _ => 1,
         };
 }
