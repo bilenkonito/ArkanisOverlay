@@ -3,7 +3,7 @@ namespace Arkanis.Overlay.Infrastructure.UnitTests.CacheDecorators;
 using External.UEX.Abstractions;
 using Microsoft.Extensions.Logging;
 
-public sealed class UexItemsApiCacheDecorator(IUexItemsApi itemsApi, ILogger<UexItemsApiCacheDecorator> logger) : ServiceCacheDecorator(logger), IUexItemsApi
+public sealed class UexItemsApiCacheDecorator(IUexItemsApi itemsApi, ILogger<UexItemsApiCacheDecorator> logger) : UexApiCacheDecorator(logger), IUexItemsApi
 {
     public Task<UexApiResponse<GetItemsOkResponse>> GetItemsByCategoryAsync(string id_category, CancellationToken cancellationToken = default)
         => CacheAsync(
