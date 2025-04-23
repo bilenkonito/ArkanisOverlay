@@ -11,8 +11,11 @@ public interface IHydrationServiceFor<in T> : IHydrationServiceFor
 {
     Task HydrateAsync(T entity, CancellationToken cancellationToken = default);
 
-    Task IHydrationServiceFor.HydrateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken)
-        => entity is T vehicle
-            ? HydrateAsync(vehicle, cancellationToken)
-            : Task.CompletedTask;
+    async Task IHydrationServiceFor.HydrateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken)
+    {
+        if (entity is T vehicle)
+        {
+            await HydrateAsync(vehicle, cancellationToken);
+        }
+    }
 }
