@@ -5,6 +5,10 @@ using Abstractions.Game;
 using Enums;
 using FuzzySharp;
 
+/// <summary>
+///     A prototype for any search query.
+///     Matching queries against <see cref="ISearchable" /> subjects produces match results.
+/// </summary>
 public abstract record SearchQuery
 {
     public virtual SearchMatchResult<T> Match<T>(T searchable) where T : ISearchable

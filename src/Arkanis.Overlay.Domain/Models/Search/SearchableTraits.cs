@@ -4,6 +4,10 @@ using Abstractions.Game;
 using Enums;
 using Game;
 
+/// <summary>
+///     Searchable traits represent unique characteristics of the subject that can be easily used for searching.
+///     This model simplifies how the search is performed based on the trait type.
+/// </summary>
 public abstract record SearchableTrait;
 
 public sealed record UnknownTrait : SearchableTrait

@@ -13,6 +13,15 @@ using External.UEX.Extensions;
 using Local;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+///     A generic synchronization repository for game entities sourced from UEX API.
+///     This repository handles shared logic for all UEX API endpoints.
+/// </summary>
+/// <param name="stateProvider">A global UEX game version provider</param>
+/// <param name="mapper">A mapper for the external DTO types</param>
+/// <param name="logger">A logger</param>
+/// <typeparam name="TSource">External DTO type</typeparam>
+/// <typeparam name="TDomain">Internal domain type</typeparam>
 internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
     UexGameDataStateProvider stateProvider,
     UexApiDtoMapper mapper,

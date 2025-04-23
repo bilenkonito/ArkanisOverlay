@@ -2,6 +2,12 @@ namespace Arkanis.Overlay.Domain.Models.Search;
 
 using Abstractions;
 
+/// <summary>
+///     A collection of matches to a single search query or an aggregate of other results.
+///     Contains logic to evaluate the matches and determine the ordering of the result or if the result should be
+///     completely excluded.
+/// </summary>
+/// <param name="Matches">Matches from all search queries</param>
 public abstract record SearchMatchResult(List<SearchMatch> Matches) : IComparable<SearchMatchResult>
 {
     public IEnumerable<ScoredMatch> ScoredMatches
@@ -66,6 +72,13 @@ public abstract record SearchMatchResult(List<SearchMatch> Matches) : IComparabl
             .ToList();
 }
 
+/// <summary>
+///     Represents a result of a search against a specific subject.
+///     Matches are sources from a single search query search or from an aggregate of other results.
+/// </summary>
+/// <param name="Subject">Any searchable subject</param>
+/// <typeparam name="TSubject">Concrete type of the subject</typeparam>
+/// <inheritdoc cref="SearchMatch" />
 public record SearchMatchResult<TSubject>(TSubject Subject, List<SearchMatch> Matches)
     : SearchMatchResult(Matches) where TSubject : ISearchable
 {

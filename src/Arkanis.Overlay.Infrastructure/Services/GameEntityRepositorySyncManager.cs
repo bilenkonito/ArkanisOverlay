@@ -5,6 +5,13 @@ using Domain.Abstractions.Services;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+///     This service performs synchronization of internal and external game entity repositories.
+/// </summary>
+/// <param name="syncRepository">External repository</param>
+/// <param name="repository">Internal repository</param>
+/// <param name="logger">A logger</param>
+/// <typeparam name="T">Internal entity domain type</typeparam>
 internal sealed class GameEntityRepositorySyncManager<T>(
     IGameEntityExternalSyncRepository<T> syncRepository,
     IGameEntityRepository<T> repository,
