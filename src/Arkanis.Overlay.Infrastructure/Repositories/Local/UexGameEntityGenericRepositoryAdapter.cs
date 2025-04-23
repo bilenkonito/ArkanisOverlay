@@ -11,6 +11,9 @@ using Domain.Abstractions.Services;
 public class UexGameEntityGenericRepositoryAdapter<T>(IGameEntityRepository<T> repository) : IGameEntityRepository
     where T : class, IGameEntity
 {
+    public bool IsReady
+        => repository.IsReady;
+
     public async Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => await repository.WaitUntilReadyAsync(cancellationToken).ConfigureAwait(false);
 

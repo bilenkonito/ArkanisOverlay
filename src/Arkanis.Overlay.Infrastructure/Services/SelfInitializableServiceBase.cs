@@ -6,6 +6,9 @@ public abstract class SelfInitializableServiceBase : ISelfInitializable
 {
     private readonly TaskCompletionSource _initialization = new();
 
+    public bool IsReady
+        => _initialization.Task.IsCompletedSuccessfully;
+
     public async Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => await _initialization.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
 

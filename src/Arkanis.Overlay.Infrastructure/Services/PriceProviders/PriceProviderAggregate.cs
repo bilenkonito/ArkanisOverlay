@@ -29,8 +29,11 @@ public class PriceProviderAggregate(
     public ValueTask<PriceTag> GetPriceTagAtAsync(IGameRentable gameEntity, IGameLocation gameLocation)
         => rentPriceProvider.GetPriceTagAtAsync(gameEntity, gameLocation);
 
+    public bool IsReady { get; private set; }
+
     public async Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => await serviceDependencyResolver.DependsOn(this, purchasePriceProvider, sellPriceProvider, rentPriceProvider)
             .WaitUntilReadyAsync(cancellationToken)
+            .ContinueWith(_ => IsReady = true, cancellationToken)
             .ConfigureAwait(false);
 }

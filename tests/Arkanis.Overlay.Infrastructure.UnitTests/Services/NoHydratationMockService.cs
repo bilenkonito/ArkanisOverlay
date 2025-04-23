@@ -8,6 +8,9 @@ public class NoHydrationMockService : IGameEntityHydrationService
     public Task HydrateAsync<T>(T gameEntity, CancellationToken cancellationToken = default) where T : IGameEntity
         => Task.CompletedTask;
 
+    public bool IsReady
+        => true;
+
     public Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => Task.CompletedTask;
 }

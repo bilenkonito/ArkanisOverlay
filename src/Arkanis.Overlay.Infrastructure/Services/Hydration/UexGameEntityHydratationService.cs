@@ -1,7 +1,7 @@
 namespace Arkanis.Overlay.Infrastructure.Services.Hydration;
 
-using Domain.Abstractions.Game;
 using Abstractions;
+using Domain.Abstractions.Game;
 
 public class GameEntityPriceHydrationService(
     ServiceDependencyResolver dependencyResolver,
@@ -16,8 +16,11 @@ public class GameEntityPriceHydrationService(
         }
     }
 
+    public bool IsReady { get; private set; }
+
     public async Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => await dependencyResolver.DependsOn(this, hydrationServices)
             .WaitUntilReadyAsync(cancellationToken)
+            .ContinueWith(_ => IsReady = true, cancellationToken)
             .ConfigureAwait(false);
 }

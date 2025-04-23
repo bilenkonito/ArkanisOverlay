@@ -24,6 +24,9 @@ public class FakePriceProvider : IPriceProvider
     public ValueTask<PriceTag> GetPriceTagAtAsync(IGameRentable gameEntity, IGameLocation gameLocation)
         => ValueTask.FromResult(PriceTag.Unknown);
 
+    public bool IsReady
+        => true;
+
     public Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => Task.CompletedTask;
 }

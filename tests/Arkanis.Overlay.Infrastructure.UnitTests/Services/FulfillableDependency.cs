@@ -6,6 +6,9 @@ internal class FulfillableDependency : IDependable
 {
     private readonly TaskCompletionSource _completionSource = new();
 
+    public bool IsReady
+        => _completionSource.Task.IsCompletedSuccessfully;
+
     public Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => _completionSource.Task;
 

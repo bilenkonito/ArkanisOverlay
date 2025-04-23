@@ -1,8 +1,8 @@
 namespace Arkanis.Overlay.Infrastructure.Services.Hydration;
 
+using Abstractions;
 using Domain.Abstractions.Services;
 using Domain.Models.Game;
-using Abstractions;
 
 public class UexGameCommodityPriceHydrationService(
     ServiceDependencyResolver dependencyResolver,
@@ -16,8 +16,11 @@ public class UexGameCommodityPriceHydrationService(
         await sellPriceProvider.UpdatePriceTagAsync(entity);
     }
 
+    public bool IsReady { get; private set; }
+
     public async Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => await dependencyResolver.DependsOn(this, purchasePriceProvider, sellPriceProvider)
             .WaitUntilReadyAsync(cancellationToken)
+            .ContinueWith(_ => IsReady = true, cancellationToken)
             .ConfigureAwait(false);
 }
