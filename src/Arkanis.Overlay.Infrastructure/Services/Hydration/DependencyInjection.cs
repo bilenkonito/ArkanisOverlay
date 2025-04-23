@@ -10,8 +10,9 @@ public static class DependencyInjection
     public static IServiceCollection AddUexHydrationServices(this IServiceCollection services)
         => services
             .AddHydrationServiceFor<UexGameCommodityPriceHydrationService, GameCommodity>()
-            .AddHydrationServiceFor<UexGameItemPriceHydrationService, GameItem>()
             .AddHydrationServiceFor<UexGameVehiclePriceHydrationService, GameVehicle>()
+            .AddHydrationServiceFor<UexGameItemPriceHydrationService, GameItem>()
+            .AddHydrationServiceFor<UexGameItemTraitHydrationService, GameItem>()
             .AddSingleton<IGameEntityHydrationService, GameEntityPriceHydrationService>();
 
     private static IServiceCollection AddHydrationServiceFor<TService, TEntity>(this IServiceCollection services)
