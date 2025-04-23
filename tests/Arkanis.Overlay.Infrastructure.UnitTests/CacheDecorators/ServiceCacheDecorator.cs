@@ -9,6 +9,10 @@ using Microsoft.Extensions.Logging;
 
 public abstract class ServiceCacheDecorator(ILogger logger)
 {
+    private const string CacheDirName = ".data";
+
+    protected abstract string CacheSubPath { get; }
+
     [SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms")]
     protected async Task<TResult> CacheAsync<TParams, TResult>(
         TParams methodParams,
@@ -25,7 +29,10 @@ public abstract class ServiceCacheDecorator(ILogger logger)
 
         var callerDirPath = Path.GetDirectoryName(callerFilePath);
         var cacheFileName = $"{methodName}-{paramsId}.json";
-        var cacheFileDir = Path.Join(callerDirPath, "data");
+        var cacheFileDir = !string.IsNullOrWhiteSpace(CacheSubPath)
+            ? Path.Join(callerDirPath, CacheDirName, CacheSubPath)
+            : Path.Join(callerDirPath, CacheDirName);
+
         var cacheFilePath = Path.Join(cacheFileDir, cacheFileName);
         if (File.Exists(cacheFilePath))
         {

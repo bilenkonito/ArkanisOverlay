@@ -4,7 +4,7 @@ using External.UEX.Abstractions;
 using Microsoft.Extensions.Logging;
 
 public sealed class UexVehiclesApiCacheDecorator(IUexVehiclesApi vehiclesApi, ILogger<UexVehiclesApiCacheDecorator> logger)
-    : ServiceCacheDecorator(logger), IUexVehiclesApi
+    : UexApiCacheDecorator(logger), IUexVehiclesApi
 {
     public Task<UexApiResponse<GetVehiclesLoanersOkResponse>> GetVehiclesLoanersAsync(double? id_vehicle = null, CancellationToken cancellationToken = default)
         => CacheAsync(
