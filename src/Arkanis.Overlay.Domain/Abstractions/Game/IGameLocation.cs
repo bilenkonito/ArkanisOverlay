@@ -12,7 +12,7 @@ public interface IGameLocation : IGameEntity, ISearchableRecursively
         => ParentLocation;
 
     bool IsOrContains(IGameLocation location)
-        => this == location || Contains(location);
+        => Id == location.Id || Contains(location);
 
     bool Contains(IGameLocation location)
         => location.ParentIds.Contains(Id);
