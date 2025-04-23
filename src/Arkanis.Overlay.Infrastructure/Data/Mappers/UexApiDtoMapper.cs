@@ -20,7 +20,9 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     internal readonly ConcurrentDictionary<string, GameEntity> CachedGameEntities = [];
 
     public async ValueTask<GameEntity> ToGameEntityAsync<TSource>(TSource source)
-        => source switch
+    {
+        await hydrationService.WaitUntilReadyAsync();
+        return source switch
         {
             UniverseStarSystemDTO system => await ToGameEntityAsync(system),
             UniversePlanetDTO planet => await ToGameEntityAsync(planet),
@@ -36,6 +38,7 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
             VehicleDTO vehicle => await ToGameEntityAsync(vehicle),
             _ => throw new ArgumentOutOfRangeException(nameof(source), source, "Cannot map to game entity from unsupported source type."),
         };
+    }
 
     [UserMapping(Default = true)]
     public async ValueTask<GameStarSystem> ToGameEntityAsync(UniverseStarSystemDTO source)
