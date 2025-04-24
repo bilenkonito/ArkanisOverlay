@@ -30,7 +30,7 @@ public class UexRentPriceProvider(
     {
         var prices = await vehiclePriceRepository.GetRentalPricesForVehicleAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
-        return CreateBoundsFrom(pricesAtLocation, price => price.Price);
+        return CreateBoundsFrom(pricesAtLocation, price => price.Price, fallback: PriceTag.MissingFor(gameLocation));
     }
 
     private async ValueTask UpdateVehicleAsync(IGameRentable gameEntity)

@@ -8,7 +8,8 @@ using NodaMoney;
 
 public abstract class UexPriceProviderBase : SelfInitializableServiceBase
 {
-    protected static Bounds<PriceTag> CreateBoundsFrom<T>(ICollection<T> prices, Func<T, Money> priceSelector) where T : GameEntityPricing
+    protected static Bounds<PriceTag> CreateBoundsFrom<T>(ICollection<T> prices, Func<T, Money> priceSelector, PriceTag? fallback = null)
+        where T : GameEntityPricing
     {
         var minDto = prices.Where(dto => priceSelector(dto).Amount > 0).MinBy(priceSelector);
         var maxDto = prices.Where(dto => priceSelector(dto).Amount > 0).MaxBy(priceSelector);
@@ -19,16 +20,17 @@ public abstract class UexPriceProviderBase : SelfInitializableServiceBase
                 .Average(money => money.Amount)
             : null;
 
+        fallback ??= PriceTag.Unknown;
         return new Bounds<PriceTag>(
             minDto is not null
                 ? new KnownPriceTag(priceSelector(minDto), minDto.Terminal, minDto.UpdatedAt)
-                : PriceTag.Unknown,
+                : fallback,
             maxDto is not null
                 ? new KnownPriceTag(priceSelector(maxDto), maxDto.Terminal, maxDto.UpdatedAt)
-                : PriceTag.Unknown,
+                : fallback,
             avgValue is not null
                 ? new AggregatePriceTag(new Money(avgValue.Value, ApplicationConstants.GameCurrency))
-                : PriceTag.Unknown
+                : fallback
         );
     }
 }

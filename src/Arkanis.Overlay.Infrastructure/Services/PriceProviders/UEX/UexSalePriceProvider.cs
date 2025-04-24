@@ -30,7 +30,7 @@ public class UexSalePriceProvider(
     {
         var prices = await commodityPricingRepository.GetAllForCommodityAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
-        return CreateBoundsFrom(pricesAtLocation, price => price.SalePrice);
+        return CreateBoundsFrom(pricesAtLocation, price => price.SalePrice, fallback: PriceTag.MissingFor(gameLocation));
     }
 
     private async ValueTask UpdateCommodity(IGameSellable gameEntity)

@@ -42,21 +42,21 @@ public class UexPurchasePriceProvider(
     {
         var prices = await vehiclePriceRepository.GetPurchasePricesForVehicleAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
-        return CreateBoundsFrom(pricesAtLocation, price => price.Price);
+        return CreateBoundsFrom(pricesAtLocation, price => price.Price, fallback: PriceTag.MissingFor(gameLocation));
     }
 
     private async ValueTask<Bounds<PriceTag>> GetItemPriceTagAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
     {
         var prices = await itemPriceRepository.GetPurchasePricesForItemAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
-        return CreateBoundsFrom(pricesAtLocation, price => price.Price);
+        return CreateBoundsFrom(pricesAtLocation, price => price.Price, fallback: PriceTag.MissingFor(gameLocation));
     }
 
     private async ValueTask<Bounds<PriceTag>> GetCommodityPriceTagAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
     {
         var prices = await commodityPriceRepository.GetAllForCommodityAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
-        return CreateBoundsFrom(pricesAtLocation, price => price.PurchasePrice);
+        return CreateBoundsFrom(pricesAtLocation, price => price.PurchasePrice, fallback: PriceTag.MissingFor(gameLocation));
     }
 
     private async ValueTask UpdateCommodityAsync(IGamePurchasable gameEntity)
