@@ -46,8 +46,11 @@ internal class GameEntityAggregateRepository(
         await finalizeTask;
     }
 
+    public bool IsReady { get; private set; }
+
     public async Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => await DependencyResolver.DependsOn(this, gameEntityRepositories)
             .WaitUntilReadyAsync(cancellationToken)
+            .ContinueWith(_ => IsReady = true, cancellationToken)
             .ConfigureAwait(false);
 }

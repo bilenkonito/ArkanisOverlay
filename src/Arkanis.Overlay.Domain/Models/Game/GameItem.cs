@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
+using System.Collections;
 using Abstractions.Game;
 using Enums;
 using Search;
@@ -8,6 +9,8 @@ using Trade;
 public class GameItem(int id, string fullName, GameCompany manufacturer, GameProductCategory category)
     : GameEntity(UexApiGameEntityId.Create<GameItem>(id), GameEntityCategory.Item), IGameManufactured, IGamePurchasable
 {
+    public TraitCollection Traits { get; } = new();
+
     public GameCompany Manufacturer
         => manufacturer;
 
@@ -24,11 +27,13 @@ public class GameItem(int id, string fullName, GameCompany manufacturer, GamePro
         }
     }
 
-    public override GameEntityName Name { get; } = new(
-        GameEntityName.ReferenceTo(category),
-        GameEntityName.ReferenceTo(manufacturer),
-        new GameEntityName.Name(fullName)
-    );
+    public override GameEntityName Name
+        => new(
+            GameEntityName.ReferenceTo(category),
+            GameEntityName.ReferenceTo(manufacturer),
+            GameEntityName.PropertyCollection.Create(Traits),
+            new GameEntityName.Name(fullName)
+        );
 
     public Bounds<PriceTag> LatestPurchasePrices { get; private set; } = new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
 
@@ -37,4 +42,18 @@ public class GameItem(int id, string fullName, GameCompany manufacturer, GamePro
 
     public void UpdatePurchasePrices(Bounds<PriceTag> newPrices)
         => LatestPurchasePrices = newPrices;
+
+    public class TraitCollection : IEnumerable<GameItemTrait>
+    {
+        private List<GameItemTrait> _traits = [];
+
+        public IEnumerator<GameItemTrait> GetEnumerator()
+            => _traits.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
+
+        public void Update(IEnumerable<GameItemTrait> traits)
+            => _traits = traits.ToList();
+    }
 }

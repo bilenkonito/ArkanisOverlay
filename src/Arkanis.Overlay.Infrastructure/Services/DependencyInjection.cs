@@ -1,6 +1,5 @@
 namespace Arkanis.Overlay.Infrastructure.Services;
 
-using Abstractions;
 using Domain.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using PriceProviders;
@@ -14,11 +13,6 @@ public static class DependencyInjection
             .AddSingleton<IPurchasePriceProvider>(provider => provider.GetRequiredService<IPriceProvider>())
             .AddSingleton<ISellPriceProvider>(provider => provider.GetRequiredService<IPriceProvider>())
             .AddSingleton<IRentPriceProvider>(provider => provider.GetRequiredService<IPriceProvider>());
-
-    public static IServiceCollection AddGameEntityPriceHydratationServices(this IServiceCollection services)
-        => services
-            .AddUexPriceProviders()
-            .AddSingleton<IGameEntityHydrationService, UexGameEntityPriceHydrationService>();
 
     public static IServiceCollection AddUexPriceProviders(this IServiceCollection services)
         => services

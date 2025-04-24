@@ -20,17 +20,19 @@
 {
 
     private string NameCss
-        => !Embedded
-            ? "font-weight: bold"
-            : "font-weight: lighter";
+        => Embedded
+            ? "font-weight: lighter"
+            : "font-weight: bold";
 
     private Typo NameTypo
-        => !Embedded
-            ? Typo.h5
-            : Typo.overline;
+        => Embedded
+            ? Typo.overline
+            : Typo.h5;
 
-    [Parameter] public required GameEntityName.Name Model { get; set; }
+    [Parameter]
+    public required GameEntityName.Name Model { get; set; }
 
-    [Parameter] public bool Embedded { get; set; }
+    [Parameter]
+    public bool Embedded { get; set; }
 
 }

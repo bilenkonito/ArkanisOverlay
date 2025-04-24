@@ -15,6 +15,9 @@ public class UexGameEntityInMemoryRepository<T>(ILogger<UexGameEntityInMemoryRep
     internal GameDataState CurrentDataState { get; set; } = MissingGameDataState.Instance;
     internal Dictionary<UexApiGameEntityId, T> Entities { get; set; } = [];
 
+    public bool IsReady
+        => _initialization.Task.IsCompletedSuccessfully;
+
     public async Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => await _initialization.Task.WaitAsync(cancellationToken);
 

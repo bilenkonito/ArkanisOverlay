@@ -44,6 +44,9 @@ internal class GameEntityRepositoryMock<T>(IGameEntityExternalSyncRepository<T> 
         }
     }
 
+    public bool IsReady
+        => _initialization.Task.IsCompletedSuccessfully;
+
     public Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => _initialization.Task.WaitAsync(cancellationToken);
 }

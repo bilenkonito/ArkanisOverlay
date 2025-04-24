@@ -27,8 +27,17 @@ public abstract class DependencyResolver(IServiceProvider serviceProvider)
 
         protected ILogger Logger { get; } = logger;
 
+        public bool IsReady
+            => _dependencies.All(x => x.IsReady);
+
         public async Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         {
+            if (IsReady)
+            {
+                // short-circuit if all dependencies are already ready
+                return;
+            }
+
             var dependencies = _dependencies
                 .Select(dependency => DependentProcess.Create(dependency, cancellationToken))
                 .ToList();

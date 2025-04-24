@@ -1,0 +1,23 @@
+@using Arkanis.Overlay.Domain.Enums
+@using Arkanis.Overlay.Domain.Models.Game
+@if (Model.Traits.FirstOrDefault(x => x.TraitType == GameItemTraitType.Grade) is { } itemGrade)
+{
+    <GameItemTraitDetail
+        Model="@itemGrade"
+        Value="@itemGrade.Content"/>
+}
+
+@if (Model.Traits.FirstOrDefault(x => x.TraitType == GameItemTraitType.Class) is { } itemClass)
+{
+    <GameItemTraitDetail
+        Model="@itemClass"
+        Value="@itemClass.Content"/>
+}
+
+@code
+{
+
+    [Parameter]
+    public required GameItem Model { get; set; }
+
+}

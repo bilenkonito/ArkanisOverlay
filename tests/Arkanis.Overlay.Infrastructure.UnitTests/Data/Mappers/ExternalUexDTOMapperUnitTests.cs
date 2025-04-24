@@ -20,7 +20,8 @@ public class ExternalUexDTOMapperUnitTests
         var mapper = new UexApiDtoMapper(HydrationService);
         var source = StarSystem;
 
-        var result = await mapper.ToGameEntityAsync(source);
+        var result = await mapper.ToGameEntityAsync(source) as GameStarSystem;
+        result.ShouldNotBeNull();
         result.Parent.ShouldBeNull();
         result.Name.ShouldHaveSingleItem()
             .ShouldBeEquivalentTo(new GameEntityName.NameWithCode(source.Name!, source.Code!));
@@ -38,8 +39,9 @@ public class ExternalUexDTOMapperUnitTests
         await mapper.ToGameEntityAsync(Outpost);
 
         var source = OutpostCommodityTerminal;
-        var result = await mapper.ToGameEntityAsync(source);
+        var result = await mapper.ToGameEntityAsync(source) as GameTerminal;
 
+        result.ShouldNotBeNull();
         result.Type.ShouldBe(GameTerminalType.Commodity);
         result.EntityCategory.ShouldBe(GameEntityCategory.Location);
         result.Parent.ShouldNotBeNull() // outpost
@@ -72,7 +74,9 @@ public class ExternalUexDTOMapperUnitTests
         await mapper.ToGameEntityAsync(ItemHatsCategory);
 
         var source = Item;
-        var result = await mapper.ToGameEntityAsync(source);
+        var result = await mapper.ToGameEntityAsync(source) as GameItem;
+
+        result.ShouldNotBeNull();
         result.Manufacturer.ShouldNotBeNull();
         result.TerminalType.ShouldBe(GameTerminalType.Item);
         result.EntityCategory.ShouldBe(GameEntityCategory.Item);

@@ -1,6 +1,7 @@
 namespace Arkanis.Overlay.Infrastructure.Repositories.Sync;
 
 using Data.Mappers;
+using Domain.Abstractions.Services;
 using Domain.Models.Game;
 using Local;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +20,14 @@ public static class DependencyInjection
             .AddSingleton<GameEntityRepositoryDependencyResolver>()
             .Scan(scan => scan
                 .FromAssembliesOf(ReferenceSourceType)
-                .AddClasses(type => type.InNamespaceOf(ReferenceSourceType), false)
+                .AddClasses(
+                    type => type
+                        .InNamespaceOf(ReferenceSourceType)
+                        .Where(repositoryType => !repositoryType.IsAssignableTo(typeof(IDecoratorService))),
+                    false
+                )
                 .AsImplementedInterfaces()
+                .WithSingletonLifetime()
             );
 
         var syncServiceManagerType = typeof(GameEntityRepositorySyncManager<>);
