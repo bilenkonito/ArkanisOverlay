@@ -23,7 +23,7 @@
     {
         <PriceTagInfo
             Label="Max sell"
-            Model="@SellPriceTag?.Max"
+            Model="@SalePriceTag?.Max"
             Color="@UiConstants.SellColor"/>
     }
     @if (Model is IGameRentable)
@@ -46,14 +46,14 @@
 
     private Bounds<PriceTag>? PurchasePriceTag { get; set; }
 
-    private Bounds<PriceTag>? SellPriceTag { get; set; }
+    private Bounds<PriceTag>? SalePriceTag { get; set; }
 
     private Bounds<PriceTag>? RentPriceTag { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
         PurchasePriceTag = null;
-        SellPriceTag = null;
+        SalePriceTag = null;
         RentPriceTag = null;
         await base.OnParametersSetAsync();
 
@@ -66,9 +66,9 @@
 
         if (Model is IGameSellable sellable)
         {
-            SellPriceTag = SearchContext.CurrentLocation is { } location
+            SalePriceTag = SearchContext.CurrentLocation is { } location
                 ? await SalePriceProvider.GetPriceTagAtAsync(sellable, location)
-                : sellable.LatestSellPrices;
+                : sellable.LatestSalePrices;
         }
 
         if (Model is IGameRentable rentable)

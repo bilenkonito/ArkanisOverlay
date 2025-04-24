@@ -25,13 +25,13 @@ public class GameCommodity(int id, string fullName, string codeName)
 
     public Bounds<PriceTag> LatestPurchasePrices { get; private set; } = new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
 
-    public Bounds<PriceTag> LatestSellPrices { get; private set; } = new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
+    public Bounds<PriceTag> LatestSalePrices { get; private set; } = new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
 
     public GameTerminalType TerminalType
         => GameTerminalType.Commodity;
 
     public void UpdateSalePrices(Bounds<PriceTag> newPrices)
-        => LatestSellPrices = newPrices;
+        => LatestSalePrices = newPrices;
 
     public void UpdatePurchasePrices(Bounds<PriceTag> newPrices)
         => LatestPurchasePrices = newPrices;
