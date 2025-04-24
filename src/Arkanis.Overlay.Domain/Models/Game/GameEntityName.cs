@@ -74,6 +74,9 @@ public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IE
 
     public sealed record PropertyCollection(params PropertyItem[] Items) : Part, IEnumerable<PropertyItem>
     {
+        public int Count
+            => Items.Length;
+
         public IEnumerator<PropertyItem> GetEnumerator()
             => Items.AsEnumerable().GetEnumerator();
 
