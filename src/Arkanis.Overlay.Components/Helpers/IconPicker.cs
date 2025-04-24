@@ -29,7 +29,7 @@ public class IconPicker : IIconPicker
             GameEntityCategory.SpaceShip => Icons.Material.Outlined.Rocket,
             GameEntityCategory.GroundVehicle => Icons.Material.Outlined.LocalShipping,
             GameEntityCategory.Item => Icons.Material.Outlined.Category,
-            GameEntityCategory.ItemCategory => Icons.Material.Outlined.Topic,
+            GameEntityCategory.ProductCategory => Icons.Material.Outlined.Topic,
             GameEntityCategory.Company => Icons.Material.Outlined.Domain,
             GameEntityCategory.Location => Icons.Material.Outlined.Public,
             _ => DefaultIcon,

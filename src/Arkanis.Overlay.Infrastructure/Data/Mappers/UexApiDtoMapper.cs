@@ -3,6 +3,7 @@ namespace Arkanis.Overlay.Infrastructure.Data.Mappers;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using Domain.Abstractions.Game;
 using Domain.Models.Game;
 using Exceptions;
 using External.UEX.Abstractions;
@@ -17,130 +18,131 @@ using Services.Abstractions;
 [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
 internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationService)
 {
-    internal readonly ConcurrentDictionary<string, GameEntity> CachedGameEntities = [];
+    internal readonly ConcurrentDictionary<string, IGameEntity> CachedGameEntities = [];
 
-    public async ValueTask<GameEntity> ToGameEntityAsync<TSource>(TSource source)
+    public async ValueTask<IGameEntity> ToGameEntityAsync<TSource>(TSource source)
     {
         await hydrationService.WaitUntilReadyAsync();
-        return source switch
+        IGameEntity result = source switch
         {
-            UniverseStarSystemDTO system => await ToGameEntityAsync(system),
-            UniversePlanetDTO planet => await ToGameEntityAsync(planet),
-            UniverseMoonDTO moon => await ToGameEntityAsync(moon),
-            UniverseSpaceStationDTO spaceStation => await ToGameEntityAsync(spaceStation),
-            UniverseCityDTO city => await ToGameEntityAsync(city),
-            UniverseOutpostDTO outpost => await ToGameEntityAsync(outpost),
-            UniverseTerminalDTO terminal => await ToGameEntityAsync(terminal),
-            CommodityDTO commodity => await ToGameEntityAsync(commodity),
-            ItemDTO item => await ToGameEntityAsync(item),
-            CompanyDTO company => await ToGameEntityAsync(company),
-            CategoryDTO category => await ToGameEntityAsync(category),
-            VehicleDTO vehicle => await ToGameEntityAsync(vehicle),
+            UniverseStarSystemDTO system => ToGameEntity(system),
+            UniversePlanetDTO planet => ToGameEntity(planet),
+            UniverseMoonDTO moon => ToGameEntity(moon),
+            UniverseSpaceStationDTO spaceStation => ToGameEntity(spaceStation),
+            UniverseCityDTO city => ToGameEntity(city),
+            UniverseOutpostDTO outpost => ToGameEntity(outpost),
+            UniverseTerminalDTO terminal => ToGameEntity(terminal),
+            CommodityDTO commodity => ToGameEntity(commodity),
+            ItemDTO item => ToGameEntity(item),
+            ItemAttributeDTO itemAttribute => ToGameEntity(itemAttribute),
+            CompanyDTO company => ToGameEntity(company),
+            CategoryDTO category => ToGameEntity(category),
+            VehicleDTO vehicle => ToGameEntity(vehicle),
             _ => throw new ArgumentOutOfRangeException(nameof(source), source, "Cannot map to game entity from unsupported source type."),
         };
+
+        await hydrationService.HydrateAsync(result);
+        return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameStarSystem> ToGameEntityAsync(UniverseStarSystemDTO source)
+    private GameStarSystem ToGameEntity(UniverseStarSystemDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GameStarSystem>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GamePlanet> ToGameEntityAsync(UniversePlanetDTO source)
+    private GamePlanet ToGameEntity(UniversePlanetDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GamePlanet>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameMoon> ToGameEntityAsync(UniverseMoonDTO source)
+    private GameMoon ToGameEntity(UniverseMoonDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GameMoon>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameCity> ToGameEntityAsync(UniverseCityDTO source)
+    private GameCity ToGameEntity(UniverseCityDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GameCity>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameSpaceStation> ToGameEntityAsync(UniverseSpaceStationDTO source)
+    private GameSpaceStation ToGameEntity(UniverseSpaceStationDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GameSpaceStation>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameOutpost> ToGameEntityAsync(UniverseOutpostDTO source)
+    private GameOutpost ToGameEntity(UniverseOutpostDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GameOutpost>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameTerminal> ToGameEntityAsync(UniverseTerminalDTO source)
+    private GameTerminal ToGameEntity(UniverseTerminalDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GameTerminal>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameCommodity> ToGameEntityAsync(CommodityDTO source)
+    private GameCommodity ToGameEntity(CommodityDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GameCommodity>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameItem> ToGameEntityAsync(ItemDTO source)
+    private GameItem ToGameEntity(ItemDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GameItem>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameCompany> ToGameEntityAsync(CompanyDTO source)
+    private GameItemTrait ToGameEntity(ItemAttributeDTO source)
+    {
+        var result = MapInternal(source);
+        CacheGameEntityId<GameItemTrait>(source.Id, result);
+        return result;
+    }
+
+    [UserMapping(Default = true)]
+    private GameCompany ToGameEntity(CompanyDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GameCompany>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameProductCategory> ToGameEntityAsync(CategoryDTO source)
+    private GameProductCategory ToGameEntity(CategoryDTO source)
     {
         var result = MapInternal(source);
         CacheGameEntityId<GameProductCategory>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    public async ValueTask<GameVehicle> ToGameEntityAsync(VehicleDTO source)
+    private GameVehicle ToGameEntity(VehicleDTO source)
     {
         GameVehicle result = source switch
         {
@@ -149,14 +151,13 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
             _ => throw new ArgumentOutOfRangeException(nameof(source), source, "Unable to select corresponding vehicle type."),
         };
         CacheGameEntityId<GameVehicle>(source.Id, result);
-        await hydrationService.HydrateAsync(result);
         return result;
     }
 
-    private void CacheGameEntityId<T>(double? sourceId, GameEntity result) where T : GameEntity
+    private void CacheGameEntityId<T>(double? sourceId, IGameEntity result) where T : class, IGameEntity
         => CachedGameEntities[CreateCacheEntityKey<T>(sourceId)] = result;
 
-    private T? ResolveCachedGameEntity<T>(double? sourceId, [CallerArgumentExpression("sourceId")] string sourceIdExpression = "") where T : GameEntity
+    private T? ResolveCachedGameEntity<T>(double? sourceId, [CallerArgumentExpression("sourceId")] string sourceIdExpression = "") where T : class, IGameEntity
     {
         var cacheEntityKey = CreateCacheEntityKey<T>(sourceId);
         var cachedEntity = CachedGameEntities.GetValueOrDefault(cacheEntityKey) as T;
@@ -220,6 +221,13 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     [MapPropertyFromSource("manufacturer", Use = nameof(GetCompanyForItem))]
     [MapPropertyFromSource("category", Use = nameof(GetCategoryForItem))]
     private partial GameItem MapInternal(ItemDTO source);
+
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapperIgnoreTarget(nameof(GameItemTrait.TraitType))]
+    [MapProperty(nameof(ItemAttributeDTO.Id_item), nameof(GameItemTrait.ItemId))]
+    [MapProperty(nameof(ItemAttributeDTO.Attribute_name), "fullName")]
+    [MapProperty(nameof(ItemAttributeDTO.Value), nameof(GameItemTrait.Content))]
+    private partial GameItemTrait MapInternal(ItemAttributeDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(CompanyDTO.Name), "fullName")]

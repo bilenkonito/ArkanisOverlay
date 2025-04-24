@@ -2,22 +2,19 @@ namespace Arkanis.Overlay.Infrastructure.Services.Hydration;
 
 using System.Globalization;
 using Abstractions;
+using Domain.Abstractions.Services;
 using Domain.Models.Game;
-using External.UEX.Abstractions;
 
-public class UexGameItemTraitHydrationService(IUexItemsApi itemsApi) : IHydrationServiceFor<GameItem>
+public class UexGameItemTraitHydrationService(IGameEntityRepository<GameItemTrait> traitRepository) : IHydrationServiceFor<GameItem>
 {
     public async Task HydrateAsync(GameItem entity, CancellationToken cancellationToken = default)
     {
         var itemId = entity.Id.Identity.ToString("0", CultureInfo.InvariantCulture);
-        var itemAttributes = await itemsApi.GetItemsAttributesByItemAsync(itemId, cancellationToken);
-        var traits = itemAttributes.Result.Data?
-            .Select(attribute => GameItem.Trait.CreateFrom(attribute.Attribute_name ?? string.Empty, attribute.Value ?? string.Empty, attribute.Unit))
-            .Where(trait => trait is not null)
-            .Select(trait => trait!)
-            .ToList();
+        var itemTraits = await traitRepository.GetAllAsync(cancellationToken)
+            .Where(trait => entity.Id.Equals(trait.ItemId))
+            .ToListAsync(cancellationToken);
 
-        entity.Traits.Update(traits ?? []);
+        entity.Traits.Update(itemTraits);
     }
 
     public bool IsReady

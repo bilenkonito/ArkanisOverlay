@@ -1,12 +1,13 @@
+@using Arkanis.Overlay.Domain.Enums
 @using Arkanis.Overlay.Domain.Models.Game
-@if (Model.Traits.OfType<GameItem.Grade>().FirstOrDefault() is { } itemGrade)
+@if (Model.Traits.FirstOrDefault(x => x.TraitType == GameItemTraitType.Grade) is { } itemGrade)
 {
     <GameItemTraitDetail
         Model="@itemGrade"
         Value="@itemGrade.Content"/>
 }
 
-@if (Model.Traits.OfType<GameItem.ClassTrait>().FirstOrDefault() is { } itemClass)
+@if (Model.Traits.FirstOrDefault(x => x.TraitType == GameItemTraitType.Class) is { } itemClass)
 {
     <GameItemTraitDetail
         Model="@itemClass"

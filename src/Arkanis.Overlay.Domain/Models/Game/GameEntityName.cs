@@ -72,14 +72,24 @@ public sealed record GameEntityName(IEnumerable<GameEntityName.Part> Parts) : IE
 
     public sealed record NameWithShortVariant(string FullName, string ShortName) : Name(FullName), IHasShortName;
 
-    public sealed record PropertyCollection(params PropertyCollection.Item[] Items) : Part, IEnumerable<PropertyCollection.Item>
+    public sealed record PropertyCollection(params PropertyItem[] Items) : Part, IEnumerable<PropertyItem>
     {
-        public IEnumerator<Item> GetEnumerator()
+        public IEnumerator<PropertyItem> GetEnumerator()
             => Items.AsEnumerable().GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
 
-        public sealed record Item(string Key, string Value);
+        public static PropertyCollection Create(IEnumerable<GameItemTrait> traits)
+        {
+            var items = traits
+                .Where(trait => !string.IsNullOrWhiteSpace(trait.Content))
+                .Select(trait => trait.ToNamePart())
+                .ToArray();
+
+            return new PropertyCollection(items);
+        }
     }
+
+    public sealed record PropertyItem(string Key, string Value) : Part;
 }
