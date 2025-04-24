@@ -2,20 +2,26 @@ namespace Arkanis.Overlay.Infrastructure.Services.Abstractions;
 
 using Domain.Abstractions;
 
-public interface IHydrationServiceFor : IDependable
+public interface IHydrationServiceFor
 {
+    bool Matches<T>(T entity);
+
     Task HydrateAsync<T>(T entity, CancellationToken cancellationToken = default);
 }
 
-public interface IHydrationServiceFor<in T> : IHydrationServiceFor
+public interface IHydrationServiceFor<in T> : IHydrationServiceFor, IDependable
 {
-    Task HydrateAsync(T entity, CancellationToken cancellationToken = default);
+    bool IHydrationServiceFor.Matches<TEntity>(TEntity entity)
+        => entity is T;
 
     async Task IHydrationServiceFor.HydrateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken)
     {
-        if (entity is T vehicle)
+        if (entity is T targetEntity)
         {
-            await HydrateAsync(vehicle, cancellationToken);
+            await WaitUntilReadyAsync(cancellationToken);
+            await HydrateAsync(targetEntity, cancellationToken);
         }
     }
+
+    Task HydrateAsync(T entity, CancellationToken cancellationToken = default);
 }

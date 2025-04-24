@@ -6,11 +6,11 @@ using External.UEX.Abstractions;
 using Local;
 using Microsoft.Extensions.Logging;
 
-internal class UexItemCategoryRepository(
+internal class UexProductCategoryRepository(
     IUexGameApi gameApi,
     UexGameDataStateProvider stateProvider,
     UexApiDtoMapper mapper,
-    ILogger<UexItemCategoryRepository> logger
+    ILogger<UexProductCategoryRepository> logger
 ) : UexGameEntityRepositoryBase<CategoryDTO, GameProductCategory>(stateProvider, mapper, logger)
 {
     protected override async Task<UexApiResponse<ICollection<CategoryDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)

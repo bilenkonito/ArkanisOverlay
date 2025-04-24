@@ -22,7 +22,6 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
 
     public async ValueTask<IGameEntity> ToGameEntityAsync<TSource>(TSource source)
     {
-        await hydrationService.WaitUntilReadyAsync();
         IGameEntity result = source switch
         {
             UniverseStarSystemDTO system => ToGameEntity(system),
