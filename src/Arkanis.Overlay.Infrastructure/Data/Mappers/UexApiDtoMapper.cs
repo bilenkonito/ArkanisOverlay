@@ -3,10 +3,13 @@ namespace Arkanis.Overlay.Infrastructure.Data.Mappers;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using Common;
 using Domain.Abstractions.Game;
+using Domain.Enums;
 using Domain.Models.Game;
 using Exceptions;
 using External.UEX.Abstractions;
+using NodaMoney;
 using Riok.Mapperly.Abstractions;
 using Services.Abstractions;
 
@@ -37,6 +40,10 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
             CompanyDTO company => ToGameEntity(company),
             CategoryDTO category => ToGameEntity(category),
             VehicleDTO vehicle => ToGameEntity(vehicle),
+            ItemPriceBriefDTO itemPrice => ToGameEntity(itemPrice),
+            CommodityPriceBriefDTO commodityPrice => ToGameEntity(commodityPrice),
+            VehiclePurchasePriceBriefDTO vehiclePurchasePrice => ToGameEntity(vehiclePurchasePrice),
+            VehicleRentalPriceBriefDTO vehicleRentalPrice => ToGameEntity(vehicleRentalPrice),
             _ => throw new ArgumentOutOfRangeException(nameof(source), source, "Cannot map to game entity from unsupported source type."),
         };
 
@@ -153,14 +160,47 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
         return result;
     }
 
+    [UserMapping(Default = true)]
+    private GameEntityPricing ToGameEntity(CommodityPriceBriefDTO source)
+    {
+        var purchaseResult = MapInternalPurchasePrice(source);
+        CacheGameEntityId<GameCommodityPricing>(source.Id, purchaseResult);
+        return purchaseResult;
+    }
+
+    [UserMapping(Default = true)]
+    private GameEntityPricing ToGameEntity(ItemPriceBriefDTO source)
+    {
+        var result = MapInternal(source);
+        CacheGameEntityId<GameItemPurchasePricing>(source.Id, result);
+        return result;
+    }
+
+    [UserMapping(Default = true)]
+    private GameEntityPricing ToGameEntity(VehiclePurchasePriceBriefDTO source)
+    {
+        var result = MapInternal(source);
+        CacheGameEntityId<GameVehiclePurchasePricing>(source.Id, result);
+        return result;
+    }
+
+    [UserMapping(Default = true)]
+    private GameEntityPricing ToGameEntity(VehicleRentalPriceBriefDTO source)
+    {
+        var result = MapInternal(source);
+        CacheGameEntityId<GameVehicleRentalPricing>(source.Id, result);
+        return result;
+    }
+
     private void CacheGameEntityId<T>(double? sourceId, IGameEntity result) where T : class, IGameEntity
         => CachedGameEntities[CreateCacheEntityKey<T>(sourceId)] = result;
 
-    private T? ResolveCachedGameEntity<T>(double? sourceId, [CallerArgumentExpression("sourceId")] string sourceIdExpression = "") where T : class, IGameEntity
+    private T? ResolveCachedGameEntity<T>(double? sourceId, bool throwOnCacheMiss = true, [CallerArgumentExpression("sourceId")] string sourceIdExpression = "")
+        where T : class, IGameEntity
     {
         var cacheEntityKey = CreateCacheEntityKey<T>(sourceId);
         var cachedEntity = CachedGameEntities.GetValueOrDefault(cacheEntityKey) as T;
-        return sourceId > 0 && cachedEntity is null
+        return sourceId > 0 && cachedEntity is null && throwOnCacheMiss
             ? ThrowInvalidCacheException<T>(sourceId, sourceIdExpression)
             : cachedEntity;
     }
@@ -251,9 +291,50 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     [MapPropertyFromSource("manufacturer", Use = nameof(GetCompanyForVehicle))]
     private partial GameGroundVehicle MapInternalGroundVehicle(VehicleDTO source);
 
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapProperty(nameof(CommodityPriceBriefDTO.Id_commodity), nameof(GameEntityPricing.OwnerId))]
+    [MapProperty(nameof(CommodityPriceBriefDTO.Date_modified), nameof(GameEntityPricing.UpdatedAt), Use = nameof(MapInternalDate))]
+    [MapProperty(nameof(CommodityPriceBriefDTO.Price_buy), nameof(GameCommodityPricing.PurchasePrice), Use = nameof(MapInternalMoney))]
+    [MapProperty(nameof(CommodityPriceBriefDTO.Price_sell), nameof(GameCommodityPricing.SalePrice), Use = nameof(MapInternalMoney))]
+    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.Terminal), Use = nameof(GetTerminalForCommodityPrice))]
+    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.OwnerId), Use = nameof(GetCommodityForPrice))]
+    private partial GameCommodityPricing MapInternalPurchasePrice(CommodityPriceBriefDTO source);
+
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapProperty(nameof(ItemPriceBriefDTO.Id_item), nameof(GameEntityPricing.OwnerId))]
+    [MapProperty(nameof(ItemPriceBriefDTO.Date_modified), nameof(GameEntityPricing.UpdatedAt), Use = nameof(MapInternalDate))]
+    [MapProperty(nameof(ItemPriceBriefDTO.Price_buy), nameof(GameItemPurchasePricing.Price), Use = nameof(MapInternalMoney))]
+    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.Terminal), Use = nameof(GetTerminalForItemPrice))]
+    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.OwnerId), Use = nameof(GetItemForPrice))]
+    private partial GameItemPurchasePricing MapInternal(ItemPriceBriefDTO source);
+
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapProperty(nameof(VehiclePurchasePriceBriefDTO.Id_vehicle), nameof(GameEntityPricing.OwnerId))]
+    [MapProperty(nameof(VehiclePurchasePriceBriefDTO.Date_modified), nameof(GameEntityPricing.UpdatedAt), Use = nameof(MapInternalDate))]
+    [MapProperty(nameof(VehiclePurchasePriceBriefDTO.Price_buy), nameof(GameVehiclePurchasePricing.Price), Use = nameof(MapInternalMoney))]
+    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.Terminal), Use = nameof(GetTerminalForVehiclePurchasePrice))]
+    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.OwnerId), Use = nameof(GetVehicleForPurchasePrice))]
+    private partial GameVehiclePurchasePricing MapInternal(VehiclePurchasePriceBriefDTO source);
+
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapProperty(nameof(VehicleRentalPriceBriefDTO.Id_vehicle), nameof(GameEntityPricing.OwnerId))]
+    [MapProperty(nameof(VehicleRentalPriceBriefDTO.Date_modified), nameof(GameEntityPricing.UpdatedAt), Use = nameof(MapInternalDate))]
+    [MapProperty(nameof(VehicleRentalPriceBriefDTO.Price_rent), nameof(GameVehicleRentalPricing.Price), Use = nameof(MapInternalMoney))]
+    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.Terminal), Use = nameof(GetTerminalForVehicleRentalPrice))]
+    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.OwnerId), Use = nameof(GetVehicleForRentalPrice))]
+    private partial GameVehicleRentalPricing MapInternal(VehicleRentalPriceBriefDTO source);
+
+    [UserMapping(Default = true)]
+    private Money MapInternalMoney(double? amount)
+        => new(amount ?? 0, ApplicationConstants.GameCurrency);
+
+    [UserMapping(Default = true)]
+    private DateTimeOffset MapInternalDate(double? timestamp)
+        => DateTimeOffset.FromUnixTimeSeconds((long)(timestamp ?? 0));
+
     [DoesNotReturn]
     private static T ThrowInvalidCacheException<T>(double? sourceId, [CallerArgumentExpression("sourceId")] string sourceIdExpression = "")
-        => throw new ObjectMappingMissingDependentObjectException(
+        => throw new ObjectMappingMissingLinkedRelatedObjectException(
             $"Could not resolve cached entity instance of {typeof(T)} for: {sourceIdExpression} == {sourceId}"
         );
 
@@ -293,6 +374,54 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
            ?? ResolveCachedGameEntity<GameSpaceStation>(terminal.Id_space_station) as GameLocationEntity
            ?? ResolveCachedGameEntity<GameStarSystem>(terminal.Id_star_system)
            ?? ThrowMissingMappingException<GameLocationEntity, UniverseTerminalDTO>(terminal.Id);
+
+    private GameTerminal GetTerminalForCommodityPrice(CommodityPriceBriefDTO commodityPrice)
+        => ResolveCachedGameEntity<GameTerminal>(commodityPrice.Id_terminal, false)
+           ?? FallbackToFakeTerminal(commodityPrice.Id_terminal, commodityPrice.Terminal_name)
+           ?? ThrowMissingMappingException<GameTerminal, CommodityPriceBriefDTO>(commodityPrice.Id_terminal);
+
+    private GameTerminal GetTerminalForItemPrice(ItemPriceBriefDTO itemPrice)
+        => ResolveCachedGameEntity<GameTerminal>(itemPrice.Id_terminal, false)
+           ?? FallbackToFakeTerminal(itemPrice.Id_terminal, itemPrice.Terminal_name)
+           ?? ThrowMissingMappingException<GameTerminal, ItemPriceBriefDTO>(itemPrice.Id_terminal);
+
+    private GameTerminal GetTerminalForVehiclePurchasePrice(VehiclePurchasePriceBriefDTO vehiclePurchasePrice)
+        => ResolveCachedGameEntity<GameTerminal>(vehiclePurchasePrice.Id_terminal, false)
+           ?? FallbackToFakeTerminal(vehiclePurchasePrice.Id_terminal, vehiclePurchasePrice.Terminal_name)
+           ?? ThrowMissingMappingException<GameTerminal, VehiclePurchasePriceBriefDTO>(vehiclePurchasePrice.Id_terminal);
+
+    private GameTerminal GetTerminalForVehicleRentalPrice(VehicleRentalPriceBriefDTO vehicleRentalPrice)
+        => ResolveCachedGameEntity<GameTerminal>(vehicleRentalPrice.Id_terminal, false)
+           ?? FallbackToFakeTerminal(vehicleRentalPrice.Id_terminal, vehicleRentalPrice.Terminal_name)
+           ?? ThrowMissingMappingException<GameTerminal, VehicleRentalPriceBriefDTO>(vehicleRentalPrice.Id_terminal);
+
+    private GameTerminal? FallbackToFakeTerminal(double? id, string? name = null, string? code = null)
+        => new(
+            (int)(id ?? 0),
+            name ?? $"Terminal {code ?? id.ToString()}",
+            name ?? $"Terminal {code ?? id.ToString()}",
+            code ?? "",
+            GameLocationEntity.Unknown
+        )
+        {
+            Type = GameTerminalType.Undefined,
+        };
+
+    private GameCommodity GetCommodityForPrice(CommodityPriceBriefDTO commodityPrice)
+        => ResolveCachedGameEntity<GameCommodity>(commodityPrice.Id_commodity)
+           ?? ThrowMissingMappingException<GameCommodity, CommodityPriceBriefDTO>(commodityPrice.Id_commodity);
+
+    private GameItem GetItemForPrice(ItemPriceBriefDTO itemPrice)
+        => ResolveCachedGameEntity<GameItem>(itemPrice.Id_item)
+           ?? ThrowMissingMappingException<GameItem, ItemPriceBriefDTO>(itemPrice.Id_item);
+
+    private GameVehicle GetVehicleForPurchasePrice(VehiclePurchasePriceBriefDTO vehiclePurchasePrice)
+        => ResolveCachedGameEntity<GameVehicle>(vehiclePurchasePrice.Id_vehicle)
+           ?? ThrowMissingMappingException<GameVehicle, VehiclePurchasePriceBriefDTO>(vehiclePurchasePrice.Id_vehicle);
+
+    private GameVehicle GetVehicleForRentalPrice(VehicleRentalPriceBriefDTO vehicleRentalPrice)
+        => ResolveCachedGameEntity<GameVehicle>(vehicleRentalPrice.Id_vehicle)
+           ?? ThrowMissingMappingException<GameVehicle, CommodityPriceBriefDTO>(vehicleRentalPrice.Id_vehicle);
 
     private GameCompany GetCompanyForItem(ItemDTO item)
         => ResolveCachedGameEntity<GameCompany>(item.Id_company)

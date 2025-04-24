@@ -29,6 +29,26 @@ public static class DependencyInjection
             .Decorate<IGameEntityRepository<GameItemTrait>, UexGameItemTraitRepositorySpecialisationDecorator>()
             .AliasVia<IGameItemTraitRepository, IGameEntityRepository<GameItemTrait>, UexGameItemTraitRepositorySpecialisationDecorator>();
 
+        services
+            .Decorate<IGameEntityRepository<GameCommodityPricing>, UexCommodityPricingRepositorySpecialisationDecorator>()
+            .AliasVia<IGameCommodityPricingRepository, IGameEntityRepository<GameCommodityPricing>, UexCommodityPricingRepositorySpecialisationDecorator>();
+
+        services
+            .Decorate<IGameEntityRepository<GameItemPurchasePricing>, UexItemPricingRepositorySpecialisationDecorator>()
+            .AliasVia<IGameItemPurchasePricingRepository, IGameEntityRepository<GameItemPurchasePricing>, UexItemPricingRepositorySpecialisationDecorator>();
+
+        services
+            .Decorate<IGameEntityRepository<GameVehiclePurchasePricing>, UexVehiclePurchasePricingRepositorySpecialisationDecorator>()
+            .AliasVia<IGameVehiclePurchasePricingRepository,
+                IGameEntityRepository<GameVehiclePurchasePricing>,
+                UexVehiclePurchasePricingRepositorySpecialisationDecorator>();
+
+        services
+            .Decorate<IGameEntityRepository<GameVehicleRentalPricing>, UexVehicleRentalPricingRepositorySpecialisationDecorator>()
+            .AliasVia<IGameVehicleRentalPricingRepository,
+                IGameEntityRepository<GameVehicleRentalPricing>,
+                UexVehicleRentalPricingRepositorySpecialisationDecorator>();
+
         return services;
     }
 }

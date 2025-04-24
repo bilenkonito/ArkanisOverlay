@@ -9,5 +9,5 @@ public interface IGameSellable : IGameEntity
     Bounds<PriceTag> LatestSellPrices { get; }
     GameTerminalType TerminalType { get; }
 
-    void UpdateSellPrices(Bounds<PriceTag> newPrices);
+    void UpdateSalePrices(Bounds<PriceTag> newPrices);
 }

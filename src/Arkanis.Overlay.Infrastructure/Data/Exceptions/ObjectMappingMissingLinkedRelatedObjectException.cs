@@ -1,4 +1,4 @@
 namespace Arkanis.Overlay.Infrastructure.Data.Exceptions;
 
-public class ObjectMappingMissingDependentObjectException(string message)
+public class ObjectMappingMissingLinkedRelatedObjectException(string message)
     : ObjectMappingException(message, null);

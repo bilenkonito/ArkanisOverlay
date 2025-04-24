@@ -11,4 +11,5 @@ public enum GameEntityCategory
     GroundVehicle,
     Location,
     Company,
+    Price,
 }

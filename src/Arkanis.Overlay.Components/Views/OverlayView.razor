@@ -187,7 +187,7 @@
                         AutoFocus
                         Immediate/>
                 </MudStack>
-                <MudText Typo="@Typo.overline" Class="text-secondary">
+                <MudText Typo="@Typo.overline" Class="text-secondary px-3">
                     @ShortcutsText
                 </MudText>
             </MudStack>
@@ -298,7 +298,8 @@
                 )
                 .Select(searchPart => searchPart.StartsWith(':')
                     ? _categorySearchShortcuts.GetValueOrDefault(searchPart) ?? EmptySearch.Instance
-                    : FuzzyStringSearch.Create(searchPart))
+                    : FuzzyStringSearch.Create(searchPart)
+                )
                 .Where(search => search is not EmptySearch)
                 .ToList();
 

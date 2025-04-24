@@ -18,6 +18,9 @@ internal sealed class GameEntityRepositoryDependencyResolver(
 {
     private readonly ILogger<GameEntityRepositoryDependencyResolver> _logger = logger;
 
+    public new Context DependsOn(object dependent, params IEnumerable<IDependable> dependencies)
+        => CreateDependencyContext(dependent, dependencies);
+
     public Context DependsOn<T>(object dependent) where T : class, IGameEntity
         => CreateDependencyContextOnGameEntity<T>(dependent);
 

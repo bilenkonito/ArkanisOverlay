@@ -30,7 +30,7 @@ public class GameCommodity(int id, string fullName, string codeName)
     public GameTerminalType TerminalType
         => GameTerminalType.Commodity;
 
-    public void UpdateSellPrices(Bounds<PriceTag> newPrices)
+    public void UpdateSalePrices(Bounds<PriceTag> newPrices)
         => LatestSellPrices = newPrices;
 
     public void UpdatePurchasePrices(Bounds<PriceTag> newPrices)

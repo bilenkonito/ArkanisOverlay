@@ -1,8 +1,9 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Abstractions.Services
+@using Arkanis.Overlay.Domain.Models
 @using Arkanis.Overlay.Domain.Models.Trade
 @inject IPurchasePriceProvider PurchasePriceProvider
-@inject ISellPriceProvider SellPriceProvider
+@inject ISalePriceProvider SalePriceProvider
 @inject IRentPriceProvider RentPriceProvider
 
 <MudStack Class="flex-1"
@@ -15,21 +16,21 @@
     {
         <PriceTagInfo
             Label="Min buy"
-            Model="@PurchasePriceTag"
+            Model="@PurchasePriceTag?.Min"
             Color="@UiConstants.PurchaseColor"/>
     }
     @if (Model is IGameSellable)
     {
         <PriceTagInfo
             Label="Max sell"
-            Model="@SellPriceTag"
+            Model="@SellPriceTag?.Max"
             Color="@UiConstants.SellColor"/>
     }
     @if (Model is IGameRentable)
     {
         <PriceTagInfo
             Label="Min rent"
-            Model="@RentPriceTag"
+            Model="@RentPriceTag?.Min"
             Color="@UiConstants.RentColor"/>
     }
 </MudStack>
@@ -43,11 +44,11 @@
     [Parameter]
     public required IGameEntity Model { get; set; }
 
-    private PriceTag? PurchasePriceTag { get; set; }
+    private Bounds<PriceTag>? PurchasePriceTag { get; set; }
 
-    private PriceTag? SellPriceTag { get; set; }
+    private Bounds<PriceTag>? SellPriceTag { get; set; }
 
-    private PriceTag? RentPriceTag { get; set; }
+    private Bounds<PriceTag>? RentPriceTag { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -60,21 +61,21 @@
         {
             PurchasePriceTag = SearchContext.CurrentLocation is { } location
                 ? await PurchasePriceProvider.GetPriceTagAtAsync(purchasable, location)
-                : purchasable.LatestPurchasePrices.Min;
+                : purchasable.LatestPurchasePrices;
         }
 
         if (Model is IGameSellable sellable)
         {
             SellPriceTag = SearchContext.CurrentLocation is { } location
-                ? await SellPriceProvider.GetPriceTagAtAsync(sellable, location)
-                : sellable.LatestSellPrices.Min;
+                ? await SalePriceProvider.GetPriceTagAtAsync(sellable, location)
+                : sellable.LatestSellPrices;
         }
 
         if (Model is IGameRentable rentable)
         {
             RentPriceTag = SearchContext.CurrentLocation is { } location
                 ? await RentPriceProvider.GetPriceTagAtAsync(rentable, location)
-                : rentable.LatestRentPrices.Min;
+                : rentable.LatestRentPrices;
         }
     }
 

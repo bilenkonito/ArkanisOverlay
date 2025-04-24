@@ -9,5 +9,6 @@ public static class GameEntityConstants
             .GetTypes()
             .Where(type => type.IsAssignableTo(typeof(IGameEntity)))
             .Where(type => !type.IsAbstract)
+            .Where(type => type.IsPublic)
             .ToArray();
 }
