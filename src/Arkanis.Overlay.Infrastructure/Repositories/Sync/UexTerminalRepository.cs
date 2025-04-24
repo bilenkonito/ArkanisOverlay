@@ -18,9 +18,9 @@ internal class UexTerminalRepository(
 {
     protected override IDependable GetDependencies()
         => dependencyResolver
-            .DependsOn<GameCity>()
-            .AlsoDependencyOn<GameOutpost>()
-            .AlsoDependencyOn<GameSpaceStation>();
+            .DependsOn<GameCity>(this)
+            .AlsoDependsOn<GameOutpost>()
+            .AlsoDependsOn<GameSpaceStation>();
 
     protected override async Task<UexApiResponse<ICollection<UniverseTerminalDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
@@ -28,6 +28,8 @@ internal class UexTerminalRepository(
         return CreateResponse(response, response.Result.Data?.Where(x => x.Is_available > 0).ToList());
     }
 
-    protected override double? GetSourceApiId(UniverseTerminalDTO source)
-        => source.Id;
+    protected override UexApiGameEntityId? GetSourceApiId(UniverseTerminalDTO source)
+        => source.Id is not null
+            ? UexApiGameEntityId.Create<GameTerminal>(source.Id.Value)
+            : null;
 }

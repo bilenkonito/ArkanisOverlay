@@ -1,4 +1,4 @@
-namespace Arkanis.Overlay.Infrastructure.Services;
+namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders;
 
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
@@ -23,4 +23,7 @@ public class FakePriceProvider : IPriceProvider
 
     public ValueTask<PriceTag> GetPriceTagAtAsync(IGameRentable gameEntity, IGameLocation gameLocation)
         => ValueTask.FromResult(PriceTag.Unknown);
+
+    public Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
+        => Task.CompletedTask;
 }

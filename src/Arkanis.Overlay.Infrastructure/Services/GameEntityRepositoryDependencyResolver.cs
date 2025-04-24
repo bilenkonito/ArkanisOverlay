@@ -4,78 +4,55 @@ using Domain.Abstractions;
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Repositories.Exceptions;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 ///     Provides support logic for resolving multiple dependencies at once.
 /// </summary>
 /// <param name="serviceProvider">Service provider used for typed service resolution</param>
-internal sealed class GameEntityRepositoryDependencyResolver(IServiceProvider serviceProvider)
+/// <param name="logger">A logger</param>
+internal sealed class GameEntityRepositoryDependencyResolver(
+    IServiceProvider serviceProvider,
+    ILogger<GameEntityRepositoryDependencyResolver> logger
+) : DependencyResolver(serviceProvider)
 {
-    public Context DependsOn(IEnumerable<IDependable> dependencies)
-        => CreateDependencyContext(dependencies);
+    private readonly ILogger<GameEntityRepositoryDependencyResolver> _logger = logger;
 
-    public Context DependsOn<T>() where T : class, IGameEntity
-        => CreateDependencyContextOn<T>();
+    public Context DependsOn<T>(object dependent) where T : class, IGameEntity
+        => CreateDependencyContextOnGameEntity<T>(dependent);
 
-    public Context DependsOn(Type gameEntityType)
-        => CreateDependencyContextOn(gameEntityType);
+    public Context DependsOn(object dependent, Type gameEntityType)
+        => CreateDependencyContextOnGameEntity(dependent, gameEntityType);
 
-    private Context CreateDependencyContextOn<T>() where T : class, IGameEntity
-        => CreateDependencyContext(CreateDependencyOn<T>());
+    private Context CreateDependencyContextOnGameEntity<T>(object dependent) where T : class, IGameEntity
+        => CreateDependencyContext(dependent, CreateDependencyOn<IGameEntityRepository<T>>());
 
-    private Context CreateDependencyContextOn(Type gameEntityType)
-        => CreateDependencyContext(CreateDependencyOn(gameEntityType));
+    private Context CreateDependencyContextOnGameEntity(object dependent, Type gameEntityType)
+        => CreateDependencyContext(dependent, CreateDependencyOnGameEntity(gameEntityType));
 
-    private IDependable CreateDependencyOn<T>() where T : class, IGameEntity
-        => serviceProvider.GetRequiredService<IGameEntityRepository<T>>();
-
-    private IDependable CreateDependencyOn(Type gameEntityType)
+    private IDependable CreateDependencyOnGameEntity(Type gameEntityType)
     {
         var repositoryType = typeof(IGameEntityRepository<>).MakeGenericType(gameEntityType);
-        var service = serviceProvider.GetRequiredService(repositoryType);
+        var service = ServiceProvider.GetRequiredService(repositoryType);
         var repository = service as IDependable ?? throw new InvalidOperationException($"failed to resolve {repositoryType} for {gameEntityType}.");
         return repository;
     }
 
-    private Context CreateDependencyContext(params IEnumerable<IDependable> dependencies)
-        => new(this, dependencies);
+    private Context CreateDependencyContext(object dependent, params IEnumerable<IDependable> dependencies)
+        => new(dependent, this, dependencies);
 
-    public sealed class Context(GameEntityRepositoryDependencyResolver resolver, params IEnumerable<IDependable> dependencies) : IDependable
+    public new sealed class Context(object dependent, GameEntityRepositoryDependencyResolver resolver, params IEnumerable<IDependable> dependencies)
+        : DependencyResolver.Context(dependent, resolver._logger, dependencies)
     {
-        private readonly List<IDependable> _dependencies = dependencies.ToList();
-
-        public async Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
+        public Context AlsoDependsOn<T>() where T : class, IGameEntity
         {
-            var dependencies = _dependencies
-                .Select(dependency => (Instance: dependency, Task: dependency.WaitUntilReadyAsync(cancellationToken)))
-                .ToList();
-
-            try
-            {
-                var tasks = dependencies.Select(x => x.Task).ToList();
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException e)
-            {
-                var failedDependencies = dependencies
-                    .Where(dependency => !dependency.Task.IsCompletedSuccessfully)
-                    .Select(dependency => dependency.Instance)
-                    .ToArray();
-
-                throw DependencyWaitCancelledException.Create(failedDependencies, e);
-            }
-        }
-
-        public Context AlsoDependencyOn<T>() where T : class, IGameEntity
-        {
-            _dependencies.Add(resolver.CreateDependencyOn<T>());
+            AddDependency(resolver.CreateDependencyOn<IGameEntityRepository<T>>());
             return this;
         }
 
-        public Context AlsoDependencyOn(Type gameEntityType)
+        public Context AlsoDependsOn(Type gameEntityType)
         {
-            _dependencies.Add(resolver.CreateDependencyOn(gameEntityType));
+            AddDependency(resolver.CreateDependencyOnGameEntity(gameEntityType));
             return this;
         }
     }

@@ -17,7 +17,7 @@ internal class UexPlanetRepository(
 ) : UexGameEntityRepositoryBase<UniversePlanetDTO, GamePlanet>(stateProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
-        => dependencyResolver.DependsOn<GameStarSystem>();
+        => dependencyResolver.DependsOn<GameStarSystem>(this);
 
     protected override async Task<UexApiResponse<ICollection<UniversePlanetDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
@@ -25,6 +25,8 @@ internal class UexPlanetRepository(
         return CreateResponse(response, response.Result.Data?.Where(x => x.Is_available > 0).ToList());
     }
 
-    protected override double? GetSourceApiId(UniversePlanetDTO source)
-        => source.Id;
+    protected override UexApiGameEntityId? GetSourceApiId(UniversePlanetDTO source)
+        => source.Id is not null
+            ? UexApiGameEntityId.Create<GamePlanet>(source.Id.Value)
+            : null;
 }

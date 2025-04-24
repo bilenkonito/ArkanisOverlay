@@ -17,7 +17,7 @@ internal class UexSpaceShipRepository(
 ) : UexGameEntityRepositoryBase<VehicleDTO, GameSpaceShip>(stateProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
-        => dependencyResolver.DependsOn<GameCompany>();
+        => dependencyResolver.DependsOn<GameCompany>(this);
 
     protected override async Task<UexApiResponse<ICollection<VehicleDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
@@ -25,8 +25,10 @@ internal class UexSpaceShipRepository(
         return CreateResponse(response, response.Result.Data);
     }
 
-    protected override double? GetSourceApiId(VehicleDTO source)
-        => source.Id;
+    protected override UexApiGameEntityId? GetSourceApiId(VehicleDTO source)
+        => source.Id is not null
+            ? UexApiGameEntityId.Create<GameSpaceShip>(source.Id.Value)
+            : null;
 
     /// <remarks>
     ///     Only space ships must be processed by this repository.

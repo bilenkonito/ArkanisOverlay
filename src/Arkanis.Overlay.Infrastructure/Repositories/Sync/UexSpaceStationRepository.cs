@@ -18,9 +18,9 @@ internal class UexSpaceStationRepository(
 {
     protected override IDependable GetDependencies()
         => dependencyResolver
-            .DependsOn<GameCity>()
-            .AlsoDependencyOn<GamePlanet>()
-            .AlsoDependencyOn<GameMoon>();
+            .DependsOn<GameCity>(this)
+            .AlsoDependsOn<GamePlanet>()
+            .AlsoDependsOn<GameMoon>();
 
     protected override async Task<UexApiResponse<ICollection<UniverseSpaceStationDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
@@ -28,6 +28,8 @@ internal class UexSpaceStationRepository(
         return CreateResponse(response, response.Result.Data?.Where(x => x.Is_available > 0).ToList());
     }
 
-    protected override double? GetSourceApiId(UniverseSpaceStationDTO source)
-        => source.Id;
+    protected override UexApiGameEntityId? GetSourceApiId(UniverseSpaceStationDTO source)
+        => source.Id is not null
+            ? UexApiGameEntityId.Create<GameSpaceStation>(source.Id.Value)
+            : null;
 }

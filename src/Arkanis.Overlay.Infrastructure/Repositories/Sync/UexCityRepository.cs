@@ -18,8 +18,8 @@ internal class UexCityRepository(
 {
     protected override IDependable GetDependencies()
         => dependencyResolver
-            .DependsOn<GamePlanet>()
-            .AlsoDependencyOn<GameMoon>();
+            .DependsOn<GamePlanet>(this)
+            .AlsoDependsOn<GameMoon>();
 
     protected override async Task<UexApiResponse<ICollection<UniverseCityDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
@@ -27,6 +27,8 @@ internal class UexCityRepository(
         return CreateResponse(response, response.Result.Data?.Where(x => x.Is_available > 0).ToList());
     }
 
-    protected override double? GetSourceApiId(UniverseCityDTO source)
-        => source.Id;
+    protected override UexApiGameEntityId? GetSourceApiId(UniverseCityDTO source)
+        => source.Id is not null
+            ? UexApiGameEntityId.Create<GameCity>(source.Id.Value)
+            : null;
 }
