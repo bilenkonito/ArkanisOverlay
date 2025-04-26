@@ -27,11 +27,11 @@ internal class UexSpaceShipRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(VehicleDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameSpaceShip>(source.Id.Value)
+            ? UexApiGameEntityId.Create<GameVehicle>(source.Id.Value)
             : null;
 
     /// <remarks>
-    ///     Only space ships must be processed by this repository.
+    ///     Only spaceships must be processed by this repository.
     ///     Exception is raised otherwise on type disparity after domain object mapping.
     /// </remarks>
     protected override bool IncludeSourceModel(VehicleDTO sourceModel)
