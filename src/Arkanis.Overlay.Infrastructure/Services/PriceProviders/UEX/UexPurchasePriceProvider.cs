@@ -2,8 +2,8 @@ namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders.UEX;
 
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
-using Domain.Enums;
 using Domain.Models;
+using Domain.Models.Game;
 using Domain.Models.Trade;
 
 public class UexPurchasePriceProvider(
@@ -14,66 +14,59 @@ public class UexPurchasePriceProvider(
 ) : UexPriceProviderBase, IPurchasePriceProvider
 {
     public async ValueTask UpdatePriceTagAsync(IGamePurchasable gameEntity)
-    {
-        if (gameEntity.EntityCategory is GameEntityCategory.Commodity)
+        => await (gameEntity switch
         {
-            await UpdateCommodityAsync(gameEntity);
-        }
-        else if (gameEntity.EntityCategory is GameEntityCategory.Item)
-        {
-            await UpdateItemAsync(gameEntity);
-        }
-        else if (gameEntity.EntityCategory is GameEntityCategory.GroundVehicle or GameEntityCategory.SpaceShip)
-        {
-            await UpdateVehicleAsync(gameEntity);
-        }
-    }
+            GameCommodity commodity => UpdateCommodityAsync(commodity),
+            GameItem item => UpdateItemAsync(item),
+            GameVehicle item => UpdateVehicleAsync(item),
+            _ => ValueTask.CompletedTask,
+        });
 
     public async ValueTask<Bounds<PriceTag>> GetPriceTagAtAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
-        => gameEntity.EntityCategory switch
+        => gameEntity switch
         {
-            GameEntityCategory.Commodity => await GetCommodityPriceTagAsync(gameEntity, gameLocation),
-            GameEntityCategory.Item => await GetItemPriceTagAsync(gameEntity, gameLocation),
-            GameEntityCategory.GroundVehicle or GameEntityCategory.SpaceShip => await GetVehiclePriceTagAsync(gameEntity, gameLocation),
+            GameCommodity commodity => await GetCommodityPriceTagAsync(commodity, gameLocation),
+            GameItem item => await GetItemPriceTagAsync(item, gameLocation),
+            GameVehicle vehicle => await GetVehiclePriceTagAsync(vehicle, gameLocation),
             _ => Bounds.All(PriceTag.Unknown),
         };
 
-    private async ValueTask<Bounds<PriceTag>> GetVehiclePriceTagAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
+    private async ValueTask<Bounds<PriceTag>> GetVehiclePriceTagAsync(GameVehicle gameEntity, IGameLocation gameLocation)
     {
         var prices = await vehiclePriceRepository.GetPurchasePricesForVehicleAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
         return CreateBoundsFrom(pricesAtLocation, price => price.Price, PriceTag.MissingFor(gameLocation));
     }
 
-    private async ValueTask<Bounds<PriceTag>> GetItemPriceTagAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
+    private async ValueTask<Bounds<PriceTag>> GetItemPriceTagAsync(GameItem gameEntity, IGameLocation gameLocation)
     {
         var prices = await itemPriceRepository.GetPurchasePricesForItemAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
         return CreateBoundsFrom(pricesAtLocation, price => price.PurchasePrice, PriceTag.MissingFor(gameLocation));
     }
 
-    private async ValueTask<Bounds<PriceTag>> GetCommodityPriceTagAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
+    private async ValueTask<Bounds<PriceTag>> GetCommodityPriceTagAsync(GameCommodity gameEntity, IGameLocation gameLocation)
     {
         var prices = await commodityPriceRepository.GetAllForCommodityAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
         return CreateBoundsFrom(pricesAtLocation, price => price.PurchasePrice, PriceTag.MissingFor(gameLocation));
     }
 
-    private async ValueTask UpdateCommodityAsync(IGamePurchasable gameEntity)
+    private async ValueTask UpdateCommodityAsync(GameCommodity gameEntity)
     {
         var prices = await commodityPriceRepository.GetAllForCommodityAsync(gameEntity.Id);
         var priceBounds = CreateBoundsFrom(prices, price => price.PurchasePrice);
         gameEntity.UpdatePurchasePrices(priceBounds);
     }
 
-    private async ValueTask UpdateItemAsync(IGamePurchasable gameEntity)
+    private async ValueTask UpdateItemAsync(GameItem gameEntity)
     {
         var prices = await itemPriceRepository.GetPurchasePricesForItemAsync(gameEntity.Id);
         var priceBounds = CreateBoundsFrom(prices, price => price.PurchasePrice);
         gameEntity.UpdatePurchasePrices(priceBounds);
     }
 
-    private async ValueTask UpdateVehicleAsync(IGamePurchasable gameEntity)
+    private async ValueTask UpdateVehicleAsync(GameVehicle gameEntity)
     {
         var prices = await vehiclePriceRepository.GetPurchasePricesForVehicleAsync(gameEntity.Id);
         var priceBounds = CreateBoundsFrom(prices, price => price.Price);
