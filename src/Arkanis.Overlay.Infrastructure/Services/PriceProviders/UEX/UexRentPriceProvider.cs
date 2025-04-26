@@ -13,7 +13,7 @@ public class UexRentPriceProvider(
 {
     public async ValueTask UpdatePriceTagAsync(IGameRentable gameEntity)
     {
-        if (gameEntity.EntityCategory is GameEntityCategory.Commodity)
+        if (gameEntity.EntityCategory is GameEntityCategory.GroundVehicle or GameEntityCategory.SpaceShip)
         {
             await UpdateVehicleAsync(gameEntity);
         }
@@ -22,7 +22,7 @@ public class UexRentPriceProvider(
     public async ValueTask<Bounds<PriceTag>> GetPriceTagAtAsync(IGameRentable gameEntity, IGameLocation gameLocation)
         => gameEntity.EntityCategory switch
         {
-            GameEntityCategory.Commodity => await GetVehiclePriceTagAsync(gameEntity, gameLocation),
+            GameEntityCategory.GroundVehicle or GameEntityCategory.SpaceShip => await GetVehiclePriceTagAsync(gameEntity, gameLocation),
             _ => Bounds.All(PriceTag.Unknown),
         };
 
