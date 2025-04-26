@@ -39,6 +39,24 @@ public sealed class GameCommodityPricing(
     public Money SalePrice { get; } = salePrice;
 }
 
+public sealed class GameItemPurchasePricing(
+    int id,
+    int ownerId,
+    Money purchasePrice,
+    Money salePrice,
+    GameTerminal terminal
+) : GameEntityPricing<GameItem>(
+    UexApiGameEntityId.Create<GameItemPurchasePricing>(id),
+    UexApiGameEntityId.Create<GameItem>(ownerId),
+    terminal
+)
+{
+    public override GameEntityName Name { get; } = new(new GameEntityName.Name("Item Price"));
+
+    public Money PurchasePrice { get; } = purchasePrice;
+    public Money SalePrice { get; } = salePrice;
+}
+
 public sealed class GameVehiclePurchasePricing(int id, int ownerId, Money price, GameTerminal terminal)
     : GameEntityPricing<GameVehicle>(
         UexApiGameEntityId.Create<GameCommodityPricing>(id),
@@ -59,18 +77,6 @@ public sealed class GameVehicleRentalPricing(int id, int ownerId, Money price, G
     )
 {
     public override GameEntityName Name { get; } = new(new GameEntityName.Name("Vehicle Rent Price"));
-
-    public Money Price { get; } = price;
-}
-
-public sealed class GameItemPurchasePricing(int id, int ownerId, Money price, GameTerminal terminal)
-    : GameEntityPricing<GameItem>(
-        UexApiGameEntityId.Create<GameItemPurchasePricing>(id),
-        UexApiGameEntityId.Create<GameItem>(ownerId),
-        terminal
-    )
-{
-    public override GameEntityName Name { get; } = new(new GameEntityName.Name("Item Price"));
 
     public Money Price { get; } = price;
 }

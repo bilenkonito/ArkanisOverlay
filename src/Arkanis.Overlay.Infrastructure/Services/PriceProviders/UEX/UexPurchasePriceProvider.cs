@@ -42,21 +42,21 @@ public class UexPurchasePriceProvider(
     {
         var prices = await vehiclePriceRepository.GetPurchasePricesForVehicleAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
-        return CreateBoundsFrom(pricesAtLocation, price => price.Price, fallback: PriceTag.MissingFor(gameLocation));
+        return CreateBoundsFrom(pricesAtLocation, price => price.Price, PriceTag.MissingFor(gameLocation));
     }
 
     private async ValueTask<Bounds<PriceTag>> GetItemPriceTagAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
     {
         var prices = await itemPriceRepository.GetPurchasePricesForItemAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
-        return CreateBoundsFrom(pricesAtLocation, price => price.Price, fallback: PriceTag.MissingFor(gameLocation));
+        return CreateBoundsFrom(pricesAtLocation, price => price.PurchasePrice, PriceTag.MissingFor(gameLocation));
     }
 
     private async ValueTask<Bounds<PriceTag>> GetCommodityPriceTagAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
     {
         var prices = await commodityPriceRepository.GetAllForCommodityAsync(gameEntity.Id);
         var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
-        return CreateBoundsFrom(pricesAtLocation, price => price.PurchasePrice, fallback: PriceTag.MissingFor(gameLocation));
+        return CreateBoundsFrom(pricesAtLocation, price => price.PurchasePrice, PriceTag.MissingFor(gameLocation));
     }
 
     private async ValueTask UpdateCommodityAsync(IGamePurchasable gameEntity)
@@ -69,7 +69,7 @@ public class UexPurchasePriceProvider(
     private async ValueTask UpdateItemAsync(IGamePurchasable gameEntity)
     {
         var prices = await itemPriceRepository.GetPurchasePricesForItemAsync(gameEntity.Id);
-        var priceBounds = CreateBoundsFrom(prices, price => price.Price);
+        var priceBounds = CreateBoundsFrom(prices, price => price.PurchasePrice);
         gameEntity.UpdatePurchasePrices(priceBounds);
     }
 

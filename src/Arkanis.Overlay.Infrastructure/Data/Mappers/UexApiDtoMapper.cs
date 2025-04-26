@@ -303,7 +303,8 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(ItemPriceBriefDTO.Id_item), nameof(GameEntityPricing.OwnerId))]
     [MapProperty(nameof(ItemPriceBriefDTO.Date_modified), nameof(GameEntityPricing.UpdatedAt), Use = nameof(MapInternalDate))]
-    [MapProperty(nameof(ItemPriceBriefDTO.Price_buy), nameof(GameItemPurchasePricing.Price), Use = nameof(MapInternalMoney))]
+    [MapProperty(nameof(ItemPriceBriefDTO.Price_buy), nameof(GameItemPurchasePricing.PurchasePrice), Use = nameof(MapInternalMoney))]
+    [MapProperty(nameof(ItemPriceBriefDTO.Price_sell), nameof(GameItemPurchasePricing.SalePrice), Use = nameof(MapInternalMoney))]
     [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.Terminal), Use = nameof(GetTerminalForItemPrice))]
     [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.OwnerId), Use = nameof(GetItemForPrice))]
     private partial GameItemPurchasePricing MapInternal(ItemPriceBriefDTO source);
