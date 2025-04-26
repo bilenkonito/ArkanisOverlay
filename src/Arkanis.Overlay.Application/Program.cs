@@ -2,13 +2,10 @@ namespace Arkanis.Overlay.Application;
 
 using Dapplo.Microsoft.Extensions.Hosting.AppServices;
 using Dapplo.Microsoft.Extensions.Hosting.Wpf;
-using External.UEX;
 using Helpers;
 using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Data.Extensions;
-using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -27,9 +24,7 @@ public static class Program
     {
         var host = Host.CreateDefaultBuilder(args)
             .ConfigureLogging()
-            .ConfigureSingleInstance
-            (
-                options =>
+            .ConfigureSingleInstance(options =>
                 {
                     options.MutexId = $"{{{Constants.InstanceId}}}";
                     options.WhenNotFirstInstance = (environment, logger) =>
@@ -41,9 +36,7 @@ public static class Program
             //? add plugin support later to support modular add-ons?
             // .ConfigurePlugins()
             .ConfigureServices()
-            .ConfigureWpf
-            (
-                options =>
+            .ConfigureWpf(options =>
                 {
                     options.UseApplication<App>();
 
@@ -61,32 +54,24 @@ public static class Program
     }
 
     private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder)
-        => hostBuilder.ConfigureLogging
-        (
-            (hostContext, configLogging) =>
-                configLogging
-                    .AddConfiguration(hostContext.Configuration.GetSection("Logging"))
-                    .AddConsole()
-                    .AddDebug()
-                    .SetMinimumLevel(LogLevel.Debug)
-                    .AddFilter
-                    (
-                        (scope, _)
-                            => scope?.StartsWith("Arkanis") ?? false
-                    )
+        => hostBuilder.ConfigureLogging((hostContext, configLogging) =>
+            configLogging
+                .AddConfiguration(hostContext.Configuration.GetSection("Logging"))
+                .AddConsole()
+                .AddDebug()
+                .SetMinimumLevel(LogLevel.Debug)
+                .AddFilter((scope, _)
+                    => scope?.StartsWith("Arkanis") ?? false
+                )
         );
 
     private static IHostBuilder ConfigureServices(this IHostBuilder builder)
-        => builder.ConfigureServices
-        (
-            (context, services) =>
+        => builder.ConfigureServices((context, services) =>
             {
                 services.AddInfrastructureConfiguration(context.Configuration);
 
                 services.AddWpfBlazorWebView();
-                services.AddMudServices
-                (
-                    config =>
+                services.AddMudServices(config =>
                     {
                         config.SnackbarConfiguration.NewestOnTop = true;
                         config.SnackbarConfiguration.MaxDisplayedSnackbars = 1;
