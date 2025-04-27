@@ -9,6 +9,13 @@ public interface IHydrationServiceFor
 {
     bool Matches<T>(T entity);
 
+    /// <summary>
+    ///     Hydrates the given entity.
+    /// </summary>
+    /// <param name="entity">Any entity instance</param>
+    /// <param name="cancellationToken">A process cancellation token</param>
+    /// <typeparam name="T">A type of the entity provided</typeparam>
+    /// <returns>A process task fulfilled when the entity hydration has been finished</returns>
     Task HydrateAsync<T>(T entity, CancellationToken cancellationToken = default);
 }
 
@@ -26,12 +33,21 @@ public interface IHydrationServiceFor<in T> : IHydrationServiceFor, IDependable
 
     async Task IHydrationServiceFor.HydrateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken)
     {
-        if (entity is T targetEntity)
+        if (entity is T targetEntity && Matches(entity))
         {
-            await WaitUntilReadyAsync(cancellationToken);
             await HydrateAsync(targetEntity, cancellationToken);
         }
     }
 
+    /// <summary>
+    ///     Hydrates the given entity.
+    /// </summary>
+    /// <remarks>
+    ///     It is unnecessary to call <see cref="IDependable.WaitUntilReadyAsync" /> before calling this method.
+    ///     The method must call it internally to ensure validity of the hydrated data.
+    /// </remarks>
+    /// <param name="entity">An entity of targeted type</param>
+    /// <param name="cancellationToken">A process cancellation token</param>
+    /// <returns>A process task fulfilled when the entity hydration has been finished</returns>
     Task HydrateAsync(T entity, CancellationToken cancellationToken = default);
 }

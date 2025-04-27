@@ -2,6 +2,7 @@ namespace Arkanis.Overlay.Infrastructure.Services.Hydration;
 
 using Abstractions;
 using Common.Extensions;
+using Domain.Abstractions.Game;
 using Domain.Models.Game;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,9 +10,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddUexHydrationServices(this IServiceCollection services)
         => services
-            .AddHydrationServiceFor<UexGameCommodityPriceHydrationService, GameCommodity>()
-            .AddHydrationServiceFor<UexGameVehiclePriceHydrationService, GameVehicle>()
-            .AddHydrationServiceFor<UexGameItemPriceHydrationService, GameItem>()
+            .AddHydrationServiceFor<UexGamePurchasableHydrationService, IGamePurchasable>()
+            .AddHydrationServiceFor<UexGameSellableHydrationService, IGameSellable>()
+            .AddHydrationServiceFor<UexGameRentableHydrationService, IGameRentable>()
             .AddHydrationServiceFor<UexGameItemTraitHydrationService, GameItem>()
             .AddSingleton<IGameEntityHydrationService, GameEntityPriceHydrationService>();
 

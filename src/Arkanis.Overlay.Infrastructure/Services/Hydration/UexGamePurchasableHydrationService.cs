@@ -1,15 +1,20 @@
 namespace Arkanis.Overlay.Infrastructure.Services.Hydration;
 
 using Abstractions;
+using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
-using Domain.Models.Game;
 
-public class UexGameItemPriceHydrationService(
+/// <summary>
+///     Hydrates any <see cref="IGamePurchasable" /> entity with all appropriate data points.
+/// </summary>
+/// <param name="dependencyResolver">A dependency resolver</param>
+/// <param name="purchasePriceProvider">A purchase price provider</param>
+public class UexGamePurchasableHydrationService(
     ServiceDependencyResolver dependencyResolver,
     IPurchasePriceProvider purchasePriceProvider
-) : IHydrationServiceFor<GameItem>
+) : IHydrationServiceFor<IGamePurchasable>
 {
-    public async Task HydrateAsync(GameItem entity, CancellationToken cancellationToken = default)
+    public async Task HydrateAsync(IGamePurchasable entity, CancellationToken cancellationToken = default)
         => await purchasePriceProvider.UpdatePriceTagAsync(entity);
 
     public bool IsReady { get; private set; }
