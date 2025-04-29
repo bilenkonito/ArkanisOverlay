@@ -22,9 +22,9 @@ public record UserPreferences
 
     public bool BlurBackground { get; set; }
 
-    public CultureInfo? CustomCultureInfo { get; set; }
+    public CultureInfo? CustomCultureInfo { get; set; } = CultureInfo.GetCultureInfo("en");
 
     public RegionInfo? CustomRegionInfo { get; set; }
 
-    public KeyboardShortcut LaunchShortcut { get; set; } = KeyboardShortcut.None;
+    public KeyboardShortcut LaunchShortcut { get; set; } = new([KeyboardKey.MetaLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyS]);
 }
