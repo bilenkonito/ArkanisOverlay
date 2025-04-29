@@ -11,7 +11,6 @@ public sealed class KeyboardShortcut(IEnumerable<KeyboardKey> pressedKeys) : IEq
     public static readonly KeyboardShortcut None = new([]);
 
     public HashSet<KeyboardKey> PressedKeys { get; } = pressedKeys
-        .Order()
         .Distinct()
         .ToHashSet();
 
@@ -54,6 +53,12 @@ public sealed class KeyboardShortcut(IEnumerable<KeyboardKey> pressedKeys) : IEq
 
         return ReferenceEquals(this, other) || PressedKeys.SetEquals(other.PressedKeys);
     }
+
+    public KeyboardShortcut Copy()
+        => new(PressedKeys);
+
+    public static implicit operator KeyboardShortcut(KeyboardKey key)
+        => new([key]);
 
     public static KeyboardShortcut operator +(KeyboardShortcut shortcut, KeyboardKey key)
         => new(shortcut.PressedKeys.Append(key));

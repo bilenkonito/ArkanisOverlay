@@ -1,0 +1,133 @@
+@using Microsoft.Extensions.Logging
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JsRuntime
+@inject ILogger<QuickAccessContainer> Logger
+
+<FocusRegion @ref="_regionRef">
+    <CascadingValue Value="@(this)" IsFixed>
+        @ChildContent(this)
+    </CascadingValue>
+</FocusRegion>
+
+@code
+{
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _controls;
+    private DotNetObjectReference<QuickAccessContainer>? _selfReference;
+
+    private readonly List<Item> _items = [];
+
+    private FocusRegion? _regionRef;
+
+    [Parameter]
+    [EditorRequired]
+    public required RenderFragment<QuickAccessContainer> ChildContent { get; set; }
+
+    [Parameter]
+    public string QuerySelector { get; set; } = "*";
+
+    public async Task<IAsyncDisposable> RegisterAsync(ElementReference element, EventCallback<ItemInfo> callback)
+    {
+        var item = new Item
+        {
+            Element = element,
+            Callback = callback,
+            DisposeFunc = UnregisterAsync,
+        };
+        lock (_items)
+        {
+            _items.Add(item);
+        }
+
+        if (_controls is not null)
+        {
+            await _controls.InvokeVoidAsync("updateDebounced", 150);
+        }
+
+        return item;
+    }
+
+    private async Task UnregisterAsync(Item item)
+    {
+        lock (_items)
+        {
+            _items.Remove(item);
+        }
+
+        if (_controls is not null)
+        {
+            await _controls.InvokeVoidAsync("updateDebounced", 150);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _selfReference = DotNetObjectReference.Create(this);
+            _module ??= await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                $"./_content/{SharedComponentsModule.Namespace}/{nameof(Shared)}/{nameof(QuickAccessContainer)}.razor.js"
+            );
+            _controls = await _module.InvokeAsync<IJSObjectReference>("QuickAccessContainer.createFor", _selfReference, _regionRef!.ContainerElement, QuerySelector);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_controls is not null)
+        {
+            Logger.LogDebug("Requesting JavaScript logic to update");
+            await _controls.InvokeVoidAsync("updateDebounced", 150);
+        }
+
+        await base.OnParametersSetAsync();
+    }
+
+    [JSInvokable]
+    public async Task OnJsUpdateAsync()
+    {
+        ICollection<Item> items = [];
+        lock (_items)
+        {
+            items = _items.ToList();
+        }
+
+        Logger.LogDebug("Updating {ItemCount} items within this quick access container", items.Count);
+        foreach (var item in items)
+        {
+            var visibilityInfo = await _controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
+            await item.Callback.InvokeAsync(visibilityInfo);
+        }
+    }
+
+    public class Item : IAsyncDisposable
+    {
+        public required Func<Item, Task> DisposeFunc { get; init; }
+        public required ElementReference Element { get; init; }
+        public required EventCallback<ItemInfo> Callback { get; init; }
+
+        public async ValueTask DisposeAsync()
+            => await DisposeFunc(this);
+    }
+
+    public record ItemInfo(int Index, bool IsVisible);
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module != null)
+        {
+            await _module.DisposeAsync();
+        }
+
+        if (_controls != null)
+        {
+            await _controls.DisposeAsync();
+        }
+
+        _selfReference?.Dispose();
+    }
+}
