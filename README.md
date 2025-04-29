@@ -3,8 +3,8 @@
 **A Next-Generation Overlay Companion for Star Citizen**
 Created by **[FatalMerlin](https://discord.com/users/174617873182883841)**,
 co-founder of the in-game organization **[Arkanis Corporation](https://join.arkanis.cc/)**,
-and **[TheKronnY](https://discord.com/users/224580858432978944)
-**, [an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg).
+and **[TheKronnY](https://discord.com/users/224580858432978944)**,
+[an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg).
 
 ---
 
@@ -50,19 +50,21 @@ We're dreaming big — here's what's ahead:
 - [ ] Self-updater and installer support (in progress)
 - [ ] Improved reliability and usability
 - [ ] Configurable display: Overlay layout, themes, behavior
-- [ ] Global keyboard shortcuts for quick access
+- [x] Global keyboard shortcuts for quick access
 
 ### 🔎 Smarter Search
 
-- [ ] Full-text **fuzzy search** across item databases
+- [x] Full-text **fuzzy search** across item databases
 - [ ] Improved result ranking and filtering
 
 ### 🔗 Integrations & Tools
 
 - [ ] [UEX CLI](https://github.com/UEXCorp/UEX-CLI) and MFD screen integration
-- [ ] Embedded tools and
-  services ([SPViewer](https://www.spviewer.eu/), [Erkul](https://www.erkul.games/), [Regolith Co.](https://regolith.rocks/),
-  etc.) — permissions required
+- [ ] Embedded tools and services — permissions required
+    - [ ] [SPViewer](https://www.spviewer.eu/)
+    - [ ] [Erkul](https://www.erkul.games/)
+    - [ ] [Regolith Co.](https://regolith.rocks/)
+    - etc.
 - [ ] API-driven data enrichment from the community (Wiki, JSON exports, etc.)
 
 ### 🔍 OCR-Driven Intelligence
@@ -97,8 +99,8 @@ Key principles:
 
 ## 🧑‍💻 Development Status
 
-> Project Lead: [FatalMerlin](https://github.com/FatalMerlin)
-> Language: C#
+> Project Lead: [FatalMerlin](https://github.com/FatalMerlin)<br>
+> Language: C#<br>
 > Frameworks: **WPF**, **Blazor (WebView2)**
 
 Currently developed in bursts due to time constraints (because, you know… real life).
