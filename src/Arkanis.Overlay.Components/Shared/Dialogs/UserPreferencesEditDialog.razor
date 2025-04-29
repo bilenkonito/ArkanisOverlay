@@ -78,7 +78,9 @@
                 <MudItem xs="12">
                     <KeyboardShortcutInput
                         Label="Overlay toggle shortcut"
-                        @bind-Value="@Preferences.LaunchShortcut"/>
+                        @bind-Value="@Preferences.LaunchShortcut"
+                        @bind-Value:after="@_form!.Validate"
+                        Required/>
                 </MudItem>
             </MudGrid>
         </MudForm>
