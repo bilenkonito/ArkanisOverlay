@@ -52,7 +52,7 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
         }
 
         CurrentPreferences = userPreferences ?? CurrentPreferences;
-        PreferencesChanged?.Invoke(this, CurrentPreferences);
+        await SaveAndApplyUserPreferencesAsync(CurrentPreferences);
     }
 
     public async Task SaveAndApplyUserPreferencesAsync(UserPreferences userPreferences)
