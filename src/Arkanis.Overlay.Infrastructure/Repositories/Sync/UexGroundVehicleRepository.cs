@@ -2,6 +2,7 @@ namespace Arkanis.Overlay.Infrastructure.Repositories.Sync;
 
 using Data.Mappers;
 using Domain.Abstractions;
+using Domain.Abstractions.Services;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 using Local;
@@ -11,10 +12,11 @@ using Services;
 internal class UexGroundVehicleRepository(
     GameEntityRepositoryDependencyResolver dependencyResolver,
     IUexGameApi gameApi,
-    UexGameDataStateProvider stateProvider,
+    UexServiceStateProvider stateProvider,
+    IExternalSyncCacheProvider<UexGroundVehicleRepository> cacheProvider,
     UexApiDtoMapper mapper,
     ILogger<UexGroundVehicleRepository> logger
-) : UexGameEntityRepositoryBase<VehicleDTO, GameGroundVehicle>(stateProvider, mapper, logger)
+) : UexGameEntityRepositoryBase<VehicleDTO, GameGroundVehicle>(stateProvider, cacheProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver.DependsOn<GameCompany>(this);

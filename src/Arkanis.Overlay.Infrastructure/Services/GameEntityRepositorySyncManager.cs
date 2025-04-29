@@ -27,21 +27,19 @@ internal sealed class GameEntityRepositorySyncManager<T>(
 
     private async Task UpdateAsync(bool onlyWhenNecessary, CancellationToken cancellationToken)
     {
-        var gameDataState = await syncRepository.LoadCurrentDataState(cancellationToken);
-        var currentLocalState = await repository.GetDataStateAsync(gameDataState, cancellationToken);
-        if (currentLocalState is AppDataUpToDate && onlyWhenNecessary)
+        var currentDataState = repository.DataState;
+        if (currentDataState is not DataMissing and DataCached { RefreshRequired: true } && onlyWhenNecessary)
         {
-            // TODO: Initialize mapper cache if empty
-            logger.LogDebug("Current data of {EntityType} repository are up to date: {AppDataState}", typeof(T), currentLocalState);
+            logger.LogDebug("Current data of {EntityType} repository are up to date: {AppDataState}", typeof(T), currentDataState);
             return;
         }
 
-        var syncData = await syncRepository.GetAllAsync(cancellationToken);
+        var syncData = await syncRepository.GetAllAsync(currentDataState, cancellationToken);
         logger.LogDebug(
-            "Updating data of {EntityType} repository: {CurrentAppDataState} -> {NewAppDataState}",
+            "Updating data of {EntityType} repository: {CurrentAppDataState} using {NewAppDataState}",
             typeof(T),
-            currentLocalState,
-            syncData.DataState
+            currentDataState,
+            syncData
         );
 
         await repository.UpdateAllAsync(syncData, cancellationToken);

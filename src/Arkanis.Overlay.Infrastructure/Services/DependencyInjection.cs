@@ -19,11 +19,12 @@ public static class DependencyInjection
             .AddSingleton<IPriceProvider, PriceProviderAggregate>()
             .AddUexPriceProviderServices();
 
+    public static IServiceCollection AddDatabaseExternalSyncCacheProviders(this IServiceCollection services)
+        => services
+            .AddSingleton(typeof(IExternalSyncCacheProvider<>), typeof(ExternalSyncDatabaseCacheProvider<>));
+
     public static IServiceCollection AddInMemorySearchServices(this IServiceCollection services)
         => services.AddScoped<ISearchService, InMemorySearchService>();
-
-    public static IServiceCollection AddEndpointManagerHostedService(this IServiceCollection services)
-        => services.AddHostedService<EndpointManager>();
 
     public static IServiceCollection AddUserPreferencesFileManagerServices(this IServiceCollection services)
         => services

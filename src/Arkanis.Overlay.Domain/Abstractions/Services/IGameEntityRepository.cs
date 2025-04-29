@@ -8,7 +8,10 @@ using Models.Game;
 ///     A repository interface matching for all game entities.
 ///     Necessary for <see cref="IGameEntityAggregateRepository" />.
 /// </summary>
-public interface IGameEntityRepository : IGameEntityReadOnlyRepository<IGameEntity>, IDependable;
+public interface IGameEntityRepository : IGameEntityReadOnlyRepository<IGameEntity>, IDependable
+{
+    Type EntityType { get; }
+}
 
 /// <summary>
 ///     A generic repository for a specific game entity type.
@@ -18,7 +21,7 @@ public interface IGameEntityRepository : IGameEntityReadOnlyRepository<IGameEnti
 public interface IGameEntityRepository<T> : IGameEntityReadOnlyRepository<T>, IDependable
     where T : class, IGameEntity
 {
-    ValueTask<AppDataState> GetDataStateAsync(GameDataState gameDataState, CancellationToken cancellationToken = default);
+    InternalDataState DataState { get; }
 
     Task UpdateAllAsync(GameEntitySyncData<T> syncData, CancellationToken cancellationToken = default);
 }

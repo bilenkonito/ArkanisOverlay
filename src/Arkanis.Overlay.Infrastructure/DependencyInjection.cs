@@ -18,16 +18,13 @@ public static class DependencyInjection
             .AddSingleton<ServiceDependencyResolver>()
             .AddHostedService<InitializeServicesHostedService>()
             .AddAllUexApiClients()
-            .AddUexDatabaseServices()
+            .AddOverlaySqliteDatabaseServices()
+            .AddDatabaseExternalSyncCacheProviders()
             .AddInMemorySearchServices()
             .AddUexInMemoryGameEntityServices()
             .AddUserPreferencesFileManagerServices()
             .AddUexPriceProviders()
             .AddUexHydrationServices();
-
-    public static IServiceCollection AddInfrastructureHostedServices(this IServiceCollection services)
-        => services
-            .AddEndpointManagerHostedService();
 
     public static IServiceCollection AddInfrastructureConfiguration(this IServiceCollection services, IConfiguration configuration)
         => services

@@ -15,6 +15,7 @@ public class LiveUexSyncRepositoryTestFixture : TestBedFixture
     protected override void AddServices(IServiceCollection services, IConfiguration? configuration)
         => services
             .AddHttpClient()
+            .AddSingleton(typeof(IExternalSyncCacheProvider<>), typeof(NoCacheProvider<>))
             .AddSingleton(typeof(IGameEntityRepository<>), typeof(GameEntityRepositoryMock<>))
             .AddSingleton<IGameEntityHydrationService, NoHydrationMockService>()
             .AddAllUexApiClients()

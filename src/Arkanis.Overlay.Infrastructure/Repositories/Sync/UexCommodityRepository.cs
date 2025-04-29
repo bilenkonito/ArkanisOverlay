@@ -1,6 +1,7 @@
 namespace Arkanis.Overlay.Infrastructure.Repositories.Sync;
 
 using Data.Mappers;
+using Domain.Abstractions.Services;
 using Domain.Models.Game;
 using External.UEX.Abstractions;
 using Local;
@@ -8,10 +9,11 @@ using Microsoft.Extensions.Logging;
 
 internal class UexCommodityRepository(
     IUexCommoditiesApi commoditiesApi,
-    UexGameDataStateProvider stateProvider,
+    UexServiceStateProvider stateProvider,
+    IExternalSyncCacheProvider<UexCommodityRepository> cacheProvider,
     UexApiDtoMapper mapper,
     ILogger<UexCommodityRepository> logger
-) : UexGameEntityRepositoryBase<CommodityDTO, GameCommodity>(stateProvider, mapper, logger)
+) : UexGameEntityRepositoryBase<CommodityDTO, GameCommodity>(stateProvider, cacheProvider, mapper, logger)
 {
     protected override async Task<UexApiResponse<ICollection<CommodityDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
