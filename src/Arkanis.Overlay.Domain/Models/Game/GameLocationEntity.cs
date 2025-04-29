@@ -7,6 +7,8 @@ using Search;
 public abstract class GameLocationEntity(UexApiGameEntityId id, GameLocationEntity? parent)
     : GameEntity(id, GameEntityCategory.Location), IGameLocation
 {
+    public static readonly GameLocationEntity Unknown = new UnknownLocation();
+
     public GameLocationEntity? Parent { get; } = parent;
 
     public HashSet<UexApiGameEntityId> ParentIds { get; } = parent is not null
@@ -40,5 +42,12 @@ public abstract class GameLocationEntity(UexApiGameEntityId id, GameLocationEnti
         }
 
         yield return this;
+    }
+
+    private sealed class UnknownLocation() : GameLocationEntity(UexApiGameEntityId.Create<GameLocationEntity>(0), null)
+    {
+        public static GameLocationEntity Instance { get; } = new UnknownLocation();
+
+        public override GameEntityName Name { get; } = new(new GameEntityName.NameWithCode("Unknown Location", "UNK?"));
     }
 }

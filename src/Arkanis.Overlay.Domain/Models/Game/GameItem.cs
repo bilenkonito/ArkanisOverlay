@@ -7,7 +7,7 @@ using Search;
 using Trade;
 
 public class GameItem(int id, string fullName, GameCompany manufacturer, GameProductCategory category)
-    : GameEntity(UexApiGameEntityId.Create<GameItem>(id), GameEntityCategory.Item), IGameManufactured, IGamePurchasable
+    : GameEntity(UexApiGameEntityId.Create<GameItem>(id), GameEntityCategory.Item), IGameManufactured, IGameTradable
 {
     public TraitCollection Traits { get; } = new();
 
@@ -35,13 +35,18 @@ public class GameItem(int id, string fullName, GameCompany manufacturer, GamePro
             new GameEntityName.Name(fullName)
         );
 
-    public Bounds<PriceTag> LatestPurchasePrices { get; private set; } = new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
-
     public GameTerminalType TerminalType
         => GameTerminalType.Item;
 
+    public Bounds<PriceTag> LatestPurchasePrices { get; private set; } = new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
+
+    public Bounds<PriceTag> LatestSalePrices { get; private set; } = new(PriceTag.Unknown, PriceTag.Unknown, PriceTag.Unknown);
+
     public void UpdatePurchasePrices(Bounds<PriceTag> newPrices)
         => LatestPurchasePrices = newPrices;
+
+    public void UpdateSalePrices(Bounds<PriceTag> newPrices)
+        => LatestSalePrices = newPrices;
 
     public class TraitCollection : IEnumerable<GameItemTrait>
     {

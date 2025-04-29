@@ -11,7 +11,7 @@ public static class DependencyInjection
         => services
             .AddSingleton<IPriceProvider, FakePriceProvider>()
             .AddSingleton<IPurchasePriceProvider>(provider => provider.GetRequiredService<IPriceProvider>())
-            .AddSingleton<ISellPriceProvider>(provider => provider.GetRequiredService<IPriceProvider>())
+            .AddSingleton<ISalePriceProvider>(provider => provider.GetRequiredService<IPriceProvider>())
             .AddSingleton<IRentPriceProvider>(provider => provider.GetRequiredService<IPriceProvider>());
 
     public static IServiceCollection AddUexPriceProviders(this IServiceCollection services)

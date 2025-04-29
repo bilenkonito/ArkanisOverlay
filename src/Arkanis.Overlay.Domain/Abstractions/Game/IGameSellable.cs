@@ -6,8 +6,8 @@ using Models.Trade;
 
 public interface IGameSellable : IGameEntity
 {
-    Bounds<PriceTag> LatestSellPrices { get; }
+    Bounds<PriceTag> LatestSalePrices { get; }
     GameTerminalType TerminalType { get; }
 
-    void UpdateSellPrices(Bounds<PriceTag> newPrices);
+    void UpdateSalePrices(Bounds<PriceTag> newPrices);
 }

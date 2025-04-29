@@ -1,85 +1,36 @@
 namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders.UEX;
 
 using Common;
-using Domain.Abstractions.Game;
 using Domain.Models;
 using Domain.Models.Game;
 using Domain.Models.Trade;
-using External.UEX.Abstractions;
 using NodaMoney;
 
 public abstract class UexPriceProviderBase : SelfInitializableServiceBase
 {
-    private static readonly IGameLocation FakeLocation = new GameStarSystem(0, "FakeLocation", "FAKE");
-
-    protected Bounds<PriceTag> CreateBoundFrom(ICollection<CommodityPriceBriefDTO>? commodityPrices, Func<CommodityPriceBriefDTO?, double?> priceSelector)
-        => CreateBoundFrom(commodityPrices ?? [], priceSelector, GetLocationFor, GetUpdateTimeFor);
-
-    protected Bounds<PriceTag> CreateBoundFrom(ICollection<ItemPriceBriefDTO>? itemPrices, Func<ItemPriceBriefDTO?, double?> priceSelector)
-        => CreateBoundFrom(itemPrices ?? [], priceSelector, GetLocationFor, GetUpdateTimeFor);
-
-    protected Bounds<PriceTag> CreateBoundFrom(
-        ICollection<VehiclePurchasePriceBriefDTO>? vehiclePrices,
-        Func<VehiclePurchasePriceBriefDTO?, double?> priceSelector
-    )
-        => CreateBoundFrom(vehiclePrices ?? [], priceSelector, GetLocationFor, GetUpdateTimeFor);
-
-    protected Bounds<PriceTag> CreateBoundFrom(ICollection<VehicleRentalPriceBriefDTO>? vehiclePrices, Func<VehicleRentalPriceBriefDTO?, double?> priceSelector)
-        => CreateBoundFrom(vehiclePrices ?? [], priceSelector, GetLocationFor, GetUpdateTimeFor);
-
-    private static Bounds<PriceTag> CreateBoundFrom<T>(
-        ICollection<T> prices,
-        Func<T?, double?> priceSelector,
-        Func<T?, IGameLocation> resolveLocation,
-        Func<T?, DateTimeOffset> resolveUpdateTime
-    )
+    protected static Bounds<PriceTag> CreateBoundsFrom<T>(ICollection<T> prices, Func<T, Money> priceSelector, PriceTag? fallback = null)
+        where T : GameEntityPricing
     {
-        var minDto = prices.Where(dto => priceSelector(dto) > 0).MinBy(priceSelector);
-        var minPrice = new Money(priceSelector(minDto) ?? 0, ApplicationConstants.GameCurrency);
+        var minDto = prices.Where(dto => priceSelector(dto).Amount > 0).MinBy(priceSelector);
+        var maxDto = prices.Where(dto => priceSelector(dto).Amount > 0).MaxBy(priceSelector);
 
-        var maxDto = prices.Where(dto => priceSelector(dto) > 0).MaxBy(priceSelector);
-        var maxPrice = new Money(priceSelector(maxDto) ?? 0, ApplicationConstants.GameCurrency);
+        decimal? avgValue = maxDto is not null
+            ? prices.Select(priceSelector)
+                .Where(money => money.Amount > 0)
+                .Average(money => money.Amount)
+            : null;
 
-        var avgValue = prices.Where(dto => priceSelector(dto) > 0).Average(priceSelector);
-        var avgPrice = new Money(avgValue ?? 0, ApplicationConstants.GameCurrency);
-
+        fallback ??= PriceTag.Unknown;
         return new Bounds<PriceTag>(
             minDto is not null
-                ? new KnownPriceTag(minPrice, resolveLocation(minDto), resolveUpdateTime(minDto))
-                : PriceTag.Unknown,
+                ? new KnownPriceTag(priceSelector(minDto), minDto.Terminal, minDto.UpdatedAt)
+                : fallback,
             maxDto is not null
-                ? new KnownPriceTag(maxPrice, resolveLocation(maxDto), resolveUpdateTime(maxDto))
-                : PriceTag.Unknown,
+                ? new KnownPriceTag(priceSelector(maxDto), maxDto.Terminal, maxDto.UpdatedAt)
+                : fallback,
             avgValue is not null
-                ? new AggregatePriceTag(avgPrice)
-                : PriceTag.Unknown
+                ? new AggregatePriceTag(new Money(avgValue.Value, ApplicationConstants.GameCurrency))
+                : fallback
         );
     }
-
-    private IGameLocation GetLocationFor(CommodityPriceBriefDTO? priceDTO)
-        => FakeLocation;
-
-    private IGameLocation GetLocationFor(ItemPriceBriefDTO? priceDTO)
-        => FakeLocation;
-
-    private IGameLocation GetLocationFor(VehiclePurchasePriceBriefDTO? priceDTO)
-        => FakeLocation;
-
-    private IGameLocation GetLocationFor(VehicleRentalPriceBriefDTO? priceDTO)
-        => FakeLocation;
-
-    private DateTimeOffset GetUpdateTimeFor(CommodityPriceBriefDTO? priceDTO)
-        => CreateDateTimeFromUnixTimestamp(priceDTO?.Date_modified ?? 0);
-
-    private DateTimeOffset GetUpdateTimeFor(ItemPriceBriefDTO? priceDTO)
-        => CreateDateTimeFromUnixTimestamp(priceDTO?.Date_modified ?? 0);
-
-    private DateTimeOffset GetUpdateTimeFor(VehiclePurchasePriceBriefDTO? priceDTO)
-        => CreateDateTimeFromUnixTimestamp(priceDTO?.Date_modified ?? 0);
-
-    private DateTimeOffset GetUpdateTimeFor(VehicleRentalPriceBriefDTO? priceDTO)
-        => CreateDateTimeFromUnixTimestamp(priceDTO?.Date_modified ?? 0);
-
-    private static DateTimeOffset CreateDateTimeFromUnixTimestamp(double updateTimestamp)
-        => DateTimeOffset.FromUnixTimeSeconds((long)updateTimestamp);
 }

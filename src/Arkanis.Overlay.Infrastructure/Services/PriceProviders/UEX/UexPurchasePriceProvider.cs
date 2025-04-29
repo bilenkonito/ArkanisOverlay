@@ -2,98 +2,78 @@ namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders.UEX;
 
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
-using Domain.Enums;
+using Domain.Models;
 using Domain.Models.Game;
 using Domain.Models.Trade;
-using External.UEX.Abstractions;
 
 public class UexPurchasePriceProvider(
-    IUexCommoditiesApi commoditiesApi,
-    IUexItemsApi itemsApi,
-    IUexVehiclesApi vehiclesApi
+    ServiceDependencyResolver resolver,
+    IGameCommodityPricingRepository commodityPriceRepository,
+    IGameItemPurchasePricingRepository itemPriceRepository,
+    IGameVehiclePurchasePricingRepository vehiclePriceRepository
 ) : UexPriceProviderBase, IPurchasePriceProvider
 {
-    private Dictionary<UexApiGameEntityId, ICollection<CommodityPriceBriefDTO>> _commodityPrices = [];
-    private Dictionary<UexApiGameEntityId, ICollection<ItemPriceBriefDTO>> _itemPrices = [];
-    private Dictionary<UexApiGameEntityId, ICollection<VehiclePurchasePriceBriefDTO>> _vehiclePrices = [];
+    public async ValueTask UpdatePriceTagAsync(IGamePurchasable gameEntity)
+        => await (gameEntity switch
+        {
+            GameCommodity commodity => UpdateCommodityAsync(commodity),
+            GameItem item => UpdateItemAsync(item),
+            GameVehicle item => UpdateVehicleAsync(item),
+            _ => ValueTask.CompletedTask,
+        });
 
-    public ValueTask UpdatePriceTagAsync(IGamePurchasable gameEntity)
+    public async ValueTask<Bounds<PriceTag>> GetPriceTagAtAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
+        => gameEntity switch
+        {
+            GameCommodity commodity => await GetCommodityPriceTagAsync(commodity, gameLocation),
+            GameItem item => await GetItemPriceTagAsync(item, gameLocation),
+            GameVehicle vehicle => await GetVehiclePriceTagAsync(vehicle, gameLocation),
+            _ => Bounds.All(PriceTag.Unknown),
+        };
+
+    private async ValueTask<Bounds<PriceTag>> GetVehiclePriceTagAsync(GameVehicle gameEntity, IGameLocation gameLocation)
     {
-        if (gameEntity.EntityCategory is GameEntityCategory.Commodity)
-        {
-            UpdateCommodity(gameEntity);
-        }
-        else if (gameEntity.EntityCategory is GameEntityCategory.Item)
-        {
-            UpdateItem(gameEntity);
-        }
-        else if (gameEntity.EntityCategory is GameEntityCategory.GroundVehicle or GameEntityCategory.SpaceShip)
-        {
-            UpdateVehicle(gameEntity);
-        }
-
-        return ValueTask.CompletedTask;
+        var prices = await vehiclePriceRepository.GetPurchasePricesForVehicleAsync(gameEntity.Id);
+        var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
+        return CreateBoundsFrom(pricesAtLocation, price => price.Price, PriceTag.MissingFor(gameLocation));
     }
 
-    public ValueTask<PriceTag> GetPriceTagAtAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
-        => ValueTask.FromResult(PriceTag.Unknown);
-
-    private void UpdateCommodity(IGamePurchasable gameEntity)
+    private async ValueTask<Bounds<PriceTag>> GetItemPriceTagAsync(GameItem gameEntity, IGameLocation gameLocation)
     {
-        if (!_commodityPrices.TryGetValue(gameEntity.Id, out var prices))
-        {
-            return;
-        }
+        var prices = await itemPriceRepository.GetPurchasePricesForItemAsync(gameEntity.Id);
+        var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
+        return CreateBoundsFrom(pricesAtLocation, price => price.PurchasePrice, PriceTag.MissingFor(gameLocation));
+    }
 
-        var priceBounds = CreateBoundFrom(prices, price => price?.Price_buy);
+    private async ValueTask<Bounds<PriceTag>> GetCommodityPriceTagAsync(GameCommodity gameEntity, IGameLocation gameLocation)
+    {
+        var prices = await commodityPriceRepository.GetAllForCommodityAsync(gameEntity.Id);
+        var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
+        return CreateBoundsFrom(pricesAtLocation, price => price.PurchasePrice, PriceTag.MissingFor(gameLocation));
+    }
+
+    private async ValueTask UpdateCommodityAsync(GameCommodity gameEntity)
+    {
+        var prices = await commodityPriceRepository.GetAllForCommodityAsync(gameEntity.Id);
+        var priceBounds = CreateBoundsFrom(prices, price => price.PurchasePrice);
         gameEntity.UpdatePurchasePrices(priceBounds);
     }
 
-    private void UpdateItem(IGamePurchasable gameEntity)
+    private async ValueTask UpdateItemAsync(GameItem gameEntity)
     {
-        if (!_itemPrices.TryGetValue(gameEntity.Id, out var prices))
-        {
-            return;
-        }
-
-        var priceBounds = CreateBoundFrom(prices, price => price?.Price_buy);
+        var prices = await itemPriceRepository.GetPurchasePricesForItemAsync(gameEntity.Id);
+        var priceBounds = CreateBoundsFrom(prices, price => price.PurchasePrice);
         gameEntity.UpdatePurchasePrices(priceBounds);
     }
 
-    private void UpdateVehicle(IGamePurchasable gameEntity)
+    private async ValueTask UpdateVehicleAsync(GameVehicle gameEntity)
     {
-        if (!_vehiclePrices.TryGetValue(gameEntity.Id, out var prices))
-        {
-            return;
-        }
-
-        var priceBounds = CreateBoundFrom(prices, price => price?.Price_buy);
+        var prices = await vehiclePriceRepository.GetPurchasePricesForVehicleAsync(gameEntity.Id);
+        var priceBounds = CreateBoundsFrom(prices, price => price.Price);
         gameEntity.UpdatePurchasePrices(priceBounds);
     }
 
     protected override async Task InitializeAsyncCore(CancellationToken cancellationToken)
-    {
-        if (this is { _commodityPrices.Count: > 0 } or { _vehiclePrices.Count: > 0 } or { _itemPrices.Count: > 0 })
-        {
-            return;
-        }
-
-        var itemPricesResponse = await itemsApi.GetItemsPricesAllAsync(cancellationToken).ConfigureAwait(false);
-        var itemPrices = itemPricesResponse.Result.Data ?? [];
-        _itemPrices = itemPrices
-            .GroupBy(x => UexApiGameEntityId.Create<GameItem>(x.Id_item ?? 0))
-            .ToDictionary(UexApiGameEntityId (x) => x.Key, ICollection<ItemPriceBriefDTO> (x) => x.ToArray());
-
-        var commodityPricesResponse = await commoditiesApi.GetCommoditiesPricesAllAsync(cancellationToken).ConfigureAwait(false);
-        var commodityPrices = commodityPricesResponse.Result.Data ?? [];
-        _commodityPrices = commodityPrices
-            .GroupBy(x => UexApiGameEntityId.Create<GameCommodity>(x.Id_commodity ?? 0))
-            .ToDictionary(UexApiGameEntityId (x) => x.Key, ICollection<CommodityPriceBriefDTO> (x) => x.ToArray());
-
-        var vehiclePricesResponse = await vehiclesApi.GetVehiclesPurchasesPricesAllAsync(cancellationToken).ConfigureAwait(false);
-        var vehiclePrices = vehiclePricesResponse.Result.Data ?? [];
-        _vehiclePrices = vehiclePrices
-            .GroupBy(x => UexApiGameEntityId.Create<GameVehicle>(x.Id_vehicle ?? 0))
-            .ToDictionary(UexApiGameEntityId (x) => x.Key, ICollection<VehiclePurchasePriceBriefDTO> (x) => x.ToArray());
-    }
+        => await resolver.DependsOn(this, commodityPriceRepository, itemPriceRepository, vehiclePriceRepository)
+            .WaitUntilReadyAsync(cancellationToken);
 }

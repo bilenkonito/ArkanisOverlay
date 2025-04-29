@@ -1,5 +1,4 @@
 ﻿using static Windows.Win32.PInvoke;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace Arkanis.Overlay.Application.UI.Windows;
 
@@ -94,18 +93,14 @@ public partial class OverlayWindow
             (_, hWnd) => Dispatcher.Invoke(() => { _currentWindowHWnd = hWnd; });
         _windowTracker.WindowLost +=
             (_, _) => Dispatcher.Invoke(() => { _currentWindowHWnd = HWND.Null; });
-        _windowTracker.WindowPositionChanged += (_, position) => Dispatcher.Invoke
-        (
-            () =>
+        _windowTracker.WindowPositionChanged += (_, position) => Dispatcher.Invoke(() =>
             {
                 _logger.LogDebug("Overlay: WindowPositionChanged: {position}", position.ToString());
                 Top = position.Y;
                 Left = position.X;
             }
         );
-        _windowTracker.WindowSizeChanged += (_, size) => Dispatcher.Invoke
-        (
-            () =>
+        _windowTracker.WindowSizeChanged += (_, size) => Dispatcher.Invoke(() =>
             {
                 _logger.LogDebug("Overlay: WindowSizeChanged: {size}", size.ToString());
                 Width = size.Width;
@@ -113,9 +108,7 @@ public partial class OverlayWindow
             }
         );
 
-        _globalHotkey.TabKeyPressed += (_, _) => Dispatcher.Invoke
-        (
-            () =>
+        _globalHotkey.TabKeyPressed += (_, _) => Dispatcher.Invoke(() =>
             {
                 Console.WriteLine("Overlay: HotKeyPressed");
 

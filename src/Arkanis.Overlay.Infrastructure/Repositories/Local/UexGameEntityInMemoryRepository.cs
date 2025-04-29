@@ -64,13 +64,13 @@ public class UexGameEntityInMemoryRepository<T>(ILogger<UexGameEntityInMemoryRep
             logger.LogInformation(
                 "Repository updated successfully to {CurrentDataState} with {EntityCount} entities cached until {CachedUntil}",
                 CurrentDataState,
-                CachedUntil,
-                Entities.Count
+                Entities.Count,
+                CachedUntil
             );
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to update repository");
+            logger.LogError(ex, "Failed to update repository of {EntityType}", typeof(T).Name);
             _initialization.TrySetException(ex);
             throw;
         }

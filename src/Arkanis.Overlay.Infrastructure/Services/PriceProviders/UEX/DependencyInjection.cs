@@ -12,9 +12,9 @@ public static class DependencyInjection
             .AddSingleton<UexPurchasePriceProvider>()
             .Alias<IPurchasePriceProvider, UexPurchasePriceProvider>()
             .Alias<ISelfInitializable, UexPurchasePriceProvider>()
-            .AddSingleton<UexSellPriceProvider>()
-            .Alias<ISellPriceProvider, UexSellPriceProvider>()
-            .Alias<ISelfInitializable, UexSellPriceProvider>()
+            .AddSingleton<UexSalePriceProvider>()
+            .Alias<ISalePriceProvider, UexSalePriceProvider>()
+            .Alias<ISelfInitializable, UexSalePriceProvider>()
             .AddSingleton<UexRentPriceProvider>()
             .Alias<IRentPriceProvider, UexRentPriceProvider>()
             .Alias<ISelfInitializable, UexRentPriceProvider>();

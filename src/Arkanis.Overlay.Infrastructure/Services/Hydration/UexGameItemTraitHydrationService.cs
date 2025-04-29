@@ -4,6 +4,10 @@ using Abstractions;
 using Domain.Abstractions.Services;
 using Domain.Models.Game;
 
+/// <summary>
+///     Links any related <see cref="GameItemTrait"/> entities to the provided <see cref="GameItem"/> entity.
+/// </summary>
+/// <param name="traitRepository">A specialised item trait repository</param>
 public class UexGameItemTraitHydrationService(IGameItemTraitRepository traitRepository) : IHydrationServiceFor<GameItem>
 {
     public async Task HydrateAsync(GameItem entity, CancellationToken cancellationToken = default)

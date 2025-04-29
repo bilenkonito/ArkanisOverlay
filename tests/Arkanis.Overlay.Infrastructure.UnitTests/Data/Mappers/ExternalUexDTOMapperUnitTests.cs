@@ -61,7 +61,7 @@ public class ExternalUexDTOMapperUnitTests
         await mapper.ToGameEntityAsync(Moon);
 
         var source = OutpostCommodityTerminal;
-        await Should.ThrowAsync<ObjectMappingMissingDependentObjectException>(async () => await mapper.ToGameEntityAsync(source));
+        await Should.ThrowAsync<ObjectMappingMissingLinkedRelatedObjectException>(async () => await mapper.ToGameEntityAsync(source));
     }
 
     [Fact]
@@ -93,6 +93,6 @@ public class ExternalUexDTOMapperUnitTests
         await mapper.ToGameEntityAsync(Moon);
 
         var source = Item;
-        await Should.ThrowAsync<ObjectMappingMissingDependentObjectException>(async () => await mapper.ToGameEntityAsync(source));
+        await Should.ThrowAsync<ObjectMappingMissingLinkedRelatedObjectException>(async () => await mapper.ToGameEntityAsync(source));
     }
 }

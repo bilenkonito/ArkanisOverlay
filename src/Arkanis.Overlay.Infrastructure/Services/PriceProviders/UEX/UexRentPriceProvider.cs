@@ -2,50 +2,44 @@ namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders.UEX;
 
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
-using Domain.Enums;
+using Domain.Models;
 using Domain.Models.Game;
 using Domain.Models.Trade;
-using External.UEX.Abstractions;
 
-public class UexRentPriceProvider(IUexVehiclesApi vehiclesApi) : UexPriceProviderBase, IRentPriceProvider
+public class UexRentPriceProvider(
+    ServiceDependencyResolver resolver,
+    IGameVehicleRentalPricingRepository vehiclePriceRepository
+) : UexPriceProviderBase, IRentPriceProvider
 {
-    private Dictionary<UexApiGameEntityId, ICollection<VehicleRentalPriceBriefDTO>> _vehiclePrices = [];
-
-    public ValueTask UpdatePriceTagAsync(IGameRentable gameEntity)
-    {
-        if (gameEntity.EntityCategory is GameEntityCategory.Commodity)
+    public async ValueTask UpdatePriceTagAsync(IGameRentable gameEntity)
+        => await (gameEntity switch
         {
-            UpdateVehicle(gameEntity);
-        }
+            GameVehicle item => UpdateVehicleAsync(item),
+            _ => ValueTask.CompletedTask,
+        });
 
-        return ValueTask.CompletedTask;
+    public async ValueTask<Bounds<PriceTag>> GetPriceTagAtAsync(IGameRentable gameEntity, IGameLocation gameLocation)
+        => gameEntity switch
+        {
+            GameVehicle vehicle => await GetVehiclePriceTagAsync(vehicle, gameLocation),
+            _ => Bounds.All(PriceTag.Unknown),
+        };
+
+    private async ValueTask<Bounds<PriceTag>> GetVehiclePriceTagAsync(GameVehicle gameEntity, IGameLocation gameLocation)
+    {
+        var prices = await vehiclePriceRepository.GetRentalPricesForVehicleAsync(gameEntity.Id);
+        var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
+        return CreateBoundsFrom(pricesAtLocation, price => price.Price, fallback: PriceTag.MissingFor(gameLocation));
     }
 
-    public ValueTask<PriceTag> GetPriceTagAtAsync(IGameRentable gameEntity, IGameLocation gameLocation)
-        => ValueTask.FromResult(PriceTag.Unknown);
-
-    private void UpdateVehicle(IGameRentable gameEntity)
+    private async ValueTask UpdateVehicleAsync(GameVehicle gameEntity)
     {
-        if (!_vehiclePrices.TryGetValue(gameEntity.Id, out var prices))
-        {
-            return;
-        }
-
-        var priceBounds = CreateBoundFrom(prices, price => price?.Price_rent);
+        var prices = await vehiclePriceRepository.GetRentalPricesForVehicleAsync(gameEntity.Id);
+        var priceBounds = CreateBoundsFrom(prices, price => price.Price);
         gameEntity.UpdateRentPrices(priceBounds);
     }
 
     protected override async Task InitializeAsyncCore(CancellationToken cancellationToken)
-    {
-        if (this is { _vehiclePrices.Count: > 0 })
-        {
-            return;
-        }
-
-        var vehiclePricesResponse = await vehiclesApi.GetVehiclesRentalsPricesAllAsync(cancellationToken).ConfigureAwait(false);
-        var vehiclePrices = vehiclePricesResponse.Result.Data ?? [];
-        _vehiclePrices = vehiclePrices
-            .GroupBy(x => UexApiGameEntityId.Create<GameVehicle>(x.Id_vehicle ?? 0))
-            .ToDictionary(UexApiGameEntityId (x) => x.Key, ICollection<VehicleRentalPriceBriefDTO> (x) => x.ToArray());
-    }
+        => await resolver.DependsOn(this, vehiclePriceRepository)
+            .WaitUntilReadyAsync(cancellationToken);
 }
