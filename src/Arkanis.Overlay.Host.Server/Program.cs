@@ -26,7 +26,6 @@ builder.Services
     .AddKeyboardProxyService()
     .AddServerOverlayControls()
     .AddInfrastructure()
-    .AddHostedService<UserPreferencesWebConfigurator>()
     .AddInfrastructureConfiguration(builder.Configuration);
 
 var app = builder.Build();

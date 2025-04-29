@@ -9,7 +9,7 @@ using Domain.Models.Keyboard;
 using Domain.Options;
 using Microsoft.Extensions.Logging;
 
-public class UserPreferencesJsonFileManager(IOverlayControls overlayControls, ILogger<UserPreferencesJsonFileManager> logger) : IUserPreferencesManager
+public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManager> logger) : IUserPreferencesManager
 {
     private readonly JsonSerializerOptions _options = new()
     {
