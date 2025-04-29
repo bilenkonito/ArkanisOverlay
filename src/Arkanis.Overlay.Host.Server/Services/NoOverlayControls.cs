@@ -9,4 +9,8 @@ public class NoOverlayControls : IOverlayControls
 
     public ValueTask HideAsync()
         => ValueTask.CompletedTask;
+
+    public void SetBlurEnabled(bool isEnabled)
+    {
+    }
 }

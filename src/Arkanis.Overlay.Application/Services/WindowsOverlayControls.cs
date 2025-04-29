@@ -1,9 +1,10 @@
 namespace Arkanis.Overlay.Application.Services;
 
 using Domain.Abstractions.Services;
+using Helpers;
 using UI.Windows;
 
-public class WindowsOverlayControls : IOverlayControls
+public class WindowsOverlayControls(BlurHelper blurHelper) : IOverlayControls
 {
     public ValueTask ShowAsync()
     {
@@ -15,5 +16,9 @@ public class WindowsOverlayControls : IOverlayControls
     {
         OverlayWindow.Instance?.Hide();
         return ValueTask.CompletedTask;
+    }
+
+    public void SetBlurEnabled(bool isEnabled)
+    {
     }
 }

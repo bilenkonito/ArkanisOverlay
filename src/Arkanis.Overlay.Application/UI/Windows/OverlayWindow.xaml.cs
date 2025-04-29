@@ -6,11 +6,12 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Domain.Abstractions.Services;
+using Domain.Options;
 using global::Windows.Win32.Foundation;
 using global::Windows.Win32.UI.WindowsAndMessaging;
 using Helpers;
 using Microsoft.AspNetCore.Components.WebView;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Web.WebView2.Core;
 using Workers;
@@ -24,13 +25,14 @@ public partial class OverlayWindow
     private readonly GlobalHotkey _globalHotkey;
 
     private readonly ILogger _logger;
+    private readonly IUserPreferencesProvider _preferencesProvider;
     private readonly WindowTracker _windowTracker;
 
     private HWND _currentWindowHWnd = HWND.Null;
 
-
     public OverlayWindow(
         ILogger<OverlayWindow> logger,
+        IUserPreferencesProvider preferencesProvider,
         WindowTracker windowTracker,
         GlobalHotkey globalHotkey,
         BlurHelper blurHelper
@@ -39,17 +41,21 @@ public partial class OverlayWindow
         Instance = this;
 
         _logger = logger;
+        _preferencesProvider = preferencesProvider;
         _windowTracker = windowTracker;
         _globalHotkey = globalHotkey;
         _blurHelper = blurHelper;
 
         SetupWorkerEventListeners();
 
-        _blurHelper.EnableBlur(this, 1);
-
         InitializeComponent();
         BlazorWebView.BlazorWebViewInitializing += BlazorWebView_Initializing;
+
+        _preferencesProvider.PreferencesChanged += PreferencesProviderOnPreferencesChanged;
     }
+
+    private void PreferencesProviderOnPreferencesChanged(object? sender, UserPreferences newPreferences)
+        => Dispatcher.Invoke(() => _blurHelper.SetBlurEnabled(newPreferences.BlurBackground));
 
     public static OverlayWindow? Instance { get; private set; }
 
@@ -76,13 +82,15 @@ public partial class OverlayWindow
         AttachThreadInput(windowThreadProcessId, currentThreadId, false);
 
         // only works when window is visible
-        _blurHelper.EnableBlur(this, 1);
+        _blurHelper.SetBlurEnabled(_preferencesProvider.CurrentPreferences.BlurBackground);
 
         var result = Activate();
         _logger.LogDebug("ShowOverlay(): Activate Window: {result}", result);
 
         BlazorWebView.WebView.Focus();
     }
+
+
 
     private void SetupWorkerEventListeners()
     {

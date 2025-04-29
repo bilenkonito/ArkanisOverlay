@@ -5,6 +5,7 @@ using Arkanis.Overlay.Host.Server.Services;
 using Arkanis.Overlay.Infrastructure;
 using Arkanis.Overlay.Infrastructure.Data;
 using Arkanis.Overlay.Infrastructure.Data.Extensions;
+using Arkanis.Overlay.Infrastructure.Services;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,7 @@ builder.Services
     .AddKeyboardProxyService()
     .AddServerOverlayControls()
     .AddInfrastructure()
+    .AddHostedService<UserPreferencesWebConfigurator>()
     .AddInfrastructureConfiguration(builder.Configuration);
 
 var app = builder.Build();

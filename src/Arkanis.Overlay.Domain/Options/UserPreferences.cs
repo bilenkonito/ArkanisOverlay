@@ -20,6 +20,8 @@ public record UserPreferences
 
     public bool TerminateOnGameExit { get; set; }
 
+    public bool BlurBackground { get; set; }
+
     public CultureInfo? CustomCultureInfo { get; set; }
 
     public RegionInfo? CustomRegionInfo { get; set; }

@@ -11,6 +11,9 @@
     <DialogContent>
         <MudForm @ref="_form">
             <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="@Typo.caption">Application</MudText>
+                </MudItem>
                 <MudItem xs="12" sm="12" lg="6">
                     <MudSwitch
                         @bind-Value="@Preferences.TerminateOnGameExit"
@@ -22,6 +25,18 @@
                         @bind-Value="@Preferences.AutoStartWithBoot"
                         Color="@Color.Success"
                         Label="Auto-start on system boot"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="@Typo.caption">Overlay</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" lg="6">
+                    <MudSwitch
+                        @bind-Value="@Preferences.BlurBackground"
+                        Color="@Color.Success"
+                        Label="Blur overlay background"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="@Typo.caption">Locale</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="12" lg="6">
                     <MudAutocomplete T="CultureInfo"
