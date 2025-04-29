@@ -85,6 +85,7 @@ public static class Program
                 services.AddKeyboardProxyService();
                 services.AddJavaScriptEventInterop();
                 services.AddSingleton(typeof(WindowProvider<>));
+                services.AddHostedService<AutoStartManager>();
 
                 // Data
                 services
