@@ -30,5 +30,6 @@ public static class DependencyInjection
         => services
             .AddSingleton<IUserPreferencesManager, UserPreferencesJsonFileManager>()
             .AddSingleton<IUserPreferencesProvider>(provider => provider.GetRequiredService<IUserPreferencesManager>())
+            .AddHostedService<AutoStartUserPreferencesUpdater>()
             .AddHostedService<UserPreferencesLoader>();
 }

@@ -10,11 +10,12 @@
     <MudTextField
         @ref="_textField"
         Label="@Label"
-        Value="@Value.Description"
+        Value="@Value"
+        Text="@Value.Description"
         Required="@false"
-        Error="@(ErrorText is not null)"
-        ErrorText="@ErrorText"
         HelperText="@HelperText"
+        Validation="@((Func<KeyboardShortcut, string?>)Validate)"
+        Converter="@KeyboardShortcutConverter"
         AdornmentIcon="@MaterialSymbols.Outlined.KeyboardKeys"
         Immediate
         Clearable="@(!KeyboardShortcut.None.Equals(Value))"
@@ -27,7 +28,7 @@
 {
 
     private KeyboardShortcutBuilder? _shortcutBuilder;
-    private MudTextField<string>? _textField;
+    private MudTextField<KeyboardShortcut>? _textField;
 
     [Parameter]
     public string Label { get; set; } = string.Empty;
@@ -44,19 +45,29 @@
     [Parameter]
     public bool Required { get; set; }
 
-    private string? ErrorText
-        => Required && Value.IsEmpty
-            ? "This field is required"
-            : Value.IsValid == false
-                ? "This shortcut cannot be used"
-                : null;
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
         _shortcutBuilder = new KeyboardShortcutBuilder(UpdatedAsync, FinalizedAsync);
     }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (_textField is not null)
+        {
+            await _textField.SetText(Value.Description);
+        }
+    }
+
+    private string? Validate(KeyboardShortcut currentValue)
+        => Required && currentValue.IsEmpty
+            ? "This shortcut is required and must be set"
+            : currentValue.IsValid == false
+                ? "The provided shortcut cannot be used"
+                : null;
 
     private async Task OnKeyDown(KeyboardEventArgs eventArgs)
     {
@@ -100,8 +111,14 @@
         await ValueChanged.InvokeAsync(shortcut);
         if (_textField is not null)
         {
-            await _textField!.SetText(shortcut.Description);
+            await _textField.SetText(shortcut.Description);
         }
     }
+
+    private static readonly MudBlazor.Converter<KeyboardShortcut, string> KeyboardShortcutConverter = new()
+    {
+        GetFunc = _ => KeyboardShortcut.None,
+        SetFunc = shortcut => shortcut?.Description ?? KeyboardShortcut.None.Description,
+    };
 
 }

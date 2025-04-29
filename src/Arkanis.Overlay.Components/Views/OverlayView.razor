@@ -82,11 +82,19 @@
     </div>
 </div>
 
-<MudIconButton
-    Color="@Color.Primary"
-    Icon="@MaterialSymbols.Outlined.Settings"
-    OnClick="@OpenUserOptionsDialogAsync"
-    Style="position: fixed; top: 6px; right: 6px; z-index: 100"/>
+<div style="position: fixed; top: 6px; right: 6px; z-index: 100">
+    <KeyboardShortcutBadge Keys="@( [KeyboardKey.MetaLeft, KeyboardKey.Comma])"
+                           Origin="@Origin.CenterLeft"
+                           Color="@Color.Dark"
+                           OnKeyPress="@OpenUserOptionsDialogAsync"
+                           DoNotOverlap
+                           IsActive>
+        <MudIconButton
+            Color="@Color.Primary"
+            Icon="@MaterialSymbols.Outlined.Settings"
+            OnClick="@OpenUserOptionsDialogAsync"/>
+    </KeyboardShortcutBadge>
+</div>
 
 <MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1 px-3">
     <div style="padding: 7.5vh"></div>

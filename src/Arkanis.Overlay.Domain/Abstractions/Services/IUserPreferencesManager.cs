@@ -7,4 +7,6 @@ public interface IUserPreferencesManager : IUserPreferencesProvider
     Task LoadUserPreferencesAsync();
 
     Task SaveAndApplyUserPreferencesAsync(UserPreferences userPreferences);
+
+    event EventHandler<UserPreferences> UpdatePreferences;
 }

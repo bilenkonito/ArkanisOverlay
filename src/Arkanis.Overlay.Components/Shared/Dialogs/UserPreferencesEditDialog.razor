@@ -11,6 +11,9 @@
     <DialogContent>
         <MudForm @ref="_form">
             <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="@Typo.caption">Application</MudText>
+                </MudItem>
                 <MudItem xs="12" sm="12" lg="6">
                     <MudSwitch
                         @bind-Value="@Preferences.TerminateOnGameExit"
@@ -23,15 +26,29 @@
                         Color="@Color.Success"
                         Label="Auto-start on system boot"/>
                 </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="@Typo.caption">Overlay</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" lg="6">
+                    <MudSwitch
+                        @bind-Value="@Preferences.BlurBackground"
+                        Color="@Color.Success"
+                        Label="Blur overlay background"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="@Typo.caption">Locale</MudText>
+                </MudItem>
                 <MudItem xs="12" sm="12" lg="6">
                     <MudAutocomplete T="CultureInfo"
                                      Label="Overlay language"
+                                     Adornment="@Adornment.Start"
                                      AdornmentIcon="@MaterialSymbols.Outlined.Language"
                                      @bind-Value="@Preferences.CustomCultureInfo"
                                      Text="@Preferences.CustomCultureInfo?.EnglishName"
                                      HelperText="@CultureSelectHelpText"
                                      SearchFunc="SearchCulture"
                                      ToStringFunc="@(culture => culture?.EnglishName)"
+                                     Disabled
                                      Clearable
                                      Dense>
                         <ItemTemplate Context="culture">
@@ -44,6 +61,7 @@
                 <MudItem xs="12" sm="12" lg="6">
                     <MudAutocomplete T="RegionInfo"
                                      Label="Display format region"
+                                     Adornment="@Adornment.Start"
                                      AdornmentIcon="@MaterialSymbols.Outlined.Globe"
                                      @bind-Value="@Preferences.CustomRegionInfo"
                                      SearchFunc="SearchRegion"
@@ -60,14 +78,16 @@
                 <MudItem xs="12">
                     <KeyboardShortcutInput
                         Label="Overlay toggle shortcut"
-                        @bind-Value="@Preferences.LaunchShortcut"/>
+                        @bind-Value="@Preferences.LaunchShortcut"
+                        @bind-Value:after="@_form!.Validate"
+                        Required/>
                 </MudItem>
             </MudGrid>
         </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="@Cancel">Cancel</MudButton>
-        <MudButton Color="@Color.Primary" OnClick="@SubmitAsync" Disabled="@(!IsValid)">Ok</MudButton>
+        <MudButton Color="@Color.Success" OnClick="@SubmitAsync" Disabled="@(!IsValid)">Save</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -97,7 +117,8 @@
         Preferences = UserPreferencesManager.CurrentPreferences with { };
     }
 
-    [CascadingParameter] public required IMudDialogInstance MudDialog { get; set; }
+    [CascadingParameter]
+    public required IMudDialogInstance MudDialog { get; set; }
 
     public string CultureSelectHelpText
         => Preferences.CustomCultureInfo is null
@@ -128,15 +149,17 @@
         MudDialog.Close(DialogResult.Ok(true));
     }
 
-    private void Cancel() => MudDialog.Cancel();
+    private void Cancel()
+        => MudDialog.Cancel();
 
     public static async Task<DialogResult> ShowAsync(IDialogService dialogService)
     {
-        var dialogRef = await dialogService.ShowAsync<UserPreferencesEditDialog>(null, new DialogOptions
+        var dialogOptions = new DialogOptions
         {
             FullWidth = true,
             MaxWidth = MaxWidth.Small,
-        });
+        };
+        var dialogRef = await dialogService.ShowAsync<UserPreferencesEditDialog>(null, dialogOptions);
         return await dialogRef.Result ?? DialogResult.Cancel();
     }
 

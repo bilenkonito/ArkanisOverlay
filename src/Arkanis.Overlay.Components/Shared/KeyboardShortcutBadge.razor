@@ -11,7 +11,7 @@
           Color="@Color"
           Visible="@IsActive"
           Elevation="8"
-          Overlap>
+          Overlap="@(DoNotOverlap == false)">
     @ChildContent
 </MudBadge>
 
@@ -54,6 +54,9 @@
 
     [Parameter]
     public bool IsActive { get; set; } = true;
+
+    [Parameter]
+    public bool DoNotOverlap { get; set; }
 
     private KeyboardProxy UsedKeyboardProxy
         => KeyboardEventProxy ?? GlobalKeyboardProxy;

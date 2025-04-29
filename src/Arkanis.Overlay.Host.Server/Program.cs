@@ -5,6 +5,9 @@ using Arkanis.Overlay.Host.Server.Services;
 using Arkanis.Overlay.Infrastructure;
 using Arkanis.Overlay.Infrastructure.Data;
 using Arkanis.Overlay.Infrastructure.Data.Extensions;
+using Arkanis.Overlay.Infrastructure.Services;
+using Arkanis.Overlay.Infrastructure.Services.Abstractions;
+using MudBlazor;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,14 +21,21 @@ builder.Services
     .AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(options =>
+    {
+        options.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+        options.SnackbarConfiguration.PreventDuplicates = false;
+        options.SnackbarConfiguration.ClearAfterNavigation = false;
+    }
+);
 
 builder.Services
     .AddJavaScriptEventInterop()
     .AddKeyboardProxyService()
     .AddServerOverlayControls()
     .AddInfrastructure()
-    .AddInfrastructureConfiguration(builder.Configuration);
+    .AddInfrastructureConfiguration(builder.Configuration)
+    .AddSingleton<ISystemAutoStartStateProvider, NoSystemAutoStartStateProvider>();
 
 var app = builder.Build();
 

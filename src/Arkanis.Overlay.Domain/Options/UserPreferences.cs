@@ -20,9 +20,11 @@ public record UserPreferences
 
     public bool TerminateOnGameExit { get; set; }
 
-    public CultureInfo? CustomCultureInfo { get; set; }
+    public bool BlurBackground { get; set; }
+
+    public CultureInfo? CustomCultureInfo { get; set; } = CultureInfo.GetCultureInfo("en");
 
     public RegionInfo? CustomRegionInfo { get; set; }
 
-    public KeyboardShortcut LaunchShortcut { get; set; } = KeyboardShortcut.None;
+    public KeyboardShortcut LaunchShortcut { get; set; } = new([KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyS]);
 }

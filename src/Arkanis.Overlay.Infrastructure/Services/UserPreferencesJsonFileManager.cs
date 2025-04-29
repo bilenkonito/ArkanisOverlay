@@ -1,6 +1,5 @@
 namespace Arkanis.Overlay.Infrastructure.Services;
 
-using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Common;
@@ -29,6 +28,10 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
 
     public UserPreferences CurrentPreferences { get; private set; } = new();
 
+    public event EventHandler<UserPreferences>? ApplyPreferences;
+
+    public event EventHandler<UserPreferences>? UpdatePreferences;
+
     public async Task LoadUserPreferencesAsync()
     {
         if (!PreferencesFileInfo.Exists)
@@ -50,13 +53,16 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
             logger.LogError(exception, "Failed to properly load user preferences from {FilePath}", PreferencesFileInfo.FullName);
         }
 
-        userPreferences ??= CurrentPreferences;
-        await ApplyUserPreferencesAsync(userPreferences).ConfigureAwait(false);
+        CurrentPreferences = userPreferences ?? CurrentPreferences;
+        UpdatePreferences?.Invoke(this, CurrentPreferences);
+
+        await SaveAndApplyUserPreferencesAsync(CurrentPreferences);
     }
 
     public async Task SaveAndApplyUserPreferencesAsync(UserPreferences userPreferences)
     {
-        await ApplyUserPreferencesAsync(userPreferences).ConfigureAwait(false);
+        CurrentPreferences = userPreferences;
+        ApplyPreferences?.Invoke(this, CurrentPreferences);
 
         try
         {
@@ -68,21 +74,9 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
         {
             logger.LogError(exception, "Failed to properly save user preferences to {FilePath}", PreferencesFileInfo.FullName);
         }
-    }
-
-    /// <summary>
-    ///     Applies the provided configuration.
-    ///     Also stores the provided configuration instance to <see cref="CurrentPreferences" />.
-    /// </summary>
-    /// <param name="userPreferences">User configuration to apply</param>
-    private Task ApplyUserPreferencesAsync(UserPreferences userPreferences)
-    {
-        logger.LogDebug("Applying new user preferences");
-        CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = userPreferences.ActiveCultureInfo;
-
-        // TODO: Apply configured user preferences
-
-        CurrentPreferences = userPreferences;
-        return Task.CompletedTask;
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Could not save preferences to {FilePath}", PreferencesFileInfo.FullName);
+        }
     }
 }

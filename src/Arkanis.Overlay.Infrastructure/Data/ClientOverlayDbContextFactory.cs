@@ -6,13 +6,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-public class ClientOverlayDbContextFactory(IServiceProvider serviceProvider, IConfiguration configuration) : IDbContextFactory<OverlayDbContext>
+public class ClientOverlayDbContextFactory(
+    IServiceProvider serviceProvider,
+    IConfiguration configuration,
+    ILogger<ClientOverlayDbContextFactory> logger
+) : IDbContextFactory<OverlayDbContext>
 {
     private const string ConnectionName = "OverlayDatabase";
 
     public OverlayDbContext CreateDbContext()
     {
         var connectionString = configuration.GetConnectionString(ConnectionName);
+        logger.LogDebug("Connecting to {ConnectionString}", connectionString);
+
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         var hostEnvironment = serviceProvider.GetRequiredService<IHostEnvironment>();
 

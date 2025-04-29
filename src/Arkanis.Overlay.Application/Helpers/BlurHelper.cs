@@ -1,37 +1,33 @@
 namespace Arkanis.Overlay.Application.Helpers;
 
 using System.Runtime.InteropServices;
-using System.Windows;
 using System.Windows.Interop;
 using Windows.Win32.Foundation;
 using Microsoft.Extensions.Logging;
+using UI.Windows;
 
 /// <summary>
 ///     Helper class for setting window composition attributes to enable blur effects.
 ///     Based on:
 ///     https://github.com/riverar/sample-win32-acrylicblur/blob/917adc277c7258307799327d12262ebd47fd0308/MainWindow.xaml.cs
 /// </summary>
-public class BlurHelper(ILogger<BlurHelper> logger)
+public class BlurHelper(WindowProvider<OverlayWindow> windowProvider, ILogger<BlurHelper> logger)
 {
-    private uint _blurOpacity;
-
-    public double BlurOpacity
-    {
-        get => _blurOpacity;
-        set => _blurOpacity = (uint)value;
-    }
+    private const uint BlurOpacity = 0;
 
     [DllImport("user32.dll")]
     private static extern BOOL SetWindowCompositionAttribute(IntPtr hWnd, ref WindowCompositionAttributeData data);
 
-    internal void EnableBlur(Window window, double blurOpacity = 0)
+    public void SetBlurEnabled(bool enabled)
     {
-        BlurOpacity = blurOpacity;
-        var windowHelper = new WindowInteropHelper(window);
+        var windowHelper = new WindowInteropHelper(windowProvider.GetWindow());
+        var accentState = enabled
+            ? AccentState.ACCENT_ENABLE_BLURBEHIND
+            : AccentState.ACCENT_DISABLED;
 
         var accent = new AccentPolicy
         {
-            AccentState = AccentState.ACCENT_ENABLE_BLURBEHIND,
+            AccentState = accentState,
             GradientColor = 0x00_00_00_00,
             AnimationId = 0,
             AccentFlags = 0,
@@ -54,7 +50,7 @@ public class BlurHelper(ILogger<BlurHelper> logger)
         if (!result)
         {
             var errorCode = Marshal.GetLastWin32Error();
-            logger.LogWarning("Failed to set window composition attribute; {errorCode}", errorCode);
+            logger.LogWarning("Failed to set window composition attribute; {ErrorCode}", errorCode);
         }
 
         Marshal.FreeHGlobal(accentPtr);
