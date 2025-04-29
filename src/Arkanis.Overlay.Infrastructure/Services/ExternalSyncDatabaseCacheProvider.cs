@@ -10,6 +10,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Repositories.Local;
 
+/// <summary>
+///     In order to simplify the caching, generic type parameter is used as a primary key.
+///     That results in any type having a unique cache key component.
+///     The primary key is a composite key, consisting of the repository type name and type name of the object stored.
+/// </summary>
+/// <remarks>
+///     This cache provider is limited to a single value per unique inner type cached.
+/// </remarks>
+/// <typeparam name="TRepository">Type used as a primary key for caching</typeparam>
 internal class ExternalSyncDatabaseCacheProvider<TRepository>(
     UexServiceStateProvider stateProvider,
     IDbContextFactory<OverlayDbContext> dbContextFactory
