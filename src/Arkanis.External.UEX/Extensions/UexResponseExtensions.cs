@@ -22,10 +22,13 @@ public static class UexResponseExtensions
         return responseHeaders.Date ?? timeFallback.Value;
     }
 
-    public static DateTimeOffset GetCacheUntil(this HttpResponseHeaders responseHeaders, TimeSpan? cacheTimeFallback = null)
+    public static DateTimeOffset GetCacheUntil(this HttpResponseHeaders responseHeaders, TimeSpan? cacheTimeFallback = null, double factor = 1.0)
     {
-        cacheTimeFallback ??= TimeSpan.FromMinutes(30);
-        var maxCacheAge = responseHeaders.CacheControl?.MaxAge ?? cacheTimeFallback.Value;
-        return responseHeaders.GetRequestTime() + maxCacheAge;
+        var cacheTime = responseHeaders.CacheControl?.MaxAge;
+        cacheTime ??= cacheTimeFallback;
+        cacheTime ??= TimeSpan.FromMinutes(30);
+        cacheTime *= factor;
+
+        return responseHeaders.GetRequestTime() + cacheTime.Value;
     }
 }

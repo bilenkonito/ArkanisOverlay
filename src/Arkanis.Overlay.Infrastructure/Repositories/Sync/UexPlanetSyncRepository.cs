@@ -9,17 +9,20 @@ using Local;
 using Microsoft.Extensions.Logging;
 using Services;
 
-internal class UexPlanetRepository(
+internal class UexPlanetSyncRepository(
     GameEntityRepositoryDependencyResolver dependencyResolver,
-    IExternalSyncCacheProvider<UexPlanetRepository> cacheProvider,
+    IExternalSyncCacheProvider<UexPlanetSyncRepository> cacheProvider,
     IUexGameApi gameApi,
     UexServiceStateProvider stateProvider,
     UexApiDtoMapper mapper,
-    ILogger<UexPlanetRepository> logger
-) : UexGameEntityRepositoryBase<UniversePlanetDTO, GamePlanet>(stateProvider, cacheProvider, mapper, logger)
+    ILogger<UexPlanetSyncRepository> logger
+) : UexGameEntitySyncRepositoryBase<UniversePlanetDTO, GamePlanet>(stateProvider, cacheProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver.DependsOn<GameStarSystem>(this);
+
+    protected override double CacheTimeFactor
+        => 7;
 
     protected override async Task<UexApiResponse<ICollection<UniversePlanetDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {

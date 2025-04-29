@@ -7,14 +7,17 @@ using External.UEX.Abstractions;
 using Local;
 using Microsoft.Extensions.Logging;
 
-internal class UexStarSystemRepository(
+internal class UexStarSystemSyncRepository(
     IUexGameApi gameApi,
     UexServiceStateProvider stateProvider,
-    IExternalSyncCacheProvider<UexStarSystemRepository> cacheProvider,
+    IExternalSyncCacheProvider<UexStarSystemSyncRepository> cacheProvider,
     UexApiDtoMapper mapper,
-    ILogger<UexStarSystemRepository> logger
-) : UexGameEntityRepositoryBase<UniverseStarSystemDTO, GameStarSystem>(stateProvider, cacheProvider, mapper, logger)
+    ILogger<UexStarSystemSyncRepository> logger
+) : UexGameEntitySyncRepositoryBase<UniverseStarSystemDTO, GameStarSystem>(stateProvider, cacheProvider, mapper, logger)
 {
+    protected override double CacheTimeFactor
+        => 7;
+
     protected override async Task<UexApiResponse<ICollection<UniverseStarSystemDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
         var response = await gameApi.GetStarSystemsAsync(cancellationToken).ConfigureAwait(false);

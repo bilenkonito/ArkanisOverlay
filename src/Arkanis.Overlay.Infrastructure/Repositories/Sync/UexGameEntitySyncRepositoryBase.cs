@@ -22,7 +22,7 @@ using Microsoft.Extensions.Logging;
 /// <param name="logger">A logger</param>
 /// <typeparam name="TSource">External DTO type</typeparam>
 /// <typeparam name="TDomain">Internal domain type</typeparam>
-internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
+internal abstract class UexGameEntitySyncRepositoryBase<TSource, TDomain>(
     UexServiceStateProvider stateProvider,
     IExternalSyncCacheProvider cacheProvider,
     UexApiDtoMapper mapper,
@@ -32,6 +32,9 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
     where TDomain : class, IGameEntity
 {
     protected ILogger Logger { get; } = logger;
+
+    protected virtual double CacheTimeFactor
+        => 1.0;
 
     public DateTimeOffset CachedUntil { get; set; }
 
@@ -76,11 +79,17 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
             Logger.LogError(ex, "Failed processing response from remote API");
             return MissingSyncData<TDomain>.Instance;
         }
+        catch (Exception ex)
+        {
+            Logger.LogCritical(ex, "Failed properly loading {Type} entities", typeof(TDomain).Name);
+            return MissingSyncData<TDomain>.Instance;
+        }
     }
 
     public async Task<TDomain?> GetAsync(IDomainId id, CancellationToken cancellationToken = default)
     {
         await GetDependencies().WaitUntilReadyAsync(cancellationToken).ConfigureAwait(false);
+
         var result = await GetSingleInternalAsync(id, cancellationToken).ConfigureAwait(false);
         return result is not null
             ? await MapToDomainAsync(result)
@@ -108,9 +117,8 @@ internal abstract class UexGameEntityRepositoryBase<TSource, TDomain>(
     private LoadedSyncData<TDomain> CreateSyncData(UexApiResponse<ICollection<TSource>> response, ServiceAvailableState serviceState)
     {
         var responseHeaders = response.CreateResponseHeaders();
-        var cacheUntil = responseHeaders.GetCacheUntil();
+        var cacheUntil = responseHeaders.GetCacheUntil(factor: CacheTimeFactor);
         var requestTime = responseHeaders.GetRequestTime();
-
         var domainEntities = response.Result.Where(IncludeSourceModel)
             .ToAsyncEnumerable()
             .SelectAwait(MapToDomainAsync)

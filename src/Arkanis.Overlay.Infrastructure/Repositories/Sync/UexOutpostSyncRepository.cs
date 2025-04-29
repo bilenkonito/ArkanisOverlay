@@ -9,19 +9,22 @@ using Local;
 using Microsoft.Extensions.Logging;
 using Services;
 
-internal class UexOutpostRepository(
+internal class UexOutpostSyncRepository(
     GameEntityRepositoryDependencyResolver dependencyResolver,
-    IExternalSyncCacheProvider<UexOutpostRepository> cacheProvider,
+    IExternalSyncCacheProvider<UexOutpostSyncRepository> cacheProvider,
     IUexGameApi gameApi,
     UexServiceStateProvider stateProvider,
     UexApiDtoMapper mapper,
-    ILogger<UexOutpostRepository> logger
-) : UexGameEntityRepositoryBase<UniverseOutpostDTO, GameOutpost>(stateProvider, cacheProvider, mapper, logger)
+    ILogger<UexOutpostSyncRepository> logger
+) : UexGameEntitySyncRepositoryBase<UniverseOutpostDTO, GameOutpost>(stateProvider, cacheProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver
             .DependsOn<GamePlanet>(this)
             .AlsoDependsOn<GameMoon>();
+
+    protected override double CacheTimeFactor
+        => 7;
 
     protected override async Task<UexApiResponse<ICollection<UniverseOutpostDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
