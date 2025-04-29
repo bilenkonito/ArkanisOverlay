@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
+using Domain.Abstractions.Services;
+using Helpers;
 using Microsoft.Extensions.Logging;
 using PInvoke = Windows.Win32.PInvoke;
 
@@ -15,21 +17,26 @@ public class GlobalHotkey : IDisposable
 {
     private static HOOKPROC? _proc;
     private static HHOOK _hookId = HHOOK.Null;
+    private readonly IUserPreferencesProvider _preferencesProvider;
 
     private Thread? _thread;
 
-    public GlobalHotkey(ILogger<GlobalHotkey> logger)
+    public GlobalHotkey(IUserPreferencesProvider preferencesProvider, ILogger<GlobalHotkey> logger)
     {
+        _preferencesProvider = preferencesProvider;
         Logger = logger;
         _proc = HookProc;
     }
 
     private ILogger Logger { get; }
 
-    /**
-     *
-     */
-    public event EventHandler? TabKeyPressed;
+    public void Dispose()
+        => Unhook();
+
+    /// <summary>
+    ///     Invoked when the user-configured hotkey press is registered.
+    /// </summary>
+    public event EventHandler? ConfiguredHotKeyPressed;
 
     public void Start()
     {
@@ -119,29 +126,24 @@ public class GlobalHotkey : IDisposable
     {
         handled = false;
         var hookStruct = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lparam);
-
         if (wparam != PInvoke.WM_KEYUP && wparam != PInvoke.WM_SYSKEYUP)
         {
             return;
         }
-        // if (hookStruct.vkCode != (uint)VIRTUAL_KEY.VK_S) return;
 
-        if (
-            !IsKeyDown(VIRTUAL_KEY.VK_LSHIFT)
-            || !IsKeyDown(VIRTUAL_KEY.VK_LMENU)
-            || !IsKeyDown(VIRTUAL_KEY.VK_S)
-        )
+        var shortcutPressed = _preferencesProvider.CurrentPreferences.LaunchShortcut.PressedKeys
+            .Select(WindowsKeyMap.ToCode)
+            .All(IsKeyDown);
+
+        if (!shortcutPressed)
         {
             return;
         }
 
-        Logger.LogDebug("Hotkey pressed.");
-        TabKeyPressed?.Invoke(null, EventArgs.Empty);
+        Logger.LogDebug("Hotkey pressed");
+        ConfiguredHotKeyPressed?.Invoke(null, EventArgs.Empty);
     }
 
-    private bool IsKeyDown(VIRTUAL_KEY vkCode)
+    private static bool IsKeyDown(VIRTUAL_KEY vkCode)
         => (PInvoke.GetAsyncKeyState((int)vkCode) & 0x8000) != 0;
-
-    public void Dispose()
-        => Unhook();
 }

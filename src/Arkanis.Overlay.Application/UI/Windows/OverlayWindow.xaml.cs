@@ -54,10 +54,10 @@ public partial class OverlayWindow
         _preferencesProvider.PreferencesChanged += PreferencesProviderOnPreferencesChanged;
     }
 
+    public static OverlayWindow? Instance { get; private set; }
+
     private void PreferencesProviderOnPreferencesChanged(object? sender, UserPreferences newPreferences)
         => Dispatcher.Invoke(() => _blurHelper.SetBlurEnabled(newPreferences.BlurBackground));
-
-    public static OverlayWindow? Instance { get; private set; }
 
     protected override void OnInitialized(EventArgs e)
     {
@@ -66,9 +66,6 @@ public partial class OverlayWindow
         _windowTracker.Start();
         _globalHotkey.Start();
     }
-
-    private void HideOverlay()
-        => Collapse();
 
     private void ShowOverlay()
     {
@@ -85,11 +82,10 @@ public partial class OverlayWindow
         _blurHelper.SetBlurEnabled(_preferencesProvider.CurrentPreferences.BlurBackground);
 
         var result = Activate();
-        _logger.LogDebug("ShowOverlay(): Activate Window: {result}", result);
+        _logger.LogDebug("Overlay: Activate Window: {Result}", result);
 
         BlazorWebView.WebView.Focus();
     }
-
 
 
     private void SetupWorkerEventListeners()
@@ -105,23 +101,22 @@ public partial class OverlayWindow
             );
         _windowTracker.WindowPositionChanged += (_, position) => Dispatcher.Invoke(() =>
             {
-                _logger.LogDebug("Overlay: WindowPositionChanged: {position}", position.ToString());
+                _logger.LogDebug("Overlay: WindowPositionChanged: {Position}", position.ToString());
                 Top = position.Y;
                 Left = position.X;
             }
         );
         _windowTracker.WindowSizeChanged += (_, size) => Dispatcher.Invoke(() =>
             {
-                _logger.LogDebug("Overlay: WindowSizeChanged: {size}", size.ToString());
+                _logger.LogDebug("Overlay: WindowSizeChanged: {Size}", size.ToString());
                 Width = size.Width;
                 Height = size.Height;
             }
         );
 
-        _globalHotkey.TabKeyPressed += (_, _) => Dispatcher.Invoke(() =>
+        _globalHotkey.ConfiguredHotKeyPressed += (_, _) => Dispatcher.Invoke(() =>
             {
-                Console.WriteLine("Overlay: HotKeyPressed");
-
+                _logger.LogDebug("Overlay: HotKeyPressed");
                 if (Visibility == Visibility.Visible)
                 {
                     HideOverlay();
@@ -194,6 +189,9 @@ public partial class OverlayWindow
         BlazorWebView.WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
     }
 
+    private void HideOverlay()
+        => Collapse();
+
     /// <summary>
     ///     Interface to hide the overlay from JS.
     ///     Collapses the window. This will hide the window and give focus back to Star Citizen.
@@ -201,6 +199,7 @@ public partial class OverlayWindow
     public void Collapse()
     {
         Visibility = Visibility.Collapsed;
+
         // we switch focus back to Star Citizen because
         // otherwise the previously active window will
         // receive focus instead for some reason
