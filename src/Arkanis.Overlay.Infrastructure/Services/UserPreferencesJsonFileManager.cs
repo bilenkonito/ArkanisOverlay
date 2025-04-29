@@ -28,7 +28,9 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
 
     public UserPreferences CurrentPreferences { get; private set; } = new();
 
-    public event EventHandler<UserPreferences>? PreferencesChanged;
+    public event EventHandler<UserPreferences>? ApplyPreferences;
+
+    public event EventHandler<UserPreferences>? UpdatePreferences;
 
     public async Task LoadUserPreferencesAsync()
     {
@@ -52,13 +54,15 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
         }
 
         CurrentPreferences = userPreferences ?? CurrentPreferences;
+        UpdatePreferences?.Invoke(this, CurrentPreferences);
+
         await SaveAndApplyUserPreferencesAsync(CurrentPreferences);
     }
 
     public async Task SaveAndApplyUserPreferencesAsync(UserPreferences userPreferences)
     {
         CurrentPreferences = userPreferences;
-        PreferencesChanged?.Invoke(this, CurrentPreferences);
+        ApplyPreferences?.Invoke(this, CurrentPreferences);
 
         try
         {

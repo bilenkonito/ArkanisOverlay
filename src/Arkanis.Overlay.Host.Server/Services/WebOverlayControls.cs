@@ -14,11 +14,11 @@ public sealed class WebOverlayControls : IOverlayControls, IDisposable
     {
         _snackbar = snackbar;
         _preferencesProvider = preferencesProvider;
-        preferencesProvider.PreferencesChanged += ApplyUserPreferencesAsync;
+        preferencesProvider.ApplyPreferences += ApplyUserPreferencesAsync;
     }
 
     public void Dispose()
-        => _preferencesProvider.PreferencesChanged -= ApplyUserPreferencesAsync;
+        => _preferencesProvider.ApplyPreferences -= ApplyUserPreferencesAsync;
 
     public ValueTask ShowAsync()
     {

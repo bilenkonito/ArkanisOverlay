@@ -51,12 +51,12 @@ public partial class OverlayWindow
         InitializeComponent();
         BlazorWebView.BlazorWebViewInitializing += BlazorWebView_Initializing;
 
-        _preferencesProvider.PreferencesChanged += PreferencesProviderOnPreferencesChanged;
+        _preferencesProvider.ApplyPreferences += ApplyUserPreferences;
     }
 
     public static OverlayWindow? Instance { get; private set; }
 
-    private void PreferencesProviderOnPreferencesChanged(object? sender, UserPreferences newPreferences)
+    private void ApplyUserPreferences(object? sender, UserPreferences newPreferences)
         => Dispatcher.Invoke(() => _blurHelper.SetBlurEnabled(newPreferences.BlurBackground));
 
     protected override void OnInitialized(EventArgs e)

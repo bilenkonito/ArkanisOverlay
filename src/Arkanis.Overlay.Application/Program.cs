@@ -8,6 +8,7 @@ using Helpers;
 using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Data.Extensions;
+using Infrastructure.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -31,7 +32,7 @@ public static class Program
                     options.MutexId = $"{{{Constants.InstanceId}}}";
                     options.WhenNotFirstInstance = (environment, logger) =>
                     {
-                        logger.LogInformation("{appName} is already running.", environment.ApplicationName);
+                        logger.LogInformation("{AppName} is already running", environment.ApplicationName);
                     };
                 }
             )
@@ -85,7 +86,9 @@ public static class Program
                 services.AddKeyboardProxyService();
                 services.AddJavaScriptEventInterop();
                 services.AddSingleton(typeof(WindowProvider<>));
-                services.AddHostedService<AutoStartManager>();
+
+                services.AddHostedService<WindowsAutoStartManager>()
+                    .AddSingleton<ISystemAutoStartStateProvider, WindowsAutoStartStateProvider>();
 
                 // Data
                 services

@@ -6,5 +6,5 @@ public interface IUserPreferencesProvider
 {
     UserPreferences CurrentPreferences { get; }
 
-    event EventHandler<UserPreferences> PreferencesChanged;
+    event EventHandler<UserPreferences> ApplyPreferences;
 }
