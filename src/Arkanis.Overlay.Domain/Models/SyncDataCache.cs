@@ -1,5 +1,14 @@
 namespace Arkanis.Overlay.Domain.Models;
 
+public static class SyncDataCache
+{
+    public static SyncDataCache<T> Missing<T>()
+        => new MissingDataCache<T>();
+
+    public static SyncDataCache<T> Unprocessable<T>()
+        => new UnprocessableDataCache<T>();
+}
+
 public abstract record SyncDataCache<TData>;
 
 public sealed record MissingDataCache<TData> : SyncDataCache<TData>;
