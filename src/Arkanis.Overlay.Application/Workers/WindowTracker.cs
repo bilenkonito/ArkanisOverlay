@@ -4,17 +4,28 @@ using System.Diagnostics;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
+using Domain.Abstractions.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Application = System.Windows.Forms.Application;
 
 public class WindowTracker
 {
+    private readonly IHostApplicationLifetime _applicationLifetime;
+    private readonly IUserPreferencesProvider _userPreferencesProvider;
     private static Dictionary<IntPtr, WINEVENTPROC> _registeredHooksDictionary = new();
     private HWND _currentWindowHWnd;
 
     private Thread? _thread;
 
-    public WindowTracker(ILogger<WindowTracker> logger)
+    public WindowTracker(
+        IHostApplicationLifetime applicationLifetime,
+        IUserPreferencesProvider userPreferencesProvider,
+        ILogger<WindowTracker> logger
+    )
     {
+        _applicationLifetime = applicationLifetime;
+        _userPreferencesProvider = userPreferencesProvider;
         Logger = logger;
         WindowClass = Constants.WindowClass;
         WindowName = Constants.WindowName;
@@ -217,7 +228,7 @@ public class WindowTracker
 
     private void OnWindowFound(object? sender, HWND hWnd)
     {
-        Logger.LogDebug("Window found.");
+        Logger.LogDebug("Window started trackingWindow found.");
 
         // emit initial state
         var windowSize = GetWindowSize();
@@ -265,7 +276,7 @@ public class WindowTracker
 
     private void OnWindowLost(object? sender, EventArgs eventArgs)
     {
-        Logger.LogDebug("Window lost.");
+        Logger.LogDebug("Tracked window lost");
 
         // unhook all current event listeners
         foreach (HWINEVENTHOOK registeredHWinEventHook in _registeredHooksDictionary.Keys)
@@ -351,7 +362,14 @@ public class WindowTracker
         // for a destroyed window :)
         // if (hWnd == HWND.Null) return;
 
-        Logger.LogDebug("Window destroyed.");
+        Logger.LogDebug("Tracked window destroyed");
+
+        if (_userPreferencesProvider.CurrentPreferences.TerminateOnGameExit)
+        {
+            Logger.LogDebug("Window destroyed, preferences request termination - shutting down");
+            Application.Exit();
+            _applicationLifetime.StopApplication();
+        }
 
         WindowLost?.Invoke(this, EventArgs.Empty);
     }

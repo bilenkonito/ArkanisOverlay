@@ -22,7 +22,6 @@ public partial class OverlayWindow
 {
     private readonly BlurHelper _blurHelper;
     private readonly GlobalHotkey _globalHotkey;
-    private readonly IHostApplicationLifetime _hostApplicationLifetime;
 
     private readonly ILogger _logger;
     private readonly WindowTracker _windowTracker;
@@ -32,7 +31,6 @@ public partial class OverlayWindow
 
     public OverlayWindow(
         ILogger<OverlayWindow> logger,
-        IHostApplicationLifetime hostApplicationLifetime,
         WindowTracker windowTracker,
         GlobalHotkey globalHotkey,
         BlurHelper blurHelper
@@ -41,7 +39,6 @@ public partial class OverlayWindow
         Instance = this;
 
         _logger = logger;
-        _hostApplicationLifetime = hostApplicationLifetime;
         _windowTracker = windowTracker;
         _globalHotkey = globalHotkey;
         _blurHelper = blurHelper;
@@ -92,7 +89,12 @@ public partial class OverlayWindow
         _windowTracker.WindowFound +=
             (_, hWnd) => Dispatcher.Invoke(() => { _currentWindowHWnd = hWnd; });
         _windowTracker.WindowLost +=
-            (_, _) => Dispatcher.Invoke(() => { _currentWindowHWnd = HWND.Null; });
+            (_, _) => Dispatcher.Invoke(() =>
+                {
+                    _currentWindowHWnd = HWND.Null;
+                    HideOverlay();
+                }
+            );
         _windowTracker.WindowPositionChanged += (_, position) => Dispatcher.Invoke(() =>
             {
                 _logger.LogDebug("Overlay: WindowPositionChanged: {position}", position.ToString());
@@ -203,7 +205,5 @@ public partial class OverlayWindow
     }
 
     private void OnExitCommand(object sender, RoutedEventArgs e)
-        =>
-            // Application.Current.Shutdown();
-            _hostApplicationLifetime.StopApplication();
+        => Application.Current.Shutdown();
 }

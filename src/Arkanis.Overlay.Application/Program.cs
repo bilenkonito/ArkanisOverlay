@@ -1,5 +1,7 @@
 namespace Arkanis.Overlay.Application;
 
+using Components.Helpers;
+using Components.Services;
 using Dapplo.Microsoft.Extensions.Hosting.AppServices;
 using Dapplo.Microsoft.Extensions.Hosting.Wpf;
 using Helpers;
@@ -79,6 +81,9 @@ public static class Program
                 );
                 services.AddSingleton<IServiceProvider>(sp => sp);
                 services.AddHttpClient();
+
+                services.AddKeyboardProxyService();
+                services.AddJavaScriptEventInterop();
 
                 // Data
                 services
