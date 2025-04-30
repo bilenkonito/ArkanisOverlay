@@ -19,7 +19,6 @@
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0"/>
         <PackageReference Include="MoreAsyncLINQ" Version="0.8.0"/>
         <PackageReference Include="morelinq" Version="4.4.0"/>
-        <PackageReference Include="NodaMoney" Version="2.1.1"/>
         <PackageReference Include="Riok.Mapperly" Version="4.2.0"/>
     </ItemGroup>
 

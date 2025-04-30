@@ -3,13 +3,11 @@ namespace Arkanis.Overlay.Infrastructure.Data.Mappers;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using Common;
 using Domain.Abstractions.Game;
 using Domain.Enums;
 using Domain.Models.Game;
 using Exceptions;
 using External.UEX.Abstractions;
-using NodaMoney;
 using Riok.Mapperly.Abstractions;
 using Services.Abstractions;
 
@@ -326,8 +324,8 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     private partial GameVehicleRentalPricing MapInternal(VehicleRentalPriceBriefDTO source);
 
     [UserMapping(Default = true)]
-    private Money MapInternalMoney(double? amount)
-        => new(amount ?? 0, ApplicationConstants.GameCurrency);
+    private GameCurrency MapInternalMoney(double? amount)
+        => new((int)(amount ?? 0));
 
     [UserMapping(Default = true)]
     private DateTimeOffset MapInternalDate(double? timestamp)
