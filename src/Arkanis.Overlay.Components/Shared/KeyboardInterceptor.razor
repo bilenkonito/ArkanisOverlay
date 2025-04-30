@@ -1,5 +1,3 @@
-@using Arkanis.Overlay.Components.Extensions
-@using Arkanis.Overlay.Domain.Models.Keyboard
 <div @onkeyup="@ProcessKeyUp"
      @onkeyup:stopPropagation="@StopPropagation"
      @onkeyup:preventDefault="@PreventDefault"
@@ -17,10 +15,10 @@
     public required RenderFragment ChildContent { get; set; }
 
     [Parameter]
-    public EventCallback<KeyboardKey> OnKeyUp { get; set; }
+    public EventCallback<KeyboardEventArgs> OnKeyUp { get; set; }
 
     [Parameter]
-    public EventCallback<KeyboardKey> OnKeyDown { get; set; }
+    public EventCallback<KeyboardEventArgs> OnKeyDown { get; set; }
 
     [Parameter]
     public bool StopPropagation { get; set; }
@@ -29,9 +27,9 @@
     public bool PreventDefault { get; set; }
 
     private async Task ProcessKeyUp(KeyboardEventArgs eventArgs)
-        => await OnKeyUp.InvokeAsync(eventArgs.GetKey());
+        => await OnKeyUp.InvokeAsync(eventArgs);
 
     private async Task ProcessKeyDown(KeyboardEventArgs eventArgs)
-        => await OnKeyDown.InvokeAsync(eventArgs.GetKey());
+        => await OnKeyDown.InvokeAsync(eventArgs);
 
 }

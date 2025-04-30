@@ -20,6 +20,9 @@ public sealed class WebOverlayControls : IOverlayControls, IDisposable
     public void Dispose()
         => _preferencesProvider.ApplyPreferences -= ApplyUserPreferencesAsync;
 
+    public event EventHandler? OverlayShown;
+    public event EventHandler? OverlayHidden;
+
     public ValueTask ShowAsync()
     {
         _snackbar.Add(
@@ -29,6 +32,7 @@ public sealed class WebOverlayControls : IOverlayControls, IDisposable
                 options.ShowCloseIcon = false;
             }
         );
+        OverlayShown?.Invoke(this, EventArgs.Empty);
         return ValueTask.CompletedTask;
     }
 
@@ -41,6 +45,7 @@ public sealed class WebOverlayControls : IOverlayControls, IDisposable
                 options.ShowCloseIcon = false;
             }
         );
+        OverlayHidden?.Invoke(this, EventArgs.Empty);
         return ValueTask.CompletedTask;
     }
 

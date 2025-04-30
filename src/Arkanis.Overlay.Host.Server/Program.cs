@@ -31,7 +31,7 @@ builder.Services.AddMudServices(options =>
 
 builder.Services
     .AddJavaScriptEventInterop()
-    .AddKeyboardProxyService()
+    .AddGlobalKeyboardProxyService()
     .AddServerOverlayControls()
     .AddInfrastructure()
     .AddInfrastructureConfiguration(builder.Configuration)

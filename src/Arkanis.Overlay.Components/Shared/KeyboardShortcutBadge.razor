@@ -1,7 +1,7 @@
-@using Arkanis.Overlay.Components.Services
+@using Arkanis.Overlay.Components.Services.Abstractions
 @using Arkanis.Overlay.Domain.Models.Keyboard
 @implements IDisposable
-@inject KeyboardProxy GlobalKeyboardProxy
+@inject IKeyboardProxy GlobalKeyboardProxy
 
 <MudBadge Origin="@Origin"
           Content="@_shortcut.Description"
@@ -35,7 +35,7 @@
     public required RenderFragment ChildContent { get; set; }
 
     [Parameter]
-    public KeyboardProxy? KeyboardEventProxy { get; set; }
+    public IKeyboardProxy? KeyboardEventProxy { get; set; }
 
     [Parameter]
     public string? Class { get; set; }
@@ -58,7 +58,7 @@
     [Parameter]
     public bool DoNotOverlap { get; set; }
 
-    private KeyboardProxy UsedKeyboardProxy
+    private IKeyboardProxy UsedKeyboardProxy
         => KeyboardEventProxy ?? GlobalKeyboardProxy;
 
     protected override void OnInitialized()
