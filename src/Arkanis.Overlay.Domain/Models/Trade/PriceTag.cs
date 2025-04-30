@@ -1,8 +1,7 @@
 namespace Arkanis.Overlay.Domain.Models.Trade;
 
 using Abstractions.Game;
-using Common;
-using NodaMoney;
+using Game;
 
 public abstract record PriceTag : IComparable<PriceTag>
 {
@@ -37,7 +36,7 @@ public sealed record UnknownPriceTag : PriceTag;
 
 public sealed record MissingPriceTag(IGameLocation Location) : PriceTag;
 
-public sealed record AggregatePriceTag(Money Price) : PriceTag, IComparable<AggregatePriceTag>
+public sealed record AggregatePriceTag(GameCurrency Price) : PriceTag, IComparable<AggregatePriceTag>
 {
     public int CompareTo(AggregatePriceTag? other)
     {
@@ -52,7 +51,7 @@ public sealed record AggregatePriceTag(Money Price) : PriceTag, IComparable<Aggr
     }
 }
 
-public sealed record KnownPriceTag(Money Price, IGameLocation Location, DateTimeOffset UpdatedAt) : PriceTag, IComparable<KnownPriceTag>
+public sealed record KnownPriceTag(GameCurrency Price, IGameLocation Location, DateTimeOffset UpdatedAt) : PriceTag, IComparable<KnownPriceTag>
 {
     public int CompareTo(KnownPriceTag? other)
     {
@@ -66,8 +65,8 @@ public sealed record KnownPriceTag(Money Price, IGameLocation Location, DateTime
             : 1;
     }
 
-    public static KnownPriceTag Create(long price, IGameLocation location, DateTimeOffset updatedAt)
-        => new(new Money(price, ApplicationConstants.GameCurrency), location, updatedAt);
+    public static KnownPriceTag Create(int price, IGameLocation location, DateTimeOffset updatedAt)
+        => new(new GameCurrency(price), location, updatedAt);
 
     public static bool operator <(KnownPriceTag left, KnownPriceTag right)
         => ReferenceEquals(left, null)

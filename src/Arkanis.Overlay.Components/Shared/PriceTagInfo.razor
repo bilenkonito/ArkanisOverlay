@@ -1,6 +1,7 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Models.Game
 @using Arkanis.Overlay.Domain.Models.Trade
+@using Humanizer
 <MudStack Style="@PriceTagCss"
           Spacing="0"
           Justify="@Justify.Center"
@@ -11,7 +12,7 @@
     }
     @if (Model is KnownPriceTag knownPriceTag)
     {
-        <span>@knownPriceTag.Price.ToString("N0")</span>
+        <span>@GameCurrency.Symbol&nbsp;@knownPriceTag.Price.Amount.ToMetric()</span>
         <GameEntityNameCodePart Model="@(knownPriceTag.Location.Name.MainContent as GameEntityName.IHasCode)"
                                 Style="font-size: 12px">
             <PrefixContent>
