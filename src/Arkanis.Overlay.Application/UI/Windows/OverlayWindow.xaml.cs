@@ -57,7 +57,16 @@ public partial class OverlayWindow
     public static OverlayWindow? Instance { get; private set; }
 
     private void ApplyUserPreferences(object? sender, UserPreferences newPreferences)
-        => Dispatcher.Invoke(() => _blurHelper.SetBlurEnabled(newPreferences.BlurBackground));
+    {
+        // prevent attempting to set blur when window is not visible
+        // which would lead to a crash
+        if (!IsVisible)
+        {
+            return;
+        }
+
+        Dispatcher.Invoke(() => _blurHelper.SetBlurEnabled(newPreferences.BlurBackground));
+    }
 
     protected override void OnInitialized(EventArgs e)
     {
