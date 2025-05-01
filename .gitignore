@@ -126,3 +126,6 @@ fabric.properties
 
 *.user
 publish/
+
+# Editor Swap Files
+*~
