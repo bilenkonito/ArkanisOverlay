@@ -8,13 +8,13 @@ public sealed class KeyboardShortcutBuilder : IDisposable
 {
     private readonly Func<KeyboardShortcut, Task> _completionCallback;
     private readonly Timer? _finalizeTimer;
-    private readonly Func<KeyboardShortcut, Task> _changeCallback;
 
     private readonly List<KeyboardKey> _releasedKeys = [];
+    private readonly Func<KeyboardShortcut, Task> _timeoutCallback;
 
-    public KeyboardShortcutBuilder(Func<KeyboardShortcut, Task> changeCallback, Func<KeyboardShortcut, Task> completionCallback)
+    public KeyboardShortcutBuilder(Func<KeyboardShortcut, Task> timeoutCallback, Func<KeyboardShortcut, Task> completionCallback)
     {
-        _changeCallback = changeCallback;
+        _timeoutCallback = timeoutCallback;
         _completionCallback = completionCallback;
         _finalizeTimer = new Timer(FinalizeAsync, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
     }
@@ -114,7 +114,7 @@ public sealed class KeyboardShortcutBuilder : IDisposable
         if (AreAnyKeysPressed())
         {
             ClearReleasedKeysFromKeyPress();
-            await _changeCallback.Invoke(Value);
+            await _timeoutCallback.Invoke(Value);
             return;
         }
 

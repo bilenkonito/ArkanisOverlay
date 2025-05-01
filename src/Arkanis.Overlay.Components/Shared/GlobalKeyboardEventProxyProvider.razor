@@ -1,14 +1,14 @@
 @using Arkanis.Overlay.Components.Extensions
-@using Arkanis.Overlay.Components.Services
+@using Arkanis.Overlay.Components.Services.Abstractions
 @using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
 @inject IJSRuntime JsRuntime
 @inject IDialogService DialogService
-@inject KeyboardProxy KeyboardProxy
+@inject IKeyboardProxy GlobalKeyboardProxy
 @inject ILogger<GlobalKeyboardEventProxyProvider> Logger
 
-<CascadingValue Value="@KeyboardProxy" IsFixed>
+<CascadingValue Value="@GlobalKeyboardProxy" IsFixed>
     @ChildContent
 </CascadingValue>
 
@@ -59,7 +59,9 @@
             return;
         }
 
-        KeyboardProxy.RegisterKeyDown(keyboardEvent.GetKey());
+        var keyboardKey = keyboardEvent.GetKey();
+        Logger.LogDebug("KeyDown: {Key}", keyboardKey);
+        GlobalKeyboardProxy.RegisterKeyDown(keyboardEvent);
     }
 
     [JSInvokable]
@@ -70,7 +72,7 @@
             return;
         }
 
-        KeyboardProxy.RegisterKeyUp(keyboardEvent.GetKey());
+        GlobalKeyboardProxy.RegisterKeyUp(keyboardEvent);
     }
 
     public async ValueTask DisposeAsync()

@@ -83,7 +83,7 @@ public static class Program
                 services.AddSingleton<IServiceProvider>(sp => sp);
                 services.AddHttpClient();
 
-                services.AddKeyboardProxyService();
+                services.AddGlobalKeyboardProxyService();
                 services.AddJavaScriptEventInterop();
                 services.AddSingleton(typeof(WindowProvider<>));
 
