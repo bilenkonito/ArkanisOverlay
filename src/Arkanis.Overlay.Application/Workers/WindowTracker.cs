@@ -403,7 +403,7 @@ public class WindowTracker
         var windowTitle = GetWindowText(hWnd);
         // allows for convenient debugging
         // this way the DevTools window counts as the window being focused
-        isFocused |= Debugger.IsAttached && windowTitle.StartsWith("DevTools");
+        isFocused |= Debugger.IsAttached && windowTitle.StartsWith("DevTools", StringComparison.InvariantCulture);
 #endif
 
         return isFocused;
