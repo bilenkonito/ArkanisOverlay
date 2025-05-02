@@ -1,5 +1,7 @@
 ﻿@page "/"
+@using Arkanis.Overlay.Components.Shared.Dialogs
 @using Arkanis.Overlay.Domain.Models.Keyboard
+@inject IDialogService DialogService
 
 <PageTitle>Home</PageTitle>
 
@@ -10,6 +12,9 @@
                 This is text.
             </MudText>
             <MudTextField T="string" tabindex="1"/>
+            <MudButton OnClick="() => AboutDialog.ShowAsync(DialogService)">
+                Open about dialog
+            </MudButton>
         </MudPaper>
     </KeyboardShortcutBadge>
 </MudContainer>
