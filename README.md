@@ -1,7 +1,7 @@
 # Arkanis Overlay
 
 ![GitHub commits since latest release](https://img.shields.io/github/commits-since/ArkanisCorporation/ArkanisOverlay/latest?logo=github)
-![GitHub branch check runs](https://img.shields.io/github/check-runs/AsyncFuncAI/deepwiki-open/main?logo=github)
+![GitHub branch check runs](https://img.shields.io/github/check-runs/ArkanisCorporation/ArkanisOverlay/main?logo=github)
 [![GitHub Support](https://img.shields.io/badge/github-support?logo=github&label=support)](https://github.com/ArkanisCorporation/ArkanisOverlay/discussions)
 [![Arkanis Website](https://img.shields.io/badge/Arkanis.cc-website?logo=googlechrome&logoColor=white&label=website)](https://arkanis.cc)
 [![Arkanis Discord](https://img.shields.io/discord/1294685596991750277?logo=discord&logoColor=white)](https://join.arkanis.cc/)
