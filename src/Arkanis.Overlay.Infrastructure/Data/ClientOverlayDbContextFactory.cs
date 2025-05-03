@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Data;
 
+using Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,8 +18,9 @@ public class ClientOverlayDbContextFactory(
     public OverlayDbContext CreateDbContext()
     {
         var connectionString = configuration.GetConnectionString(ConnectionName);
-        logger.LogDebug("Connecting to {ConnectionString}", connectionString);
+        connectionString ??= $"Data Source={ApplicationConstants.LocalAppDataDir}/Overlay.db;Cache=Shared";
 
+        logger.LogDebug("Connecting to {ConnectionString}", connectionString);
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         var hostEnvironment = serviceProvider.GetRequiredService<IHostEnvironment>();
 
