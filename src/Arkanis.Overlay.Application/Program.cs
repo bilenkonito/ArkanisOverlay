@@ -110,6 +110,7 @@ public static class Program
 
                 services.AddGlobalKeyboardProxyService();
                 services.AddJavaScriptEventInterop();
+                services.AddGoogleTrackingServices();
                 services.AddSingleton(typeof(WindowProvider<>));
 
                 services.AddHostedService<WindowsAutoStartManager>()
