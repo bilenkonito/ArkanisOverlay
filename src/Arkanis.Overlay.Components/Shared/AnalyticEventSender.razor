@@ -1,24 +1,61 @@
-@using Arkanis.Overlay.Domain.Abstractions.Services
-@using Microsoft.Extensions.Logging
 @inject IAnalytics Analytics
 @inject IAnalyticsEventReporter AnalyticsEventReporter
 @inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
+@inject IUserPreferencesProvider UserRePreferencesProvider
 @inject ILogger<AnalyticEventSender> Logger
+@using Microsoft.Extensions.Logging
+@implements IDisposable
 
-<NavigationTracker/>
+@if (UserRePreferencesProvider.CurrentPreferences.DisableAnalytics == false)
+{
+    <NavigationTracker/>
+}
 
 @code
 {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         Logger.LogDebug("Initializing analytics tracking...");
-
         await base.OnAfterRenderAsync(firstRender);
-        await Analytics.ConfigureGlobalConfigData([]);
+
+        var globalConfigData = new Dictionary<string, object>
+        {
+            ["installationId"] = UserRePreferencesProvider.CurrentPreferences.InstallationId,
+        };
+        await Analytics.ConfigureGlobalConfigData(globalConfigData);
 
         if (firstRender)
         {
             await GlobalAnalyticsReporter.LinkReporterAsync(AnalyticsEventReporter);
+        }
+    }
+
+    public void Dispose()
+        => UserRePreferencesProvider.ApplyPreferences -= OnPreferencesChanged;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        UserRePreferencesProvider.ApplyPreferences += OnPreferencesChanged;
+    }
+
+    private async void OnPreferencesChanged(object? _, UserPreferences preferences)
+    {
+        try
+        {
+            await InvokeAsync(StateHasChanged);
+            if (preferences.DisableAnalytics)
+            {
+                Analytics.Disable();
+            }
+            else
+            {
+                Analytics.Enable();
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Failed to properly update analytics preferences");
         }
     }
 }

@@ -10,6 +10,8 @@ public sealed record TerminateWithGameFeatureStateChangedEvent(bool IsEnabled) :
 
 public sealed record AutoStartFeatureStateChangedEvent(bool IsEnabled) : BuiltInFeatureUsageStateChangedEvent("overlay__app__autostart", IsEnabled);
 
+public sealed record AnalyticsFeatureStateChangedEvent(bool IsEnabled) : BuiltInFeatureUsageStateChangedEvent("overlay__app__analytics", IsEnabled);
+
 public sealed record BlurFeatureStateChangedEvent(bool IsEnabled) : BuiltInFeatureUsageStateChangedEvent("overlay__blur", IsEnabled);
 
 public sealed record SearchEvent(string Query) : BuiltInAnalyticsEvent("search");

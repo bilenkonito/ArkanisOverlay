@@ -1,7 +1,5 @@
 @using System.Globalization
 @using Arkanis.Common.Extensions
-@using Arkanis.Overlay.Domain.Abstractions.Services
-@using Arkanis.Overlay.Domain.Options
 @inject IUserPreferencesManager UserPreferencesManager
 
 <MudDialog>
@@ -25,6 +23,12 @@
                         @bind-Value="@Preferences.AutoStartWithBoot"
                         Color="@Color.Success"
                         Label="Auto-start on system boot"/>
+                </MudItem>
+                <MudItem xs="12" sm="12" lg="6">
+                    <MudSwitch
+                        @bind-Value="@Preferences.DisableAnalytics"
+                        Color="@Color.Error"
+                        Label="Disable usage analytics"/>
                 </MudItem>
                 <MudItem xs="12">
                     <MudText Typo="@Typo.caption">Overlay</MudText>
@@ -158,6 +162,7 @@
         {
             FullWidth = true,
             MaxWidth = MaxWidth.Small,
+            CloseOnEscapeKey = true,
         };
         var dialogRef = await dialogService.ShowAsync<UserPreferencesEditDialog>(null, dialogOptions);
         return await dialogRef.Result ?? DialogResult.Cancel();

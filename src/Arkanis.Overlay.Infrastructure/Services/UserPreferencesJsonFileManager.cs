@@ -63,7 +63,7 @@ public class UserPreferencesJsonFileManager(IGlobalAnalyticsReporter analyticsRe
 
     public async Task SaveAndApplyUserPreferencesAsync(UserPreferences userPreferences)
     {
-        await ReportFeatureChangesAsync(userPreferences);
+        await TrackFeatureChangesAsync(userPreferences);
 
         CurrentPreferences = userPreferences;
         ApplyPreferences?.Invoke(this, CurrentPreferences);
@@ -84,22 +84,22 @@ public class UserPreferencesJsonFileManager(IGlobalAnalyticsReporter analyticsRe
         }
     }
 
-    private async Task ReportFeatureChangesAsync(UserPreferences @new)
+    private async Task TrackFeatureChangesAsync(UserPreferences @new)
     {
-        var current = CurrentPreferences;
-        if (@new.BlurBackground != current.BlurBackground)
-        {
-            await analyticsReporter.TrackEventAsync(new BlurFeatureStateChangedEvent(@new.BlurBackground));
-        }
+        await TrackIfChangedAsync(x => x.BlurBackground, newValue => new BlurFeatureStateChangedEvent(newValue));
+        await TrackIfChangedAsync(x => x.TerminateOnGameExit, newValue => new TerminateWithGameFeatureStateChangedEvent(newValue));
+        await TrackIfChangedAsync(x => x.AutoStartWithBoot, newValue => new AutoStartFeatureStateChangedEvent(newValue));
+        await TrackIfChangedAsync(x => x.DisableAnalytics, newValue => new AnalyticsFeatureStateChangedEvent(!newValue));
 
-        if (@new.TerminateOnGameExit != current.TerminateOnGameExit)
-        {
-            await analyticsReporter.TrackEventAsync(new TerminateWithGameFeatureStateChangedEvent(@new.TerminateOnGameExit));
-        }
+        return;
 
-        if (@new.AutoStartWithBoot != current.AutoStartWithBoot)
+        async Task TrackIfChangedAsync(Func<UserPreferences, bool> isEnabled, Func<bool, AnalyticsEvent> createEvent)
         {
-            await analyticsReporter.TrackEventAsync(new AutoStartFeatureStateChangedEvent(@new.AutoStartWithBoot));
+            var newValue = isEnabled(@new);
+            if (newValue != isEnabled(CurrentPreferences))
+            {
+                await analyticsReporter.TrackEventAsync(createEvent(newValue));
+            }
         }
     }
 }
