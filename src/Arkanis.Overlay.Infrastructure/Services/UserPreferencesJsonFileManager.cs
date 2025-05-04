@@ -5,11 +5,13 @@ using System.Text.Json.Serialization;
 using Common;
 using Common.Converters.Json;
 using Domain.Abstractions.Services;
+using Domain.Models.Analytics;
 using Domain.Models.Keyboard;
 using Domain.Options;
 using Microsoft.Extensions.Logging;
 
-public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManager> logger) : IUserPreferencesManager
+public class UserPreferencesJsonFileManager(IGlobalAnalyticsReporter analyticsReporter, ILogger<UserPreferencesJsonFileManager> logger)
+    : IUserPreferencesManager
 {
     private readonly JsonSerializerOptions _options = new()
     {
@@ -61,6 +63,8 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
 
     public async Task SaveAndApplyUserPreferencesAsync(UserPreferences userPreferences)
     {
+        await ReportFeatureChangesAsync(userPreferences);
+
         CurrentPreferences = userPreferences;
         ApplyPreferences?.Invoke(this, CurrentPreferences);
 
@@ -77,6 +81,25 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
         catch (Exception exception)
         {
             logger.LogError(exception, "Could not save preferences to {FilePath}", PreferencesFileInfo.FullName);
+        }
+    }
+
+    private async Task ReportFeatureChangesAsync(UserPreferences @new)
+    {
+        var current = CurrentPreferences;
+        if (@new.BlurBackground != current.BlurBackground)
+        {
+            await analyticsReporter.TrackEventAsync(new BlurFeatureStateChangedEvent(@new.BlurBackground));
+        }
+
+        if (@new.TerminateOnGameExit != current.TerminateOnGameExit)
+        {
+            await analyticsReporter.TrackEventAsync(new TerminateWithGameFeatureStateChangedEvent(@new.TerminateOnGameExit));
+        }
+
+        if (@new.AutoStartWithBoot != current.AutoStartWithBoot)
+        {
+            await analyticsReporter.TrackEventAsync(new AutoStartFeatureStateChangedEvent(@new.AutoStartWithBoot));
         }
     }
 }
