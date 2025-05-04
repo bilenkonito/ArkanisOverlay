@@ -1,0 +1,157 @@
+@using System.Reflection
+<MudDialog>
+    <TitleContent>
+        About
+    </TitleContent>
+    <DialogContent>
+        <style>
+            a.badge {
+                height: 28px;
+            }
+        </style>
+        <MudStack AlignItems="@AlignItems.Center" Class="mb-6">
+            <MudText Typo="@Typo.subtitle1">
+                Created by
+                <MudLink Href="https://discord.com/users/174617873182883841"
+                         Target="_blank"
+                         Color="@Color.Info">
+                    FatalMerlin
+                </MudLink>
+                ,
+                <MudLink Href="https://discord.com/users/224580858432978944"
+                         Target="_blank"
+                         Color="@Color.Info">
+                    TheKronnY
+                </MudLink>
+                ,
+                and
+                <MudLink Href="https://github.com/ArkanisCorporation/ArkanisOverlay/graphs/contributors"
+                         Target="_blank"
+                         Color="@Color.Info">
+                    contributors
+                </MudLink>
+                .
+            </MudText>
+            <MudText Align="@Align.Center" Class="mb-2">
+                <span>Program version</span>
+                <MudLink Href="@($"https://github.com/ArkanisCorporation/ArkanisOverlay/releases/tag/{ProgramVersion}")"
+                         Target="_blank"
+                         Color="@Color.Info">
+                    @ProgramVersion
+                </MudLink>
+            </MudText>
+            <MudImage
+                Src="@LinkHelper.GetPathToAsset("img/MadeByTheCommunity_Black.png")"
+                Style="opacity: 70%; width: 50%"/>
+
+            <MudDivider DividerType="@DividerType.FullWidth"/>
+            <MudStack AlignItems="@AlignItems.Center"
+                      Justify="@Justify.Center"
+                      Wrap="@Wrap.Wrap"
+                      Row>
+                <a href="https://github.com/ArkanisCorporation/ArkanisOverlay/issues/new/choose"
+                   target="_blank"
+                   class="badge">
+                    <img alt="GitHub Issues"
+                         src="https://img.shields.io/github/issues/ArkanisCorporation/ArkanisOverlay?logo=github&style=for-the-badge&labelColor=@LabelColorHex&color=@GitHubContentColorHex">
+                </a>
+                <a href="https://github.com/ArkanisCorporation/ArkanisOverlay/releases"
+                   target="_blank"
+                   class="badge">
+                    <img alt="GitHub Release"
+                         src="https://img.shields.io/github/v/release/ArkanisCorporation/ArkanisOverlay?include_prereleases&sort=semver&logo=github&style=for-the-badge&labelColor=@LabelColorHex&color=@GitHubContentColorHex">
+                </a>
+                <a href="https://github.com/ArkanisCorporation/ArkanisOverlay/discussions"
+                   target="_blank"
+                   class="badge">
+                    <img alt="GitHub Support"
+                         src="https://img.shields.io/badge/github-support?logo=github&label=support&style=for-the-badge&labelColor=@LabelColorHex&color=@GitHubContentColorHex">
+                </a>
+                <a href="https://arkanis.cc"
+                   target="_blank"
+                   class="badge">
+                    <img alt="Arkanis Website"
+                         src="https://img.shields.io/badge/Arkanis.cc-website?logo=googlechrome&logoColor=white&label=website&style=for-the-badge&labelColor=@LabelColorHex&color=@ArkanisContentColorHex">
+                </a>
+                <a href="https://join.arkanis.cc/"
+                   target="_blank"
+                   class="badge">
+                    <img alt="Arkanis Discord - Support"
+                         src="https://img.shields.io/discord/1294685596991750277?logo=discord&logoColor=white&style=for-the-badge&labelColor=@LabelColorHex&color=@ArkanisContentColorHex">
+                </a>
+            </MudStack>
+
+            <MudDivider DividerType="@DividerType.FullWidth"/>
+            <MudText Typo="@Typo.body2" Align="@Align.Justify" Class="text-disabled">
+                This is an unofficial Star Citizen tool, unaffiliated with the Cloud Imperium group of companies.
+                Some content on this site belongs to their respective owners.
+                Star Citizen&reg;, Roberts Space Industries&reg; and Cloud Imperium&reg; are registered trademarks of Cloud Imperium Rights LLC.
+                All data presented is estimated and maintained by the Star Citizen community.
+                It may not precisely reflect the current state of live servers.
+                <br>
+                Arkanis Corporation is a fictional entity within the Star Citizen universe and is not associated with
+                any real-world company.
+                Partnered with
+                <a href="https://uexcorp.space/" target="_blank">UEX Corporation</a>
+                .
+            </MudText>
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Cancel">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+
+    private static readonly Version ProgramVersion = Assembly.GetExecutingAssembly().GetName().Version ?? new Version();
+
+    [CascadingParameter]
+    public MudThemeProvider? ThemeProvider { get; set; }
+
+    [CascadingParameter]
+    public required IMudDialogInstance MudDialog { get; set; }
+
+    private string LabelColorHex
+        => (ThemeProvider switch
+        {
+            { Theme: null } => Colors.Gray.Darken3,
+            { IsDarkMode: true } => ThemeProvider.Theme.PaletteDark.GrayDark,
+            { IsDarkMode: false } => ThemeProvider.Theme.PaletteLight.GrayDark,
+            _ => Colors.Gray.Darken3,
+        }).Trim('#');
+
+    private string GitHubContentColorHex
+        => (ThemeProvider switch
+        {
+            { Theme: null } => Colors.Blue.Darken2,
+            { IsDarkMode: true } => ThemeProvider.Theme.PaletteDark.InfoDarken,
+            { IsDarkMode: false } => ThemeProvider.Theme.PaletteLight.InfoDarken,
+            _ => Colors.Blue.Darken2,
+        }).Trim('#');
+
+    private string ArkanisContentColorHex
+        => (ThemeProvider switch
+        {
+            { Theme: null } => Colors.Purple.Default,
+            { IsDarkMode: true } => Colors.Purple.Darken1,
+            { IsDarkMode: false } => Colors.Purple.Lighten1,
+            _ => Colors.Purple.Default,
+        }).Trim('#');
+
+    private void Cancel()
+        => MudDialog.Cancel();
+
+    public static async Task<DialogResult> ShowAsync(IDialogService dialogService)
+    {
+        var dialogOptions = new DialogOptions
+        {
+            FullWidth = true,
+            MaxWidth = MaxWidth.Small,
+        };
+        var dialogRef = await dialogService.ShowAsync<AboutDialog>(null, dialogOptions);
+        return await dialogRef.Result ?? DialogResult.Cancel();
+    }
+
+}

@@ -83,17 +83,16 @@
 </div>
 
 <div style="position: fixed; top: 6px; right: 6px; z-index: 100">
-    <KeyboardShortcutBadge Keys="@( [KeyboardKey.MetaLeft, KeyboardKey.Comma])"
-                           Origin="@Origin.CenterLeft"
-                           Color="@Color.Dark"
-                           OnKeyPress="@OpenUserOptionsDialogAsync"
-                           DoNotOverlap
-                           IsActive>
+    <MudStack Spacing="0">
+        <MudIconButton
+            Color="@Color.Primary"
+            Icon="@MaterialSymbols.Outlined.Info"
+            OnClick="@OpenAboutDialogAsync"/>
         <MudIconButton
             Color="@Color.Primary"
             Icon="@MaterialSymbols.Outlined.Settings"
             OnClick="@OpenUserOptionsDialogAsync"/>
-    </KeyboardShortcutBadge>
+    </MudStack>
 </div>
 
 <MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1 px-3">
@@ -272,6 +271,9 @@
 
     private async Task OpenUserOptionsDialogAsync()
         => await UserPreferencesEditDialog.ShowAsync(DialogService);
+
+    private async Task OpenAboutDialogAsync()
+        => await AboutDialog.ShowAsync(DialogService);
 
     private async Task FocusSearchBoxAsync()
     {
