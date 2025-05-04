@@ -12,7 +12,7 @@
     }
     @if (Model is KnownPriceTag knownPriceTag)
     {
-        <span>@GameCurrency.Symbol&nbsp;@knownPriceTag.Price.Amount.ToMetric()</span>
+        <span style="white-space: nowrap">@GameCurrency.Symbol @knownPriceTag.Price.Amount.ToMetric(MetricNumeralFormats.WithSpace, 3)</span>
         <GameEntityNameCodePart Model="@(knownPriceTag.Location.Name.MainContent as GameEntityName.IHasCode)"
                                 Style="font-size: 12px">
             <PrefixContent>
