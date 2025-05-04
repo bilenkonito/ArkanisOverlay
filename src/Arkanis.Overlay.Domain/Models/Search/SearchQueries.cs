@@ -40,24 +40,6 @@ public abstract record TextSearch(string Content) : SearchQuery
     protected string NormalizedContent { get; } = Content.ToLowerInvariant();
 }
 
-public sealed record FullTextSearch(string Content) : TextSearch(Content)
-{
-    public override IEnumerable<SearchMatch> Match(SearchableTrait trait, int depth = 0)
-        => trait switch
-        {
-            SearchableCode data => [SoftMatch.OrNone(data.Code.Contains(Content, StringComparison.InvariantCultureIgnoreCase), trait, this)],
-            SearchableEntityCategory data
-                => [SoftMatch.OrNone(data.Category.ToString("G").Contains(Content, StringComparison.InvariantCultureIgnoreCase), trait, this)],
-            SearchableManufacturer data => Match(data.Manufacturer.SearchableAttributes.OfType<SearchableTextTrait>(), depth + 1),
-            SearchableLocation data => Match(data.Location.Parent?.SearchableAttributes.OfType<SearchableTextTrait>() ?? [], depth + 1),
-            SearchableName data => [SoftMatch.OrNone(data.Name.Contains(Content, StringComparison.InvariantCultureIgnoreCase), trait, this)],
-            _ => [new NoMatch(trait, this)],
-        };
-
-    public static SearchQuery Create(string content)
-        => new FullTextSearch(content);
-}
-
 public sealed record FuzzyTextSearch(string Content) : TextSearch(Content)
 {
     public override IEnumerable<SearchMatch> Match(SearchableTrait trait, int depth = 0)
@@ -67,7 +49,7 @@ public sealed record FuzzyTextSearch(string Content) : TextSearch(Content)
             SearchableEntityCategory data
                 => [new ScoredMatch(Fuzz.Ratio(NormalizedContent, data.Category.ToString("G").ToLowerInvariant()), depth, trait, this)],
             SearchableManufacturer data => Match(data.Manufacturer.SearchableAttributes.OfType<SearchableTextTrait>(), depth + 1),
-            SearchableLocation data => Match(data.Location.Parent?.SearchableAttributes.OfType<SearchableTextTrait>() ?? [], depth + 1),
+            SearchableLocation data => Match(data.Location.Parent?.SearchableAttributes ?? [], depth + 1),
             SearchableName data => [new ScoredMatch(Fuzz.TokenSortRatio(Content, data.Name), depth, trait, this)],
             _ => [new NoMatch(trait, this)],
         };
