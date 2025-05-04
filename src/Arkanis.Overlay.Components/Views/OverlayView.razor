@@ -14,7 +14,7 @@
 @inject IDialogService DialogService
 @inject IOverlayControls OverlayControls
 @inject ISearchService SearchService
-@inject IAnalyticsTracker AnalyticsTracker
+@inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
 @inject EventInterop EventInterop
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
@@ -260,7 +260,7 @@
 
             await _searchCancellation.CancelAsync();
             _searchCancellation = new CancellationTokenSource();
-            await AnalyticsTracker.TrackEventAsync(new EntitySearchEvent(SearchText));
+            await GlobalAnalyticsReporter.TrackEventAsync(new SearchEvent(SearchText));
             SearchResults = await SearchService.SearchAsync(searchQueries, _searchCancellation.Token);
             await InvokeAsync(StateHasChanged);
         }

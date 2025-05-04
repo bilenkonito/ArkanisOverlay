@@ -6,7 +6,8 @@ using Domain.Models.Analytics;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-public class GoogleAnalyticsTracker(IAnalytics analytics, IHostEnvironment hostEnvironment, ILogger<GoogleAnalyticsTracker> logger) : IAnalyticsTracker
+public class GoogleAnalyticsEventReporter(IAnalytics analytics, IHostEnvironment hostEnvironment, ILogger<GoogleAnalyticsEventReporter> logger)
+    : IAnalyticsEventReporter
 {
     private const string EventCategoryKey = "event_category";
     private const string EventLabelKey = "event_label";
@@ -23,8 +24,9 @@ public class GoogleAnalyticsTracker(IAnalytics analytics, IHostEnvironment hostE
     {
         var eventData = analyticsEvent switch
         {
+            BuiltInFeatureUsageStateChangedEvent @event => CreateSpecificEventData(@event),
             DialogOpenedEvent @event => CreateSpecificEventData(@event),
-            EntitySearchEvent @event => CreateSpecificEventData(@event),
+            SearchEvent @event => CreateSpecificEventData(@event),
             _ => [],
         };
 
@@ -38,7 +40,15 @@ public class GoogleAnalyticsTracker(IAnalytics analytics, IHostEnvironment hostE
         eventData[TrafficTypeKey] = hostEnvironment.IsProduction() ? "public" : "internal";
     }
 
-    private static Dictionary<string, object> CreateSpecificEventData(EntitySearchEvent @event)
+    private static Dictionary<string, object> CreateSpecificEventData(BuiltInFeatureUsageStateChangedEvent @event)
+        => new()
+        {
+            [EventCategoryKey] = "Feature",
+            [EventLabelKey] = @event.FeatureName,
+            ["value"] = @event.IsEnabled ? 1 : 0,
+        };
+
+    private static Dictionary<string, object> CreateSpecificEventData(SearchEvent @event)
         => new()
         {
             ["search_term"] = @event.Query,

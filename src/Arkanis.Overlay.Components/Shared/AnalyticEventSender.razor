@@ -1,0 +1,24 @@
+@using Arkanis.Overlay.Domain.Abstractions.Services
+@using Microsoft.Extensions.Logging
+@inject IAnalytics Analytics
+@inject IAnalyticsEventReporter AnalyticsEventReporter
+@inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
+@inject ILogger<AnalyticEventSender> Logger
+
+<NavigationTracker/>
+
+@code
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Logger.LogDebug("Initializing analytics tracking...");
+
+        await base.OnAfterRenderAsync(firstRender);
+        await Analytics.ConfigureGlobalConfigData([]);
+
+        if (firstRender)
+        {
+            await GlobalAnalyticsReporter.LinkReporterAsync(AnalyticsEventReporter);
+        }
+    }
+}
