@@ -6,23 +6,15 @@
 @using Microsoft.Extensions.Logging
 @implements IDisposable
 
-@if (UserRePreferencesProvider.CurrentPreferences.DisableAnalytics == false)
-{
-    <NavigationTracker/>
-}
+<NavigationTracker/>
 
 @code
 {
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Logger.LogDebug("Initializing analytics tracking...");
         await base.OnAfterRenderAsync(firstRender);
-
-        var globalConfigData = new Dictionary<string, object>
-        {
-            ["installationId"] = UserRePreferencesProvider.CurrentPreferences.InstallationId,
-        };
-        await Analytics.ConfigureGlobalConfigData(globalConfigData);
+        await ConfigureAnalyticsAsync(UserRePreferencesProvider.CurrentPreferences);
 
         if (firstRender)
         {
@@ -44,18 +36,32 @@
         try
         {
             await InvokeAsync(StateHasChanged);
-            if (preferences.DisableAnalytics)
-            {
-                Analytics.Disable();
-            }
-            else
-            {
-                Analytics.Enable();
-            }
+            await ConfigureAnalyticsAsync(preferences);
         }
         catch (Exception e)
         {
             Logger.LogError(e, "Failed to properly update analytics preferences");
         }
     }
+
+    private async Task ConfigureAnalyticsAsync(UserPreferences preferences)
+    {
+        Logger.LogDebug("Configuring analytics tracking, disable? {DisableAnalytics}", preferences.DisableAnalytics);
+
+        if (preferences.DisableAnalytics)
+        {
+            Analytics.Disable();
+        }
+        else
+        {
+            Analytics.Enable();
+
+            var globalConfigData = new Dictionary<string, object>
+            {
+                ["installationId"] = preferences.InstallationId,
+            };
+            await Analytics.ConfigureGlobalConfigData(globalConfigData);
+        }
+    }
+
 }
