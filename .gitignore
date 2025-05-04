@@ -126,3 +126,6 @@ fabric.properties
 
 *.user
 publish/
+
+# NPM (for semantic-release)
+node_modules/
