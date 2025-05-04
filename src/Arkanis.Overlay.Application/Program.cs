@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Application;
 
+using Common.Extensions;
 using Components.Helpers;
 using Components.Services;
 using Dapplo.Microsoft.Extensions.Hosting.AppServices;
@@ -100,8 +101,11 @@ public static class Program
                 services.AddMemoryCache();
 
                 // Workers
-                services.AddSingleton<WindowTracker>();
-                services.AddSingleton<GlobalHotkey>();
+                services.AddSingleton<WindowTracker>()
+                    .Alias<IHostedService, WindowTracker>();
+
+                services.AddSingleton<GlobalHotkey>()
+                    .Alias<IHostedService, GlobalHotkey>();
             }
         );
 }

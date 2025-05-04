@@ -5,18 +5,25 @@ using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Domain.Abstractions.Services;
-using Helpers;
+using Helpers;using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PInvoke = Windows.Win32.PInvoke;
 
-/**
- * Captures global hotkeys.
- * Based on: https://learn.microsoft.com/en-us/archive/blogs/toub/low-level-keyboard-hook-in-c
- */
-public class GlobalHotkey : IDisposable
+/// <summary>
+///     Captures global hotkeys.
+///     Based on: https://learn.microsoft.com/en-us/archive/blogs/toub/low-level-keyboard-hook-in-c
+/// </summary>
+public sealed class GlobalHotkey : IHostedService, IDisposable
 {
+    /// <summary>
+    ///     Invoked when the user-configured hotkey press is registered.
+    /// </summary>
+    public event EventHandler? ConfiguredHotKeyPressed;
+
     private static HOOKPROC? _proc;
     private static HHOOK _hookId = HHOOK.Null;
+
+    private readonly ILogger _logger;
     private readonly IUserPreferencesProvider _preferencesProvider;
 
     private Thread? _thread;
@@ -24,21 +31,11 @@ public class GlobalHotkey : IDisposable
     public GlobalHotkey(IUserPreferencesProvider preferencesProvider, ILogger<GlobalHotkey> logger)
     {
         _preferencesProvider = preferencesProvider;
-        Logger = logger;
+        _logger = logger;
         _proc = HookProc;
     }
 
-    private ILogger Logger { get; }
-
-    public void Dispose()
-        => Unhook();
-
-    /// <summary>
-    ///     Invoked when the user-configured hotkey press is registered.
-    /// </summary>
-    public event EventHandler? ConfiguredHotKeyPressed;
-
-    public void Start()
+    Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
         _thread = new Thread(Run)
         {
@@ -48,12 +45,22 @@ public class GlobalHotkey : IDisposable
             IsBackground = true,
         };
         _thread.Start();
+        return Task.CompletedTask;
     }
 
-    /**
-     * Entry method for Thread.
-     * Registers window event hooks and executes the message loop.
-     */
+    Task IHostedService.StopAsync(CancellationToken cancellationToken)
+    {
+        Dispose();
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+        => Unhook();
+
+    /// <summary>
+    ///     Entry method for Thread.
+    ///     Registers window event hooks and executes the message loop.
+    /// </summary>
     private void Run()
     {
         SetHook();
@@ -73,7 +80,7 @@ public class GlobalHotkey : IDisposable
         if (hook == HHOOK.Null)
         {
             var errorCode = Marshal.GetLastWin32Error();
-            Logger.LogWarning("Failed to set hook; {errorCode}", errorCode);
+            _logger.LogWarning("Failed to set hook; {ErrorCode}", errorCode);
             return;
         }
 
@@ -91,21 +98,25 @@ public class GlobalHotkey : IDisposable
         if (!result)
         {
             var errorCode = Marshal.GetLastWin32Error();
-            Logger.LogWarning("Failed to unhook; {errorCode}", errorCode);
+            _logger.LogWarning("Failed to unhook; {ErrorCode}", errorCode);
             return;
         }
 
         _hookId = HHOOK.Null;
     }
 
-    /**
-     * LowLevelKeyboardProc
-     * See: See: https://learn.microsoft.com/en-us/windows/win32/winmsg/lowlevelkeyboardproc
-     * @param nCode If nCode is less than zero, the hook procedure must pass the message to the CallNextHookEx function without further processing and should return the value returned by CallNextHookEx.
-     * @param wparam The identifier of the keyboard message.
-     * This parameter can be one of the following messages: WM_KEYDOWN, WM_KEYUP, WM_SYSKEYDOWN, or WM_SYSKEYUP.
-     * @param lparam A pointer to a KBDLLHOOKSTRUCT structure.
-     */
+    /// <summary>
+    ///     LowLevelKeyboardProc
+    ///     See: https://learn.microsoft.com/en-us/windows/win32/winmsg/lowlevelkeyboardproc
+    /// </summary>
+    /// <param name="nCode">
+    ///     If nCode is less than zero, the hook procedure must pass the message to the CallNextHookEx function without further processing and should return the value returned by CallNextHookEx.</param>
+    /// <param name="wparam">
+    ///     The identifier of the keyboard message.
+    ///     This parameter can be one of the following messages: WM_KEYDOWN, WM_KEYUP, WM_SYSKEYDOWN, or WM_SYSKEYUP.
+    /// </param>
+    /// <param name="lparam">A pointer to a KBDLLHOOKSTRUCT structure.</param>
+    /// <returns></returns>
     private LRESULT HookProc(int nCode, WPARAM wparam, LPARAM lparam)
     {
         if (nCode < 0)
@@ -140,7 +151,7 @@ public class GlobalHotkey : IDisposable
             return;
         }
 
-        Logger.LogDebug("Hotkey pressed");
+        _logger.LogDebug("Configured Hotkey pressed");
         ConfiguredHotKeyPressed?.Invoke(null, EventArgs.Empty);
     }
 
