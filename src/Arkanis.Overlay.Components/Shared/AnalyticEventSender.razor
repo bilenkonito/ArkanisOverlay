@@ -1,0 +1,67 @@
+@inject IAnalytics Analytics
+@inject IAnalyticsEventReporter AnalyticsEventReporter
+@inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
+@inject IUserPreferencesProvider UserRePreferencesProvider
+@inject ILogger<AnalyticEventSender> Logger
+@using Microsoft.Extensions.Logging
+@implements IDisposable
+
+<NavigationTracker/>
+
+@code
+{
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        await ConfigureAnalyticsAsync(UserRePreferencesProvider.CurrentPreferences);
+
+        if (firstRender)
+        {
+            await GlobalAnalyticsReporter.LinkReporterAsync(AnalyticsEventReporter);
+        }
+    }
+
+    public void Dispose()
+        => UserRePreferencesProvider.ApplyPreferences -= OnPreferencesChanged;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        UserRePreferencesProvider.ApplyPreferences += OnPreferencesChanged;
+    }
+
+    private async void OnPreferencesChanged(object? _, UserPreferences preferences)
+    {
+        try
+        {
+            await InvokeAsync(StateHasChanged);
+            await ConfigureAnalyticsAsync(preferences);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Failed to properly update analytics preferences");
+        }
+    }
+
+    private async Task ConfigureAnalyticsAsync(UserPreferences preferences)
+    {
+        Logger.LogDebug("Configuring analytics tracking, disable? {DisableAnalytics}", preferences.DisableAnalytics);
+
+        if (preferences.DisableAnalytics)
+        {
+            Analytics.Disable();
+        }
+        else
+        {
+            Analytics.Enable();
+
+            var globalConfigData = new Dictionary<string, object>
+            {
+                ["installationId"] = preferences.InstallationId,
+            };
+            await Analytics.ConfigureGlobalConfigData(globalConfigData);
+        }
+    }
+
+}

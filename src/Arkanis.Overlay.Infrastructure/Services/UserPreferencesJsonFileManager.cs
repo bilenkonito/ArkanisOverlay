@@ -5,11 +5,13 @@ using System.Text.Json.Serialization;
 using Common;
 using Common.Converters.Json;
 using Domain.Abstractions.Services;
+using Domain.Models.Analytics;
 using Domain.Models.Keyboard;
 using Domain.Options;
 using Microsoft.Extensions.Logging;
 
-public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManager> logger) : IUserPreferencesManager
+public class UserPreferencesJsonFileManager(IGlobalAnalyticsReporter analyticsReporter, ILogger<UserPreferencesJsonFileManager> logger)
+    : IUserPreferencesManager
 {
     private readonly JsonSerializerOptions _options = new()
     {
@@ -61,6 +63,8 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
 
     public async Task SaveAndApplyUserPreferencesAsync(UserPreferences userPreferences)
     {
+        await TrackFeatureChangesAsync(userPreferences);
+
         CurrentPreferences = userPreferences;
         ApplyPreferences?.Invoke(this, CurrentPreferences);
 
@@ -77,6 +81,25 @@ public class UserPreferencesJsonFileManager(ILogger<UserPreferencesJsonFileManag
         catch (Exception exception)
         {
             logger.LogError(exception, "Could not save preferences to {FilePath}", PreferencesFileInfo.FullName);
+        }
+    }
+
+    private async Task TrackFeatureChangesAsync(UserPreferences @new)
+    {
+        await TrackIfChangedAsync(x => x.BlurBackground, newValue => new BlurFeatureStateChangedEvent(newValue));
+        await TrackIfChangedAsync(x => x.TerminateOnGameExit, newValue => new TerminateWithGameFeatureStateChangedEvent(newValue));
+        await TrackIfChangedAsync(x => x.AutoStartWithBoot, newValue => new AutoStartFeatureStateChangedEvent(newValue));
+        await TrackIfChangedAsync(x => x.DisableAnalytics, newValue => new AnalyticsFeatureStateChangedEvent(!newValue));
+
+        return;
+
+        async Task TrackIfChangedAsync(Func<UserPreferences, bool> isEnabled, Func<bool, AnalyticsEvent> createEvent)
+        {
+            var newValue = isEnabled(@new);
+            if (newValue != isEnabled(CurrentPreferences))
+            {
+                await analyticsReporter.TrackEventAsync(createEvent(newValue));
+            }
         }
     }
 }
