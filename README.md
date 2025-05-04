@@ -1,16 +1,16 @@
 # Arkanis Overlay
 
+**A Next-Generation Overlay Companion for Star Citizen**<br>
+Created by **[FatalMerlin](https://discord.com/users/174617873182883841)**,
+co-founder of the in-game organization **[Arkanis Corporation](https://join.arkanis.cc/)**,
+and **[TheKronnY](https://discord.com/users/224580858432978944)**,
+[an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg).
+
 ![GitHub commits since latest release](https://img.shields.io/github/commits-since/ArkanisCorporation/ArkanisOverlay/latest?logo=github)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/ArkanisCorporation/ArkanisOverlay/main?logo=github)
 [![GitHub Support](https://img.shields.io/badge/github-support?logo=github&label=support)](https://github.com/ArkanisCorporation/ArkanisOverlay/discussions)
 [![Arkanis Website](https://img.shields.io/badge/Arkanis.cc-website?logo=googlechrome&logoColor=white&label=website)](https://arkanis.cc)
 [![Arkanis Discord](https://img.shields.io/discord/1294685596991750277?logo=discord&logoColor=white)](https://join.arkanis.cc/)
-
-**A Next-Generation Overlay Companion for Star Citizen**
-Created by **[FatalMerlin](https://discord.com/users/174617873182883841)**,
-co-founder of the in-game organization **[Arkanis Corporation](https://join.arkanis.cc/)**,
-and **[TheKronnY](https://discord.com/users/224580858432978944)**,
-[an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg).
 
 ---
 
@@ -29,21 +29,24 @@ The overlay is currently in **active development** and driven by a clear mission
 
 ## ✨ Key User Features (MVP)
 
-- 🔍 **In-Game Search Tool**
-  Find general and commonly-needed game information fast — no more alt-tabbing to search websites.
+- **In-Game Search Tool**
+  — Find general and commonly-needed game information fast — no more alt-tabbing to search websites.
 
-- 📦 **Integrated Community Data**
-  Seamlessly connected with [UEX](https://uexcorp.space) and other community tools to enrich in-game decision-making.
+- **Integrated Community Data**
+  — Seamlessly connected with [UEX](https://uexcorp.space) and other community tools to enrich in-game decision-making.
+
+- **Automatic Startup**
+  — Launches automatically when you start Windows and Star Citizen, so you’re always ready to go.
 
 ## 🤝 Community Focus
 
 - 🧪 **Community-Driven Development**
-  Built in collaboration with players and devs who actively use and shape the tools.
+  — Built in collaboration with players and devs who actively use and shape the tools.
 
 ## 🖥️ Tech Stack
 
 - ⚙️ **WPF-Hosted Blazor App**
-  Built in C# using modern UI technologies for smooth performance and extensibility.
+  — Built in C# using modern UI technologies for smooth performance and simple extensibility.
 
 ---
 
@@ -56,15 +59,16 @@ We're dreaming big — here's what's ahead:
 - [ ] Self-updater and installer support (in progress)
 - [ ] Improved reliability and usability
 - [ ] Configurable display: Overlay layout, themes, behavior
-- [x] Global keyboard shortcuts for quick access
+- [x] Global keyboard shortcuts for quick access and navigation
 
 ### 🔎 Smarter Search
 
 - [x] Full-text **fuzzy search** across item databases
-- [ ] Improved result ranking and filtering
+- [ ] Improved result sorting and filtering
 
 ### 🔗 Integrations & Tools
 
+- [x] Game entity search sourced from [UEX Corporation](https://uexcorp.space/)
 - [ ] [UEX CLI](https://github.com/UEXCorp/UEX-CLI) and MFD screen integration
 - [ ] Embedded tools and services — permissions required
     - [ ] [SPViewer](https://www.spviewer.eu/)
@@ -165,7 +169,7 @@ Big shout-out to:
 - **UEX Dev Team** for their continued support, testing, and future collaboration.
 - Everyone in the **Arkanis Corporation** and broader SC community who has provided feedback and ideas.
 
-Want to contribute, suggest features, or test?
+Want to contribute, suggest features, or participate in app testing?
 [Open an issue](https://github.com/ArkanisCorporation/ArkanisOverlay/issues/new/choose) or
 contact [@FatalMerlin](https://discord.com/users/174617873182883841) — we’d love your input!
 
