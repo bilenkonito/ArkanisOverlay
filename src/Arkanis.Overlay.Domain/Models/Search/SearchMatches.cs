@@ -76,6 +76,16 @@ public sealed record SoftMatch(SearchableTrait TargetTrait, SearchQuery Source) 
             SoftMatch => 0,
             _ => 1,
         };
+
+    public static SearchMatch OrNone(bool isMatch, SearchableTrait trait, SearchQuery query)
+        => isMatch
+            ? new SoftMatch(trait, query)
+            : new NoMatch(trait, query);
+
+    public static SearchMatch OrExcluded(bool isMatch, SearchableTrait trait, SearchQuery query)
+        => isMatch
+            ? new SoftMatch(trait, query)
+            : new ExcludeMatch(trait, query);
 }
 
 /// <summary>
