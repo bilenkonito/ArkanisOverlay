@@ -16,7 +16,7 @@ public record UserPreferences
     private CultureInfo ActiveCulture
         => CustomCultureInfo ?? CultureInfo.CurrentCulture;
 
-    public Guid InstallationId { get; set; } = Guid.NewGuid();
+    public Guid InstallationId { get; init; } = Guid.NewGuid();
 
     public bool AutoStartWithBoot { get; set; }
 
