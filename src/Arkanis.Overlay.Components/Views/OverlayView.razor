@@ -3,6 +3,7 @@
 @using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Abstractions.Services
 @using Arkanis.Overlay.Domain.Enums
+@using Arkanis.Overlay.Domain.Models.Analytics
 @using Arkanis.Overlay.Domain.Models.Keyboard
 @using Arkanis.Overlay.Domain.Models.Search
 @using Humanizer
@@ -13,6 +14,7 @@
 @inject IDialogService DialogService
 @inject IOverlayControls OverlayControls
 @inject ISearchService SearchService
+@inject IAnalyticsTracker AnalyticsTracker
 @inject EventInterop EventInterop
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
@@ -132,11 +134,12 @@
                             T="string"
                             Style="border-bottom-left-radius: 0; border-top-left-radius: 0"
                             @bind-Value="@SearchText"
-                            @bind-Value:after="@SearchAsync"
                             Variant="Variant.Outlined"
                             Adornment="@Adornment.End"
                             AdornmentIcon="@Icons.Material.Filled.Search"
                             AdornmentColor="@Color.Secondary"
+                            DebounceInterval="180"
+                            OnDebounceIntervalElapsed="@SearchAsync"
                             AutoFocus
                             Immediate/>
                     </KeyboardShortcutBadge>
@@ -257,6 +260,7 @@
 
             await _searchCancellation.CancelAsync();
             _searchCancellation = new CancellationTokenSource();
+            await AnalyticsTracker.TrackEventAsync(new EntitySearchEvent(SearchText));
             SearchResults = await SearchService.SearchAsync(searchQueries, _searchCancellation.Token);
             await InvokeAsync(StateHasChanged);
         }
