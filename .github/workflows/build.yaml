@@ -47,7 +47,7 @@ jobs:
       - name: Test
         run: dotnet test --no-build --verbosity normal /p:EnableWindowsTargeting=true
       - name: Publish
-        run: dotnet publish --no-build "./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj" --configuration Release /p:EnableWindowsTargeting=true -r win-x64 --output "./publish"
+        run: dotnet publish "./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj" --configuration Release /p:EnableWindowsTargeting=true -r win-x64 --output "./publish"
 
       - name: Remove excess files
         run: find ./publish -type f -name "*.pdb" -delete
