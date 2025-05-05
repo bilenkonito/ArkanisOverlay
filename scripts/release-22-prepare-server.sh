@@ -10,8 +10,14 @@
 
 [[ -z "${VERSION}" ]] && >&2 echo "VERSION is not set" && exit 2
 [[ -z "${VERSION_TAG}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
+[[ -z "${REGISTRY}" ]] && REGISTRY="ghcr.io"
 [[ -z "${CONFIGURATION}" ]] && CONFIGURATION="Release"
 
-"$(dirname "$(realpath "$0")")/release-21-prepare-win.sh"
+dotnet restore --locked-mode
 
-"$(dirname "$(realpath "$0")")/release-22-prepare-server.sh"
+dotnet publish ./src/Arkanis.Overlay.Host.Server/Arkanis.Overlay.Host.Server.csproj \
+    --no-restore \
+    --configuration ${CONFIGURATION} \
+    -p:PublishProfile=DefaultContainer \
+    -p:ContainerRegistry=${REGISTRY} \
+    -p:ContainerImageTag="${VERSION_TAG}"

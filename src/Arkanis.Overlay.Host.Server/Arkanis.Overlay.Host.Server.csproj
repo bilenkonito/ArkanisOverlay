@@ -6,6 +6,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <ContainerRepository>ArkanisCorporation/ArkanisOverlay</ContainerRepository>
+    </PropertyGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\Arkanis.Overlay.Components\Arkanis.Overlay.Components.csproj"/>
         <ProjectReference Include="..\Arkanis.Overlay.Infrastructure\Arkanis.Overlay.Infrastructure.csproj"/>
