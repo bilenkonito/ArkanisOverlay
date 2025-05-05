@@ -7,28 +7,27 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
 using Domain.Abstractions.Services;
-using Exceptions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-/// <summary>
-/// Represents the current state of the window, e.g. if it is minimized, maximized, normal, closed, or lost from tracking.
-/// </summary>
-public enum ExtendedWindowState
-{
-    Minimized,
-    Maximized,
-    Normal,
-    Closed,
-    Lost,
-}
+// /// <summary>
+// /// Represents the current state of the window, e.g. if it is minimized, maximized, normal, closed, or lost from tracking.
+// /// </summary>
+// public enum ExtendedWindowState
+// {
+//     Minimized,
+//     Maximized,
+//     Normal,
+//     Closed,
+//     Lost,
+// }
 
 /// <summary>
 /// Tracks the target window and raises events for window state changes, window position changes, and window focus changes.
 /// </summary>
 public sealed class WindowTracker : IHostedService, IDisposable
 {
-    private const uint WM_INVOKE_ACTION = PInvoke.WM_USER + 100;
+    private const uint WmInvokeAction = PInvoke.WM_USER + 100;
 
     private const string WindowClass = Constants.WindowClass;
     private const string WindowName = Constants.WindowName;
@@ -37,7 +36,7 @@ public sealed class WindowTracker : IHostedService, IDisposable
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly IUserPreferencesProvider _userPreferencesProvider;
     private static Dictionary<HWINEVENTHOOK, WINEVENTPROC> _registeredHooksDictionary = new();
-    private static Dictionary<HWINEVENTHOOK, Thread> _threadMap = new();
+    private static readonly Dictionary<HWINEVENTHOOK, Thread> ThreadMap = new();
 
     private readonly ConcurrentQueue<Action> _actionQueue = new();
 
@@ -56,13 +55,13 @@ public sealed class WindowTracker : IHostedService, IDisposable
 
     private CancellationTokenSource _processExitWatcherCts = new();
 
-    /// <summary>
-    ///
-    /// </summary>
-    /// <remarks>
-    ///     By default, we do not know the current window state, so we have "lost" track of it
-    /// </remarks>
-    private ExtendedWindowState _currentWindowState = ExtendedWindowState.Lost;
+    // /// <summary>
+    // ///
+    // /// </summary>
+    // /// <remarks>
+    // ///     By default, we do not know the current window state, so we have "lost" track of it
+    // /// </remarks>
+    // private ExtendedWindowState _currentWindowState = ExtendedWindowState.Lost;
 
     /// <summary>
     ///     Raised when the Star Citizen game window was found.
@@ -150,7 +149,7 @@ public sealed class WindowTracker : IHostedService, IDisposable
         // see: https://stackoverflow.com/a/2223270/4161937
         while (PInvoke.GetMessage(out var msg, HWND.Null, 0, 0))
         {
-            if (msg.message == WM_INVOKE_ACTION)
+            if (msg.message == WmInvokeAction)
             {
                 ProcessActionQueue();
             }
@@ -183,7 +182,7 @@ public sealed class WindowTracker : IHostedService, IDisposable
 
         if (_thread == null) { return; }
 
-        PInvoke.PostThreadMessage(_threadId, WM_INVOKE_ACTION, UIntPtr.Zero, IntPtr.Zero);
+        PInvoke.PostThreadMessage(_threadId, WmInvokeAction, UIntPtr.Zero, IntPtr.Zero);
     }
 
     private static void RegisterWinEventHook(
@@ -214,7 +213,7 @@ public sealed class WindowTracker : IHostedService, IDisposable
         }
 
         _registeredHooksDictionary.Add(eventHookHandle, pfnWinEventProc);
-        _threadMap.Add(eventHookHandle, Thread.CurrentThread);
+        ThreadMap.Add(eventHookHandle, Thread.CurrentThread);
     }
 
     private static void WinEventDelegate(
@@ -250,14 +249,14 @@ public sealed class WindowTracker : IHostedService, IDisposable
             Console.WriteLine("Failed to unhook win event hook: {0} - {1}", hWinEventHook, code);
             Console.WriteLine(
                 "Expected Thread: {0} - Actual: {1} - Equal: {2}",
-                _threadMap[hWinEventHook].ManagedThreadId,
+                ThreadMap[hWinEventHook].ManagedThreadId,
                 Environment.CurrentManagedThreadId,
-                _threadMap[hWinEventHook] == Thread.CurrentThread
+                ThreadMap[hWinEventHook] == Thread.CurrentThread
             );
         }
 
         _registeredHooksDictionary.Remove(hWinEventHook);
-        _threadMap.Remove(hWinEventHook);
+        ThreadMap.Remove(hWinEventHook);
     }
 
 
@@ -554,7 +553,7 @@ public sealed class WindowTracker : IHostedService, IDisposable
     }
 
     private void StopProcessExitWatcher()
-        => _processExitWatcherCts?.Cancel();
+        => _processExitWatcherCts.Cancel();
 
     public bool IsWindowFocused()
     {
@@ -565,7 +564,10 @@ public sealed class WindowTracker : IHostedService, IDisposable
         var windowTitle = PInvoke.GetWindowText(hWnd);
         // allows for convenient debugging
         // this way the DevTools window counts as the window being focused
-        isFocused |= Debugger.IsAttached && windowTitle.StartsWith("DevTools", StringComparison.InvariantCulture);
+        if (windowTitle != null)
+        {
+            isFocused |= Debugger.IsAttached && windowTitle.StartsWith("DevTools", StringComparison.InvariantCulture);
+        }
 #endif
 
         return isFocused;
