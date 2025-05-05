@@ -2,14 +2,14 @@
     "branches": [
         "main",
         {
-            "name": "dev",
+            "name": "nightly",
             "channel": "nightly",
             "prerelease": "nightly"
         },
         {
-            "name": "46-build-pipeline",
-            "channel": "test",
-            "prerelease": "test"
+            "name": "rc",
+            "channel": "rc",
+            "prerelease": "rc"
         }
     ],
     "repositoryUrl": "https://github.com/ArkanisCorporation/ArkanisOverlay",
@@ -35,8 +35,8 @@
             "@semantic-release/github",
             {
                 "assets": [
-                    { "path": "ArkanisOverlay.zip", "label": "Arkanis Overlay" },
-                    { "path": "CHANGELOG.md", "label": "Arkanis Overlay" }
+                    { "path": "ArkanisOverlay.zip" },
+                    { "path": "CHANGELOG.md" }
 
                 ]
             }

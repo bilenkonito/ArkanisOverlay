@@ -2,9 +2,9 @@ name: .NET build
 
 on:
   push:
-    branches: [ main, dev, feature/ci, 46-build-pipeline ]
+    branches: [ main, dev, rc, nightly, feature/ci ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, dev, rc, nightly ]
 
 permissions:
   contents: write       # for publishing a GitHub release
