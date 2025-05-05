@@ -60,7 +60,9 @@ jobs:
         id: semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEBUG: ${{ inputs.dry_run && 'semantic-release:*' || '' }}
         with:
+          ci: ${{ ! inputs.dry_run }}
           dry_run: ${{ inputs.dry_run }}
           semantic_version: 24.2.3
           extra_plugins: |

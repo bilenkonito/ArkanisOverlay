@@ -26,6 +26,4 @@ jobs:
     uses: ./.github/workflows/_release.yaml
     secrets: inherit
     with:
-      ci: ${{ github.ref != 'refs/heads/feature/ci' }}
-      debug: ${{ github.ref == 'refs/heads/feature/ci' }}
       dry_run: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/feature/ci' }}
