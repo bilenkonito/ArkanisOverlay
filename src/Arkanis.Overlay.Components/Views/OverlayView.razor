@@ -240,14 +240,10 @@
                 return;
             }
 
-            var searchQueries = SearchText.Split(',', SplittingOptions)
-                .SelectMany(searchPart => searchPart.StartsWith(':')
-                    ? searchPart.Split(' ', 2, SplittingOptions)
-                    : [searchPart]
-                )
+            var searchQueries = SearchText.Split(' ', SplittingOptions)
                 .Select(searchPart => searchPart.StartsWith(':')
                     ? _categorySearchShortcuts.GetValueOrDefault(searchPart.ToLower()) ?? EmptySearch.Instance
-                    : FuzzyStringSearch.Create(searchPart)
+                    : TextSearch.Fuzzy(searchPart)
                 )
                 .Where(search => search is not EmptySearch)
                 .ToList();
