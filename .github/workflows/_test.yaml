@@ -30,10 +30,10 @@ jobs:
       -   run: echo "Cache hit - ${{ steps.setup-dotnet.outputs.cache-hit }}"
 
       -   name: Restore dependencies
-          run: dotnet restore --locked-mode /p:EnableWindowsTargeting=true
+          run: dotnet restore --locked-mode -p:EnableWindowsTargeting=true
 
       -   name: Build solution
-          run: dotnet build --no-restore /p:EnableWindowsTargeting=true
+          run: dotnet build --no-restore -p:EnableWindowsTargeting=true
 
       -   name: Test solution
-          run: dotnet test --no-build --verbosity normal /p:EnableWindowsTargeting=true
+          run: dotnet test --no-build --verbosity normal -p:EnableWindowsTargeting=true
