@@ -32,6 +32,7 @@ on:
 env:
   # https://github.com/actions/setup-dotnet?tab=readme-ov-file#reduce-caching-size
   NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+  REGISTRY: ghcr.io
 
 jobs:
   release:
