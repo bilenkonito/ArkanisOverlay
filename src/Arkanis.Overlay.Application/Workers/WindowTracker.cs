@@ -1,10 +1,13 @@
 namespace Arkanis.Overlay.Application.Workers;
 
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
 using Domain.Abstractions.Services;
+using Exceptions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -25,19 +28,27 @@ public enum ExtendedWindowState
 /// </summary>
 public sealed class WindowTracker : IHostedService, IDisposable
 {
+    private const uint WM_INVOKE_ACTION = PInvoke.WM_USER + 100;
+
     private const string WindowClass = Constants.WindowClass;
     private const string WindowName = Constants.WindowName;
 
     private readonly ILogger _logger;
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly IUserPreferencesProvider _userPreferencesProvider;
-    private static Dictionary<IntPtr, WINEVENTPROC> _registeredHooksDictionary = new();
+    private static Dictionary<HWINEVENTHOOK, WINEVENTPROC> _registeredHooksDictionary = new();
+    private static Dictionary<HWINEVENTHOOK, Thread> _threadMap = new();
+
+    private readonly ConcurrentQueue<Action> _actionQueue = new();
+
 
     /// <summary>
     /// The self-launched thread this class runs on.
     /// This is needed to be able to stop the thread.
     /// </summary>
     private Thread? _thread;
+
+    private uint _threadId;
 
     private HWND _currentWindowHWnd;
     private uint _currentWindowProcessId;
@@ -119,6 +130,8 @@ public sealed class WindowTracker : IHostedService, IDisposable
      */
     private void Run()
     {
+        _threadId = PInvoke.GetCurrentThreadId();
+
         var hWnd = PInvoke.FindWindow(WindowClass, WindowName);
         if (hWnd != HWND.Null)
         {
@@ -130,13 +143,47 @@ public sealed class WindowTracker : IHostedService, IDisposable
             StartWaitForNewWindow();
         }
 
+        // safe-guard: handle any actions enqueued before the thread was started
+        ProcessActionQueue();
+
         // this thread needs a message loop
         // see: https://stackoverflow.com/a/2223270/4161937
         while (PInvoke.GetMessage(out var msg, HWND.Null, 0, 0))
         {
+            if (msg.message == WM_INVOKE_ACTION)
+            {
+                ProcessActionQueue();
+            }
+
             PInvoke.TranslateMessage(in msg);
             PInvoke.DispatchMessage(in msg);
         }
+    }
+
+    private void ProcessActionQueue()
+    {
+        while (_actionQueue.TryDequeue(out var action))
+        {
+            try
+            {
+                _logger.LogDebug("Handling queued action");
+                action();
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                _logger.LogError(ex, "Error in dispatched action");
+            }
+        }
+    }
+
+    private void Invoke(Action action)
+    {
+        _actionQueue.Enqueue(action);
+
+        if (_thread == null) { return; }
+
+        PInvoke.PostThreadMessage(_threadId, WM_INVOKE_ACTION, UIntPtr.Zero, IntPtr.Zero);
     }
 
     private static void RegisterWinEventHook(
@@ -152,14 +199,22 @@ public sealed class WindowTracker : IHostedService, IDisposable
         var eventHookHandle = PInvoke.SetWinEventHook(
             eventMin,
             eventMax,
-            null,
+            HMODULE.Null,
             WinEventDelegate,
             idProcess,
             idThread,
             dwFlags
         );
 
-        _registeredHooksDictionary.Add(eventHookHandle.DangerousGetHandle(), pfnWinEventProc);
+        if (eventHookHandle == HWINEVENTHOOK.Null)
+        {
+            var reason = Marshal.GetLastPInvokeErrorMessage();
+            // throw new NativeCallException($"Failed to set WinEventHook: {reason}");
+            Console.Write("Failed to set WinEventHook for event range {0}-{1}: {2}", eventMin, eventMax, reason);
+        }
+
+        _registeredHooksDictionary.Add(eventHookHandle, pfnWinEventProc);
+        _threadMap.Add(eventHookHandle, Thread.CurrentThread);
     }
 
     private static void WinEventDelegate(
@@ -185,12 +240,24 @@ public sealed class WindowTracker : IHostedService, IDisposable
 
     private static void UnhookWinEvent(HWINEVENTHOOK hWinEventHook)
     {
-        bool success = PInvoke.UnhookWinEvent(hWinEventHook);
+        var success = PInvoke.UnhookWinEvent(hWinEventHook);
+
         if (!success)
         {
+            var code = Marshal.GetLastWin32Error();
+            // throw new NativeCallException($"Failed to set WinEventHook: {reason}");
             // Logger.LogWarning("Failed to unhook win event hook: {hWinEventHook}", hWinEventHook);
-            Console.WriteLine("Failed to unhook win event hook: {0}", hWinEventHook);
+            Console.WriteLine("Failed to unhook win event hook: {0} - {1}", hWinEventHook, code);
+            Console.WriteLine(
+                "Expected Thread: {0} - Actual: {1} - Equal: {2}",
+                _threadMap[hWinEventHook].ManagedThreadId,
+                Environment.CurrentManagedThreadId,
+                _threadMap[hWinEventHook] == Thread.CurrentThread
+            );
         }
+
+        _registeredHooksDictionary.Remove(hWinEventHook);
+        _threadMap.Remove(hWinEventHook);
     }
 
 
@@ -313,7 +380,7 @@ public sealed class WindowTracker : IHostedService, IDisposable
         }
 
         // just to be safe (should, ideally, be completely redundant and a waste of a re-allocation)
-        _registeredHooksDictionary = new Dictionary<IntPtr, WINEVENTPROC>();
+        _registeredHooksDictionary = new Dictionary<HWINEVENTHOOK, WINEVENTPROC>();
     }
 
     private void OnWindowFound(object? sender, HWND hWnd)
@@ -478,7 +545,10 @@ public sealed class WindowTracker : IHostedService, IDisposable
                         return;
                     }
 
-                    ProcessExited?.Invoke(this, EventArgs.Empty);
+                    // dispatch to WindowTracker worker thread
+                    // otherwise we have a lot of fun :)))
+                    // => All Native InterOp needs to stick to the same thread
+                    Invoke(() => ProcessExited?.Invoke(this, EventArgs.Empty));
                 }
             );
     }

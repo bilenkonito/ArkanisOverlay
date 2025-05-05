@@ -83,3 +83,6 @@ OpenProcess
 CloseHandle
 WaitForSingleObject
 GetModuleFileNameEx
+
+PostThreadMessage
+GetCurrentThreadId
