@@ -2,57 +2,28 @@ name: .NET build
 
 on:
   push:
-    branches: [ main, dev, rc, nightly, feature/ci ]
+    branches: [ main, rc, nightly, dev, feature/ci ]
   pull_request:
-    branches: [ main, dev, rc, nightly ]
+    branches: [ main, rc, nightly, dev ]
 
 permissions:
   contents: write       # for publishing a GitHub release
   issues: write         # for commenting on released issues
   pull-requests: write  # for commenting on released pull requests
 
+env:
+  # https://github.com/actions/setup-dotnet?tab=readme-ov-file#reduce-caching-size
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
 jobs:
-  build:
+  test:
+    name: Tests
+    uses: ./.github/workflows/_test.yaml
 
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install npm dependencies
-        run: npm install
-
-      - name: Install dotnet-setversion
-        run: dotnet tool restore
-
-      - name: Inject version into project
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release --dry-run
-
-      - name: Restore dependencies
-        run: dotnet restore /p:EnableWindowsTargeting=true
-      - name: Build
-        run: dotnet build --no-restore /p:EnableWindowsTargeting=true
-      - name: Test
-        run: dotnet test --no-build --verbosity normal /p:EnableWindowsTargeting=true
-      - name: Publish
-        run: dotnet publish "./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj" --configuration Release /p:EnableWindowsTargeting=true -r win-x64 --output "./publish"
-
-      - name: Remove excess files
-        run: find ./publish -type f -name "*.pdb" -delete
-
-      - name: Semantic-Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+  release:
+    name: Release
+    needs: test
+    uses: ./.github/workflows/_release.yaml
+    secrets: inherit
+    with:
+      dry_run: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/feature/ci' }}

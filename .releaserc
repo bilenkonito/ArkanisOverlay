@@ -20,8 +20,9 @@
         [
             "@semantic-release/exec",
             {
-                "verifyReleaseCmd": "dotnet setversion \"${nextRelease.version}\" \"./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj\"",
-                "prepareCmd": "sh -c 'cp CHANGELOG.md publish/ ; cd publish ; zip -r ../ArkanisOverlay.zip .'"
+                "verifyReleaseCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} ./scripts/release-10-verify.sh",
+                "prepareCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} ./scripts/release-20-prepare.sh",
+                "publishCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} ./scripts/release-30-publish.sh"
             }
         ],
         "@semantic-release/release-notes-generator",
@@ -35,9 +36,14 @@
             "@semantic-release/github",
             {
                 "assets": [
-                    { "path": "ArkanisOverlay.zip" },
-                    { "path": "CHANGELOG.md" }
-
+                    {
+                        "label": "Arkanis Overlay - Windows x64 (Portable, zip)",
+                        "path": "ArkanisOverlay.zip"
+                    },
+                    {
+                        "label": "Changelog",
+                        "path": "CHANGELOG.md"
+                    }
                 ]
             }
         ]
