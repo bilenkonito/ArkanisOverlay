@@ -1,0 +1,45 @@
+{
+    "branches": [
+        "main",
+        {
+            "name": "dev",
+            "channel": "nightly",
+            "prerelease": "nightly"
+        },
+        {
+            "name": "46-build-pipeline",
+            "channel": "test",
+            "prerelease": "test"
+        }
+    ],
+    "repositoryUrl": "https://github.com/ArkanisCorporation/ArkanisOverlay",
+    "tagFormat": "v${version}",
+    "debug": false,
+    "plugins": [
+        "@semantic-release/commit-analyzer",
+        [
+            "@semantic-release/exec",
+            {
+                "verifyReleaseCmd": "dotnet setversion \"${nextRelease.version}\" \"./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj\"",
+                "prepareCmd": "sh -c 'cp CHANGELOG.md publish/ ; cd publish ; zip -r ../ArkanisOverlay.zip .'"
+            }
+        ],
+        "@semantic-release/release-notes-generator",
+        [
+            "@semantic-release/changelog",
+            {
+                "changelogFile": "CHANGELOG.md"
+            }
+        ],
+        [
+            "@semantic-release/github",
+            {
+                "assets": [
+                    { "path": "ArkanisOverlay.zip", "label": "Arkanis Overlay" },
+                    { "path": "CHANGELOG.md", "label": "Arkanis Overlay" }
+
+                ]
+            }
+        ]
+    ]
+}
