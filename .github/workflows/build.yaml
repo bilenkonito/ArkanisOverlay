@@ -27,3 +27,11 @@ jobs:
     secrets: inherit
     with:
       dry_run: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/feature/ci' }}
+
+  deploy:
+    name: Deployment
+    if: ${{ needs.release.outputs.new_version != '' }}
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Would run deployment pipeline here"
