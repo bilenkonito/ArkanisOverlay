@@ -3,6 +3,7 @@
 @using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Abstractions.Services
 @using Arkanis.Overlay.Domain.Enums
+@using Arkanis.Overlay.Domain.Models.Analytics
 @using Arkanis.Overlay.Domain.Models.Keyboard
 @using Arkanis.Overlay.Domain.Models.Search
 @using Humanizer
@@ -13,6 +14,7 @@
 @inject IDialogService DialogService
 @inject IOverlayControls OverlayControls
 @inject ISearchService SearchService
+@inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
 @inject EventInterop EventInterop
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
@@ -83,17 +85,16 @@
 </div>
 
 <div style="position: fixed; top: 6px; right: 6px; z-index: 100">
-    <KeyboardShortcutBadge Keys="@( [KeyboardKey.MetaLeft, KeyboardKey.Comma])"
-                           Origin="@Origin.CenterLeft"
-                           Color="@Color.Dark"
-                           OnKeyPress="@OpenUserOptionsDialogAsync"
-                           DoNotOverlap
-                           IsActive>
+    <MudStack Spacing="0">
+        <MudIconButton
+            Color="@Color.Primary"
+            Icon="@MaterialSymbols.Outlined.Info"
+            OnClick="@OpenAboutDialogAsync"/>
         <MudIconButton
             Color="@Color.Primary"
             Icon="@MaterialSymbols.Outlined.Settings"
             OnClick="@OpenUserOptionsDialogAsync"/>
-    </KeyboardShortcutBadge>
+    </MudStack>
 </div>
 
 <MudStack id="searchContainer" Class="d-flex justify-center align-center flex-grow-1 px-3">
@@ -132,11 +133,12 @@
                             T="string"
                             Style="border-bottom-left-radius: 0; border-top-left-radius: 0"
                             @bind-Value="@SearchText"
-                            @bind-Value:after="@SearchAsync"
                             Variant="Variant.Outlined"
                             Adornment="@Adornment.End"
                             AdornmentIcon="@Icons.Material.Filled.Search"
                             AdornmentColor="@Color.Secondary"
+                            DebounceInterval="180"
+                            OnDebounceIntervalElapsed="@SearchAsync"
                             AutoFocus
                             Immediate/>
                     </KeyboardShortcutBadge>
@@ -238,14 +240,10 @@
                 return;
             }
 
-            var searchQueries = SearchText.Split(',', SplittingOptions)
-                .SelectMany(searchPart => searchPart.StartsWith(':')
-                    ? searchPart.Split(' ', 2, SplittingOptions)
-                    : [searchPart]
-                )
+            var searchQueries = SearchText.Split(' ', SplittingOptions)
                 .Select(searchPart => searchPart.StartsWith(':')
                     ? _categorySearchShortcuts.GetValueOrDefault(searchPart.ToLower()) ?? EmptySearch.Instance
-                    : FuzzyStringSearch.Create(searchPart)
+                    : TextSearch.Fuzzy(searchPart)
                 )
                 .Where(search => search is not EmptySearch)
                 .ToList();
@@ -257,6 +255,7 @@
 
             await _searchCancellation.CancelAsync();
             _searchCancellation = new CancellationTokenSource();
+            await GlobalAnalyticsReporter.TrackEventAsync(new SearchEvent(SearchText));
             SearchResults = await SearchService.SearchAsync(searchQueries, _searchCancellation.Token);
             await InvokeAsync(StateHasChanged);
         }
@@ -272,6 +271,9 @@
 
     private async Task OpenUserOptionsDialogAsync()
         => await UserPreferencesEditDialog.ShowAsync(DialogService);
+
+    private async Task OpenAboutDialogAsync()
+        => await AboutDialog.ShowAsync(DialogService);
 
     private async Task FocusSearchBoxAsync()
     {

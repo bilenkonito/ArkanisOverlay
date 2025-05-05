@@ -32,6 +32,7 @@ builder.Services.AddMudServices(options =>
 builder.Services
     .AddJavaScriptEventInterop()
     .AddGlobalKeyboardProxyService()
+    .AddGoogleTrackingServices()
     .AddServerOverlayControls()
     .AddInfrastructure()
     .AddInfrastructureConfiguration(builder.Configuration)

@@ -16,9 +16,13 @@ public record UserPreferences
     private CultureInfo ActiveCulture
         => CustomCultureInfo ?? CultureInfo.CurrentCulture;
 
+    public Guid InstallationId { get; init; } = Guid.NewGuid();
+
     public bool AutoStartWithBoot { get; set; }
 
     public bool TerminateOnGameExit { get; set; }
+
+    public bool DisableAnalytics { get; set; }
 
     public bool BlurBackground { get; set; }
 

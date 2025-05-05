@@ -1,6 +1,8 @@
 namespace Arkanis.Overlay.Application;
 
 using Common.Extensions;
+using System.Data.Common;
+using Common;
 using Components.Helpers;
 using Components.Services;
 using Dapplo.Microsoft.Extensions.Hosting.AppServices;
@@ -26,7 +28,7 @@ public static class Program
     [STAThread]
     public static async Task Main(string[] args)
     {
-        var host = Host.CreateDefaultBuilder(args)
+        var hostBuilder = Host.CreateDefaultBuilder(args)
             .ConfigureLogging()
             .ConfigureSingleInstance(options =>
                 {
@@ -50,11 +52,34 @@ public static class Program
                 }
             )
             .UseWpfLifetime()
-            .UseConsoleLifetime()
-            .Build();
+            .UseConsoleLifetime();
 
-        await host.MigrateDatabaseAsync<OverlayDbContext>().ConfigureAwait(false);
-        await host.RunAsync().ConfigureAwait(false);
+        try
+        {
+            ApplicationConstants.LocalAppDataDir.Create();
+            var host = hostBuilder.Build();
+
+            try
+            {
+                await host.MigrateDatabaseAsync<OverlayDbContext>().ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                await Console.Error.WriteLineAsync($"Encountered a database error during migration: {ex.Message}");
+                await Console.Error.WriteLineAsync($"Trying auto-recovery by deleting default appdata directory at {ApplicationConstants.LocalAppDataDir}");
+
+                ApplicationConstants.LocalAppDataDir.Delete(true);
+                ApplicationConstants.LocalAppDataDir.Create();
+                await host.MigrateDatabaseAsync<OverlayDbContext>().ConfigureAwait(false);
+            }
+
+            await host.RunAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            await Console.Error.WriteLineAsync($"An error occurred during app startup: {ex.Message}");
+            throw;
+        }
     }
 
     private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder)
@@ -86,6 +111,7 @@ public static class Program
 
                 services.AddGlobalKeyboardProxyService();
                 services.AddJavaScriptEventInterop();
+                services.AddGoogleTrackingServices();
                 services.AddSingleton(typeof(WindowProvider<>));
 
                 services.AddHostedService<WindowsAutoStartManager>()
