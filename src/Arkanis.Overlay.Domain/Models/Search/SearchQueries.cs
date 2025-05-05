@@ -38,6 +38,9 @@ public sealed record EmptySearch : SearchQuery
 public abstract record TextSearch(string Content) : SearchQuery
 {
     protected string NormalizedContent { get; } = Content.ToLowerInvariant();
+
+    public static SearchQuery Fuzzy(string content)
+        => new FuzzyTextSearch(content);
 }
 
 public sealed record FuzzyTextSearch(string Content) : TextSearch(Content)

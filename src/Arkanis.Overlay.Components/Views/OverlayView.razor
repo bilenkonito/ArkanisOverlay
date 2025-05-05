@@ -243,7 +243,7 @@
             var searchQueries = SearchText.Split(' ', SplittingOptions)
                 .Select(searchPart => searchPart.StartsWith(':')
                     ? _categorySearchShortcuts.GetValueOrDefault(searchPart.ToLower()) ?? EmptySearch.Instance
-                    : FullTextSearch.Create(searchPart)
+                    : TextSearch.Fuzzy(searchPart)
                 )
                 .Where(search => search is not EmptySearch)
                 .ToList();
