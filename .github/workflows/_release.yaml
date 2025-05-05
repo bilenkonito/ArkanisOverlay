@@ -4,7 +4,7 @@ permissions:
   contents: write       # for publishing a GitHub release
   issues: write         # for commenting on released issues
   pull-requests: write  # for commenting on released pull requests
-  packages: write       # for publishing packages in 
+  packages: write       # for publishing packages in repository registry
 
 on:
   workflow_dispatch:
