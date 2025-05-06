@@ -13,4 +13,4 @@ set -eEuo pipefail
 [[ -z "${VERSION_TAG}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
 
 dotnet tool restore
-dotnet setversion "${VERSION}"
+dotnet setversion --recursive "${VERSION}"
