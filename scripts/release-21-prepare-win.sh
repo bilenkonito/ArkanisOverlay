@@ -17,7 +17,9 @@ dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csp
     --runtime win-x64 \
     --configuration ${CONFIGURATION} \
     --output publish \
-    -p:EnableWindowsTargeting=true
+    -p:EnableWindowsTargeting=true \
+    -p:DebugType=None \
+    -p:DebugSymbols=false
 
 cp CHANGELOG.md publish/
 

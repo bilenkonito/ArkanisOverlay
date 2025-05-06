@@ -18,4 +18,6 @@ dotnet publish ./src/Arkanis.Overlay.Host.Server/Arkanis.Overlay.Host.Server.csp
     --configuration ${CONFIGURATION} \
     -p:PublishProfile=DefaultContainer \
     -p:ContainerRegistry=${REGISTRY} \
-    -p:ContainerImageTag="${VERSION_TAG}"
+    -p:ContainerImageTag="${VERSION_TAG}" \
+    -p:DebugType=None \
+    -p:DebugSymbols=false
