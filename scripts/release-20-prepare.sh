@@ -9,9 +9,9 @@ set -eEuo pipefail
 #| `stdout`         | Can be used for logging.                                                                                            |
 #| `stderr`         | Can be used for logging.                                                                                            |
 
-[[ -z "${VERSION}" ]] && >&2 echo "VERSION is not set" && exit 2
-[[ -z "${VERSION_TAG}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
-[[ -z "${CONFIGURATION}" ]] && CONFIGURATION="Release"
+[[ -z "${VERSION+x}" ]] && >&2 echo "VERSION is not set" && exit 2
+[[ -z "${VERSION_TAG+x}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
+[[ -z "${CONFIGURATION+x}" ]] || CONFIGURATION="Release"
 
 "$(dirname "$(realpath "$0")")/release-21-prepare-win.sh"
 
