@@ -15,4 +15,4 @@ set -eEuo pipefail
 dotnet tool restore
 dotnet setversion --recursive "${VERSION}"
 
-dotnet restore --locked-mode
+dotnet restore --locked-mode -p:EnableWindowsTargeting=true
