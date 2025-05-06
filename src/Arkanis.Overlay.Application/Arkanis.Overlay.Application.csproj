@@ -14,12 +14,7 @@
         <ServerGarbageCollection>true</ServerGarbageCollection>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
-        <!-- PublishSingleFile in csproj breaks debugger -->
-        <PublishSingleFile>true</PublishSingleFile>
-        <SelfContained>true</SelfContained>
-        <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
-        <PublishDir>..\publish</PublishDir>
+    <PropertyGroup>
         <!-- Exclude unsupported languages -->
         <ResourceLanguages>en</ResourceLanguages>
         <SatelliteResourceLanguages>en-US;en</SatelliteResourceLanguages>
