@@ -50,6 +50,21 @@
         }
     }
 
+    @@keyframes fadeInDown {
+        0% {
+            transform: translateY(-50%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    #search-box-container {
+        animation: 250ms fadeInDown;
+    }
+
     #searchContainer {
         position: sticky;
         z-index: 1;
@@ -121,6 +136,7 @@
     <MudStack id="searchContainer" Class="d-flex justify-start align-center flex-grow-1 px-3">
         <div style="padding: 7.5vh"></div>
         <MudPaper Elevation="8"
+                  id="search-box-container"
                   Style="position: sticky; top: 0; z-index: 10; min-width: 60vw;">
             <MudStack Spacing="0"
                       AlignItems="@AlignItems.Center">
