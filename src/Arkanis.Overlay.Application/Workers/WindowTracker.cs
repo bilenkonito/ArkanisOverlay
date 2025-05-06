@@ -573,35 +573,36 @@ public sealed class WindowTracker : IHostedService, IDisposable
         return isFocused;
     }
 
-//     private void Handler_WindowFocused(
-//         HWINEVENTHOOK hWinEventHook,
-//         uint @event,
-//         HWND hWnd,
-//         int idObject,
-//         int idChild,
-//         uint idEventThread,
-//         uint dwmsEventTime)
-//     {
-//         // safety precaution
-//         // if (hWnd == HWND.Null) return;
-//
-//         // var isFocused = hWnd == _currentWindowHWnd;
-//         // sometimes there is an eroneous detected focus change
-//         // if the above check is used, the below check works 100% of the time
-//         var isFocused = PInvoke.GetForegroundWindow() == _currentWindowHWnd;
-//
-// #if DEBUG
-//         var windowTitle = GetWindowText(hWnd);
-//         // allows for convenient debugging
-//         // this way the DevTools window counts as the window being focused
-//         isFocused |= Debugger.IsAttached && windowTitle.StartsWith("DevTools");
-// #endif
-//
-//         // Logger.LogDebug(
-//         //     "Window focus changed: {isFocused} => Event: {event} - hWnd: {hWnd} - idObject: {idObject} - idChild: {idChild} - idEventThread: {idEventThread} - dwmsEventTime: {dwmsEventTime} - WindowTitle: '{windowTitle}'",
-//         //     isFocused, @event, (IntPtr)hWnd, idObject, idChild, idEventThread, dwmsEventTime, windowTitle);
-//         WindowFocusChanged?.Invoke(this, isFocused);
-//     }
+    private void Handler_WindowFocused(
+        HWINEVENTHOOK hWinEventHook,
+        uint @event,
+        HWND hWnd,
+        int idObject,
+        int idChild,
+        uint idEventThread,
+        uint dwmsEventTime)
+    {
+        // safety precaution
+        // if (hWnd == HWND.Null) return;
+
+        // var isFocused = hWnd == _currentWindowHWnd;
+        // sometimes there is an eroneous detected focus change
+        // if the above check is used, the below check works 100% of the time
+        var isFocused = PInvoke.GetForegroundWindow() == _currentWindowHWnd;
+
+#if DEBUG
+        var windowTitle = PInvoke.GetWindowText(hWnd);
+        // allows for convenient debugging
+        // this way the DevTools window counts as the window being focused
+        isFocused |= Debugger.IsAttached && (bool)windowTitle?.StartsWith("DevTools", StringComparison.InvariantCulture);
+#endif
+
+        // Logger.LogDebug(
+        //     "Window focus changed: {isFocused} => Event: {event} - hWnd: {hWnd} - idObject: {idObject} - idChild: {idChild} - idEventThread: {idEventThread} - dwmsEventTime: {dwmsEventTime} - WindowTitle: '{windowTitle}'",
+        //     isFocused, @event, (IntPtr)hWnd, idObject, idChild, idEventThread, dwmsEventTime, windowTitle);
+        WindowFocusChanged?.Invoke(this, isFocused);
+    }
+
     public void Dispose()
     {
         StopProcessExitWatcher();
