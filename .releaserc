@@ -10,6 +10,11 @@
             "name": "rc",
             "channel": "rc",
             "prerelease": "rc"
+        },
+        {
+            "name": "ci",
+            "channel": "ci",
+            "prerelease": "test-do-not-use"
         }
     ],
     "repositoryUrl": "https://github.com/ArkanisCorporation/ArkanisOverlay",
@@ -36,14 +41,8 @@
             "@semantic-release/github",
             {
                 "assets": [
-                    {
-                        "label": "Arkanis Overlay - Windows x64 (Portable, zip)",
-                        "path": "ArkanisOverlay.zip"
-                    },
-                    {
-                        "label": "Changelog",
-                        "path": "CHANGELOG.md"
-                    }
+                    { "path": "ArkanisOverlay.zip" },
+                    { "path": "CHANGELOG.md" }
                 ]
             }
         ]

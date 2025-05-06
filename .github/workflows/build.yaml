@@ -2,7 +2,7 @@ name: .NET build
 
 on:
   push:
-    branches: [ main, rc, nightly, dev, feature/ci ]
+    branches: [ main, rc, nightly, dev, ci ]
   pull_request:
     branches: [ main, rc, nightly, dev ]
 
@@ -27,7 +27,7 @@ jobs:
     uses: ./.github/workflows/_release.yaml
     secrets: inherit
     with:
-      dry_run: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/feature/ci' }}
+      dry_run: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/ci' }}
 
   deploy:
     name: Deployment
