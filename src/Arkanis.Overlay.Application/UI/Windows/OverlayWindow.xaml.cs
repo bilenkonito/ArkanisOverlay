@@ -57,14 +57,15 @@ public partial class OverlayWindow
     public static OverlayWindow? Instance { get; private set; }
 
     private void ApplyUserPreferences(object? sender, UserPreferences newPreferences)
-        => Dispatcher.Invoke(() => _blurHelper.SetBlurEnabled(newPreferences.BlurBackground));
-
-    protected override void OnInitialized(EventArgs e)
     {
-        base.OnInitialized(e);
+        // prevent attempting to set blur when window is not visible
+        // which would lead to a crash
+        if (!IsVisible)
+        {
+            return;
+        }
 
-        _windowTracker.Start();
-        _globalHotkey.Start();
+        Dispatcher.Invoke(() => _blurHelper.SetBlurEnabled(newPreferences.BlurBackground));
     }
 
     private void ShowOverlay()
@@ -75,7 +76,6 @@ public partial class OverlayWindow
         AttachThreadInput(windowThreadProcessId, currentThreadId, true);
         BringWindowToTop(mainWindowHandle);
         Show();
-        // PInvoke.ShowWindow((HWND)MainWindowHandle, SHOW_WINDOW_CMD.SW_SHOW);
         AttachThreadInput(windowThreadProcessId, currentThreadId, false);
 
         // only works when window is visible
@@ -92,7 +92,7 @@ public partial class OverlayWindow
     {
         _windowTracker.WindowFound +=
             (_, hWnd) => Dispatcher.Invoke(() => { _currentWindowHWnd = hWnd; });
-        _windowTracker.WindowLost +=
+        _windowTracker.ProcessExited +=
             (_, _) => Dispatcher.Invoke(() =>
                 {
                     _currentWindowHWnd = HWND.Null;

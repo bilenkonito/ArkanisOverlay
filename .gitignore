@@ -127,5 +127,8 @@ fabric.properties
 *.user
 publish/
 
+# Editor Swap Files
+*~
+
 # NPM (for semantic-release)
 node_modules/

@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Application;
 
+using Common.Extensions;
 using System.Data.Common;
 using Common;
 using Components.Helpers;
@@ -126,8 +127,11 @@ public static class Program
                 services.AddMemoryCache();
 
                 // Workers
-                services.AddSingleton<WindowTracker>();
-                services.AddSingleton<GlobalHotkey>();
+                services.AddSingleton<WindowTracker>()
+                    .Alias<IHostedService, WindowTracker>();
+
+                services.AddSingleton<GlobalHotkey>()
+                    .Alias<IHostedService, GlobalHotkey>();
             }
         );
 }
