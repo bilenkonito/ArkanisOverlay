@@ -19,8 +19,6 @@ dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csp
     --output publish \
     -p:EnableWindowsTargeting=true
 
-ls -r
-
 cp CHANGELOG.md publish/
 
 cd publish || (>&2 echo "Failed switching directory to publish" && exit 1)

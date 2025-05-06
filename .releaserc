@@ -23,6 +23,12 @@
     "plugins": [
         "@semantic-release/commit-analyzer",
         [
+            "@semantic-release/changelog",
+            {
+                "changelogFile": "CHANGELOG.md"
+            }
+        ],
+        [
             "@semantic-release/exec",
             {
                 "verifyReleaseCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} ./scripts/release-10-verify.sh",
@@ -31,12 +37,6 @@
             }
         ],
         "@semantic-release/release-notes-generator",
-        [
-            "@semantic-release/changelog",
-            {
-                "changelogFile": "CHANGELOG.md"
-            }
-        ],
         [
             "@semantic-release/github",
             {
