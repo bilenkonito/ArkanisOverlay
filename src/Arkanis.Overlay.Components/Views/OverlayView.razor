@@ -43,10 +43,20 @@
         }
     }
 
-    #currentLocation + .mud-input-control.mud-input-input-control {
-        fieldset.mud-input-outlined-border {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
+    #currentLocation > div {
+        border: 1px solid var(--mud-palette-lines-inputs);
+        border-radius: var(--mud-default-borderradius);
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-right: 0;
+    }
+
+    #currentLocation + .focus-region {
+        .mud-input-control.mud-input-input-control {
+            fieldset.mud-input-outlined-border {
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
         }
     }
 
@@ -145,14 +155,13 @@
                           Row>
                     @if (_searchContext.CurrentLocation is { } currentLocation)
                     {
-                        <KeyboardShortcutBadge Key="@KeyboardKey.F2"
+                        <KeyboardShortcutBadge id="currentLocation"
+                                               Key="@KeyboardKey.F2"
                                                Origin="@Origin.BottomCenter"
                                                Color="@Color.Error"
                                                Class="d-flex"
                                                OnKeyPress="@(() => _searchContext.ClearLocationFilterAsync())">
-                            <div class="h-100 px-4 d-flex align-center no-wrap"
-                                 id="currentLocation"
-                                 style="border: 1px solid var(--mud-palette-lines-inputs); border-radius: var(--mud-default-borderradius); border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                            <div class="h-100 px-4 d-flex align-center no-wrap">
                                 <GameEntityNameLabel
                                     Model="@currentLocation.Name"/>
                             </div>
