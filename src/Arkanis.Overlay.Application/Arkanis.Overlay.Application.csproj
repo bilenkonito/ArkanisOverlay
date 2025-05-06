@@ -10,8 +10,7 @@
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
         <Platform>x64</Platform>
         <StartupObject>Arkanis.Overlay.Application.Program</StartupObject>
-        <!-- see https://learn.microsoft.com/en-us/dotnet/core/extensions/workers#template-defaults -->
-        <ServerGarbageCollection>true</ServerGarbageCollection>
+        <ServerGarbageCollection>false</ServerGarbageCollection>
     </PropertyGroup>
 
     <PropertyGroup>
