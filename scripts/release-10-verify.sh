@@ -12,5 +12,5 @@ set -eEuo pipefail
 [[ -z "${VERSION}" ]] && >&2 echo "VERSION is not set" && exit 2
 [[ -z "${VERSION_TAG}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
 
-dotnet tool restore -p:EnableWindowsTargeting=true
+dotnet tool restore
 dotnet setversion "${VERSION}"

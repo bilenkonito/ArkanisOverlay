@@ -13,6 +13,8 @@ set -eEuo pipefail
 [[ -z "${VERSION_TAG}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
 [[ -z "${CONFIGURATION}" ]] && CONFIGURATION="Release"
 
+dotnet restore --locked-mode
+
 "$(dirname "$(realpath "$0")")/release-21-prepare-win.sh"
 
 "$(dirname "$(realpath "$0")")/release-22-prepare-server.sh"

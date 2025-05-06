@@ -14,8 +14,6 @@ set -eEuo pipefail
 [[ -z "${REGISTRY}" ]] && REGISTRY="ghcr.io"
 [[ -z "${CONFIGURATION}" ]] && CONFIGURATION="Release"
 
-dotnet restore --locked-mode
-
 dotnet publish ./src/Arkanis.Overlay.Host.Server/Arkanis.Overlay.Host.Server.csproj \
     --no-restore \
     --configuration ${CONFIGURATION} \
