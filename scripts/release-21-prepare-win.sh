@@ -11,7 +11,7 @@ set -eEuo pipefail
 
 [[ -z "${VERSION+x}" ]] && >&2 echo "VERSION is not set" && exit 2
 [[ -z "${VERSION_TAG+x}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
-[[ -z "${CONFIGURATION+x}" ]] || CONFIGURATION="Release"
+[[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
 dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj \
     --no-restore \
