@@ -22,18 +22,25 @@
     .controls-container {
         position: sticky;
         width: 100%;
+        top: 0;
+        z-index: 100;
 
-        &.top {
-            top: 0;
+        & > .controls-inner-wrapper {
+            position: absolute;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+
+            &.right {
+                right: 0;
+                align-items: flex-end;
+            }
+
+            &.left {
+                left: 0;
+                align-items: flex-start;
+            }
         }
-
-        &.bottom {
-            bottom: 0;
-        }
-    }
-
-    .action {
-        z-index: 10;
     }
 
     #currentLocation + .mud-input-control.mud-input-input-control {
@@ -76,19 +83,40 @@
 </style>
 
 <div style="@ContainerCss">
-    <div class="controls-container top">
-        <MudStack Spacing="1" AlignItems="@AlignItems.End" Justify="@Justify.FlexEnd" Class="w-100 pa-4">
-            <MudIconButton
-                Color="@Color.Primary"
-                Class="action"
-                Icon="@MaterialSymbols.Outlined.Info"
-                OnClick="@OpenAboutDialogAsync"/>
-            <MudIconButton
-                Color="@Color.Primary"
-                Class="action"
-                Icon="@MaterialSymbols.Outlined.Settings"
-                OnClick="@OpenUserOptionsDialogAsync"/>
-        </MudStack>
+    <div class="controls-container">
+        <div class="controls-inner-wrapper right pa-4">
+            <MudStack Spacing="1" AlignItems="@AlignItems.End" Justify="@Justify.FlexEnd">
+                <MudIconButton
+                    Color="Color.Primary"
+                    Class="action"
+                    Icon="@MaterialSymbols.Outlined.Info"
+                    OnClick="OpenAboutDialogAsync"/>
+                <MudIconButton
+                    Color="Color.Primary"
+                    Class="action"
+                    Icon="@MaterialSymbols.Outlined.Settings"
+                    OnClick="OpenUserOptionsDialogAsync"/>
+            </MudStack>
+            <MudSpacer/>
+            <MudStack Spacing="1" AlignItems="@AlignItems.End" Justify="@Justify.FlexEnd">
+                <div class="badge-container">
+                    <a href="https://discord.com/users/174617873182883841" target="_blank" rel="noopener noreferrer">
+                        <div class="badge author">
+                            <img src="@LinkHelper.GetPathToAsset("/img/created-by-badge.png")"
+                                 alt="Created by Delta"/>
+                        </div>
+                    </a>
+                </div>
+                <div class="badge-container">
+                    <a href="https://uexcorp.space/" target="_blank" rel="noopener noreferrer">
+                        <div class="badge">
+                            <img src="@LinkHelper.GetPathToAsset("/img/uex-api-badge-powered.png")"
+                                 alt="Powered by UEX API"/>
+                        </div>
+                    </a>
+                </div>
+            </MudStack>
+        </div>
     </div>
     <MudStack id="searchContainer" Class="d-flex justify-start align-center flex-grow-1 px-3">
         <div style="padding: 7.5vh"></div>
@@ -172,26 +200,6 @@
         </CascadingValue>
 
     </MudStack>
-    <div class="controls-container bottom">
-        <MudStack Spacing="1" AlignItems="@AlignItems.Start" Justify="@Justify.FlexEnd" Class="h-100 pa-4">
-            <div class="badge-container uex action">
-                <a href="https://uexcorp.space/" target="_blank" rel="noopener noreferrer">
-                    <div class="badge">
-                        <img src="@LinkHelper.GetPathToAsset("/img/uex-api-badge-powered.png")"
-                             alt="Powered by UEX API"/>
-                    </div>
-                </a>
-            </div>
-            <div class="badge-container author action">
-                <a href="https://discord.com/users/174617873182883841" target="_blank" rel="noopener noreferrer">
-                    <div class="badge author">
-                        <img src="@LinkHelper.GetPathToAsset("/img/created-by-badge.png")"
-                             alt="Created by Delta"/>
-                    </div>
-                </a>
-            </div>
-        </MudStack>
-    </div>
 </div>
 
 @code
