@@ -15,7 +15,6 @@ set -eEuo pipefail
 [[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
 dotnet publish ./src/Arkanis.Overlay.Host.Server/Arkanis.Overlay.Host.Server.csproj \
-    --no-restore \
     --configuration ${CONFIGURATION} \
     -p:PublishProfile=DefaultContainer \
     -p:ContainerRegistry=${REGISTRY} \

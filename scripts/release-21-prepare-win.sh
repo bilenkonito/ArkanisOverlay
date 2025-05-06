@@ -14,7 +14,6 @@ set -eEuo pipefail
 [[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
 dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj \
-    --no-restore \
     --runtime win-x64 \
     --configuration ${CONFIGURATION} \
     --output publish \
