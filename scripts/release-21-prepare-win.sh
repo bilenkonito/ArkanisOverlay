@@ -19,10 +19,7 @@ dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csp
     --no-restore \
     --runtime win-x64 \
     --configuration ${CONFIGURATION} \
-    --output publish \
-    -p:EnableWindowsTargeting=true \
-    -p:PublishSingleFile=false \
-    -p:PublishReadyToRun=true
+    --output publish
 
 cd publish || >&2 echo "Failed switching directory to publish" && exit 1
 
