@@ -13,13 +13,12 @@ set -eEuo pipefail
 [[ -z "${VERSION_TAG}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
 [[ -z "${CONFIGURATION}" ]] && CONFIGURATION="Release"
 
-dotnet restore --locked-mode -p:EnableWindowsTargeting=true
-
 dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj \
     --no-restore \
     --runtime win-x64 \
     --configuration ${CONFIGURATION} \
-    --output publish
+    --output publish \
+    -p:EnableWindowsTargeting=true
 
 cd publish || >&2 echo "Failed switching directory to publish" && exit 1
 
