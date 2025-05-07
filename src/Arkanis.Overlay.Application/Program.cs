@@ -1,12 +1,13 @@
 namespace Arkanis.Overlay.Application;
 
-using Common.Extensions;
 using System.Data.Common;
 using Common;
+using Common.Extensions;
 using Components.Helpers;
 using Components.Services;
 using Dapplo.Microsoft.Extensions.Hosting.AppServices;
 using Dapplo.Microsoft.Extensions.Hosting.Wpf;
+using Domain.Options;
 using Helpers;
 using Infrastructure;
 using Infrastructure.Data;
@@ -31,11 +32,14 @@ public static class Program
     [STAThread]
     public static async Task Main(string[] args)
     {
+        var userPreferences = new UserPreferences();
         VelopackApp.Build()
-            .WithFirstRun((v) =>
-            {
-                // TODO: Add first run logic, show tutorial & hotkey popup
-            })
+            .WithFirstRun(currentVersion =>
+                {
+                    // TODO: check for updates and potentially immediately update
+                    WindowsToastNotifications.ShowWelcomeToast(userPreferences);
+                }
+            )
             .Run();
 
         var hostBuilder = Host.CreateDefaultBuilder(args)
@@ -49,14 +53,11 @@ public static class Program
                     };
                 }
             )
-            //? add plugin support later to support modular add-ons?
-            // .ConfigurePlugins()
             .ConfigureServices()
             .ConfigureWpf(options =>
                 {
                     options.UseApplication<App>();
 
-                    //* Add Singleton Windows here
                     // Windows will be registered as singletons
                     options.UseWindow<OverlayWindow>();
                 }
@@ -127,6 +128,11 @@ public static class Program
                 services.AddHostedService<WindowsAutoStartManager>()
                     .AddSingleton<ISystemAutoStartStateProvider, WindowsAutoStartStateProvider>();
 
+                // Auto updater
+                services
+                    .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>()
+                    .AddSingleton<IUpdateSource>(_ => new GithubSource(ApplicationConstants.GitHubRepositoryUrl, null, false));
+
                 // Data
                 services
                     .AddWindowsOverlayControls()
@@ -148,23 +154,4 @@ public static class Program
                     .Alias<IHostedService, GlobalHotkey>();
             }
         );
-
-    private static async Task Update()
-    {
-        var mgr = new UpdateManager(new GithubSource("https://github.com/ArkanisCorporation/ArkanisOverlay", null, false, null));
-
-        // check for new version
-        var newVersion = await mgr.CheckForUpdatesAsync();
-        if (newVersion == null)
-        {
-            // no updates available
-            return;
-        }
-
-        // download new version
-        await mgr.DownloadUpdatesAsync(newVersion);
-
-        // install new version and restart app
-        mgr.ApplyUpdatesAndRestart(newVersion);
-    }
 }
