@@ -250,6 +250,16 @@
         "resolved": "1.1.1.1",
         "contentHash": "uTNrt1zlOUewcaFHwtafwxtSFWEmy6+TK1hQ4ciHhA+5c9yV1kGCtPlFNzOVQkQQyJ5WRpb4SJb/6m+un9pPUg=="
       },
+      "Velopack": {
+        "type": "Direct",
+        "requested": "[0.0.1053, )",
+        "resolved": "0.0.1053",
+        "contentHash": "hbSFBfwAAEg5GGKkocDPiyYA+FxyrkXo2pJJCcrgOv1xnSupINpYXk2l9M/M7LEjKiH42pq+NmcG/+CwQvTbvA==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "NuGet.Versioning": "6.12.1"
+        }
+      },
       "Blazor-Analytics": {
         "type": "Transitive",
         "resolved": "3.12.0",
@@ -1267,6 +1277,11 @@
         "type": "Transitive",
         "resolved": "4.4.0",
         "contentHash": "QX3bsK9oFeUXk8tFsc9NkI6NnCr8Ar/ex027p+ZZ/jdLCdX2RlryDtxUqZW5j45NVwn4E4Z4hzupsoMQd6Yxtg=="
+      },
+      "NuGet.Versioning": {
+        "type": "Transitive",
+        "resolved": "6.12.1",
+        "contentHash": "fJ6rFYANDnohFsdpaY79FvrJxI6murmoOxXz6nZlf819F48+IBKMnAIg3oIBRtZq5y498ObMtKnro5IitvizUg=="
       },
       "protobuf-net": {
         "type": "Transitive",

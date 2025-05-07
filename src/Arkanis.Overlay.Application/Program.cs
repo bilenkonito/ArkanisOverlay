@@ -20,6 +20,8 @@ using Services;
 using Services.Factories;
 using UI;
 using UI.Windows;
+using Velopack;
+using Velopack.Sources;
 using Workers;
 
 // based on:
@@ -29,6 +31,13 @@ public static class Program
     [STAThread]
     public static async Task Main(string[] args)
     {
+        VelopackApp.Build()
+            .WithFirstRun((v) =>
+            {
+                // TODO: Add first run logic, show tutorial & hotkey popup
+            })
+            .Run();
+
         var hostBuilder = Host.CreateDefaultBuilder(args)
             .ConfigureLogging()
             .ConfigureSingleInstance(options =>
@@ -139,4 +148,23 @@ public static class Program
                     .Alias<IHostedService, GlobalHotkey>();
             }
         );
+
+    private static async Task Update()
+    {
+        var mgr = new UpdateManager(new GithubSource("https://github.com/ArkanisCorporation/ArkanisOverlay", null, false, null));
+
+        // check for new version
+        var newVersion = await mgr.CheckForUpdatesAsync();
+        if (newVersion == null)
+        {
+            // no updates available
+            return;
+        }
+
+        // download new version
+        await mgr.DownloadUpdatesAsync(newVersion);
+
+        // install new version and restart app
+        mgr.ApplyUpdatesAndRestart(newVersion);
+    }
 }

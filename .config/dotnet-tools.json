@@ -15,6 +15,13 @@
         "setversion"
       ],
       "rollForward": false
+    },
+    "vpk": {
+      "version": "0.0.1053",
+      "commands": [
+        "vpk"
+      ],
+      "rollForward": false
     }
   }
 }
