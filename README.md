@@ -30,8 +30,8 @@ and <a href="https://discord.com/users/224580858432978944" target="_blank"><b>Th
 
 <p align="center">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif">
-  <source media="(prefers-color-scheme: light)" srcset="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602d.gif">
+  <source media="(prefers-color-scheme: dark)" srcset="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602d.gif">
+  <source media="(prefers-color-scheme: light)" srcset="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif">
   <img alt="Overlay search behaviour demonstration" src="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif">
 </picture>
 </p>
