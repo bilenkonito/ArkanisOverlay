@@ -26,6 +26,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{9AC34A40-36D7-4D0C-A667-508A386B76D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8BB043D2-BDE7-461C-8D9C-5184A0A0C185}"
+	ProjectSection(SolutionItems) = preProject
+		tests\README.md = tests\README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arkanis.Overlay.Infrastructure.UnitTests", "tests\Arkanis.Overlay.Infrastructure.UnitTests\Arkanis.Overlay.Infrastructure.UnitTests.csproj", "{06F00A11-3606-43F2-B6F5-907586C606B8}"
 EndProject

@@ -1,16 +1,33 @@
-# Arkanis Overlay
+<h1 align="center">
+<a href="https://arkanis.cc/overlay" target="_blank">Arkanis Overlay</a>
+for Star Citizen
+</h1>
 
-**A Next-Generation Overlay Companion for Star Citizen**<br>
-Created by **[FatalMerlin](https://discord.com/users/174617873182883841)**,
-co-founder of the in-game organization **[Arkanis Corporation](https://join.arkanis.cc/)**,
-and **[TheKronnY](https://discord.com/users/224580858432978944)**,
-[an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg).
+<p align="center">
+<img alt="GitHub dev branch commits since latest release" src="https://img.shields.io/github/commits-since/ArkanisCorporation/ArkanisOverlay/latest/dev?logo=github" />
+<img alt="GitHub dev branch check runs" src="https://img.shields.io/github/check-runs/ArkanisCorporation/ArkanisOverlay/dev?logo=github" />
+<a href="https://github.com/ArkanisCorporation/ArkanisOverlay/discussions" target="_blank">
+ <img alt="GitHub Support" src="https://img.shields.io/badge/github-support?logo=github&label=support" />
+</a>
+<a href="https://arkanis.cc" target="_blank">
+ <img alt="Arkanis Website" src="https://img.shields.io/badge/Arkanis.cc-website?logo=googlechrome&logoColor=white&label=website" />
+</a>
+<a href="https://join.arkanis.cc" target="_blank">
+ <img alt="Arkanis Discord" src="https://img.shields.io/discord/1294685596991750277?logo=discord&logoColor=white" />
+</a>
+</p>
 
-![GitHub commits since latest release](https://img.shields.io/github/commits-since/ArkanisCorporation/ArkanisOverlay/latest?logo=github)
-![GitHub branch check runs](https://img.shields.io/github/check-runs/ArkanisCorporation/ArkanisOverlay/main?logo=github)
-[![GitHub Support](https://img.shields.io/badge/github-support?logo=github&label=support)](https://github.com/ArkanisCorporation/ArkanisOverlay/discussions)
-[![Arkanis Website](https://img.shields.io/badge/Arkanis.cc-website?logo=googlechrome&logoColor=white&label=website)](https://arkanis.cc)
-[![Arkanis Discord](https://img.shields.io/discord/1294685596991750277?logo=discord&logoColor=white)](https://join.arkanis.cc/)
+<h3 align="center">
+A Next-Generation Overlay Companion for Star Citizen<br>
+</h3>
+
+<h6 align="center">
+Created by <a href="https://discord.com/users/174617873182883841" target="_blank"><b>FatalMerlin</b></a>,
+co-founder of the <a href="https://org.arkanis.cc" target="_blank">in-game organization</a> <a href="https://arkanis.cc" target="_blank"><b>Arkanis Corporation</b></a>,
+<br/>and <a href="https://discord.com/users/224580858432978944" target="_blank"><b>TheKronnY</b></a>, <a href="https://i.redd.it/dkrdm5jdb8ce1.jpeg" target="_blank">an engineer and IT PhD student</a>.
+</h6>
+
+https://github.com/user-attachments/assets/a578b6bc-b815-47f9-8f02-c8a54d4125ef
 
 ---
 
@@ -118,50 +135,6 @@ We are now a small dev team — progress is slow but deliberate. A Minimum Viabl
 
 ---
 
-## 🧪 Unit Testing
-
-To ensure the reliability and stability of the project, **unit tests** are implemented using the `xUnit` testing
-framework.
-Developers can run the tests locally using the following commands:
-
-### Running All Tests
-
-```bash
-dotnet test
-```
-
-### Filtering Tests by Traits
-
-You can filter test cases based on specific traits (e.g., types, categories) using the `--filter` CLI option.
-For example, to run only tests that do not go against live external APIs (either do not need external APIs at all or use
-locally cached data):
-
-```bash
-dotnet test --filter "DataState!=Live"
-```
-
-### Adding Traits to Tests
-
-To categorize tests, use the `TraitAttribute` in your test methods.
-Place trait names and their corresponding values in the `TestConstants` or other project-appropriate class.
-
-```csharp
-[Trait(nameof(TestConstants.Traits.DataSource), TestConstants.Traits.DataSource.ExternalApi)]
-[Trait(nameof(TestConstants.Traits.DataState), TestConstants.Traits.DataState.Cached)]
-public class CachedUexItemSyncRepositoryTest(ITestOutputHelper testOutputHelper, CachedUexSyncRepositoryTestFixture fixture)
-{
-    [Fact]
-    public void TestMethod()
-    {
-        // Your test code here
-    }
-}
-```
-
-This allows for better organization and selective execution of tests during development.
-
----
-
 ## 🙌 Community & Support
 
 Big shout-out to:
@@ -177,15 +150,45 @@ contact [@FatalMerlin](https://discord.com/users/174617873182883841) — we’d 
 
 ## 🧭 Why "Arkanis"?
 
-The name pays tribute to the **Arkanis Sector**, a frontier region of bold explorers — just like the users of this
-tool.
+The name pays tribute to the **Arkanis Sector**, a frontier region of bold explorers
+— just like the developers and the users of this tool.
 We aim to embody the same spirit: discovery, utility, and frontier innovation.
 
 ---
 
 ## 🛠️ Getting Started (Coming Soon)
 
+> [!IMPORTANT]
 > Detailed build and deployment instructions will be added after the MVP is finalized. Stay tuned.
+
+### Application Behavior
+
+> [!TIP]
+> It does not matter whether the game was started before or after the Arkanis Overlay application.
+
+Once launched, the application runs in the **Windows system tray**.
+It does not display a window by default.
+From the tray icon, users can open the **preferences dialog** or exit the application entirely.
+
+### Overlay Activation
+
+> [!IMPORTANT]
+> The in-game overlay can be opened using the default keyboard shortcut: `Left Alt + Left Shift + S`.
+
+The shortcut can be customized through the **preferences dialog**, allowing you to set a key combination that best suits
+your needs.
+
+### Preferences and Configuration
+
+The preferences dialog is accessible either from the **system tray icon** or directly within the **overlay interface**
+itself.
+
+Within the Preferences, you can:
+
+- Enable or disable automatic launching of the application when Windows starts.
+- Choose whether the overlay application should automatically exit when Star Citizen is closed.
+- Customize the keyboard shortcut used to activate the overlay.
+- Adjust other application-specific settings related to appearance and behavior.
 
 ---
 
