@@ -24,8 +24,7 @@ A Next-Generation Overlay Companion for Star Citizen<br>
 <h6 align="center">
 Created by <a href="https://discord.com/users/174617873182883841" target="_blank"><b>FatalMerlin</b></a>,
 co-founder of the <a href="https://org.arkanis.cc" target="_blank">in-game organization</a> <a href="https://arkanis.cc" target="_blank"><b>Arkanis Corporation</b></a>,
-and <a href="https://discord.com/users/224580858432978944" target="_blank"><b>TheKronnY</b></a>,
-<a href="https://i.redd.it/dkrdm5jdb8ce1.jpeg" target="_blank">an engineer and IT PhD student</a>.
+<br/>and <a href="https://discord.com/users/224580858432978944" target="_blank"><b>TheKronnY</b></a>, <a href="https://i.redd.it/dkrdm5jdb8ce1.jpeg" target="_blank">an engineer and IT PhD student</a>.
 </h6>
 
 <p align="center">
