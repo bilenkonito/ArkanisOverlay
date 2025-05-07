@@ -1,16 +1,40 @@
-# Arkanis Overlay
+<h1 align="center">
+<a href="https://arkanis.cc/overlay" target="_blank">Arkanis Overlay</a>
+for Star Citizen
+</h1>
 
-**A Next-Generation Overlay Companion for Star Citizen**<br>
-Created by **[FatalMerlin](https://discord.com/users/174617873182883841)**,
-co-founder of the in-game organization **[Arkanis Corporation](https://join.arkanis.cc/)**,
-and **[TheKronnY](https://discord.com/users/224580858432978944)**,
-[an engineer and IT PhD student](https://i.redd.it/dkrdm5jdb8ce1.jpeg).
+<p align="center">
+<img alt="GitHub dev branch commits since latest release" src="https://img.shields.io/github/commits-since/ArkanisCorporation/ArkanisOverlay/latest/dev?logo=github" />
+<img alt="GitHub dev branch check runs" src="https://img.shields.io/github/check-runs/ArkanisCorporation/ArkanisOverlay/dev?logo=github" />
+<a href="https://github.com/ArkanisCorporation/ArkanisOverlay/discussions" target="_blank">
+ <img alt="GitHub Support" src="https://img.shields.io/badge/github-support?logo=github&label=support" />
+</a>
+<a href="https://arkanis.cc" target="_blank">
+ <img alt="Arkanis Website" src="https://img.shields.io/badge/Arkanis.cc-website?logo=googlechrome&logoColor=white&label=website" />
+</a>
+<a href="https://join.arkanis.cc" target="_blank">
+ <img alt="Arkanis Discord" src="https://img.shields.io/discord/1294685596991750277?logo=discord&logoColor=white" />
+</a>
+</p>
 
-![GitHub commits since latest release](https://img.shields.io/github/commits-since/ArkanisCorporation/ArkanisOverlay/latest?logo=github)
-![GitHub branch check runs](https://img.shields.io/github/check-runs/ArkanisCorporation/ArkanisOverlay/main?logo=github)
-[![GitHub Support](https://img.shields.io/badge/github-support?logo=github&label=support)](https://github.com/ArkanisCorporation/ArkanisOverlay/discussions)
-[![Arkanis Website](https://img.shields.io/badge/Arkanis.cc-website?logo=googlechrome&logoColor=white&label=website)](https://arkanis.cc)
-[![Arkanis Discord](https://img.shields.io/discord/1294685596991750277?logo=discord&logoColor=white)](https://join.arkanis.cc/)
+<h3 align="center">
+A Next-Generation Overlay Companion for Star Citizen<br>
+</h3>
+
+<h6 align="center">
+Created by <a href="https://discord.com/users/174617873182883841" target="_blank"><b>FatalMerlin</b></a>,
+co-founder of the <a href="https://org.arkanis.cc" target="_blank">in-game organization</a> <a href="https://arkanis.cc" target="_blank"><b>Arkanis Corporation</b></a>,
+and <a href="https://discord.com/users/224580858432978944" target="_blank"><b>TheKronnY</b></a>,
+<a href="https://i.redd.it/dkrdm5jdb8ce1.jpeg" target="_blank">an engineer and IT PhD student</a>.
+</h6>
+
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://media.discordapp.net/attachments/644554635360731146/1369548514161594448/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif?ex=681c42f2&is=681af172&hm=b70c3d6f5775337e1345806f2e8545d005783a81032d904ffcb03f203b08cafe">
+  <source media="(prefers-color-scheme: light)" srcset="https://media.discordapp.net/attachments/644554635360731146/1369552531344195676/ArkanisOverlay_EverusMultitoolDemo_1000x602d.gif?ex=681c46b0&is=681af530&hm=f84ab5e7a1b869e6b71ada559929fc7ef96d47ea5b1cf999cf46268285ff192a">
+  <img alt="Overlay search behaviour demonstration" src="https://media.discordapp.net/attachments/644554635360731146/1369548514161594448/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif?ex=681c42f2&is=681af172&hm=b70c3d6f5775337e1345806f2e8545d005783a81032d904ffcb03f203b08cafe">
+</picture>
+</p>
 
 ---
 
