@@ -135,50 +135,6 @@ We are now a small dev team — progress is slow but deliberate. A Minimum Viabl
 
 ---
 
-## 🧪 Unit Testing
-
-To ensure the reliability and stability of the project, **unit tests** are implemented using the `xUnit` testing
-framework.
-Developers can run the tests locally using the following commands:
-
-### Running All Tests
-
-```bash
-dotnet test
-```
-
-### Filtering Tests by Traits
-
-You can filter test cases based on specific traits (e.g., types, categories) using the `--filter` CLI option.
-For example, to run only tests that do not go against live external APIs (either do not need external APIs at all or use
-locally cached data):
-
-```bash
-dotnet test --filter "DataState!=Live"
-```
-
-### Adding Traits to Tests
-
-To categorize tests, use the `TraitAttribute` in your test methods.
-Place trait names and their corresponding values in the `TestConstants` or other project-appropriate class.
-
-```csharp
-[Trait(nameof(TestConstants.Traits.DataSource), TestConstants.Traits.DataSource.ExternalApi)]
-[Trait(nameof(TestConstants.Traits.DataState), TestConstants.Traits.DataState.Cached)]
-public class CachedUexItemSyncRepositoryTest(ITestOutputHelper testOutputHelper, CachedUexSyncRepositoryTestFixture fixture)
-{
-    [Fact]
-    public void TestMethod()
-    {
-        // Your test code here
-    }
-}
-```
-
-This allows for better organization and selective execution of tests during development.
-
----
-
 ## 🙌 Community & Support
 
 Big shout-out to:
@@ -194,15 +150,45 @@ contact [@FatalMerlin](https://discord.com/users/174617873182883841) — we’d 
 
 ## 🧭 Why "Arkanis"?
 
-The name pays tribute to the **Arkanis Sector**, a frontier region of bold explorers — just like the users of this
-tool.
+The name pays tribute to the **Arkanis Sector**, a frontier region of bold explorers
+— just like the developers and the users of this tool.
 We aim to embody the same spirit: discovery, utility, and frontier innovation.
 
 ---
 
 ## 🛠️ Getting Started (Coming Soon)
 
+> [!IMPORTANT]
 > Detailed build and deployment instructions will be added after the MVP is finalized. Stay tuned.
+
+### Application Behavior
+
+> [!TIP]
+> It does not matter whether the game was started before or after the Arkanis Overlay application.
+
+Once launched, the application runs in the **Windows system tray**.
+It does not display a window by default.
+From the tray icon, users can open the **preferences dialog** or exit the application entirely.
+
+### Overlay Activation
+
+> [!IMPORTANT]
+> The in-game overlay can be opened using the default keyboard shortcut: `Left Alt + Left Shift + S`.
+
+The shortcut can be customized through the **preferences dialog**, allowing you to set a key combination that best suits
+your needs.
+
+### Preferences and Configuration
+
+The preferences dialog is accessible either from the **system tray icon** or directly within the **overlay interface**
+itself.
+
+Within the Preferences, you can:
+
+- Enable or disable automatic launching of the application when Windows starts.
+- Choose whether the overlay application should automatically exit when Star Citizen is closed.
+- Customize the keyboard shortcut used to activate the overlay.
+- Adjust other application-specific settings related to appearance and behavior.
 
 ---
 
