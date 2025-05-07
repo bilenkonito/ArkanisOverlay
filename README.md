@@ -27,13 +27,7 @@ co-founder of the <a href="https://org.arkanis.cc" target="_blank">in-game organ
 <br/>and <a href="https://discord.com/users/224580858432978944" target="_blank"><b>TheKronnY</b></a>, <a href="https://i.redd.it/dkrdm5jdb8ce1.jpeg" target="_blank">an engineer and IT PhD student</a>.
 </h6>
 
-<p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602d.gif">
-  <source media="(prefers-color-scheme: light)" srcset="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif">
-  <img alt="Overlay search behaviour demonstration" src="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif">
-</picture>
-</p>
+https://github.com/user-attachments/assets/a578b6bc-b815-47f9-8f02-c8a54d4125ef
 
 ---
 
