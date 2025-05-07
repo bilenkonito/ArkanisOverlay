@@ -30,9 +30,9 @@ and <a href="https://discord.com/users/224580858432978944" target="_blank"><b>Th
 
 <p align="center">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://media.discordapp.net/attachments/644554635360731146/1369548514161594448/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif?ex=681c42f2&is=681af172&hm=b70c3d6f5775337e1345806f2e8545d005783a81032d904ffcb03f203b08cafe">
-  <source media="(prefers-color-scheme: light)" srcset="https://media.discordapp.net/attachments/644554635360731146/1369552531344195676/ArkanisOverlay_EverusMultitoolDemo_1000x602d.gif?ex=681c46b0&is=681af530&hm=f84ab5e7a1b869e6b71ada559929fc7ef96d47ea5b1cf999cf46268285ff192a">
-  <img alt="Overlay search behaviour demonstration" src="https://media.discordapp.net/attachments/644554635360731146/1369548514161594448/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif?ex=681c42f2&is=681af172&hm=b70c3d6f5775337e1345806f2e8545d005783a81032d904ffcb03f203b08cafe">
+  <source media="(prefers-color-scheme: dark)" srcset="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif">
+  <source media="(prefers-color-scheme: light)" srcset="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602d.gif">
+  <img alt="Overlay search behaviour demonstration" src="https://media.githubusercontent.com/media/ArkanisCorporation/ArkanisOverlayAssets/refs/heads/main/assets/ArkanisOverlay_EverusMultitoolDemo_1000x602l.gif">
 </picture>
 </p>
 
