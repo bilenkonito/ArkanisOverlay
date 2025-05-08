@@ -53,7 +53,7 @@ internal class UpdateProcess(UpdateManager updateManager, WindowsNotifications n
 
     internal class CheckForUpdatesJob(IServiceProvider serviceProvider) : IJob
     {
-        public static readonly TimeSpan UpdateCheckInterval = TimeSpan.FromHours(4);
+        public static readonly TimeSpan UpdateCheckInterval = TimeSpan.FromMinutes(15);
 
         public static ITrigger Trigger { get; } = TriggerBuilder.Create()
             .WithIdentity(nameof(CheckForUpdatesJob))
