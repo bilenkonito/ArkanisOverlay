@@ -1,5 +1,6 @@
 @using System.Globalization
-@using Arkanis.Common.Extensions
+@using Arkanis.Overlay.Common.Extensions
+@using Arkanis.Overlay.Common.Models
 @inject IUserPreferencesManager UserPreferencesManager
 
 <MudDialog>
@@ -23,6 +24,23 @@
                         @bind-Value="@Preferences.AutoStartWithBoot"
                         Color="@Color.Success"
                         Label="Auto-start on system boot"/>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="@UpdateChannel"
+                               @bind-Value="@Preferences.UpdateChannel"
+                               Label="Update channel"
+                               Adornment="@Adornment.Start"
+                               AdornmentIcon="@MaterialSymbols.Outlined.SystemUpdateAlt"
+                               Text="@(Preferences.UpdateChannel.Name)"
+                               Required
+                               Dense>
+                        @foreach (var channel in UpdateChannel.All)
+                        {
+                            <MudSelectItem Value="@channel">
+                                @channel.Name
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudStack Spacing="0">

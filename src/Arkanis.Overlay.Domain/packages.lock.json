@@ -572,7 +572,7 @@
         "resolved": "5.0.0",
         "contentHash": "cPtIuuH8TIjVHSi2ewwReWGW1PfChPE0LxPIDlfwVcLuTM9GANFTXiMB7k3aC4sk3f0cQU25LNKzx+jZMxijqw=="
       },
-      "arkanis.common": {
+      "arkanis.overlay.common": {
         "type": "Project",
         "dependencies": {
           "FluentValidation": "[11.11.0, )",
