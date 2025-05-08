@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -eEuo pipefail
 
+THIS_DIR="$(dirname "$(realpath "$0")")"
+
+. "${THIS_DIR}/common.sh"
+
 ### prepareCmd
 #
 #| Command property | Description                                                                                                         |
@@ -9,6 +13,17 @@ set -eEuo pipefail
 #| `stdout`         | Can be used for logging.                                                                                            |
 #| `stderr`         | Can be used for logging.                                                                                            |
 
-[[ -n "${DEBUG}" ]] && env
+if [[ ! -d publish-win64 ]]; then
+  >&2 echo "publish-win64 directory does not exist"
+  exit 2
+fi
 
-exit 0
+if [[ ! -d publish-server ]]; then
+  >&2 echo "publish-server directory does not exist"
+  exit 2
+fi
+
+if [[ ! -d release-win64 ]]; then
+  >&2 echo "release-win64 directory does not exist"
+  exit 2
+fi

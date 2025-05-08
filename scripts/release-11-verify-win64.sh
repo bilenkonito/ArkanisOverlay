@@ -11,10 +11,14 @@ set -eEuo pipefail
 
 [[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
->&2 dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj \
+>&2 echo "Publishing the Windows Overlay application..."
+dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj \
     --runtime win-x64 \
     --configuration "${CONFIGURATION}" \
-    --output publish \
+    --output publish-win64 \
     -p:EnableWindowsTargeting=true \
     -p:DebugType=None \
-    -p:DebugSymbols=false
+    -p:DebugSymbols=false \
+    1>&2 # logging output must not go to stdout
+
+>&2 echo "Successfully published the Windows Overlay application to: $(realpath publish)"

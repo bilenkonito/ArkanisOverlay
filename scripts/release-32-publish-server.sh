@@ -7,28 +7,20 @@ set -eEuo pipefail
 #| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 #| `exit code`      | Any non `0` code is considered as an unexpected error and will stop the `semantic-release` execution with an error.                                                                                                                                |
 #| `stdout`         | The `release` information can be written to `stdout` as parseable JSON (for example `{"name": "Release name", "url": "http://url/release/1.0.0"}`). If the command write non parseable JSON to `stdout` no `release` information will be returned. |
-#| `stderr`         | Can be used for logging.                                                                                                                                                                                                                           |
+#| `stderr`         | Can be used for logging.
 
-[[ -z "${VERSION_TAG+x}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
-[[ -z "${VERSION_CHANNEL+x}" ]] && >&2 echo "VERSION_CHANNEL is not set" && exit 2
-[[ -z "${GITHUB_TOKEN+x}" ]] && >&2 echo "GITHUB_TOKEN is not set" && exit 2
-[[ -z "${REPOSITORY_URL+x}" ]] && REPOSITORY_URL="https://github.com/ArkanisCorporation/ArkanisOverlay"
+[[ -z "${VERSION_TAG+x}" ]] && echo "VERSION_TAG is not set" && exit 2
+[[ -z "${REGISTRY+x}" ]] && REGISTRY="ghcr.io"
+[[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
-if [[ ! -d publish-win64 ]]; then
-  >&2 echo "publish directory does not exist"
-  exit 2
-fi
+>&2 echo "Publishing the server web application container..."
+dotnet publish ./src/Arkanis.Overlay.Host.Server/Arkanis.Overlay.Host.Server.csproj \
+    --configuration "${CONFIGURATION}" \
+    -p:PublishProfile=DefaultContainer \
+    -p:ContainerRegistry="${REGISTRY}" \
+    -p:ContainerImageTag="${VERSION_TAG}" \
+    -p:DebugType=None \
+    -p:DebugSymbols=false \
+    1>&2
 
-if [[ ! -d release-win64 ]]; then
-  >&2 echo "release directory does not exist"
-  exit 2
-fi
-
->&2 echo "Uploading the packed application..."
-dotnet vpk upload github \
-    --repoUrl "${REPOSITORY_URL}" \
-    --token "${GITHUB_TOKEN}" \
-    --channel "${VERSION_CHANNEL}" \
-    --outputDir release-win64 \
-    --tag "${VERSION_TAG}" \
-    --merge
+>&2 echo "Successfully published the server web application container"
