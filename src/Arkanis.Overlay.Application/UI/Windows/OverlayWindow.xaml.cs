@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Common;
 using Domain.Abstractions.Services;
 using Domain.Options;
 using global::Windows.Win32.Foundation;
@@ -28,8 +29,8 @@ public partial class OverlayWindow
 
     private readonly ILogger _logger;
     private readonly IUserPreferencesProvider _preferencesProvider;
-    private readonly WindowTracker _windowTracker;
     private readonly PreferencesWindowFactory _preferencesWindowFactory;
+    private readonly WindowTracker _windowTracker;
 
     private HWND _currentWindowHWnd = HWND.Null;
 
@@ -177,7 +178,7 @@ public partial class OverlayWindow
     }
 
     private void BlazorWebView_Initializing(object? sender, BlazorWebViewInitializingEventArgs e)
-        => e.UserDataFolder = Path.Join(Constants.LocalAppDataPath, "WebView");
+        => e.UserDataFolder = Path.Join(ApplicationConstants.LocalAppDataPath, "WebView");
 
     private void WebView_Loaded(object? sender, CoreWebView2NavigationCompletedEventArgs e)
     {
@@ -221,7 +222,6 @@ public partial class OverlayWindow
 
     private void OnPreferenceCommand(object sender, RoutedEventArgs e)
     {
-
         var preferencesWindow = _preferencesWindowFactory.CreateWindow();
         preferencesWindow.ShowDialog();
     }

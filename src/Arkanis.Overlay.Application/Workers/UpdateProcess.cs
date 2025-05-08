@@ -2,14 +2,13 @@ namespace Arkanis.Overlay.Application.Workers;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Quartz;
 using Services;
 using Velopack;
-using Velopack.Sources;
 
-internal class UpdateProcess(IUpdateSource updateSource, WindowsNotifications notifications) : IDisposable
+internal class UpdateProcess(UpdateManager updateManager, WindowsNotifications notifications) : IDisposable
 {
-    private readonly UpdateManager _manager = new(updateSource);
     private WindowsNotifications.UpdatableNotification<WindowsNotifications.UpdateProgressParams>? _progressToast;
 
     public void Dispose()
@@ -25,7 +24,7 @@ internal class UpdateProcess(IUpdateSource updateSource, WindowsNotifications no
     public async Task RunAsync(bool forced, CancellationToken cancellationToken = default)
     {
         // check for new version
-        var newVersion = await _manager.CheckForUpdatesAsync();
+        var newVersion = await updateManager.CheckForUpdatesAsync();
         if (newVersion == null)
         {
             // no updates available
@@ -40,10 +39,10 @@ internal class UpdateProcess(IUpdateSource updateSource, WindowsNotifications no
 
         // download new version
         ShowProgressToast(newVersion);
-        await _manager.DownloadUpdatesAsync(newVersion, UpdateProgressToast, cancelToken: cancellationToken);
+        await updateManager.DownloadUpdatesAsync(newVersion, UpdateProgressToast, cancelToken: cancellationToken);
 
         // install new version and restart app
-        _manager.ApplyUpdatesAndRestart(newVersion);
+        updateManager.ApplyUpdatesAndRestart(newVersion);
     }
 
     private void ShowProgressToast(UpdateInfo newVersion)
@@ -77,10 +76,16 @@ internal class UpdateProcess(IUpdateSource updateSource, WindowsNotifications no
                 .DisallowConcurrentExecution()
                 .Build();
 
-        public class SelfScheduleService(ISchedulerFactory schedulerFactory) : IHostedService
+        public class SelfScheduleService(UpdateManager updateManager, ISchedulerFactory schedulerFactory, ILogger<SelfScheduleService> logger) : IHostedService
         {
             public async Task StartAsync(CancellationToken cancellationToken)
             {
+                if (!updateManager.IsInstalled)
+                {
+                    logger.LogInformation("The application is not installed, skipping scheduling for updates");
+                    return;
+                }
+
                 var scheduler = await schedulerFactory.GetScheduler(cancellationToken);
                 await ScheduleAsync(scheduler, cancellationToken);
             }

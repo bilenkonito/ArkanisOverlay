@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
+using NuGet.Versioning;
 using Services;
 using Services.Factories;
 using UI;
@@ -34,18 +35,7 @@ public static class Program
     [STAThread]
     public static async Task Main(string[] args)
     {
-        var userPreferenceDefaults = new UserPreferences();
-        VelopackApp.Build()
-            .WithFirstRun(_ =>
-                {
-                    WindowsNotifications.ShowWelcomeToast(userPreferenceDefaults);
-                    using var windowsNotifications = new WindowsNotifications();
-                    using var update = new UpdateProcess(UpdateSource, windowsNotifications);
-                    update.RunAsync(true, CancellationToken.None).GetAwaiter().GetResult();
-                }
-            )
-            .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
-            .Run();
+        HandleInstallationBehaviour();
 
         var hostBuilder = Host.CreateDefaultBuilder(args)
             .ConfigureLogging()
@@ -98,6 +88,26 @@ public static class Program
         }
     }
 
+    private static void HandleInstallationBehaviour()
+    {
+        var userPreferenceDefaults = new UserPreferences();
+        VelopackApp.Build()
+            .WithFirstRun(WithFirstRun)
+            .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
+            .Run();
+
+        return;
+
+        void WithFirstRun(SemanticVersion _)
+        {
+            WindowsNotifications.ShowWelcomeToast(userPreferenceDefaults);
+            var updateManager = new UpdateManager(UpdateSource);
+            using var windowsNotifications = new WindowsNotifications();
+            using var update = new UpdateProcess(updateManager, windowsNotifications);
+            update.RunAsync(true, CancellationToken.None).GetAwaiter().GetResult();
+        }
+    }
+
     private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder)
         => hostBuilder.ConfigureLogging((hostContext, configLogging) =>
             configLogging
@@ -105,9 +115,7 @@ public static class Program
                 .AddConsole()
                 .AddDebug()
                 .SetMinimumLevel(LogLevel.Debug)
-                .AddFilter((scope, _)
-                    => scope?.StartsWith("Arkanis") ?? false
-                )
+                .AddFilter((scope, _) => scope?.StartsWith(nameof(Arkanis), StringComparison.InvariantCulture) ?? false)
         );
 
     private static IHostBuilder ConfigureServices(this IHostBuilder builder)
@@ -137,8 +145,9 @@ public static class Program
 
                 // Auto updater
                 services
-                    .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>()
-                    .AddSingleton<IUpdateSource>(_ => UpdateSource);
+                    .AddSingleton<IUpdateSource>(_ => UpdateSource)
+                    .AddSingleton<UpdateManager>(provider => new UpdateManager(provider.GetRequiredService<IUpdateSource>()))
+                    .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>();
 
                 // Data
                 services
