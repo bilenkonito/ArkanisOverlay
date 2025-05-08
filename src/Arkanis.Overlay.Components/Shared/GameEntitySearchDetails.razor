@@ -38,7 +38,7 @@
 {
 
     [CascadingParameter]
-    public required OverlaySearchContext SearchContext { get; set; }
+    public OverlaySearchContext? SearchContext { get; set; }
 
     [Parameter]
     public required IGameEntity Model { get; set; }
@@ -58,21 +58,21 @@
 
         if (Model is IGamePurchasable purchasable)
         {
-            PurchasePriceTag = SearchContext.CurrentLocation is { } location
+            PurchasePriceTag = SearchContext?.CurrentLocation is { } location
                 ? await PurchasePriceProvider.GetPriceTagAtAsync(purchasable, location)
                 : purchasable.LatestPurchasePrices;
         }
 
         if (Model is IGameSellable sellable)
         {
-            SalePriceTag = SearchContext.CurrentLocation is { } location
+            SalePriceTag = SearchContext?.CurrentLocation is { } location
                 ? await SalePriceProvider.GetPriceTagAtAsync(sellable, location)
                 : sellable.LatestSalePrices;
         }
 
         if (Model is IGameRentable rentable)
         {
-            RentPriceTag = SearchContext.CurrentLocation is { } location
+            RentPriceTag = SearchContext?.CurrentLocation is { } location
                 ? await RentPriceProvider.GetPriceTagAtAsync(rentable, location)
                 : rentable.LatestRentPrices;
         }
