@@ -1,4 +1,4 @@
-namespace Arkanis.Common.Abstractions;
+namespace Arkanis.Overlay.Common.Abstractions;
 
 using Microsoft.Extensions.Configuration;
 

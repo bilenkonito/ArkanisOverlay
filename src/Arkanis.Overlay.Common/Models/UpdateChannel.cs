@@ -1,4 +1,4 @@
-namespace Arkanis.Common.Models;
+namespace Arkanis.Overlay.Common.Models;
 
 public record UpdateChannel(string Name, string InternalId, string? VelopackChannelId)
 {

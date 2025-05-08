@@ -1,4 +1,4 @@
-namespace Arkanis.Common;
+namespace Arkanis.Overlay.Common;
 
 public static class ApplicationConstants
 {

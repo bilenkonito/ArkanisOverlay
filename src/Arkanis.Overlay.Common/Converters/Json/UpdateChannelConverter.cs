@@ -1,4 +1,4 @@
-namespace Arkanis.Common.Converters.Json;
+namespace Arkanis.Overlay.Common.Converters.Json;
 
 using System.Text.Json;
 using System.Text.Json.Serialization;

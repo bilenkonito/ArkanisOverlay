@@ -1553,7 +1553,7 @@
           "protobuf-net": "3.0.101"
         }
       },
-      "arkanis.common": {
+      "arkanis.overlay.common": {
         "type": "Project",
         "dependencies": {
           "FluentValidation": "[11.11.0, )",
@@ -1571,13 +1571,6 @@
           "morelinq": "[4.4.0, )"
         }
       },
-      "arkanis.external.uex": {
-        "type": "Project",
-        "dependencies": {
-          "Arkanis.Common": "[1.0.0, )",
-          "Microsoft.Extensions.Http": "[8.0.1, )"
-        }
-      },
       "arkanis.overlay.components": {
         "type": "Project",
         "dependencies": {
@@ -1592,14 +1585,21 @@
       "arkanis.overlay.domain": {
         "type": "Project",
         "dependencies": {
-          "Arkanis.Common": "[1.0.0, )"
+          "Arkanis.Overlay.Common": "[1.0.0, )"
+        }
+      },
+      "arkanis.overlay.external.uex": {
+        "type": "Project",
+        "dependencies": {
+          "Arkanis.Overlay.Common": "[1.0.0, )",
+          "Microsoft.Extensions.Http": "[8.0.1, )"
         }
       },
       "arkanis.overlay.infrastructure": {
         "type": "Project",
         "dependencies": {
-          "Arkanis.External.UEX": "[1.0.0, )",
           "Arkanis.Overlay.Domain": "[1.0.0, )",
+          "Arkanis.Overlay.External.UEX": "[1.0.0, )",
           "Microsoft.AspNetCore.Http.Extensions": "[2.3.0, )",
           "Microsoft.Data.Sqlite": "[8.0.0, )",
           "Microsoft.EntityFrameworkCore.Sqlite": "[8.0.13, )",
