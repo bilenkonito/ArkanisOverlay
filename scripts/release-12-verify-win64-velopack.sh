@@ -23,6 +23,8 @@ fi
 dotnet vpk download github \
     --repoUrl "${REPOSITORY_URL}" \
     --token "${GITHUB_TOKEN}" \
+    --channel "${VERSION_CHANNEL}" \
+    --outputDir release-win64 \
     1>&2 # logging output must not go to stdout
 
 >&2 echo "Packing the published application..."
