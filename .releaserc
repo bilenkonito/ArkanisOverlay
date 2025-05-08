@@ -37,14 +37,6 @@
             }
         ],
         "@semantic-release/release-notes-generator",
-        [
-            "@semantic-release/github",
-            {
-                "assets": [
-                    { "path": "ArkanisOverlay.zip" },
-                    { "path": "CHANGELOG.md" }
-                ]
-            }
-        ]
+        "@semantic-release/github"
     ]
 }
