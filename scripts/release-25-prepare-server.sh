@@ -9,15 +9,14 @@ set -eEuo pipefail
 #| `stdout`         | Can be used for logging.                                                                                            |
 #| `stderr`         | Can be used for logging.                                                                                            |
 
-[[ -z "${VERSION+x}" ]] && >&2 echo "VERSION is not set" && exit 2
 [[ -z "${VERSION_TAG+x}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
 [[ -z "${REGISTRY+x}" ]] && REGISTRY="ghcr.io"
 [[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
 dotnet publish ./src/Arkanis.Overlay.Host.Server/Arkanis.Overlay.Host.Server.csproj \
-    --configuration ${CONFIGURATION} \
+    --configuration "${CONFIGURATION}" \
     -p:PublishProfile=DefaultContainer \
-    -p:ContainerRegistry=${REGISTRY} \
+    -p:ContainerRegistry="${REGISTRY}" \
     -p:ContainerImageTag="${VERSION_TAG}" \
     -p:DebugType=None \
     -p:DebugSymbols=false

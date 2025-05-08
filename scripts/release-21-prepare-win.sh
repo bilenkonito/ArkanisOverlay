@@ -9,13 +9,11 @@ set -eEuo pipefail
 #| `stdout`         | Can be used for logging.                                                                                            |
 #| `stderr`         | Can be used for logging.                                                                                            |
 
-[[ -z "${VERSION+x}" ]] && >&2 echo "VERSION is not set" && exit 2
-[[ -z "${VERSION_TAG+x}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
 [[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
 dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj \
     --runtime win-x64 \
-    --configuration ${CONFIGURATION} \
+    --configuration "${CONFIGURATION}" \
     --output publish \
     -p:EnableWindowsTargeting=true \
     -p:DebugType=None \

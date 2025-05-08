@@ -9,10 +9,13 @@ set -eEuo pipefail
 #| `stdout`         | Can be used for logging.                                                                                            |
 #| `stderr`         | Can be used for logging.                                                                                            |
 
+[[ -n "${DEBUG}" ]] && env
+
 [[ -z "${VERSION+x}" ]] && >&2 echo "VERSION is not set" && exit 2
 [[ -z "${VERSION_TAG+x}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
 [[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
 "$(dirname "$(realpath "$0")")/release-21-prepare-win.sh"
+"$(dirname "$(realpath "$0")")/release-22-prepare-win_pack.sh"
 
-"$(dirname "$(realpath "$0")")/release-22-prepare-server.sh"
+"$(dirname "$(realpath "$0")")/release-25-prepare-server.sh"
