@@ -30,5 +30,7 @@ dotnet vpk upload github \
     --token "${GITHUB_TOKEN}" \
     --channel "${VERSION_CHANNEL}" \
     --outputDir release-win64 \
+    --releaseName "${VERSION_TAG}" \
     --tag "${VERSION_TAG}" \
+    --targetCommitish "${VERSION_TAG}" \
     --merge
