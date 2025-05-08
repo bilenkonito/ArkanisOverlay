@@ -28,9 +28,9 @@ dotnet vpk download github \
 >&2 echo "Packing the published application..."
 dotnet vpk [win] pack \
     --packTitle "Arkanis Overlay" \
-    --packId Arkanis.Overlay.Application \
-    --splashImage ./src/Arkanis.Overlay.Application/Resources/ArkanisTransparent_512x512.png \
-    --icon ./src/Arkanis.Overlay.Application/Resources/favicon.ico \
+    --packId Arkanis.Overlay.Host.Desktop \
+    --splashImage ./src/Arkanis.Overlay.Host.Desktop/Resources/ArkanisTransparent_512x512.png \
+    --icon ./src/Arkanis.Overlay.Host.Desktop/Resources/favicon.ico \
     --packVersion "${VERSION}" \
     --framework net8.0-x64-desktop \
     --channel "${VERSION_CHANNEL}" \

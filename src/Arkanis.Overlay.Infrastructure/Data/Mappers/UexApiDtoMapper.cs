@@ -2,6 +2,7 @@ namespace Arkanis.Overlay.Infrastructure.Data.Mappers;
 
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using Domain.Abstractions.Game;
 using Domain.Enums;
@@ -324,11 +325,11 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     private partial GameVehicleRentalPricing MapInternal(VehicleRentalPriceBriefDTO source);
 
     [UserMapping(Default = true)]
-    private GameCurrency MapInternalMoney(double? amount)
+    private static GameCurrency MapInternalMoney(double? amount)
         => new((int)(amount ?? 0));
 
     [UserMapping(Default = true)]
-    private DateTimeOffset MapInternalDate(double? timestamp)
+    private static DateTimeOffset MapInternalDate(double? timestamp)
         => DateTimeOffset.FromUnixTimeSeconds((long)(timestamp ?? 0));
 
     [DoesNotReturn]
@@ -394,11 +395,11 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
            ?? FallbackToFakeTerminal(vehicleRentalPrice.Id_terminal, vehicleRentalPrice.Terminal_name)
            ?? ThrowMissingMappingException<GameTerminal, VehicleRentalPriceBriefDTO>(vehicleRentalPrice.Id_terminal);
 
-    private GameTerminal? FallbackToFakeTerminal(double? id, string? name = null, string? code = null)
+    private static GameTerminal FallbackToFakeTerminal(double? id, string? name = null, string? code = null)
         => new(
             (int)(id ?? 0),
-            name ?? $"Terminal {code ?? id.ToString()}",
-            name ?? $"Terminal {code ?? id.ToString()}",
+            name ?? $"Terminal {code ?? id?.ToString("N0", CultureInfo.InvariantCulture) ?? "?"}",
+            name ?? $"Terminal {code ?? id?.ToString("N0", CultureInfo.InvariantCulture) ?? "?"}",
             code ?? "",
             GameLocationEntity.Unknown
         )

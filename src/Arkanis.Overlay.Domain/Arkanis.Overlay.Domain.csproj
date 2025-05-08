@@ -4,10 +4,12 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <IsPackable>true</IsPackable>
+        <PackageId>Arkanis.Overlay.Domain</PackageId>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Arkanis.Common\Arkanis.Common.csproj"/>
+        <ProjectReference Include="..\Arkanis.Overlay.Common\Arkanis.Overlay.Common.csproj" />
     </ItemGroup>
 
 </Project>
