@@ -1,4 +1,4 @@
-namespace Arkanis.External.UEX;
+namespace Arkanis.Overlay.External.UEX;
 
 using Abstractions;
 using Microsoft.Extensions.DependencyInjection;

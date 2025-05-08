@@ -1,4 +1,4 @@
-namespace Arkanis.External.UEX.Extensions;
+namespace Arkanis.Overlay.External.UEX.Extensions;
 
 using System.Net.Http.Headers;
 using Abstractions;
