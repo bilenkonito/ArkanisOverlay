@@ -15,12 +15,15 @@ public class UserPreferencesJsonFileManager(IGlobalAnalyticsReporter analyticsRe
 {
     private readonly JsonSerializerOptions _options = new()
     {
+        IgnoreReadOnlyProperties = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         WriteIndented = true,
         Converters =
         {
             new KeyboardShortcut.JsonConverter(),
             new RegionInfoJsonConverter(),
             new CultureInfoJsonConverter(),
+            new UpdateChannelConverter(),
             new JsonStringEnumConverter(),
         },
     };

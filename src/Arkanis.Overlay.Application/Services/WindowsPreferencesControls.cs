@@ -1,8 +1,5 @@
 namespace Arkanis.Overlay.Application.Services;
 
-using Domain.Abstractions.Services;
-using UI.Windows;
-
 public class WindowsPreferencesControls
 {
     public event EventHandler? PreferencesClosed;

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using Windows;
+using Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -46,9 +47,9 @@ public partial class App
             // Task.Delay(2000).ContinueWith(_ => splashScreen.Close(TimeSpan.FromSeconds(0.5)));
         }
 
-        if (!Directory.Exists(Constants.LocalAppDataPath))
+        if (!Directory.Exists(ApplicationConstants.LocalAppDataPath))
         {
-            Directory.CreateDirectory(Constants.LocalAppDataPath);
+            Directory.CreateDirectory(ApplicationConstants.LocalAppDataPath);
         }
 
         Resources.Add("services", _serviceProvider);

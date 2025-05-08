@@ -1,12 +1,14 @@
 namespace Arkanis.Overlay.Application;
 
-using Common.Extensions;
 using System.Data.Common;
 using Common;
+using Common.Extensions;
 using Components.Helpers;
 using Components.Services;
 using Dapplo.Microsoft.Extensions.Hosting.AppServices;
 using Dapplo.Microsoft.Extensions.Hosting.Wpf;
+using Domain.Abstractions.Services;
+using Domain.Options;
 using Helpers;
 using Infrastructure;
 using Infrastructure.Data;
@@ -16,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
+using NuGet.Versioning;
 using Services;
 using Services.Factories;
 using UI;
@@ -28,15 +31,12 @@ using Workers;
 // https://github.com/dapplo/Dapplo.Microsoft.Extensions.Hosting/blob/master/samples/Dapplo.Hosting.Sample.WpfDemo/Program.cs#L48
 public static class Program
 {
+    private static readonly IUpdateSource UpdateSource = new GithubSource(ApplicationConstants.GitHubRepositoryUrl, null, false);
+
     [STAThread]
     public static async Task Main(string[] args)
     {
-        VelopackApp.Build()
-            .WithFirstRun((v) =>
-            {
-                // TODO: Add first run logic, show tutorial & hotkey popup
-            })
-            .Run();
+        HandleInstallationBehaviour();
 
         var hostBuilder = Host.CreateDefaultBuilder(args)
             .ConfigureLogging()
@@ -49,14 +49,11 @@ public static class Program
                     };
                 }
             )
-            //? add plugin support later to support modular add-ons?
-            // .ConfigurePlugins()
             .ConfigureServices()
             .ConfigureWpf(options =>
                 {
                     options.UseApplication<App>();
 
-                    //* Add Singleton Windows here
                     // Windows will be registered as singletons
                     options.UseWindow<OverlayWindow>();
                 }
@@ -92,6 +89,26 @@ public static class Program
         }
     }
 
+    private static void HandleInstallationBehaviour()
+    {
+        var userPreferenceDefaults = new UserPreferences();
+        VelopackApp.Build()
+            .WithFirstRun(WithFirstRun)
+            .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
+            .Run();
+
+        return;
+
+        void WithFirstRun(SemanticVersion _)
+        {
+            WindowsNotifications.ShowWelcomeToast(userPreferenceDefaults);
+            var updateManager = new UpdateManager(UpdateSource);
+            using var windowsNotifications = new WindowsNotifications();
+            using var update = new UpdateProcess(updateManager, windowsNotifications);
+            update.RunAsync(true, CancellationToken.None).GetAwaiter().GetResult();
+        }
+    }
+
     private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder)
         => hostBuilder.ConfigureLogging((hostContext, configLogging) =>
             configLogging
@@ -99,9 +116,7 @@ public static class Program
                 .AddConsole()
                 .AddDebug()
                 .SetMinimumLevel(LogLevel.Debug)
-                .AddFilter((scope, _)
-                    => scope?.StartsWith("Arkanis") ?? false
-                )
+                .AddFilter((scope, _) => scope?.StartsWith(nameof(Arkanis), StringComparison.InvariantCulture) ?? false)
         );
 
     private static IHostBuilder ConfigureServices(this IHostBuilder builder)
@@ -127,6 +142,20 @@ public static class Program
                 services.AddHostedService<WindowsAutoStartManager>()
                     .AddSingleton<ISystemAutoStartStateProvider, WindowsAutoStartStateProvider>();
 
+                services.AddSingleton<WindowsNotifications>();
+
+                // Auto updater
+                services
+                    .AddSingleton<IUpdateSource>(_ => UpdateSource)
+                    .AddSingleton<UpdateOptions>(provider => new UpdateOptions
+                        {
+                            AllowVersionDowngrade = false,
+                            ExplicitChannel = provider.GetRequiredService<IUserPreferencesProvider>().CurrentPreferences.UpdateChannel.VelopackChannelId,
+                        }
+                    )
+                    .AddSingleton<UpdateManager>(provider => ActivatorUtilities.CreateInstance<UpdateManager>(provider))
+                    .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>();
+
                 // Data
                 services
                     .AddWindowsOverlayControls()
@@ -148,23 +177,4 @@ public static class Program
                     .Alias<IHostedService, GlobalHotkey>();
             }
         );
-
-    private static async Task Update()
-    {
-        var mgr = new UpdateManager(new GithubSource("https://github.com/ArkanisCorporation/ArkanisOverlay", null, false, null));
-
-        // check for new version
-        var newVersion = await mgr.CheckForUpdatesAsync();
-        if (newVersion == null)
-        {
-            // no updates available
-            return;
-        }
-
-        // download new version
-        await mgr.DownloadUpdatesAsync(newVersion);
-
-        // install new version and restart app
-        mgr.ApplyUpdatesAndRestart(newVersion);
-    }
 }
