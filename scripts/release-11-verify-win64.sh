@@ -12,7 +12,7 @@ set -eEuo pipefail
 [[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
 >&2 echo "Publishing the Windows Overlay application..."
-dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj \
+dotnet publish ./src/Arkanis.Overlay.Host.Desktop/Arkanis.Overlay.Host.Desktop.csproj \
     --runtime win-x64 \
     --configuration "${CONFIGURATION}" \
     --output publish-win64 \
