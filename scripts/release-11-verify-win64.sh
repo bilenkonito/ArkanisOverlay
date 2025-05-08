@@ -9,15 +9,12 @@ set -eEuo pipefail
 #| `stdout`         | Only the reason for the verification to fail can be written to `stdout`. |
 #| `stderr`         | Can be used for logging.                                                 |
 
-[[ -n "${DEBUG}" ]] && env
+[[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
-[[ -z "${VERSION+x}" ]] && >&2 echo "VERSION is not set" && exit 2
-[[ -z "${VERSION_TAG+x}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
-
-dotnet tool restore
-dotnet setversion --recursive "${VERSION}"
-
-
-"$(dirname "$(realpath "$0")")/release-11-verify-win64.sh"
-"$(dirname "$(realpath "$0")")/release-12-verify-win64-velopack.sh"
-"$(dirname "$(realpath "$0")")/release-13-verify-server.sh"
+>&2 dotnet publish ./src/Arkanis.Overlay.Application/Arkanis.Overlay.Application.csproj \
+    --runtime win-x64 \
+    --configuration "${CONFIGURATION}" \
+    --output publish \
+    -p:EnableWindowsTargeting=true \
+    -p:DebugType=None \
+    -p:DebugSymbols=false

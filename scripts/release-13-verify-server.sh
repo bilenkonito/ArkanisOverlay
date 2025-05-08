@@ -9,15 +9,14 @@ set -eEuo pipefail
 #| `stdout`         | Only the reason for the verification to fail can be written to `stdout`. |
 #| `stderr`         | Can be used for logging.                                                 |
 
-[[ -n "${DEBUG}" ]] && env
-
-[[ -z "${VERSION+x}" ]] && >&2 echo "VERSION is not set" && exit 2
 [[ -z "${VERSION_TAG+x}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
+[[ -z "${REGISTRY+x}" ]] && REGISTRY="ghcr.io"
+[[ -z "${CONFIGURATION+x}" ]] && CONFIGURATION="Release"
 
-dotnet tool restore
-dotnet setversion --recursive "${VERSION}"
-
-
-"$(dirname "$(realpath "$0")")/release-11-verify-win64.sh"
-"$(dirname "$(realpath "$0")")/release-12-verify-win64-velopack.sh"
-"$(dirname "$(realpath "$0")")/release-13-verify-server.sh"
+dotnet publish ./src/Arkanis.Overlay.Host.Server/Arkanis.Overlay.Host.Server.csproj \
+    --configuration "${CONFIGURATION}" \
+    -p:PublishProfile=DefaultContainer \
+    -p:ContainerRegistry="${REGISTRY}" \
+    -p:ContainerImageTag="${VERSION_TAG}" \
+    -p:DebugType=None \
+    -p:DebugSymbols=false

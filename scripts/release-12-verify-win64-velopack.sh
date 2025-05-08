@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -eEuo pipefail
 
-### prepareCmd
+### verifyReleaseCmd
 #
-#| Command property | Description                                                                                                         |
-#| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
-#| `exit code`      | Any non `0` code is considered as an unexpected error and will stop the `semantic-release` execution with an error. |
-#| `stdout`         | Can be used for logging.                                                                                            |
-#| `stderr`         | Can be used for logging.                                                                                            |
+#| Command property | Description                                                              |
+#| ---------------- | ------------------------------------------------------------------------ |
+#| `exit code`      | `0` if the verification is successful, or any other exit code otherwise. |
+#| `stdout`         | Only the reason for the verification to fail can be written to `stdout`. |
+#| `stderr`         | Can be used for logging.                                                 |
 
 [[ -z "${VERSION+x}" ]] && >&2 echo "VERSION is not set" && exit 2
 [[ -z "${VERSION_CHANNEL+x}" ]] && >&2 echo "VERSION_CHANNEL is not set" && exit 2
@@ -17,12 +17,12 @@ set -eEuo pipefail
 [[ -d publish ]] || >&2 echo "publish directory does not exist" && exit 2
 
 >&2 echo "Downloading previous release to build a delta release..."
-dotnet vpk download github \
+>&2 dotnet vpk download github \
     --repoUrl "${REPOSITORY_URL}" \
     --token "${GITHUB_TOKEN}"
 
 >&2 echo "Packing the published application..."
-dotnet vpk [win] pack \
+>&2 dotnet vpk [win] pack \
     --packTitle "Arkanis Overlay" \
     --packId Arkanis.Overlay.Application \
     --splashImage ./src/Arkanis.Overlay.Application/Resources/ArkanisTransparent_512x512.png \

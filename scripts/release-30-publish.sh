@@ -11,4 +11,4 @@ set -eEuo pipefail
 
 [[ -n "${DEBUG}" ]] && env
 
-"$(dirname "$(realpath "$0")")/release-31-publish-win_pack.sh"
+"$(dirname "$(realpath "$0")")/release-31-publish-win64-velopack.sh"
