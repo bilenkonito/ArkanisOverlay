@@ -23,7 +23,8 @@ using Microsoft.Extensions.Logging;
 // }
 
 /// <summary>
-/// Tracks the target window and raises events for window state changes, window position changes, and window focus changes.
+///     Tracks the target window and raises events for window state changes, window position changes, and window focus
+///     changes.
 /// </summary>
 public sealed class WindowTracker : IHostedService, IDisposable
 {
@@ -31,29 +32,68 @@ public sealed class WindowTracker : IHostedService, IDisposable
 
     private const string WindowClass = Constants.WindowClass;
     private const string WindowName = Constants.WindowName;
-
-    private readonly ILogger _logger;
-    private readonly IHostApplicationLifetime _applicationLifetime;
-    private readonly IUserPreferencesProvider _userPreferencesProvider;
     private static Dictionary<HWINEVENTHOOK, WINEVENTPROC> _registeredHooksDictionary = new();
     private static readonly Dictionary<HWINEVENTHOOK, Thread> ThreadMap = new();
 
     private readonly ConcurrentQueue<Action> _actionQueue = new();
+    private readonly IHostApplicationLifetime _applicationLifetime;
 
-
-    /// <summary>
-    /// The self-launched thread this class runs on.
-    /// This is needed to be able to stop the thread.
-    /// </summary>
-    private Thread? _thread;
-
-    private uint _threadId;
+    private readonly ILogger _logger;
+    private readonly IUserPreferencesProvider _userPreferencesProvider;
 
     private HWND _currentWindowHWnd;
     private uint _currentWindowProcessId;
     private uint _currentWindowThreadId;
 
     private CancellationTokenSource _processExitWatcherCts = new();
+
+
+    /// <summary>
+    ///     The self-launched thread this class runs on.
+    ///     This is needed to be able to stop the thread.
+    /// </summary>
+    private Thread? _thread;
+
+    private uint _threadId;
+
+    public WindowTracker(
+        IHostApplicationLifetime applicationLifetime,
+        IUserPreferencesProvider userPreferencesProvider,
+        ILogger<WindowTracker> logger
+    )
+    {
+        _applicationLifetime = applicationLifetime;
+        _userPreferencesProvider = userPreferencesProvider;
+        _logger = logger;
+
+        WindowFound += OnWindowFound;
+        ProcessExited += OnProcessExited;
+    }
+
+    public void Dispose()
+    {
+        StopProcessExitWatcher();
+        _processExitWatcherCts.Dispose();
+    }
+
+    Task IHostedService.StartAsync(CancellationToken cancellationToken)
+    {
+        _thread = new Thread(Run)
+        {
+            // ensures that the application can exit
+            // regardless of this thread
+            // see: https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread.isbackground?view=net-9.0
+            IsBackground = true,
+        };
+        _thread.Start();
+        return Task.CompletedTask;
+    }
+
+    Task IHostedService.StopAsync(CancellationToken cancellationToken)
+    {
+        Dispose();
+        return Task.CompletedTask;
+    }
 
     // /// <summary>
     // ///
@@ -89,39 +129,6 @@ public sealed class WindowTracker : IHostedService, IDisposable
     ///     Reports the new size of the window.
     /// </summary>
     public event EventHandler<Size>? WindowSizeChanged;
-
-    public WindowTracker(
-        IHostApplicationLifetime applicationLifetime,
-        IUserPreferencesProvider userPreferencesProvider,
-        ILogger<WindowTracker> logger
-    )
-    {
-        _applicationLifetime = applicationLifetime;
-        _userPreferencesProvider = userPreferencesProvider;
-        _logger = logger;
-
-        WindowFound += OnWindowFound;
-        ProcessExited += OnProcessExited;
-    }
-
-    Task IHostedService.StartAsync(CancellationToken cancellationToken)
-    {
-        _thread = new Thread(Run)
-        {
-            // ensures that the application can exit
-            // regardless of this thread
-            // see: https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread.isbackground?view=net-9.0
-            IsBackground = true,
-        };
-        _thread.Start();
-        return Task.CompletedTask;
-    }
-
-    Task IHostedService.StopAsync(CancellationToken cancellationToken)
-    {
-        Dispose();
-        return Task.CompletedTask;
-    }
 
     /**
      * Entry method for Thread.
@@ -372,7 +379,7 @@ public sealed class WindowTracker : IHostedService, IDisposable
         _logger.LogDebug("Removing all registered win event hooks");
 
         // unhook all current event listeners
-        foreach (HWINEVENTHOOK registeredHWinEventHook in _registeredHooksDictionary.Keys)
+        foreach (var registeredHWinEventHook in _registeredHooksDictionary.Keys)
         {
             UnhookWinEvent(registeredHWinEventHook);
             _registeredHooksDictionary.Remove(registeredHWinEventHook);
@@ -580,7 +587,8 @@ public sealed class WindowTracker : IHostedService, IDisposable
         int idObject,
         int idChild,
         uint idEventThread,
-        uint dwmsEventTime)
+        uint dwmsEventTime
+    )
     {
         // safety precaution
         // if (hWnd == HWND.Null) return;
@@ -594,18 +602,12 @@ public sealed class WindowTracker : IHostedService, IDisposable
         var windowTitle = PInvoke.GetWindowText(hWnd);
         // allows for convenient debugging
         // this way the DevTools window counts as the window being focused
-        isFocused |= Debugger.IsAttached && (bool)windowTitle?.StartsWith("DevTools", StringComparison.InvariantCulture);
+        isFocused |= Debugger.IsAttached && (windowTitle?.StartsWith("DevTools", StringComparison.InvariantCulture) ?? false);
 #endif
 
         // Logger.LogDebug(
         //     "Window focus changed: {isFocused} => Event: {event} - hWnd: {hWnd} - idObject: {idObject} - idChild: {idChild} - idEventThread: {idEventThread} - dwmsEventTime: {dwmsEventTime} - WindowTitle: '{windowTitle}'",
         //     isFocused, @event, (IntPtr)hWnd, idObject, idChild, idEventThread, dwmsEventTime, windowTitle);
         WindowFocusChanged?.Invoke(this, isFocused);
-    }
-
-    public void Dispose()
-    {
-        StopProcessExitWatcher();
-        _processExitWatcherCts.Dispose();
     }
 }

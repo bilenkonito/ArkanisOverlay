@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Application.Helpers;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using Windows.Win32.Foundation;
@@ -15,6 +16,10 @@ public class BlurHelper(WindowProvider<OverlayWindow> windowProvider, ILogger<Bl
 {
     private const uint BlurOpacity = 0;
 
+    [SuppressMessage(
+        "Interoperability",
+        "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time"
+    )]
     [DllImport("user32.dll")]
     private static extern BOOL SetWindowCompositionAttribute(IntPtr hWnd, ref WindowCompositionAttributeData data);
 

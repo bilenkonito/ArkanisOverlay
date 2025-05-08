@@ -177,4 +177,23 @@ public static class Program
                     .Alias<IHostedService, GlobalHotkey>();
             }
         );
+
+    private static async Task Update()
+    {
+        var mgr = new UpdateManager(new GithubSource("https://github.com/ArkanisCorporation/ArkanisOverlay", null, false));
+
+        // check for new version
+        var newVersion = await mgr.CheckForUpdatesAsync();
+        if (newVersion == null)
+        {
+            // no updates available
+            return;
+        }
+
+        // download new version
+        await mgr.DownloadUpdatesAsync(newVersion);
+
+        // install new version and restart app
+        mgr.ApplyUpdatesAndRestart(newVersion);
+    }
 }

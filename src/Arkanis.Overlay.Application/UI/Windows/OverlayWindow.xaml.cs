@@ -141,7 +141,7 @@ public partial class OverlayWindow
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
-        _logger.LogDebug("Overlay: KeyDown: {key}", e.Key);
+        _logger.LogTrace("Overlay: KeyDown: {Key}", e.Key);
         base.OnKeyDown(e);
         if (e.Key == Key.F)
         {

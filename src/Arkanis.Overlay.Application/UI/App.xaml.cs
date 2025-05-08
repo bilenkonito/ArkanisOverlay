@@ -63,9 +63,9 @@ public partial class App
         overlayWindow.Show();
     }
 
-    protected override void OnExit(ExitEventArgs exitEventArgs)
+    protected override void OnExit(ExitEventArgs e)
     {
-        _logger.LogInformation("Shutting down.");
+        _logger.LogInformation("Shutting down");
 
         try
         {
@@ -77,10 +77,10 @@ public partial class App
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during shutdown.");
+            _logger.LogError(ex, "Error during shutdown");
         }
 
-        base.OnExit(exitEventArgs);
+        base.OnExit(e);
         _hostApplicationLifetime.StopApplication();
     }
 }

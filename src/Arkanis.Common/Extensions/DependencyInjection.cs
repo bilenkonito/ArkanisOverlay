@@ -26,11 +26,23 @@ public static class DependencyInjection
         ServiceLifetime lifetime = ServiceLifetime.Singleton
     )
         where TService : class, TAlias, TRegistered
+        where TRegistered : notnull
     {
         var serviceDescriptor = ServiceDescriptor.Describe(
             typeof(TAlias),
-            provider => provider.GetRequiredService(typeof(TRegistered)) as TService
-                        ?? throw new ApplicationException($"Unable to resolve service {typeof(TRegistered)} implemented by {typeof(TService)}."),
+            provider =>
+            {
+                var requiredService = provider.GetRequiredService<TRegistered>();
+                if (requiredService is not TService service)
+                {
+                    throw new InvalidOperationException(
+                        $"Unable to create alias {typeof(TAlias)} for {typeof(TService)} registered as {typeof(TRegistered)},"
+                        + $" because the actually registered service {requiredService.GetType()} is not assignable to {typeof(TService)}."
+                    );
+                }
+
+                return service;
+            },
             lifetime
         );
         services.Add(serviceDescriptor);
