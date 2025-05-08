@@ -28,6 +28,8 @@
                 "changelogFile": "CHANGELOG.md"
             }
         ],
+        "@semantic-release/release-notes-generator",
+        "@semantic-release/github",
         [
             "@semantic-release/exec",
             {
@@ -35,8 +37,6 @@
                 "prepareCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} VERSION_CHANNEL=${nextRelease.channel} ./scripts/release-20-prepare.sh",
                 "publishCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} VERSION_CHANNEL=${nextRelease.channel} ./scripts/release-30-publish.sh"
             }
-        ],
-        "@semantic-release/release-notes-generator",
-        "@semantic-release/github"
+        ]
     ]
 }
