@@ -29,17 +29,22 @@ using Workers;
 // https://github.com/dapplo/Dapplo.Microsoft.Extensions.Hosting/blob/master/samples/Dapplo.Hosting.Sample.WpfDemo/Program.cs#L48
 public static class Program
 {
+    private static readonly IUpdateSource UpdateSource = new GithubSource(ApplicationConstants.GitHubRepositoryUrl, null, false);
+
     [STAThread]
     public static async Task Main(string[] args)
     {
-        var userPreferences = new UserPreferences();
+        var userPreferenceDefaults = new UserPreferences();
         VelopackApp.Build()
-            .WithFirstRun(currentVersion =>
+            .WithFirstRun(_ =>
                 {
-                    // TODO: check for updates and potentially immediately update
-                    WindowsToastNotifications.ShowWelcomeToast(userPreferences);
+                    WindowsNotifications.ShowWelcomeToast(userPreferenceDefaults);
+                    using var windowsNotifications = new WindowsNotifications();
+                    using var update = new UpdateProcess(UpdateSource, windowsNotifications);
+                    update.RunAsync(true, CancellationToken.None).GetAwaiter().GetResult();
                 }
             )
+            .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
             .Run();
 
         var hostBuilder = Host.CreateDefaultBuilder(args)
@@ -128,10 +133,12 @@ public static class Program
                 services.AddHostedService<WindowsAutoStartManager>()
                     .AddSingleton<ISystemAutoStartStateProvider, WindowsAutoStartStateProvider>();
 
+                services.AddSingleton<WindowsNotifications>();
+
                 // Auto updater
                 services
                     .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>()
-                    .AddSingleton<IUpdateSource>(_ => new GithubSource(ApplicationConstants.GitHubRepositoryUrl, null, false));
+                    .AddSingleton<IUpdateSource>(_ => UpdateSource);
 
                 // Data
                 services
