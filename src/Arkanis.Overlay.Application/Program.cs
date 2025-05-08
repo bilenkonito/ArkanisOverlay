@@ -7,6 +7,7 @@ using Components.Helpers;
 using Components.Services;
 using Dapplo.Microsoft.Extensions.Hosting.AppServices;
 using Dapplo.Microsoft.Extensions.Hosting.Wpf;
+using Domain.Abstractions.Services;
 using Domain.Options;
 using Helpers;
 using Infrastructure;
@@ -146,7 +147,13 @@ public static class Program
                 // Auto updater
                 services
                     .AddSingleton<IUpdateSource>(_ => UpdateSource)
-                    .AddSingleton<UpdateManager>(provider => new UpdateManager(provider.GetRequiredService<IUpdateSource>()))
+                    .AddSingleton<UpdateOptions>(provider => new UpdateOptions
+                        {
+                            AllowVersionDowngrade = false,
+                            ExplicitChannel = provider.GetRequiredService<IUserPreferencesProvider>().CurrentPreferences.UpdateChannel.VelopackChannelId,
+                        }
+                    )
+                    .AddSingleton<UpdateManager>(provider => ActivatorUtilities.CreateInstance<UpdateManager>(provider))
                     .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>();
 
                 // Data
