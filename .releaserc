@@ -14,12 +14,12 @@
         {
             "name": "ci",
             "channel": "ci",
-            "prerelease": "test-do-not-use"
+            "prerelease": "ci-do-not-use"
         },
         {
             "name": "dev",
             "channel": "dev",
-            "prerelease": "test-do-not-use"
+            "prerelease": "dev-do-not-use"
         }
     ],
     "repositoryUrl": "https://github.com/ArkanisCorporation/ArkanisOverlay",
