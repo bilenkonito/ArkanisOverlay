@@ -43,8 +43,8 @@ internal class WindowsNotifications : IDisposable
             .SetToastDuration(ToastDuration.Long)
             .SetToastScenario(ToastScenario.Default)
             .AddText("Welcome to the Arkanis Overlay!", AdaptiveTextStyle.Header)
-            .AddText("You can find the app in the system tray. By right-clicking on it, you can open the preferences dialog or exit.", AdaptiveTextStyle.Body)
-            .AddText($"The overlay can be launched by pressing {launchShortcut} while in the game.", AdaptiveTextStyle.Body)
+            .AddText($"Press {launchShortcut} to toggle the Overlay while in game.", AdaptiveTextStyle.Body)
+            .AddText("Right-click the tray icon to open the preferences or exit.", AdaptiveTextStyle.Body)
             .AddAttributionText(AppAttributionText)
             .Show();
     }
