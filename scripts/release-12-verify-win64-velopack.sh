@@ -30,7 +30,7 @@ dotnet vpk download github \
 >&2 echo "Packing the published application..."
 dotnet vpk [win] pack \
     --packTitle "Arkanis Overlay" \
-    --packId Arkanis.Overlay.Host.Desktop \
+    --packId ArkanisOverlay \
     --splashImage ./src/Arkanis.Overlay.Host.Desktop/Resources/ArkanisTransparent_512x512.png \
     --icon ./src/Arkanis.Overlay.Host.Desktop/Resources/favicon.ico \
     --packVersion "${VERSION}" \
@@ -38,6 +38,7 @@ dotnet vpk [win] pack \
     --channel "${VERSION_CHANNEL}" \
     --packDir publish-win64 \
     --outputDir release-win64 \
+    --mainExe ArkanisOverlay.exe \
     1>&2 # logging output must not go to stdout
 
 >&2 echo "Successfully packed the Overlay application to: $(realpath release)"
