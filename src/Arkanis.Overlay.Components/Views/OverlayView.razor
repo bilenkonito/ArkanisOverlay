@@ -10,7 +10,6 @@
 
 @inject ILogger<OverlayView> Logger
 @inject IDialogService DialogService
-@inject IOverlayControls OverlayControls
 @inject ISearchService SearchService
 @inject IUserPreferencesProvider UserPreferencesProvider
 @inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
@@ -192,12 +191,15 @@
 @code
 {
 
+    [SupplyParameterFromQuery(Name = "q")]
+    public string SearchText { get; set; } = string.Empty;
+
     private const StringSplitOptions SplittingOptions
         = StringSplitOptions.RemoveEmptyEntries
           | StringSplitOptions.TrimEntries;
 
     private static CancellationTokenSource _searchCancellation = new();
-    private static SearchBox _searchBox;
+    private static SearchBox? _searchBox;
 
     private readonly Dictionary<string, EntityCategorySearch> _categorySearchShortcuts = new()
     {
@@ -219,6 +221,13 @@
             ? "backdrop-filter: blur(12px);"
             : "";
 
+    private string ShortcutsText
+        => new StringBuilder().AppendJoin(", ", _categorySearchShortcuts.Select(search => $"{search.Key} {search.Value.Category.Humanize().Pluralize()}")).ToString();
+
+    private GameEntitySearchResults SearchResults { get; set; } = GameEntitySearchResults.Empty;
+
+    private string PreviousSearchText { get; set; } = string.Empty;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -228,11 +237,17 @@
         };
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await SearchAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        if (firstRender)
+        if (firstRender && _searchBox is not null)
         {
             var windowFocusHandler = EventInterop.CreateHandler(_searchBox.FocusSearchBoxAsync);
             await EventInterop.RegisterWindowEventHandlerAsync("focus", windowFocusHandler);
@@ -244,13 +259,6 @@
         await SearchAsync();
         await InvokeAsync(StateHasChanged);
     }
-
-    private string ShortcutsText
-        => new StringBuilder().AppendJoin(", ", _categorySearchShortcuts.Select(search => $"{search.Key} {search.Value.Category.Humanize().Pluralize()}")).ToString();
-
-    private string SearchText { get; set; } = "";
-
-    private GameEntitySearchResults SearchResults { get; set; } = GameEntitySearchResults.Empty;
 
     private async Task SearchAsync()
     {
@@ -278,8 +286,8 @@
 
             await _searchCancellation.CancelAsync();
             _searchCancellation = new CancellationTokenSource();
-            await GlobalAnalyticsReporter.TrackEventAsync(new SearchEvent(SearchText));
             SearchResults = await SearchService.SearchAsync(searchQueries, _searchCancellation.Token);
+            await GlobalAnalyticsReporter.TrackEventAsync(new SearchEvent(SearchText));
             await InvokeAsync(StateHasChanged);
         }
         catch (OperationCanceledException)
