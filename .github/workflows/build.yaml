@@ -4,11 +4,11 @@ on:
   # You can use the GitHub API to trigger a webhook event called repository_dispatch
   # when you want to trigger a workflow for activity that happens outside of GitHub.
   repository_dispatch:
-    branches: [ main, rc, nightly, dev, ci ]
+    branches: [ main, release/rc, release/nightly, dev, ci ]
   push:
-    branches: [ main, rc, nightly, dev, ci ]
+    branches: [ main, release/rc, release/nightly, dev, ci ]
   pull_request:
-    branches: [ main, rc, nightly, dev ]
+    branches: [ main, release/rc, release/nightly, dev ]
 
 permissions:
   contents: write       # for publishing a GitHub release
