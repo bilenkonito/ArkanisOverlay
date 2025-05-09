@@ -53,10 +53,15 @@ public partial class OverlayWindow
         _preferencesWindowFactory = preferencesWindowFactory;
 
         SetupWorkerEventListeners();
-
         InitializeComponent();
-        BlazorWebView.BlazorWebViewInitializing += BlazorWebView_Initializing;
 
+        Height =_windowTracker.CurrentWindowSize.Height;
+        Width = _windowTracker.CurrentWindowSize.Width;
+
+        Top = _windowTracker.CurrentWindowPosition.Y;
+        Left = _windowTracker.CurrentWindowPosition.X;
+
+        BlazorWebView.BlazorWebViewInitializing += BlazorWebView_Initializing;
         _preferencesProvider.ApplyPreferences += ApplyUserPreferences;
     }
 
