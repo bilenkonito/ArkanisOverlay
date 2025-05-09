@@ -281,12 +281,29 @@
     {
         await base.OnInitializedAsync();
         ReleaseAppRelease = await GitHubReleasesService.GetLatestStableDownloadsAsync();
-        Terminals = [await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(259)), await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(511)), await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(13))];
-        Items = [await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1932)), await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1931)), await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1759))];
-        Commodities =
-        [
-            await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(60)), await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(58)), await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(63)),
-        ];
+        Terminals = Array.Empty<GameTerminal>()
+            .Append(await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(259)))
+            .Append(await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(511)))
+            .Append(await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(13)))
+            .Where(terminal => terminal is not null)
+            .OfType<GameTerminal>()
+            .ToArray();
+
+        Items = Array.Empty<GameItem>()
+            .Append(await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1932)))
+            .Append(await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1931)))
+            .Append(await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1759)))
+            .Where(item => item is not null)
+            .OfType<GameItem>()
+            .ToArray();
+
+        Commodities = Array.Empty<GameCommodity>()
+            .Append(await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(60)))
+            .Append(await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(58)))
+            .Append(await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(63)))
+            .Where(commodity => commodity is not null)
+            .OfType<GameCommodity>()
+            .ToArray();
     }
 
 }
