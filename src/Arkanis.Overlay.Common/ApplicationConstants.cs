@@ -6,6 +6,7 @@ public static class ApplicationConstants
 
     public const string LocalAppDataDirectoryName = "ArkanisOverlay";
     public const string GitHubRepositoryUrl = "https://github.com/ArkanisCorporation/ArkanisOverlay";
+    public const string GitHubReleaseToken = "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";
 
     public const string CurrencyName = "Alpha United Earth Credits";
     public const string CurrencyAbbr = "aUEC";
