@@ -1,9 +1,13 @@
 ﻿@page "/"
+@using Arkanis.Overlay.Common
 @using Arkanis.Overlay.Components.Shared.Dialogs
 @using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Abstractions.Services
 @using Arkanis.Overlay.Domain.Models.Game
+@using Arkanis.Overlay.Host.Server.Components.Shared
+@using Arkanis.Overlay.Host.Server.Services
 @inject IDialogService DialogService
+@inject GitHubReleasesService GitHubReleasesService
 @inject IGameEntityRepository<GameTerminal> GameTerminalRepository
 @inject IGameEntityRepository<GameItem> GameItemRepository
 @inject IGameEntityRepository<GameCommodity> GameCommodityRepository
@@ -62,13 +66,10 @@
                     Built with performance and extensibility in mind.
                 </MudText>
                 <MudStack Row>
-                    <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               StartIcon="@Icons.Material.Filled.FileDownload"
-                               Href="@GitHubRepositoryUrl"
-                               Target="_blank">
-                        Download the Installer
-                    </MudButton>
+                    <MudButtonGroup OverrideStyles="false">
+                        <PortableDownloadButton Downloads="ReleaseDownloads"/>
+                        <InstallerDownloadButton Downloads="ReleaseDownloads"/>
+                    </MudButtonGroup>
                     <MudButton Variant="Variant.Outlined"
                                Color="Color.Secondary"
                                StartIcon="@Icons.Material.Filled.Web"
@@ -102,18 +103,16 @@
 
             <MudPaper Class="pa-12 mb-4 embed-wrapper">
                 <div class="mr-n2">
-                    <SearchBox HelperText="Use the search as you normally would in the game overlay! Check out the demo."/>
+                    <SearchBox
+                        HelperText="Use the search as you normally would in the game overlay! Check out the demo."/>
                 </div>
             </MudPaper>
 
             <MudStack Justify="Justify.Center" Row>
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           StartIcon="@Icons.Material.Filled.FileDownload"
-                           Href="@GitHubRepositoryUrl"
-                           Target="_blank">
-                    Download the Installer
-                </MudButton>
+                <MudButtonGroup OverrideStyles="false">
+                    <PortableDownloadButton Downloads="ReleaseDownloads"/>
+                    <InstallerDownloadButton Downloads="ReleaseDownloads"/>
+                </MudButtonGroup>
                 <MudButton Variant="Variant.Outlined"
                            Color="Color.Secondary"
                            StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
@@ -233,7 +232,7 @@
                                StartIcon="@Icons.Custom.Brands.GitHub"
                                Href="@GitHubRepositoryUrl"
                                Target="_blank">
-                        Check the Code
+                        Check out the Code
                     </MudButton>
                 </MudStack>
             </MudPaper>
@@ -244,20 +243,22 @@
 
 @code
 {
-    private const string GitHubRepositoryUrl = "https://github.com/ArkanisCorporation/ArkanisOverlay";
+
+    private const string GitHubRepositoryUrl = ApplicationConstants.GitHubRepositoryUrl;
     private const string DiscordUrl = "https://join.arkanis.cc";
 
-    public GameTerminal? Terminal { get; set; }
-
-    public GameCommodity? Commodity { get; set; }
-
-    public GameItem? Item { get; set; }
+    private Downloads ReleaseDownloads { get; set; } = DownloadsMissing.Instance;
+    private GameTerminal? Terminal { get; set; }
+    private GameCommodity? Commodity { get; set; }
+    private GameItem? Item { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        ReleaseDownloads = await GitHubReleasesService.GetLatestStableDownloads();
         Terminal = await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(259));
         Item = await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1932));
         Commodity = await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(60));
     }
+
 }
