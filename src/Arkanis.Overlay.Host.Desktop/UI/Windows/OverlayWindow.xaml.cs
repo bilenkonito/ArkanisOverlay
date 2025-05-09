@@ -81,13 +81,7 @@ public partial class OverlayWindow
 
     private void ShowOverlay()
     {
-        var mainWindowHandle = (HWND)new WindowInteropHelper(this).Handle;
-        var windowThreadProcessId = GetWindowThreadProcessId(GetForegroundWindow(), out _);
-        var currentThreadId = GetCurrentThreadId();
-        AttachThreadInput(windowThreadProcessId, currentThreadId, true);
-        BringWindowToTop(mainWindowHandle);
-        Show();
-        AttachThreadInput(windowThreadProcessId, currentThreadId, false);
+        ForceFocus();
 
         // only works when window is visible
         _blurHelper.SetBlurEnabled(_preferencesProvider.CurrentPreferences.BlurBackground);
@@ -96,6 +90,17 @@ public partial class OverlayWindow
         _logger.LogDebug("Overlay: Activate Window: {Result}", result);
 
         BlazorWebView.WebView.Focus();
+    }
+
+    private void ForceFocus()
+    {
+        var mainWindowHandle = (HWND)new WindowInteropHelper(this).Handle;
+        var windowThreadProcessId = GetWindowThreadProcessId(GetForegroundWindow(), out _);
+        var currentThreadId = GetCurrentThreadId();
+        AttachThreadInput(windowThreadProcessId, currentThreadId, true);
+        BringWindowToTop(mainWindowHandle);
+        Show();
+        AttachThreadInput(windowThreadProcessId, currentThreadId, false);
     }
 
 
@@ -122,6 +127,14 @@ public partial class OverlayWindow
                 _logger.LogDebug("Overlay: WindowSizeChanged: {Size}", size.ToString());
                 Width = size.Width;
                 Height = size.Height;
+            }
+        );
+
+        _windowTracker.WindowFocusChanged += (_, isFocused) => Dispatcher.Invoke(() =>
+            {
+                _logger.LogDebug("Overlay: WindowFocusChanged: {IsFocused}", isFocused);
+                if (Visibility != Visibility.Visible) { return; }
+                Topmost = isFocused;
             }
         );
 

@@ -604,7 +604,8 @@ public sealed class WindowTracker : IHostedService, IDisposable
         // var isFocused = hWnd == _currentWindowHWnd;
         // sometimes there is an eroneous detected focus change
         // if the above check is used, the below check works 100% of the time
-        var isFocused = PInvoke.GetForegroundWindow() == _currentWindowHWnd;
+        var currentForegroundWindowHWnd = PInvoke.GetForegroundWindow();
+        var isFocused = currentForegroundWindowHWnd == _currentWindowHWnd;
 
 #if DEBUG && !DEBUG
         var windowTitle = PInvoke.GetWindowText(hWnd);
@@ -613,9 +614,9 @@ public sealed class WindowTracker : IHostedService, IDisposable
         isFocused |= Debugger.IsAttached && (windowTitle?.StartsWith("DevTools", StringComparison.InvariantCulture) ?? false);
 #endif
 
-        // Logger.LogDebug(
-        //     "Window focus changed: {isFocused} => Event: {event} - hWnd: {hWnd} - idObject: {idObject} - idChild: {idChild} - idEventThread: {idEventThread} - dwmsEventTime: {dwmsEventTime} - WindowTitle: '{windowTitle}'",
-        //     isFocused, @event, (IntPtr)hWnd, idObject, idChild, idEventThread, dwmsEventTime, windowTitle);
+        _logger.LogDebug(
+            "Window focus changed: {IsFocused} => Current hWnd: {HWnd} - Focused hWnd: {CurrentForegroundWindowHWnd}",
+            isFocused, (IntPtr)_currentWindowHWnd, (IntPtr)currentForegroundWindowHWnd);
         WindowFocusChanged?.Invoke(this, isFocused);
     }
 }
