@@ -978,20 +978,20 @@
         }
       },
       "arkanis.overlay.infrastructure": {
-          "type": "Project",
-          "dependencies": {
-              "Arkanis.Overlay.Domain": "[1.0.0, )",
-              "Arkanis.Overlay.External.UEX": "[1.0.0, )",
-              "Microsoft.AspNetCore.Http.Extensions": "[2.3.0, )",
-              "Microsoft.Data.Sqlite": "[8.0.0, )",
-              "Microsoft.EntityFrameworkCore.Sqlite": "[8.0.13, )",
-              "Microsoft.Extensions.Http": "[8.0.1, )",
-              "Quartz": "[3.14.0, )",
-              "Quartz.Extensions.DependencyInjection": "[3.14.0, )",
-              "Quartz.Extensions.Hosting": "[3.14.0, )",
-              "Quartz.Jobs": "[3.14.0, )",
-              "Scrutor": "[6.0.1, )"
-          }
+        "type": "Project",
+        "dependencies": {
+          "Arkanis.Overlay.Domain": "[1.0.0, )",
+          "Arkanis.Overlay.External.UEX": "[1.0.0, )",
+          "Microsoft.AspNetCore.Http.Extensions": "[2.3.0, )",
+          "Microsoft.Data.Sqlite": "[8.0.0, )",
+          "Microsoft.EntityFrameworkCore.Sqlite": "[8.0.13, )",
+          "Microsoft.Extensions.Http": "[8.0.1, )",
+          "Quartz": "[3.14.0, )",
+          "Quartz.Extensions.DependencyInjection": "[3.14.0, )",
+          "Quartz.Extensions.Hosting": "[3.14.0, )",
+          "Quartz.Jobs": "[3.14.0, )",
+          "Scrutor": "[6.0.1, )"
+        }
       }
     }
   }
