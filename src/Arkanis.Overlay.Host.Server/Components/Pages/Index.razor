@@ -4,7 +4,7 @@
 @using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Abstractions.Services
 @using Arkanis.Overlay.Domain.Models.Game
-@using Arkanis.Overlay.Host.Server.Components.Shared
+@using Arkanis.Overlay.Host.Server.Models
 @using Arkanis.Overlay.Host.Server.Services
 @inject IDialogService DialogService
 @inject GitHubReleasesService GitHubReleasesService
@@ -65,10 +65,18 @@
                     — search tools, trading info, location data, and more.
                     Built with performance and extensibility in mind.
                 </MudText>
-                <MudStack Row>
+                <MudStack Wrap="@Wrap.Wrap" Row>
                     <MudButtonGroup OverrideStyles="false">
-                        <PortableDownloadButton Downloads="ReleaseDownloads"/>
-                        <InstallerDownloadButton Downloads="ReleaseDownloads"/>
+                        <AssetDownloadButton
+                            T="GitHubAppRelease"
+                            Name="Installer"
+                            Release="ReleaseAppRelease"
+                            AssetSelector="@(release => release.InstallerAsset)"/>
+                        <AssetDownloadButton
+                            T="GitHubAppRelease"
+                            Name="Portable"
+                            Release="ReleaseAppRelease"
+                            AssetSelector="@(release => release.PortableAsset)"/>
                     </MudButtonGroup>
                     <MudButton Variant="Variant.Outlined"
                                Color="Color.Secondary"
@@ -104,14 +112,23 @@
             <MudPaper Class="pa-12 mb-4 embed-wrapper">
                 <div class="mr-n2">
                     <SearchBox
-                        HelperText="Use the search as you normally would in the game overlay! Check out the demo."/>
+                        HelperText="Use the search as you normally would in the game overlay! Check out the demo."
+                        MinWidth="100%"/>
                 </div>
             </MudPaper>
 
             <MudStack Justify="Justify.Center" Row>
                 <MudButtonGroup OverrideStyles="false">
-                    <PortableDownloadButton Downloads="ReleaseDownloads"/>
-                    <InstallerDownloadButton Downloads="ReleaseDownloads"/>
+                    <AssetDownloadButton
+                        T="GitHubAppRelease"
+                        Name="Installer"
+                        Release="ReleaseAppRelease"
+                        AssetSelector="@(release => release.InstallerAsset)"/>
+                    <AssetDownloadButton
+                        T="GitHubAppRelease"
+                        Name="Portable"
+                        Release="ReleaseAppRelease"
+                        AssetSelector="@(release => release.PortableAsset)"/>
                 </MudButtonGroup>
                 <MudButton Variant="Variant.Outlined"
                            Color="Color.Secondary"
@@ -145,20 +162,25 @@
 
                 <MudItem xs="12" md="8">
                     <MudPaper Class="py-12 pl-12 embed-wrapper">
-                        <div class="mr-n2">
-                            <SearchResult Model="@Item"/>
-                        </div>
+                        <MudStack Class="mr-n2">
+                            @foreach (var item in Items)
+                            {
+                                <SearchResult Model="@item"/>
+                            }
+                        </MudStack>
                     </MudPaper>
                 </MudItem>
-
             </MudGrid>
 
-            <MudGrid Justify="@Justify.Center" Class="my-4 align-center">
+            <MudGrid Justify="@Justify.Center" Class="my-4 align-center flex-wrap-reverse">
                 <MudItem xs="12" md="8">
                     <MudPaper Class="py-12 pl-12 embed-wrapper reverse">
-                        <div class="mr-n2">
-                            <SearchResult Model="@Commodity"/>
-                        </div>
+                        <MudStack Class="mr-n2">
+                            @foreach (var commodity in Commodities)
+                            {
+                                <SearchResult Model="@commodity"/>
+                            }
+                        </MudStack>
                     </MudPaper>
                 </MudItem>
 
@@ -204,9 +226,12 @@
 
                 <MudItem xs="12" md="8">
                     <MudPaper Class="py-12 pl-12 embed-wrapper">
-                        <div class="mr-n2">
-                            <SearchResult Model="@Terminal"/>
-                        </div>
+                        <MudStack Class="mr-n2">
+                            @foreach (var terminal in Terminals)
+                            {
+                                <SearchResult Model="@terminal"/>
+                            }
+                        </MudStack>
                     </MudPaper>
                 </MudItem>
             </MudGrid>
@@ -247,18 +272,38 @@
     private const string GitHubRepositoryUrl = ApplicationConstants.GitHubRepositoryUrl;
     private const string DiscordUrl = "https://join.arkanis.cc";
 
-    private Downloads ReleaseDownloads { get; set; } = DownloadsMissing.Instance;
-    private GameTerminal? Terminal { get; set; }
-    private GameCommodity? Commodity { get; set; }
-    private GameItem? Item { get; set; }
+    private AppRelease ReleaseAppRelease { get; set; } = AppReleaseMissing.Instance;
+    private GameTerminal[] Terminals { get; set; } = [];
+    private GameCommodity[] Commodities { get; set; } = [];
+    private GameItem[] Items { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        ReleaseDownloads = await GitHubReleasesService.GetLatestStableDownloads();
-        Terminal = await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(259));
-        Item = await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1932));
-        Commodity = await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(60));
+        ReleaseAppRelease = await GitHubReleasesService.GetLatestStableDownloadsAsync();
+        Terminals = Array.Empty<GameTerminal>()
+            .Append(await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(259)))
+            .Append(await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(511)))
+            .Append(await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(13)))
+            .Where(terminal => terminal is not null)
+            .OfType<GameTerminal>()
+            .ToArray();
+
+        Items = Array.Empty<GameItem>()
+            .Append(await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1932)))
+            .Append(await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1931)))
+            .Append(await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1759)))
+            .Where(item => item is not null)
+            .OfType<GameItem>()
+            .ToArray();
+
+        Commodities = Array.Empty<GameCommodity>()
+            .Append(await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(60)))
+            .Append(await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(58)))
+            .Append(await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(63)))
+            .Where(commodity => commodity is not null)
+            .OfType<GameCommodity>()
+            .ToArray();
     }
 
 }
