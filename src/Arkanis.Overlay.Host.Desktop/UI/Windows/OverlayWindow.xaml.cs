@@ -133,10 +133,8 @@ public partial class OverlayWindow
         _windowTracker.WindowFocusChanged += (_, isFocused) => Dispatcher.Invoke(() =>
             {
                 _logger.LogDebug("Overlay: WindowFocusChanged: {IsFocused}", isFocused);
-                if (!isFocused) { return; }
                 if (Visibility != Visibility.Visible) { return; }
-
-                ShowOverlay();
+                Topmost = isFocused;
             }
         );
 
