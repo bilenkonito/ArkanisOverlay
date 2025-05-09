@@ -36,6 +36,7 @@ builder.Services
     .AddServerOverlayControls()
     .AddInfrastructure()
     .AddInfrastructureConfiguration(builder.Configuration)
+    .AddSingleton<GitHubReleasesService>()
     .AddSingleton<ISystemAutoStartStateProvider, NoSystemAutoStartStateProvider>();
 
 var app = builder.Build();

@@ -8,7 +8,7 @@
         Width="800"
         Height="600"
         ResizeMode="NoResize"
-        Topmost="True"
+        Topmost="False"
         ShowInTaskbar="False"
         WindowStyle="None"
         Visibility="Hidden"

@@ -18,7 +18,7 @@ public sealed class DependencyResolverUnitTests : IDisposable
         var context = DependencyResolver.DependsOn(this, [dependency]);
         var task = context.WaitUntilReadyAsync(_cancellation.Token);
 
-        await Should.ThrowAsync<TimeoutException>(async () => await task.WaitAsync(TimeSpan.FromMilliseconds(100)));
+        await Should.ThrowAsync<TimeoutException>(async () => await task.WaitAsync(TimeSpan.FromMilliseconds(500)));
 
         dependency.Fulfill();
         await task;
@@ -33,7 +33,7 @@ public sealed class DependencyResolverUnitTests : IDisposable
         var context = DependencyResolver.DependsOn(this, [chainedDependency]);
         var task = context.WaitUntilReadyAsync(_cancellation.Token);
 
-        await Should.ThrowAsync<TimeoutException>(async () => await task.WaitAsync(TimeSpan.FromMilliseconds(100)));
+        await Should.ThrowAsync<TimeoutException>(async () => await task.WaitAsync(TimeSpan.FromMilliseconds(500)));
 
         dependency.Fulfill();
         await task;
@@ -48,7 +48,7 @@ public sealed class DependencyResolverUnitTests : IDisposable
         var context = DependencyResolver.DependsOn(this, [chainedDependency, dependency]);
         var task = context.WaitUntilReadyAsync(_cancellation.Token);
 
-        await Should.ThrowAsync<TimeoutException>(async () => await task.WaitAsync(TimeSpan.FromMilliseconds(100)));
+        await Should.ThrowAsync<TimeoutException>(async () => await task.WaitAsync(TimeSpan.FromMilliseconds(500)));
 
         dependency.Fulfill();
         await task;
@@ -65,7 +65,7 @@ public sealed class DependencyResolverUnitTests : IDisposable
         var context = DependencyResolver.DependsOn(this, [chainedDependency1, chainedDependency2, chainedDependency3]);
         var task = context.WaitUntilReadyAsync(_cancellation.Token);
 
-        await Should.ThrowAsync<TimeoutException>(async () => await task.WaitAsync(TimeSpan.FromMilliseconds(100)));
+        await Should.ThrowAsync<TimeoutException>(async () => await task.WaitAsync(TimeSpan.FromMilliseconds(500)));
 
         dependency.Fulfill();
         await task;
@@ -81,7 +81,7 @@ public sealed class DependencyResolverUnitTests : IDisposable
 
         var task = context3.WaitUntilReadyAsync(_cancellation.Token);
 
-        await Should.ThrowAsync<TimeoutException>(async () => await task.WaitAsync(TimeSpan.FromMilliseconds(100)));
+        await Should.ThrowAsync<TimeoutException>(async () => await task.WaitAsync(TimeSpan.FromMilliseconds(500)));
 
         dependency.Fulfill();
         await task;

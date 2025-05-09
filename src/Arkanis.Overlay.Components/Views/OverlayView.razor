@@ -3,7 +3,6 @@
 @using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Enums
 @using Arkanis.Overlay.Domain.Models.Analytics
-@using Arkanis.Overlay.Domain.Models.Keyboard
 @using Arkanis.Overlay.Domain.Models.Search
 @using Humanizer
 @using Microsoft.Extensions.Logging
@@ -11,7 +10,6 @@
 
 @inject ILogger<OverlayView> Logger
 @inject IDialogService DialogService
-@inject IOverlayControls OverlayControls
 @inject ISearchService SearchService
 @inject IUserPreferencesProvider UserPreferencesProvider
 @inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
@@ -139,71 +137,20 @@
             </MudStack>
             <MudSpacer/>
             <MudStack Spacing="1" AlignItems="@AlignItems.End" Justify="@Justify.FlexEnd">
-                <div class="badge-container">
-                    <a href="https://uexcorp.space/" target="_blank" rel="noopener noreferrer">
-                        <div class="badge">
-                            <img src="@LinkHelper.GetPathToAsset("/img/uex-api-badge-powered.png")"
-                                 alt="Powered by UEX API"/>
-                        </div>
-                    </a>
-                </div>
+                <UEXBadge/>
             </MudStack>
         </div>
     </div>
     <MudStack id="searchContainer" Class="d-flex justify-start align-center flex-grow-1 px-3">
         <div style="padding: 7.5vh"></div>
-        <MudPaper Elevation="8"
-                  id="search-box-container"
-                  Style="position: sticky; top: 0; z-index: 10; min-width: 60vw;">
-            <MudStack Spacing="0"
-                      AlignItems="@AlignItems.Center">
-                <MudStack Spacing="0"
-                          Class="w-100"
-                          Row>
-                    @if (_searchContext.CurrentLocation is { } currentLocation)
-                    {
-                        <KeyboardShortcutBadge id="currentLocation"
-                                               Key="@KeyboardKey.F2"
-                                               Origin="@Origin.BottomCenter"
-                                               Color="@Color.Error"
-                                               Class="d-flex"
-                                               OnKeyPress="@(() => _searchContext.ClearLocationFilterAsync())">
-                            <div class="h-100 px-4 d-flex align-center no-wrap">
-                                <GameEntityNameLabel
-                                    Model="@currentLocation.Name"/>
-                            </div>
-                        </KeyboardShortcutBadge>
-                    }
-                    <FocusRegion Class="w-100" @ref="_searchBoxFocusRegion">
-                        <KeyboardShortcutBadge Key="@KeyboardKey.Escape"
-                                               Origin="@(Origin.BottomCenter)"
-                                               Color="@(context.ContainsFocus ? Color.Error : Color.Tertiary)"
-                                               Class="w-100"
-                                               OnKeyPress="@(FocusSearchBoxAsync)">
-                            <MudTextField
-                                id="searchBox"
-                                @ref="_searchBox"
-                                T="string"
-                                Style="border-bottom-left-radius: 0; border-top-left-radius: 0"
-                                @bind-Value="@SearchText"
-                                Variant="Variant.Outlined"
-                                Adornment="@Adornment.End"
-                                AdornmentIcon="@Icons.Material.Filled.Search"
-                                AdornmentColor="@Color.Secondary"
-                                DebounceInterval="180"
-                                OnDebounceIntervalElapsed="@SearchAsync"
-                                AutoFocus
-                                Immediate/>
-                        </KeyboardShortcutBadge>
-                    </FocusRegion>
-                </MudStack>
-                <MudText Typo="@Typo.overline" Class="text-secondary px-3">
-                    @ShortcutsText
-                </MudText>
-            </MudStack>
-        </MudPaper>
 
         <CascadingValue Value="@_searchContext" IsFixed>
+            <SearchBox
+                @ref="_searchBox"
+                @bind-SearchText="@SearchText"
+                @bind-SearchText:after="@SearchAsync"
+                HelperText="@ShortcutsText"/>
+
             @if (SearchResults.GameEntities.Count > 0)
             {
                 <MudChip T="string" Variant="@Variant.Text">
@@ -237,12 +184,15 @@
 @code
 {
 
+    [SupplyParameterFromQuery(Name = "q")]
+    public string SearchText { get; set; } = string.Empty;
+
     private const StringSplitOptions SplittingOptions
         = StringSplitOptions.RemoveEmptyEntries
           | StringSplitOptions.TrimEntries;
 
     private static CancellationTokenSource _searchCancellation = new();
-    private static MudTextField<string>? _searchBox;
+    private static SearchBox? _searchBox;
 
     private readonly Dictionary<string, EntityCategorySearch> _categorySearchShortcuts = new()
     {
@@ -255,7 +205,6 @@
     };
 
     private OverlaySearchContext _searchContext = new();
-    private FocusRegion? _searchBoxFocusRegion;
 
     private string ContainerCss
         => $"min-height: 100vh; {ContainerBlurCss}";
@@ -264,6 +213,13 @@
         => UserPreferencesProvider.CurrentPreferences.BlurBackground
             ? "backdrop-filter: blur(12px);"
             : "";
+
+    private string ShortcutsText
+        => new StringBuilder().AppendJoin(", ", _categorySearchShortcuts.Select(search => $"{search.Key} {search.Value.Category.Humanize().Pluralize()}")).ToString();
+
+    private GameEntitySearchResults SearchResults { get; set; } = GameEntitySearchResults.Empty;
+
+    private string PreviousSearchText { get; set; } = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -274,13 +230,19 @@
         };
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await SearchAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        if (firstRender)
+        if (firstRender && _searchBox is not null)
         {
-            var windowFocusHandler = EventInterop.CreateHandler(FocusSearchBoxAsync);
+            var windowFocusHandler = EventInterop.CreateHandler(_searchBox.FocusSearchBoxAsync);
             await EventInterop.RegisterWindowEventHandlerAsync("focus", windowFocusHandler);
         }
     }
@@ -290,13 +252,6 @@
         await SearchAsync();
         await InvokeAsync(StateHasChanged);
     }
-
-    private string ShortcutsText
-        => new StringBuilder().AppendJoin(", ", _categorySearchShortcuts.Select(search => $"{search.Key} {search.Value.Category.Humanize().Pluralize()}")).ToString();
-
-    private string SearchText { get; set; } = "";
-
-    private GameEntitySearchResults SearchResults { get; set; } = GameEntitySearchResults.Empty;
 
     private async Task SearchAsync()
     {
@@ -324,8 +279,8 @@
 
             await _searchCancellation.CancelAsync();
             _searchCancellation = new CancellationTokenSource();
-            await GlobalAnalyticsReporter.TrackEventAsync(new SearchEvent(SearchText));
             SearchResults = await SearchService.SearchAsync(searchQueries, _searchCancellation.Token);
+            await GlobalAnalyticsReporter.TrackEventAsync(new SearchEvent(SearchText));
             await InvokeAsync(StateHasChanged);
         }
         catch (OperationCanceledException)
@@ -344,18 +299,4 @@
     private async Task OpenAboutDialogAsync()
         => await AboutDialog.ShowAsync(DialogService);
 
-    private async Task FocusSearchBoxAsync()
-    {
-        if (_searchBoxFocusRegion?.HasFocus == true)
-        {
-            await OverlayControls.HideAsync();
-        }
-        else
-        {
-            if (_searchBox is not null)
-            {
-                await _searchBox.SelectAsync();
-            }
-        }
-    }
 }

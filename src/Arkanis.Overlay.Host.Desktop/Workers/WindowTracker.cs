@@ -47,6 +47,9 @@ public sealed class WindowTracker : IHostedService, IDisposable
 
     private CancellationTokenSource _processExitWatcherCts = new();
 
+    public Size CurrentWindowSize { get; private set; }
+    public Point CurrentWindowPosition { get; private set; }
+
 
     /// <summary>
     ///     The self-launched thread this class runs on.
@@ -298,9 +301,11 @@ public sealed class WindowTracker : IHostedService, IDisposable
         _logger.LogDebug("Emitting initial window state");
 
         var windowSize = GetWindowSize();
+        CurrentWindowSize = windowSize;
         WindowSizeChanged?.Invoke(this, windowSize);
 
         var windowPosition = GetWindowPosition();
+        CurrentWindowPosition = windowPosition;
         WindowPositionChanged?.Invoke(this, windowPosition);
 
         var windowFocussed = IsWindowFocussed();
@@ -340,15 +345,15 @@ public sealed class WindowTracker : IHostedService, IDisposable
             PInvoke.WINEVENT_OUTOFCONTEXT | PInvoke.WINEVENT_SKIPOWNPROCESS
         );
 
-        // RegisterWinEventHook(
-        //     PInvoke.EVENT_OBJECT_FOCUS,
-        //     PInvoke.EVENT_OBJECT_FOCUS,
-        //     Handler_WindowFocused,
-        //     0, // not needed, we need to know if our window has been unfocused
-        //     0, // not needed, we need to know if our window has been unfocused
-        //     // PInvoke.WINEVENT_OUTOFCONTEXT | PInvoke.WINEVENT_SKIPOWNPROCESS
-        //     PInvoke.WINEVENT_OUTOFCONTEXT
-        // );
+        RegisterWinEventHook(
+            PInvoke.EVENT_OBJECT_FOCUS,
+            PInvoke.EVENT_OBJECT_FOCUS,
+            Handler_WindowFocused,
+            0, // not needed, we need to know if our window has been unfocused
+            0, // not needed, we need to know if our window has been unfocused
+            // PInvoke.WINEVENT_OUTOFCONTEXT | PInvoke.WINEVENT_SKIPOWNPROCESS
+            PInvoke.WINEVENT_OUTOFCONTEXT
+        );
     }
 
     private void StopWindowStateTracking()
@@ -487,8 +492,11 @@ public sealed class WindowTracker : IHostedService, IDisposable
             return;
         }
 
-        WindowPositionChanged?.Invoke(this, GetWindowPosition());
-        WindowSizeChanged?.Invoke(this, GetWindowSize());
+        CurrentWindowPosition = GetWindowPosition();
+        CurrentWindowSize = GetWindowSize();
+
+        WindowPositionChanged?.Invoke(this, CurrentWindowPosition);
+        WindowSizeChanged?.Invoke(this, CurrentWindowSize);
     }
 
     private void Handler_WindowMinimized(
@@ -596,18 +604,19 @@ public sealed class WindowTracker : IHostedService, IDisposable
         // var isFocused = hWnd == _currentWindowHWnd;
         // sometimes there is an eroneous detected focus change
         // if the above check is used, the below check works 100% of the time
-        var isFocused = PInvoke.GetForegroundWindow() == _currentWindowHWnd;
+        var currentForegroundWindowHWnd = PInvoke.GetForegroundWindow();
+        var isFocused = currentForegroundWindowHWnd == _currentWindowHWnd;
 
-#if DEBUG
+#if DEBUG && !DEBUG
         var windowTitle = PInvoke.GetWindowText(hWnd);
         // allows for convenient debugging
         // this way the DevTools window counts as the window being focused
         isFocused |= Debugger.IsAttached && (windowTitle?.StartsWith("DevTools", StringComparison.InvariantCulture) ?? false);
 #endif
 
-        // Logger.LogDebug(
-        //     "Window focus changed: {isFocused} => Event: {event} - hWnd: {hWnd} - idObject: {idObject} - idChild: {idChild} - idEventThread: {idEventThread} - dwmsEventTime: {dwmsEventTime} - WindowTitle: '{windowTitle}'",
-        //     isFocused, @event, (IntPtr)hWnd, idObject, idChild, idEventThread, dwmsEventTime, windowTitle);
+        _logger.LogDebug(
+            "Window focus changed: {IsFocused} => Current hWnd: {HWnd} - Focused hWnd: {CurrentForegroundWindowHWnd}",
+            isFocused, (IntPtr)_currentWindowHWnd, (IntPtr)currentForegroundWindowHWnd);
         WindowFocusChanged?.Invoke(this, isFocused);
     }
 }
