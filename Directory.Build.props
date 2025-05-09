@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
+        <Copyright>Copyright © $([System.DateTime]::Now.Year) FatalMerlin, TheKronnY and contributors</Copyright>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <!-- https://github.com/actions/setup-dotnet?tab=readme-ov-file#caching-nuget-packages -->
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
         <!-- Use shared artifacts path -->
