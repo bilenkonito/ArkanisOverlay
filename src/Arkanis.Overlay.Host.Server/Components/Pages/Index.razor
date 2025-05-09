@@ -1,28 +1,264 @@
 ﻿@page "/"
+@using Arkanis.Overlay.Common
 @using Arkanis.Overlay.Components.Shared.Dialogs
-@using Arkanis.Overlay.Domain.Models.Keyboard
+@using Arkanis.Overlay.Components.Views.Components
+@using Arkanis.Overlay.Domain.Abstractions.Services
+@using Arkanis.Overlay.Domain.Models.Game
+@using Arkanis.Overlay.Host.Server.Components.Shared
+@using Arkanis.Overlay.Host.Server.Services
 @inject IDialogService DialogService
+@inject GitHubReleasesService GitHubReleasesService
+@inject IGameEntityRepository<GameTerminal> GameTerminalRepository
+@inject IGameEntityRepository<GameItem> GameItemRepository
+@inject IGameEntityRepository<GameCommodity> GameCommodityRepository
+
+<style>
+    .embed-wrapper {
+        background: #833AB4;
+        background: linear-gradient(90deg, rgba(131, 58, 180, .33) 0%, rgba(253, 29, 29, .33) 50%, rgba(252, 176, 69, .33) 100%);
+        overflow: hidden;
+
+        &.reverse {
+            background: linear-gradient(90deg, rgba(252, 176, 69, .33) 0%, rgba(253, 29, 29, .33) 50%, rgba(131, 58, 180, .33) 100%);
+        }
+    }
+</style>
 
 <PageTitle>Home</PageTitle>
 
-<MudContainer Class="mt-4">
-    <KeyboardShortcutBadge Key="@KeyboardKey.KeyA" OnKeyPress="@OnKeyPress">
-        <MudPaper Class="pa-4">
-            <MudText tabindex="0">
-                This is text.
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudContainer Class="w-100">
+            <MudStack Class="w-100" AlignItems="@AlignItems.Center" Row>
+                <MudText Typo="@Typo.h5" Class="mr-4">Arkanis Overlay</MudText>
+                <MudButton StartIcon="@Icons.Material.Filled.ScreenshotMonitor" Href="/overlay">
+                    Overlay Demo
+                </MudButton>
+                <MudButton StartIcon="@Icons.Custom.Brands.GitHub" Href="@GitHubRepositoryUrl">
+                    GitHub Project
+                </MudButton>
+                <MudSpacer/>
+                <MudLink Href="https://discord.com/users/174617873182883841" Target="_blank">
+                    <MudAvatar>
+                        FM
+                    </MudAvatar>
+                </MudLink>
+                <MudLink Href="https://discord.com/users/224580858432978944" Target="_blank">
+                    <MudAvatar>
+                        TK
+                    </MudAvatar>
+                </MudLink>
+                <MudIconButton
+                    Icon="@Icons.Material.Outlined.Info"
+                    Color="Color.Inherit"
+                    Edge="Edge.End"
+                    OnClick="@(() => AboutDialog.ShowAsync(DialogService))"/>
+            </MudStack>
+        </MudContainer>
+    </MudAppBar>
+    <MudMainContent Class="pb-8">
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-12">
+            <MudPaper Class="pa-6 text-center">
+                <MudText Typo="Typo.h3" Class="mb-2">Welcome to the Arkanis Overlay Demo</MudText>
+                <MudText Typo="Typo.subtitle1" Class="mb-4">
+                    Experience a new level of usability in Star Citizen
+                    — search tools, trading info, location data, and more.
+                    Built with performance and extensibility in mind.
+                </MudText>
+                <MudStack Row>
+                    <MudButtonGroup OverrideStyles="false">
+                        <PortableDownloadButton Downloads="ReleaseDownloads"/>
+                        <InstallerDownloadButton Downloads="ReleaseDownloads"/>
+                    </MudButtonGroup>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               StartIcon="@Icons.Material.Filled.Web"
+                               Href="https://arkanis.cc"
+                               Target="_blank">
+                        Visit Arkanis Website
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               StartIcon="@Icons.Custom.Brands.Discord"
+                               Href="https://join.arkanis.cc"
+                               Target="_blank">
+                        Join the Community
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               StartIcon="@Icons.Custom.Brands.GitHub"
+                               Href="@GitHubRepositoryUrl"
+                               Target="_blank">
+                        Visit GitHub
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+
+            <MudDivider Class="my-8"/>
+
+            <MudText Typo="Typo.body2" Align="Align.Center" Class="mb-4">
+                Instantly find Star Citizen items, commodities, or locations. Start typing to explore what the 'verse
+                has to offer — fast, accurate, and always in-game.
             </MudText>
-            <MudTextField T="string" tabindex="1"/>
-            <MudButton OnClick="() => AboutDialog.ShowAsync(DialogService)">
-                Open about dialog
-            </MudButton>
-        </MudPaper>
-    </KeyboardShortcutBadge>
-</MudContainer>
+
+            <MudPaper Class="pa-12 mb-4 embed-wrapper">
+                <div class="mr-n2">
+                    <SearchBox
+                        HelperText="Use the search as you normally would in the game overlay! Check out the demo."/>
+                </div>
+            </MudPaper>
+
+            <MudStack Justify="Justify.Center" Row>
+                <MudButtonGroup OverrideStyles="false">
+                    <PortableDownloadButton Downloads="ReleaseDownloads"/>
+                    <InstallerDownloadButton Downloads="ReleaseDownloads"/>
+                </MudButtonGroup>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Secondary"
+                           StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
+                           Href="/overlay">
+                    Try it out
+                </MudButton>
+            </MudStack>
+
+            <MudDivider Class="my-8"/>
+
+            <MudGrid Justify="@Justify.Center" Class="mb-4 align-center">
+                <MudItem xs="12" md="4">
+                    <MudPaper Class="pa-4">
+                        <MudStack>
+                            <MudText Typo="Typo.h6">🔍 In-Game Item Search</MudText>
+                            <MudText Typo="Typo.body2">
+                                Search through Star Citizen items using full-text fuzzy matching and get instant
+                                attribute
+                                and price visibility.
+                            </MudText>
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Secondary"
+                                       StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
+                                       Href="/overlay">
+                                Try it out
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" md="8">
+                    <MudPaper Class="py-12 pl-12 embed-wrapper">
+                        <div class="mr-n2">
+                            <SearchResult Model="@Item"/>
+                        </div>
+                    </MudPaper>
+                </MudItem>
+
+            </MudGrid>
+
+            <MudGrid Justify="@Justify.Center" Class="my-4 align-center">
+                <MudItem xs="12" md="8">
+                    <MudPaper Class="py-12 pl-12 embed-wrapper reverse">
+                        <div class="mr-n2">
+                            <SearchResult Model="@Commodity"/>
+                        </div>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudPaper Class="pa-4">
+                        <MudStack>
+                            <MudText Typo="Typo.h6">📦 Commodity Market Viewer</MudText>
+                            <MudText Typo="Typo.body2">
+                                View live commodity prices by location. Filter and compare by system, planet, or station
+                                for
+                                better trade planning.
+                            </MudText>
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Secondary"
+                                       StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
+                                       Href="/overlay">
+                                Try it out
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+
+            </MudGrid>
+            <MudGrid Justify="@Justify.Center" Class="my-4 align-center">
+
+                <MudItem xs="12" md="4">
+                    <MudPaper Class="pa-4">
+                        <MudStack>
+                            <MudText Typo="Typo.h6">🌌 Location Lookup</MudText>
+                            <MudText Typo="Typo.body2">
+                                Search locations across the 'verse and explore their context
+                                — which planet, moon, or star system they belong to.
+                            </MudText>
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Secondary"
+                                       StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
+                                       Href="/overlay">
+                                Try it out
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" md="8">
+                    <MudPaper Class="py-12 pl-12 embed-wrapper">
+                        <div class="mr-n2">
+                            <SearchResult Model="@Terminal"/>
+                        </div>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="my-8"/>
+
+            <MudPaper Elevation="0" Class="pa-6 text-center">
+                <MudText Typo="Typo.h5" Class="mb-2">Built with the Community in Mind</MudText>
+                <MudText Typo="Typo.body1" Class="mb-4">
+                    Arkanis Overlay is free to use and open source.
+                    Contribute, test, or suggest improvements on GitHub or Discord.
+                </MudText>
+                <MudStack Row>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               StartIcon="@Icons.Custom.Brands.Discord"
+                               Href="@DiscordUrl"
+                               Target="_blank">
+                        Join the Community
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               StartIcon="@Icons.Custom.Brands.GitHub"
+                               Href="@GitHubRepositoryUrl"
+                               Target="_blank">
+                        Check out the Code
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudContainer>
+
+    </MudMainContent>
+</MudLayout>
 
 @code
 {
-    private void OnKeyPress()
+
+    private const string GitHubRepositoryUrl = ApplicationConstants.GitHubRepositoryUrl;
+    private const string DiscordUrl = "https://join.arkanis.cc";
+
+    private Downloads ReleaseDownloads { get; set; } = DownloadsMissing.Instance;
+    private GameTerminal? Terminal { get; set; }
+    private GameCommodity? Commodity { get; set; }
+    private GameItem? Item { get; set; }
+
+    protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("Target key pressed!");
+        await base.OnInitializedAsync();
+        ReleaseDownloads = await GitHubReleasesService.GetLatestStableDownloads();
+        Terminal = await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(259));
+        Item = await GameItemRepository.GetAsync(UexApiGameEntityId.Create<GameItem>(1932));
+        Commodity = await GameCommodityRepository.GetAsync(UexApiGameEntityId.Create<GameCommodity>(60));
     }
+
 }

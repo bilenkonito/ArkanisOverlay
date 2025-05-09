@@ -5,7 +5,9 @@ public static class ApplicationConstants
     public const string GoogleAnalyticsTrackingId = "G-ND6WBR51VP";
 
     public const string LocalAppDataDirectoryName = "ArkanisOverlay";
-    public const string GitHubRepositoryUrl = "https://github.com/ArkanisCorporation/ArkanisOverlay";
+    public const string GitHubOwner = "ArkanisCorporation";
+    public const string GitHubRepository = "ArkanisOverlay";
+    public const string GitHubRepositoryUrl = $"https://github.com/{GitHubOwner}/{GitHubRepository}";
     public const string GitHubReleaseToken = "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";
 
     public const string CurrencyName = "Alpha United Earth Credits";
