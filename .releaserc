@@ -2,19 +2,24 @@
     "branches": [
         "main",
         {
-            "name": "nightly",
+            "name": "release/nightly",
             "channel": "nightly",
             "prerelease": "nightly"
         },
         {
-            "name": "rc",
+            "name": "release/rc",
             "channel": "rc",
             "prerelease": "rc"
         },
         {
             "name": "ci",
             "channel": "ci",
-            "prerelease": "test-do-not-use"
+            "prerelease": "ci-do-not-use"
+        },
+        {
+            "name": "dev",
+            "channel": "dev",
+            "prerelease": "dev-do-not-use"
         }
     ],
     "repositoryUrl": "https://github.com/ArkanisCorporation/ArkanisOverlay",
