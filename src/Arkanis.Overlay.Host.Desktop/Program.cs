@@ -18,7 +18,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
-using NuGet.Versioning;
 using Services;
 using Services.Factories;
 using UI;
@@ -36,7 +35,7 @@ public static class Program
     [STAThread]
     public static async Task Main(string[] args)
     {
-        HandleInstallationBehaviour();
+        await HandleInstallationBehaviourAsync(args);
 
         var hostBuilder = Host.CreateDefaultBuilder(args)
             .ConfigureLogging()
@@ -89,24 +88,19 @@ public static class Program
         }
     }
 
-    private static void HandleInstallationBehaviour()
+    private static async Task HandleInstallationBehaviourAsync(string[] args)
     {
         var userPreferenceDefaults = new UserPreferences();
         VelopackApp.Build()
-            .WithFirstRun(WithFirstRun)
+            .SetArgs(args)
+            .WithFirstRun(_ => WindowsNotifications.ShowWelcomeToast(userPreferenceDefaults))
             .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
             .Run();
 
-        return;
-
-        void WithFirstRun(SemanticVersion _)
-        {
-            WindowsNotifications.ShowWelcomeToast(userPreferenceDefaults);
-            var updateManager = new UpdateManager(UpdateSource);
-            using var windowsNotifications = new WindowsNotifications();
-            using var update = new UpdateProcess(updateManager, windowsNotifications);
-            update.RunAsync(true, CancellationToken.None).GetAwaiter().GetResult();
-        }
+        var updateManager = new UpdateManager(UpdateSource);
+        using var windowsNotifications = new WindowsNotifications();
+        using var update = new UpdateProcess(updateManager, windowsNotifications);
+        await update.RunAsync(true, CancellationToken.None);
     }
 
     private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder)
@@ -177,23 +171,4 @@ public static class Program
                     .Alias<IHostedService, GlobalHotkey>();
             }
         );
-
-    private static async Task Update()
-    {
-        var mgr = new UpdateManager(new GithubSource("https://github.com/ArkanisCorporation/ArkanisOverlay", null, false));
-
-        // check for new version
-        var newVersion = await mgr.CheckForUpdatesAsync();
-        if (newVersion == null)
-        {
-            // no updates available
-            return;
-        }
-
-        // download new version
-        await mgr.DownloadUpdatesAsync(newVersion);
-
-        // install new version and restart app
-        mgr.ApplyUpdatesAndRestart(newVersion);
-    }
 }
