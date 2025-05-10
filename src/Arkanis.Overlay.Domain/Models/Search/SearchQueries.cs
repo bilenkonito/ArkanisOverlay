@@ -56,7 +56,7 @@ public sealed record FuzzyTextSearch(string Content) : TextSearch(Content)
                 [
                     data.Code.Equals(NormalizedContent, StringComparison.OrdinalIgnoreCase)
                         ? new ScoredMatch(100, depth, trait, this)
-                        : new NoMatch(trait, this)
+                        : new NoMatch(trait, this),
                 ],
             //! Category should be filtered through an operator not searched directly
             // SearchableEntityCategory data
@@ -64,11 +64,12 @@ public sealed record FuzzyTextSearch(string Content) : TextSearch(Content)
             // TODO: add negative weights to manufacturer and location (less important than search by name unless specifically targeted)
             // SearchableManufacturer data => Match(data.Manufacturer.SearchableAttributes.OfType<SearchableTextTrait>(), depth + 1),
             // SearchableLocation data => Match(data.Location.Parent?.SearchableAttributes ?? [], depth + 1),
-            SearchableName data => MatchExact(data.Name, trait, depth, () => Fuzz.WeightedRatio(Content, data.Name)),
+            SearchableName data => MatchExact(data.Name, trait, depth),
+            // SearchableName data => MatchExact(data.Name, trait, depth, () => Fuzz.WeightedRatio(Content, data.Name)),
             _ => [new NoMatch(trait, this)],
         };
 
-    private IEnumerable<SearchMatch> MatchExact(string data, SearchableTrait trait, int depth, Func<int> fallback)
+    private IEnumerable<SearchMatch> MatchExact(string data, SearchableTrait trait, int depth, Func<int>? fallback = null)
     {
         var score = data.Equals(NormalizedContent, StringComparison.OrdinalIgnoreCase)
             ? 100
@@ -78,9 +79,14 @@ public sealed record FuzzyTextSearch(string Content) : TextSearch(Content)
                     ? 98
                     : data.Contains(NormalizedContent, StringComparison.OrdinalIgnoreCase)
                         ? 97
-                        : fallback();
+                        : fallback?.Invoke() ?? 0;
 
-        yield return new ScoredMatch(score, depth, trait, this);
+        if (score == 0)
+        {
+            return [new NoMatch(trait, this)];
+        }
+
+        return [new ScoredMatch(score, depth, trait, this)];
     }
 
     public static SearchQuery Create(string content)
