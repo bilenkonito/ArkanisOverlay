@@ -39,6 +39,9 @@ public abstract record TextSearch(string Content) : SearchQuery
 {
     protected string NormalizedContent { get; } = Content.ToLowerInvariant();
 
+    public static FuzzyTextSearch Combine(IEnumerable<SearchQuery> queries)
+        => new(string.Join(' ', queries.OfType<TextSearch>().Select(x => x.Content)));
+
     public static SearchQuery Fuzzy(string content)
         => new FuzzyTextSearch(content);
 }
@@ -48,14 +51,37 @@ public sealed record FuzzyTextSearch(string Content) : TextSearch(Content)
     public override IEnumerable<SearchMatch> Match(SearchableTrait trait, int depth = 0)
         => trait switch
         {
-            SearchableCode data => [new ScoredMatch(Fuzz.Ratio(Content, data.Code), depth, trait, this)],
-            SearchableEntityCategory data
-                => [new ScoredMatch(Fuzz.Ratio(NormalizedContent, data.Category.ToString("G").ToLowerInvariant()), depth, trait, this)],
-            SearchableManufacturer data => Match(data.Manufacturer.SearchableAttributes.OfType<SearchableTextTrait>(), depth + 1),
-            SearchableLocation data => Match(data.Location.Parent?.SearchableAttributes ?? [], depth + 1),
-            SearchableName data => [new ScoredMatch(Fuzz.TokenSortRatio(Content, data.Name), depth, trait, this)],
+            SearchableCode data =>
+                //! Location Codes only for full match
+                [
+                    data.Code.Equals(NormalizedContent, StringComparison.OrdinalIgnoreCase)
+                        ? new ScoredMatch(100, depth, trait, this)
+                        : new NoMatch(trait, this)
+                ],
+            //! Category should be filtered through an operator not searched directly
+            // SearchableEntityCategory data
+            //     => [new ScoredMatch(Fuzz.Ratio(NormalizedContent, data.Category.ToString("G").ToLowerInvariant()), depth, trait, this)],
+            // TODO: add negative weights to manufacturer and location (less important than search by name unless specifically targeted)
+            // SearchableManufacturer data => Match(data.Manufacturer.SearchableAttributes.OfType<SearchableTextTrait>(), depth + 1),
+            // SearchableLocation data => Match(data.Location.Parent?.SearchableAttributes ?? [], depth + 1),
+            SearchableName data => MatchExact(data.Name, trait, depth, () => Fuzz.WeightedRatio(Content, data.Name)),
             _ => [new NoMatch(trait, this)],
         };
+
+    private IEnumerable<SearchMatch> MatchExact(string data, SearchableTrait trait, int depth, Func<int> fallback)
+    {
+        var score = data.Equals(NormalizedContent, StringComparison.OrdinalIgnoreCase)
+            ? 100
+            : data.StartsWith(NormalizedContent, StringComparison.OrdinalIgnoreCase)
+                ? 99
+                : data.EndsWith(NormalizedContent, StringComparison.OrdinalIgnoreCase)
+                    ? 98
+                    : data.Contains(NormalizedContent, StringComparison.OrdinalIgnoreCase)
+                        ? 97
+                        : fallback();
+
+        yield return new ScoredMatch(score, depth, trait, this);
+    }
 
     public static SearchQuery Create(string content)
         => new FuzzyTextSearch(content);
