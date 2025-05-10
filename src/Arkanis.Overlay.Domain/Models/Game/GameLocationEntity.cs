@@ -18,19 +18,16 @@ public abstract class GameLocationEntity(UexApiGameEntityId id, GameLocationEnti
     IGameLocation? IGameLocation.ParentLocation
         => Parent;
 
-    public override IEnumerable<SearchableTrait> SearchableAttributes
+    protected override IEnumerable<SearchableTrait> CollectSearchableTraits()
     {
-        get
+        if (Parent is not null)
         {
-            if (Parent is not null)
-            {
-                yield return new SearchableLocation(this);
-            }
+            yield return new SearchableLocation(this);
+        }
 
-            foreach (var searchableAttribute in base.SearchableAttributes)
-            {
-                yield return searchableAttribute;
-            }
+        foreach (var searchableAttribute in base.CollectSearchableTraits())
+        {
+            yield return searchableAttribute;
         }
     }
 
