@@ -8,6 +8,7 @@
 
     <PropertyGroup>
         <ContainerRepository>ArkanisCorporation/ArkanisOverlay</ContainerRepository>
+        <ContainerUser>root</ContainerUser>
     </PropertyGroup>
 
     <ItemGroup>
