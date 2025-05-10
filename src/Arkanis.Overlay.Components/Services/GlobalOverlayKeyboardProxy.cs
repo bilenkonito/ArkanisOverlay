@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 
 public class GlobalOverlayKeyboardProxy : KeyboardProxy
 {
-    private readonly IOverlayControls _overlay;
+    private readonly IOverlayEventProvider _overlay;
 
-    public GlobalOverlayKeyboardProxy(IOverlayControls overlay, ILogger<GlobalOverlayKeyboardProxy> logger) : base(logger)
+    public GlobalOverlayKeyboardProxy(IOverlayEventProvider overlay, ILogger<GlobalOverlayKeyboardProxy> logger) : base(logger)
     {
         _overlay = overlay;
         _overlay.OverlayShown += OnOverlayVisibilityChanged;

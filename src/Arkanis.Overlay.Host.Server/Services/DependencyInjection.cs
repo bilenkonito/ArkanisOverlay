@@ -7,5 +7,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddServerOverlayControls(this IServiceCollection services)
         => services.AddScoped<WebOverlayControls>()
+            .Alias<IOverlayEventProvider, WebOverlayControls>(ServiceLifetime.Scoped)
+            .Alias<IOverlayEventSource, WebOverlayControls>(ServiceLifetime.Scoped)
             .Alias<IOverlayControls, WebOverlayControls>(ServiceLifetime.Scoped);
 }
