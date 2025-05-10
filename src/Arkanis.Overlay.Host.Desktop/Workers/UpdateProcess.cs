@@ -1,13 +1,13 @@
 namespace Arkanis.Overlay.Host.Desktop.Workers;
 
-using Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Quartz;
+using Services;
 using Velopack;
 
-internal class UpdateProcess(UpdateManager updateManager, WindowsNotifications notifications) : IDisposable
+internal class UpdateProcess(ArkanisOverlayUpdateManager updateManager, WindowsNotifications notifications) : IDisposable
 {
     private WindowsNotifications.UpdatableNotification<WindowsNotifications.UpdateProgressParams>? _progressToast;
 
@@ -82,7 +82,11 @@ internal class UpdateProcess(UpdateManager updateManager, WindowsNotifications n
                 .DisallowConcurrentExecution()
                 .Build();
 
-        public class SelfScheduleService(UpdateManager updateManager, ISchedulerFactory schedulerFactory, ILogger<SelfScheduleService> logger) : IHostedService
+        public class SelfScheduleService(
+            ArkanisOverlayUpdateManager updateManager,
+            ISchedulerFactory schedulerFactory,
+            ILogger<SelfScheduleService> logger
+        ) : IHostedService
         {
             public async Task StartAsync(CancellationToken cancellationToken)
             {

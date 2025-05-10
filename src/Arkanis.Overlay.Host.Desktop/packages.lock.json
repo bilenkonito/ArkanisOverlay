@@ -1567,6 +1567,7 @@
           "Microsoft.Extensions.Logging.Abstractions": "[8.0.3, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[8.0.0, )",
           "MoreAsyncLINQ": "[0.8.0, )",
+          "NuGet.Versioning": "[6.12.1, )",
           "Riok.Mapperly": "[4.2.0, )",
           "morelinq": "[4.4.0, )"
         }

@@ -1,3 +1,5 @@
+using Arkanis.Overlay.Common.Abstractions;
+using Arkanis.Overlay.Common.Services;
 using Arkanis.Overlay.Components.Helpers;
 using Arkanis.Overlay.Components.Services;
 using Arkanis.Overlay.Host.Server.Components;
@@ -37,6 +39,7 @@ builder.Services
     .AddInfrastructure()
     .AddInfrastructureConfiguration(builder.Configuration)
     .AddSingleton<GitHubReleasesService>()
+    .AddSingleton<IAppVersionProvider, AssemblyAppVersionProvider>()
     .AddSingleton<ISystemAutoStartStateProvider, NoSystemAutoStartStateProvider>();
 
 var app = builder.Build();
