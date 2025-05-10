@@ -1,6 +1,5 @@
-@using Arkanis.Overlay.Components.Helpers
-@using Arkanis.Overlay.Domain.Abstractions.Services
-@inject IOverlayEventSource OverlayEventSource
+@using Microsoft.Extensions.Logging
+@inject IOverlayEventControls OverlayEventControls
 @inject EventInterop EventInterop
 @inject ILogger<WebOverlayControlsInterop> Logger
 
@@ -25,12 +24,12 @@
     private void OnWindowFocusGained()
     {
         Logger.LogDebug("Window focus gained");
-        OverlayEventSource.OnFocusGained();
+        OverlayEventControls.OnFocusGained();
     }
 
     private void OnWindowFocusLost()
     {
         Logger.LogDebug("Window focus lost");
-        OverlayEventSource.OnFocusLost();
+        OverlayEventControls.OnFocusLost();
     }
 }

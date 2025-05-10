@@ -5,7 +5,7 @@ using Domain.Abstractions.Services;
 using Domain.Options;
 using MudBlazor;
 
-internal sealed class WebOverlayControls : IOverlayControls, IOverlayEventProvider, IOverlayEventSource, IDisposable
+internal sealed class WebOverlayControls : IOverlayControls, IOverlayEventProvider, IOverlayEventControls, IDisposable
 {
     private readonly IUserPreferencesProvider _preferencesProvider;
     private readonly ISnackbar _snackbar;
@@ -50,17 +50,17 @@ internal sealed class WebOverlayControls : IOverlayControls, IOverlayEventProvid
     {
     }
 
-    public event EventHandler? OverlayShown;
-    public event EventHandler? OverlayHidden;
-
-    public event EventHandler? OverlayFocused;
-    public event EventHandler? OverlayBlurred;
-
     public void OnFocusGained()
         => OverlayFocused?.Invoke(this, EventArgs.Empty);
 
     public void OnFocusLost()
         => OverlayBlurred?.Invoke(this, EventArgs.Empty);
+
+    public event EventHandler? OverlayShown;
+    public event EventHandler? OverlayHidden;
+
+    public event EventHandler? OverlayFocused;
+    public event EventHandler? OverlayBlurred;
 
     private void ApplyUserPreferencesAsync(object? sender, UserPreferences userPreferences)
     {
