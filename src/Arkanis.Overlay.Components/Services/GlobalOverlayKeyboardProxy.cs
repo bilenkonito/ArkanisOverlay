@@ -12,6 +12,8 @@ public class GlobalOverlayKeyboardProxy : KeyboardProxy
         _overlay = overlay;
         _overlay.OverlayShown += OnOverlayVisibilityChanged;
         _overlay.OverlayHidden += OnOverlayVisibilityChanged;
+        _overlay.OverlayFocused += OnOverlayVisibilityChanged;
+        _overlay.OverlayBlurred += OnOverlayVisibilityChanged;
     }
 
     private void OnOverlayVisibilityChanged(object? sender, EventArgs e)
@@ -21,6 +23,8 @@ public class GlobalOverlayKeyboardProxy : KeyboardProxy
     {
         _overlay.OverlayShown -= OnOverlayVisibilityChanged;
         _overlay.OverlayHidden -= OnOverlayVisibilityChanged;
+        _overlay.OverlayFocused -= OnOverlayVisibilityChanged;
+        _overlay.OverlayBlurred -= OnOverlayVisibilityChanged;
 
         base.Dispose();
         GC.SuppressFinalize(this);

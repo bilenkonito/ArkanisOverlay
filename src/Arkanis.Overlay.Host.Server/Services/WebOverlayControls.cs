@@ -23,6 +23,9 @@ public sealed class WebOverlayControls : IOverlayControls, IDisposable
     public event EventHandler? OverlayShown;
     public event EventHandler? OverlayHidden;
 
+    public event EventHandler? OverlayFocused;
+    public event EventHandler? OverlayBlurred;
+
     public ValueTask ShowAsync()
     {
         _snackbar.Add(
@@ -52,6 +55,12 @@ public sealed class WebOverlayControls : IOverlayControls, IDisposable
     public void SetBlurEnabled(bool isEnabled)
     {
     }
+
+    internal void FocusGained()
+        => OverlayFocused?.Invoke(this, EventArgs.Empty);
+
+    internal void FocusLost()
+        => OverlayBlurred?.Invoke(this, EventArgs.Empty);
 
     private void ApplyUserPreferencesAsync(object? sender, UserPreferences userPreferences)
     {
