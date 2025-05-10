@@ -272,6 +272,10 @@
                 .Where(search => search is not EmptySearch)
                 .ToList();
 
+            // increases the score of results that contain / match all search terms (in order)
+            // var combinedSearchQuery = TextSearch.Combine(searchQueries);
+            // searchQueries = searchQueries.Prepend(combinedSearchQuery).ToList();
+
             if (_searchContext.CurrentLocation is { } location)
             {
                 searchQueries.Add(new LocationSearch(location));
