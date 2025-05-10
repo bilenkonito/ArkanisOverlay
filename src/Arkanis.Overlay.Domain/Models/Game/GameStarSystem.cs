@@ -5,18 +5,15 @@ using Search;
 public sealed class GameStarSystem(int id, string fullName, string codeName)
     : GameLocationEntity(UexApiGameEntityId.Create<GameStarSystem>(id), null)
 {
-    public override IEnumerable<SearchableTrait> SearchableAttributes
+    public override GameEntityName Name { get; } = new(new GameEntityName.NameWithCode(fullName, codeName));
+
+    protected override IEnumerable<SearchableTrait> CollectSearchableTraits()
     {
-        get
+        yield return new SearchableName(fullName);
+        yield return new SearchableCode(codeName);
+        foreach (var searchableAttribute in base.CollectSearchableTraits())
         {
-            yield return new SearchableName(fullName);
-            yield return new SearchableCode(codeName);
-            foreach (var searchableAttribute in base.SearchableAttributes)
-            {
-                yield return searchableAttribute;
-            }
+            yield return searchableAttribute;
         }
     }
-
-    public override GameEntityName Name { get; } = new(new GameEntityName.NameWithCode(fullName, codeName));
 }
