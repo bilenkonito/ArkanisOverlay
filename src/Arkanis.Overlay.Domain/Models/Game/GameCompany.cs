@@ -6,6 +6,8 @@ using Search;
 public sealed class GameCompany(int id, string fullName, string shortName)
     : GameEntity(UexApiGameEntityId.Create<GameCompany>(id), GameEntityCategory.Company)
 {
+    public static readonly GameCompany Unknown = new(0, "Unknown Company", "Unknown");
+
     public override GameEntityName Name { get; } = new(new GameEntityName.NameWithShortVariant(fullName, shortName));
 
     protected override IEnumerable<SearchableTrait> CollectSearchableTraits()

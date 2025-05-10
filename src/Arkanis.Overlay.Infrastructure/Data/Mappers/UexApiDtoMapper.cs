@@ -425,6 +425,7 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
 
     private GameCompany GetCompanyForItem(ItemDTO item)
         => ResolveCachedGameEntity<GameCompany>(item.Id_company)
+           ?? GameCompany.Unknown
            ?? ThrowMissingMappingException<GameCompany, ItemDTO>(item.Id);
 
     private GameCompany GetCompanyForVehicle(VehicleDTO vehicle)
