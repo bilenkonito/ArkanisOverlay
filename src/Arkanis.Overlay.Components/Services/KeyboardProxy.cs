@@ -48,6 +48,9 @@ public class KeyboardProxy : IDisposable, IKeyboardProxy
     public event EventHandler<KeyboardKey>? OnKeyDown;
     public event EventHandler<KeyboardShortcut>? OnKeyboardShortcut;
 
+    public void Clear()
+        => ShortcutBuilder.Clear();
+
     public void RegisterKeyUp(KeyboardEventArgs keyboardEvent)
     {
         var keyboardKey = keyboardEvent.GetKey();

@@ -11,23 +11,20 @@ public sealed class GameTerminal(
     GameLocationEntity location
 ) : GameLocationEntity(UexApiGameEntityId.Create<GameTerminal>(id), location)
 {
-    public override IEnumerable<SearchableTrait> SearchableAttributes
-    {
-        get
-        {
-            yield return new SearchableName(fullName);
-            yield return new SearchableCode(codeName);
-            foreach (var searchableAttribute in base.SearchableAttributes)
-            {
-                yield return searchableAttribute;
-            }
-        }
-    }
-
     public override GameEntityName Name { get; } = new(
         GameEntityName.ReferenceTo(location),
         new GameEntityName.NameWithCodeAndShortVariant(fullName, codeName, shortName)
     );
 
     public required GameTerminalType Type { get; init; }
+
+    protected override IEnumerable<SearchableTrait> CollectSearchableTraits()
+    {
+        yield return new SearchableName(fullName);
+        yield return new SearchableCode(codeName);
+        foreach (var searchableAttribute in base.CollectSearchableTraits())
+        {
+            yield return searchableAttribute;
+        }
+    }
 }

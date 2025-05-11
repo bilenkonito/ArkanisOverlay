@@ -1,4 +1,6 @@
-@using System.Reflection
+@using Arkanis.Overlay.Common.Abstractions
+@inject IAppVersionProvider VersionProvider
+
 <MudDialog>
     <TitleContent>
         About
@@ -34,10 +36,11 @@
             </MudText>
             <MudText Align="@Align.Center" Class="mb-2">
                 <span>Program version</span>
-                <MudLink Href="@($"https://github.com/ArkanisCorporation/ArkanisOverlay/releases/tag/{ProgramVersion}")"
-                         Target="_blank"
-                         Color="@Color.Info">
-                    @ProgramVersion
+                <MudLink
+                    Href="@($"https://github.com/ArkanisCorporation/ArkanisOverlay/releases/tag/v{VersionProvider.CurrentVersion.ToNormalizedString()}")"
+                    Target="_blank"
+                    Color="@Color.Info">
+                    @VersionProvider.CurrentVersion
                 </MudLink>
             </MudText>
             <MudImage
@@ -85,7 +88,8 @@
             <MudText Typo="@Typo.body2" Align="@Align.Justify" Class="text-disabled">
                 This is an unofficial Star Citizen tool, unaffiliated with the Cloud Imperium group of companies.
                 Some content on this site belongs to their respective owners.
-                Star Citizen&reg;, Roberts Space Industries&reg; and Cloud Imperium&reg; are registered trademarks of Cloud Imperium Rights LLC.
+                Star Citizen&reg;, Roberts Space Industries&reg; and Cloud Imperium&reg; are registered trademarks of
+                Cloud Imperium Rights LLC.
                 All data presented is estimated and maintained by the Star Citizen community.
                 It may not precisely reflect the current state of live servers.
                 <br>
@@ -104,8 +108,6 @@
 
 @code
 {
-
-    private static readonly Version ProgramVersion = Assembly.GetExecutingAssembly().GetName().Version ?? new Version();
 
     [CascadingParameter]
     public MudThemeProvider? ThemeProvider { get; set; }

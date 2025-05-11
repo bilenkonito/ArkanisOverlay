@@ -64,11 +64,4 @@ internal class UexItemSyncRepository(
         => source.Id is not null
             ? UexApiGameEntityId.Create<GameItem>(source.Id.Value)
             : null;
-
-    /// <remarks>
-    ///     Some items do not have company ID defined.
-    ///     Typical example are centurion/imperator subscriber items.
-    /// </remarks>
-    protected override bool IncludeSourceModel(ItemDTO sourceModel)
-        => sourceModel.Id_company > 0;
 }

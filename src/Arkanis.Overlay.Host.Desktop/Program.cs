@@ -2,6 +2,7 @@ namespace Arkanis.Overlay.Host.Desktop;
 
 using System.Data.Common;
 using Common;
+using Common.Abstractions;
 using Common.Extensions;
 using Components.Helpers;
 using Components.Services;
@@ -18,7 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
-using NuGet.Versioning;
 using Services;
 using Services.Factories;
 using UI;
@@ -31,12 +31,16 @@ using Workers;
 // https://github.com/dapplo/Dapplo.Microsoft.Extensions.Hosting/blob/master/samples/Dapplo.Hosting.Sample.WpfDemo/Program.cs#L48
 public static class Program
 {
-    private static readonly IUpdateSource UpdateSource = new GithubSource(ApplicationConstants.GitHubRepositoryUrl, ApplicationConstants.GitHubReleaseToken, prerelease: true);
+    private static readonly IUpdateSource UpdateSource = new GithubSource(
+        ApplicationConstants.GitHubRepositoryUrl,
+        ApplicationConstants.GitHubReleaseToken,
+        true
+    );
 
     [STAThread]
     public static async Task Main(string[] args)
     {
-        HandleInstallationBehaviour();
+        await HandleInstallationBehaviourAsync(args);
 
         var hostBuilder = Host.CreateDefaultBuilder(args)
             .ConfigureLogging()
@@ -89,24 +93,19 @@ public static class Program
         }
     }
 
-    private static void HandleInstallationBehaviour()
+    private static async Task HandleInstallationBehaviourAsync(string[] args)
     {
         var userPreferenceDefaults = new UserPreferences();
         VelopackApp.Build()
-            .WithFirstRun(WithFirstRun)
+            .SetArgs(args)
+            .WithFirstRun(_ => WindowsNotifications.ShowWelcomeToast(userPreferenceDefaults))
             .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
             .Run();
 
-        return;
-
-        void WithFirstRun(SemanticVersion _)
-        {
-            WindowsNotifications.ShowWelcomeToast(userPreferenceDefaults);
-            var updateManager = new UpdateManager(UpdateSource);
-            using var windowsNotifications = new WindowsNotifications();
-            using var update = new UpdateProcess(updateManager, windowsNotifications);
-            update.RunAsync(true, CancellationToken.None).GetAwaiter().GetResult();
-        }
+        var updateManager = new ArkanisOverlayUpdateManager(UpdateSource);
+        using var windowsNotifications = new WindowsNotifications();
+        using var update = new UpdateProcess(updateManager, windowsNotifications);
+        await update.RunAsync(true, CancellationToken.None);
     }
 
     private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder)
@@ -153,7 +152,8 @@ public static class Program
                             ExplicitChannel = provider.GetRequiredService<IUserPreferencesProvider>().CurrentPreferences.UpdateChannel.VelopackChannelId,
                         }
                     )
-                    .AddSingleton<UpdateManager>(provider => ActivatorUtilities.CreateInstance<UpdateManager>(provider))
+                    .AddSingleton<ArkanisOverlayUpdateManager>(provider => ActivatorUtilities.CreateInstance<ArkanisOverlayUpdateManager>(provider))
+                    .AddSingleton<IAppVersionProvider, VelopackAppVersionProvider>()
                     .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>();
 
                 // Data
@@ -177,23 +177,4 @@ public static class Program
                     .Alias<IHostedService, GlobalHotkey>();
             }
         );
-
-    private static async Task Update()
-    {
-        var mgr = new UpdateManager(new GithubSource("https://github.com/ArkanisCorporation/ArkanisOverlay", null, false));
-
-        // check for new version
-        var newVersion = await mgr.CheckForUpdatesAsync();
-        if (newVersion == null)
-        {
-            // no updates available
-            return;
-        }
-
-        // download new version
-        await mgr.DownloadUpdatesAsync(newVersion);
-
-        // install new version and restart app
-        mgr.ApplyUpdatesAndRestart(newVersion);
-    }
 }

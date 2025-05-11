@@ -1,6 +1,6 @@
 namespace Arkanis.Overlay.Components.Services.Abstractions;
 
-using Arkanis.Overlay.Domain.Models.Keyboard;
+using Domain.Models.Keyboard;
 using Microsoft.AspNetCore.Components.Web;
 
 public interface IKeyboardProxy

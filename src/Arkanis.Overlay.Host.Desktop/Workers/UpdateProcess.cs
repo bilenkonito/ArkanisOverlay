@@ -1,13 +1,13 @@
 namespace Arkanis.Overlay.Host.Desktop.Workers;
 
-using Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Quartz;
+using Services;
 using Velopack;
 
-internal class UpdateProcess(UpdateManager updateManager, WindowsNotifications notifications) : IDisposable
+internal class UpdateProcess(ArkanisOverlayUpdateManager updateManager, WindowsNotifications notifications) : IDisposable
 {
     private WindowsNotifications.UpdatableNotification<WindowsNotifications.UpdateProgressParams>? _progressToast;
 
@@ -23,6 +23,12 @@ internal class UpdateProcess(UpdateManager updateManager, WindowsNotifications n
     /// <returns>A task that represents the asynchronous operation</returns>
     public async Task RunAsync(bool forced, CancellationToken cancellationToken = default)
     {
+        if (!updateManager.IsInstalled)
+        {
+            // do not check for updates if the application is not installed (=app is not updatable)
+            return;
+        }
+
         // check for new version
         var newVersion = await updateManager.CheckForUpdatesAsync();
         if (newVersion == null)
@@ -76,7 +82,11 @@ internal class UpdateProcess(UpdateManager updateManager, WindowsNotifications n
                 .DisallowConcurrentExecution()
                 .Build();
 
-        public class SelfScheduleService(UpdateManager updateManager, ISchedulerFactory schedulerFactory, ILogger<SelfScheduleService> logger) : IHostedService
+        public class SelfScheduleService(
+            ArkanisOverlayUpdateManager updateManager,
+            ISchedulerFactory schedulerFactory,
+            ILogger<SelfScheduleService> logger
+        ) : IHostedService
         {
             public async Task StartAsync(CancellationToken cancellationToken)
             {
