@@ -3,7 +3,6 @@ namespace Arkanis.Overlay.Domain.Models.Search;
 using Abstractions;
 using Abstractions.Game;
 using Enums;
-using FuzzySharp;
 
 /// <summary>
 ///     A prototype for any search query.
@@ -43,51 +42,39 @@ public abstract record TextSearch(string Content) : SearchQuery
         => new(string.Join(' ', queries.OfType<TextSearch>().Select(x => x.Content)));
 
     public static SearchQuery Fuzzy(string content)
-        => new FuzzyTextSearch(content);
+        => FuzzyTextSearch.Create(content);
 }
 
 public sealed record FuzzyTextSearch(string Content) : TextSearch(Content)
 {
+    private static int GetStringComparisonScore(string subject, string query, StringComparison comparison, Func<int>? fallback = null)
+        => subject switch
+        {
+            _ when subject.Equals(query, comparison) => 100,
+            _ when subject.StartsWith(query, comparison) => 99,
+            _ when subject.EndsWith(query, comparison) => 98,
+            _ when subject.Contains(query, comparison) => 97,
+            _ => fallback?.Invoke() ?? 0,
+        };
+
     public override IEnumerable<SearchMatch> Match(SearchableTrait trait, int depth = 0)
         => trait switch
         {
             SearchableCode data =>
-                //! Location Codes only for full match
-                [
-                    data.Code.Equals(NormalizedContent, StringComparison.OrdinalIgnoreCase)
-                        ? new ScoredMatch(100, depth, trait, this)
-                        : new NoMatch(trait, this),
-                ],
-            //! Category should be filtered through an operator not searched directly
-            // SearchableEntityCategory data
-            //     => [new ScoredMatch(Fuzz.Ratio(NormalizedContent, data.Category.ToString("G").ToLowerInvariant()), depth, trait, this)],
-            // TODO: add negative weights to manufacturer and location (less important than search by name unless specifically targeted)
-            // SearchableManufacturer data => Match(data.Manufacturer.SearchableAttributes.OfType<SearchableTextTrait>(), depth + 1),
-            // SearchableLocation data => Match(data.Location.Parent?.SearchableAttributes ?? [], depth + 1),
-            SearchableName data => MatchExact(data.Name, trait, depth),
-            // SearchableName data => MatchExact(data.Name, trait, depth, () => Fuzz.WeightedRatio(Content, data.Name)),
+            [
+                //! Location Codes for partial but case-sensitive exact match
+                GetStringComparisonScore(data.Code, Content, StringComparison.Ordinal) is > 0 and var score
+                    ? new ScoredMatch(score, depth, trait, this)
+                    : new NoMatch(trait, this),
+            ],
+            SearchableName data =>
+            [
+                GetStringComparisonScore(data.Name, NormalizedContent, StringComparison.OrdinalIgnoreCase) is > 0 and var score
+                    ? new ScoredMatch(score, depth, trait, this)
+                    : new NoMatch(trait, this),
+            ],
             _ => [new NoMatch(trait, this)],
         };
-
-    private IEnumerable<SearchMatch> MatchExact(string data, SearchableTrait trait, int depth, Func<int>? fallback = null)
-    {
-        var score = data.Equals(NormalizedContent, StringComparison.OrdinalIgnoreCase)
-            ? 100
-            : data.StartsWith(NormalizedContent, StringComparison.OrdinalIgnoreCase)
-                ? 99
-                : data.EndsWith(NormalizedContent, StringComparison.OrdinalIgnoreCase)
-                    ? 98
-                    : data.Contains(NormalizedContent, StringComparison.OrdinalIgnoreCase)
-                        ? 97
-                        : fallback?.Invoke() ?? 0;
-
-        if (score == 0)
-        {
-            return [new NoMatch(trait, this)];
-        }
-
-        return [new ScoredMatch(score, depth, trait, this)];
-    }
 
     public static SearchQuery Create(string content)
         => new FuzzyTextSearch(content);
