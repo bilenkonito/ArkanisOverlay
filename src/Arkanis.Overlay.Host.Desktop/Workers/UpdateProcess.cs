@@ -23,6 +23,12 @@ internal class UpdateProcess(UpdateManager updateManager, WindowsNotifications n
     /// <returns>A task that represents the asynchronous operation</returns>
     public async Task RunAsync(bool forced, CancellationToken cancellationToken = default)
     {
+        if (!updateManager.IsInstalled)
+        {
+            // do not check for updates if the application is not installed (=app is not updatable)
+            return;
+        }
+
         // check for new version
         var newVersion = await updateManager.CheckForUpdatesAsync();
         if (newVersion == null)
