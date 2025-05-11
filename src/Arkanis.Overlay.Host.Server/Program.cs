@@ -1,3 +1,4 @@
+using System.Globalization;
 using Arkanis.Overlay.Common.Abstractions;
 using Arkanis.Overlay.Common.Services;
 using Arkanis.Overlay.Components.Helpers;
@@ -11,8 +12,18 @@ using Arkanis.Overlay.Infrastructure.Services;
 using Arkanis.Overlay.Infrastructure.Services.Abstractions;
 using MudBlazor;
 using MudBlazor.Services;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSerilog(loggerConfig => loggerConfig
+    .Enrich.FromLogContext()
+    .ReadFrom.Configuration(builder.Configuration)
+);
 
 builder.Services.AddLogging();
 builder.Services.AddHttpClient();
