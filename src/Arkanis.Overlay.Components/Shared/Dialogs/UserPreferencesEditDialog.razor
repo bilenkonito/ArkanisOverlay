@@ -1,7 +1,9 @@
 @using System.Globalization
+@using Arkanis.Overlay.Common.Abstractions
 @using Arkanis.Overlay.Common.Extensions
 @using Arkanis.Overlay.Common.Models
 @inject IUserPreferencesManager UserPreferencesManager
+@inject IAppVersionProvider VersionProvider
 
 <MudDialog>
     <TitleContent>
@@ -44,6 +46,15 @@
                             </MudSelectItem>
                         }
                     </MudSelect>
+                    @if (UserPreferencesManager.CurrentPreferences.UpdateChannel != Preferences.UpdateChannel)
+                    {
+                        <MudText Typo="@Typo.caption" Color="@Color.Warning" Inline="false">
+                            App restart is necessary to correctly apply
+                        </MudText>
+                    }
+                    <MudText Typo="@Typo.caption" Class="text-secondary">
+                        Current version is @VersionProvider.CurrentVersion
+                    </MudText>
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudStack Spacing="0">
@@ -208,6 +219,7 @@
         {
             FullScreen = true,
             CloseOnEscapeKey = true,
+            NoHeader = true,
         };
 
         return ShowAsync(dialogService, dialogOptions);

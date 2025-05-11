@@ -844,6 +844,11 @@
           "Microsoft.AspNetCore.Components.Web": "7.0.0"
         }
       },
+      "NuGet.Versioning": {
+        "type": "Transitive",
+        "resolved": "6.12.1",
+        "contentHash": "fJ6rFYANDnohFsdpaY79FvrJxI6murmoOxXz6nZlf819F48+IBKMnAIg3oIBRtZq5y498ObMtKnro5IitvizUg=="
+      },
       "Quartz": {
         "type": "Transitive",
         "resolved": "3.14.0",
@@ -962,6 +967,7 @@
           "Microsoft.Extensions.Logging.Abstractions": "[8.0.3, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[8.0.0, )",
           "MoreAsyncLINQ": "[0.8.0, )",
+          "NuGet.Versioning": "[6.12.1, )",
           "Riok.Mapperly": "[4.2.0, )",
           "morelinq": "[4.4.0, )"
         }

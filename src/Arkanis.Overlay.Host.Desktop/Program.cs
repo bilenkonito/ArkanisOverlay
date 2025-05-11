@@ -2,6 +2,7 @@ namespace Arkanis.Overlay.Host.Desktop;
 
 using System.Data.Common;
 using Common;
+using Common.Abstractions;
 using Common.Extensions;
 using Components.Helpers;
 using Components.Services;
@@ -30,7 +31,11 @@ using Workers;
 // https://github.com/dapplo/Dapplo.Microsoft.Extensions.Hosting/blob/master/samples/Dapplo.Hosting.Sample.WpfDemo/Program.cs#L48
 public static class Program
 {
-    private static readonly IUpdateSource UpdateSource = new GithubSource(ApplicationConstants.GitHubRepositoryUrl, ApplicationConstants.GitHubReleaseToken, prerelease: true);
+    private static readonly IUpdateSource UpdateSource = new GithubSource(
+        ApplicationConstants.GitHubRepositoryUrl,
+        ApplicationConstants.GitHubReleaseToken,
+        true
+    );
 
     [STAThread]
     public static async Task Main(string[] args)
@@ -97,7 +102,7 @@ public static class Program
             .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
             .Run();
 
-        var updateManager = new UpdateManager(UpdateSource);
+        var updateManager = new ArkanisOverlayUpdateManager(UpdateSource);
         using var windowsNotifications = new WindowsNotifications();
         using var update = new UpdateProcess(updateManager, windowsNotifications);
         await update.RunAsync(true, CancellationToken.None);
@@ -147,7 +152,8 @@ public static class Program
                             ExplicitChannel = provider.GetRequiredService<IUserPreferencesProvider>().CurrentPreferences.UpdateChannel.VelopackChannelId,
                         }
                     )
-                    .AddSingleton<UpdateManager>(provider => ActivatorUtilities.CreateInstance<UpdateManager>(provider))
+                    .AddSingleton<ArkanisOverlayUpdateManager>(provider => ActivatorUtilities.CreateInstance<ArkanisOverlayUpdateManager>(provider))
+                    .AddSingleton<IAppVersionProvider, VelopackAppVersionProvider>()
                     .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>();
 
                 // Data
