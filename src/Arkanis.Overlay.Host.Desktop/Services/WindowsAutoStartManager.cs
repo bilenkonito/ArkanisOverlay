@@ -1,6 +1,5 @@
 namespace Arkanis.Overlay.Host.Desktop.Services;
 
-using System.Reflection;
 using Domain.Abstractions.Services;
 using Domain.Options;
 using Microsoft.Extensions.Hosting;
@@ -42,7 +41,7 @@ public class WindowsAutoStartManager(
             throw new InvalidOperationException("Failed to open registry key for auto-start.");
         }
 
-        var exePath = Assembly.GetExecutingAssembly().Location;
+        var exePath = Application.ExecutablePath;
         key.SetValue(RegistryKeyName, $"\"{exePath}\"");
     }
 
