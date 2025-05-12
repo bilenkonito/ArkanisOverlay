@@ -1,5 +1,11 @@
 @inherits LayoutComponentBase
+@using Arkanis.Overlay.Domain.Models.Analytics
+@implements IDisposable
 @layout MainLayout
+
+@inject IOverlayEventProvider OverlayEventProvider
+@inject IAnalyticsEventReporter AnalyticsEventReporter
+@inject NavigationManager NavigationManager
 
 <style>
     body {
@@ -8,3 +14,30 @@
 </style>
 
 @Body
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        OverlayEventProvider.OverlayFocused += OnPageFocused;
+        OverlayEventProvider.OverlayShown += OnOverlayShown;
+        OverlayEventProvider.OverlayHidden += OnOverlayHidden;
+    }
+
+    private void OnPageFocused(object? sender, EventArgs e)
+        => AnalyticsEventReporter.TrackNavigationAsync(NavigationManager.Uri);
+
+    private void OnOverlayShown(object? _, EventArgs e)
+        => AnalyticsEventReporter.TrackEventAsync(new OverlayShownEvent());
+
+    private void OnOverlayHidden(object? _, EventArgs e)
+        => AnalyticsEventReporter.TrackEventAsync(new OverlayHiddenEvent());
+
+    public void Dispose()
+    {
+        OverlayEventProvider.OverlayFocused -= OnPageFocused;
+        OverlayEventProvider.OverlayShown -= OnOverlayShown;
+        OverlayEventProvider.OverlayHidden -= OnOverlayHidden;
+    }
+}

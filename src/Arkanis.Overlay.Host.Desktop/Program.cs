@@ -133,9 +133,10 @@ public static class Program
                 services.AddSingleton<IServiceProvider>(sp => sp);
                 services.AddHttpClient();
 
+                services.AddGoogleTrackingServices();
+
                 services.AddGlobalKeyboardProxyService();
                 services.AddJavaScriptEventInterop();
-                services.AddGoogleTrackingServices();
                 services.AddSingleton(typeof(WindowProvider<>));
 
                 services.AddHostedService<WindowsAutoStartManager>()

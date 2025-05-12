@@ -29,6 +29,9 @@ public class GoogleAnalyticsEventReporter(
         await analytics.TrackEvent(analyticsEvent.EventName, CreateEventData(analyticsEvent));
     }
 
+    public async Task TrackNavigationAsync(string uri)
+        => await analytics.TrackNavigation(uri);
+
     private Dictionary<string, object> CreateEventData(AnalyticsEvent analyticsEvent)
     {
         var eventData = analyticsEvent switch
