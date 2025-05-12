@@ -26,6 +26,12 @@ export class QuickAccessContainer {
     /** @type {MutationObserver} */
     domObserver;
 
+    /** @type {boolean} */
+    disposed = false;
+
+    /** @type {function} */
+    scrollEventHandler;
+
     /**
      * Initializes the QuickAccessContainer and links it to the .NET component (via DotNet ObjectReference).
      *
@@ -48,7 +54,10 @@ export class QuickAccessContainer {
         //     childList: true,
         //     subtree: true,
         // })
-        document.addEventListener('scroll', this.handleScroll.bind(this));
+
+        this.scrollEventHandler = this.handleScroll.bind(this);
+        document.addEventListener('scroll', this.scrollEventHandler);
+
         this.updateDebounced();
     }
 
@@ -68,7 +77,18 @@ export class QuickAccessContainer {
     }
 
     /**
-     Performs the internal update process based on DOM change.
+     * Performs the internal update process based on DOM change.
+     *
+     */
+    async dispose() {
+        console.debug("dispose requested from .NET component %o", this.componentRef);
+        document.removeEventListener('scroll', this.scrollEventHandler);
+        this.domObserver.disconnect()
+        this.disposed = true;
+    }
+
+    /**
+     * Performs the internal update process based on DOM change.
      *
      * @param {Array<MutationRecord>} changes
      * @param {MutationObserver} observer
@@ -108,6 +128,11 @@ export class QuickAccessContainer {
      * Optimizes the collection of visible elements.
      */
     async pushUpdateToDotNet() {
+        if (this.disposed) {
+            console.debug("parent .NET component has disposed this interop instance, preventingupdate");
+            return;
+        }
+
         console.debug("sending notification to parent .NET component");
         await this.componentRef.invokeMethodAsync("OnJsUpdateAsync");
     }
