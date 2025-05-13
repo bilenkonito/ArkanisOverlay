@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.Accessibility;
+using Windows.Win32.UI.HiDpi;
 using Domain.Abstractions.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -29,6 +31,8 @@ using Microsoft.Extensions.Logging;
 public sealed class WindowTracker : IHostedService, IDisposable
 {
     private const uint WmInvokeAction = PInvoke.WM_USER + 100;
+    private const double DefaultDpi = 96.0; // This is official and fixed by Windows logic
+
 
     private const string WindowClass = Constants.WindowClass;
     private const string WindowName = Constants.WindowName;
@@ -272,8 +276,10 @@ public sealed class WindowTracker : IHostedService, IDisposable
 
     private Size GetWindowSize()
     {
-        PInvoke.GetClientRect(_currentWindowHWnd, out var result);
-        return new Size(result.Width, result.Height);
+        PInvoke.GetClientRect(_currentWindowHWnd, out var rect);
+        var scale = GetDpiScaleFactor(_currentWindowHWnd);
+
+        return new Size((int)(rect.Width / scale), (int)(rect.Height / scale));
     }
 
     private Point GetWindowPosition()
@@ -282,11 +288,21 @@ public sealed class WindowTracker : IHostedService, IDisposable
         var success = PInvoke.ClientToScreen(_currentWindowHWnd, ref point);
         if (success)
         {
+            var scaleFactor = GetDpiScaleFactor(_currentWindowHWnd);
+            point.X = (int)(point.X / scaleFactor);
+            point.Y = (int)(point.Y / scaleFactor);
             return point;
         }
 
         _logger.LogWarning("Failed to get window position");
         return new Point(0, 0); // return value might be zero
+    }
+
+    private static double GetDpiScaleFactor(HWND hWnd)
+    {
+        var monitor = PInvoke.MonitorFromWindow(hWnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+        PInvoke.GetDpiForMonitor(monitor, MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI, out var dpiX, out _);
+        return dpiX / DefaultDpi;
     }
 
     private bool IsWindowFocussed()
@@ -616,7 +632,10 @@ public sealed class WindowTracker : IHostedService, IDisposable
 
         _logger.LogDebug(
             "Window focus changed: {IsFocused} => Current hWnd: {HWnd} - Focused hWnd: {CurrentForegroundWindowHWnd}",
-            isFocused, (IntPtr)_currentWindowHWnd, (IntPtr)currentForegroundWindowHWnd);
+            isFocused,
+            (IntPtr)_currentWindowHWnd,
+            (IntPtr)currentForegroundWindowHWnd
+        );
         WindowFocusChanged?.Invoke(this, isFocused);
     }
 }
