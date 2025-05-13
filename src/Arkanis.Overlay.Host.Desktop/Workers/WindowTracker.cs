@@ -296,10 +296,10 @@ public sealed class WindowTracker : IHostedService, IDisposable
         return new Point(0, 0); // return value might be zero
     }
 
-    private double GetDpiScaleFactor(HWND hWnd)
+    private static double GetDpiScaleFactor(HWND hWnd)
     {
         var monitor = PInvoke.MonitorFromWindow(hWnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        PInvoke.GetDpiForMonitor(monitor, MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI, out var dpiX, out var dpiY);
+        PInvoke.GetDpiForMonitor(monitor, MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI, out var dpiX, out _);
         return dpiX / 96.0;
     }
 
