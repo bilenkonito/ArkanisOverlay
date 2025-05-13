@@ -1,27 +1,19 @@
 namespace Arkanis.Overlay.Components.Services;
 
 using Blazor.Analytics;
-using Common.Abstractions;
 using Domain.Abstractions.Services;
 using Domain.Models.Analytics;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 public class GoogleAnalyticsEventReporter(
     IAnalytics analytics,
-    IHostEnvironment hostEnvironment,
-    IAppVersionProvider versionProvider,
-    IUserPreferencesProvider userPreferencesProvider,
+    SharedAnalyticsPropertyProvider analyticsPropertyProvider,
     ILogger<GoogleAnalyticsEventReporter> logger
 ) : IAnalyticsEventReporter
 {
     private const string EventCategoryKey = "event_category";
     private const string EventLabelKey = "event_label";
 
-    private const string EnvironmentTypeKey = "environment_type";
-    private const string InstallationIdKey = "installation_id";
-    private const string ApplicationVersionKey = "app_version";
-    private const string TrafficTypeKey = "traffic_type";
 
     public async Task TrackEventAsync(AnalyticsEvent analyticsEvent)
     {
@@ -48,10 +40,10 @@ public class GoogleAnalyticsEventReporter(
 
     private void AddCommonEventData(Dictionary<string, object> eventData)
     {
-        eventData[EnvironmentTypeKey] = hostEnvironment.EnvironmentName;
-        eventData[InstallationIdKey] = userPreferencesProvider.CurrentPreferences.InstallationId.ToString();
-        eventData[ApplicationVersionKey] = versionProvider.CurrentVersion.ToFullString();
-        eventData[TrafficTypeKey] = hostEnvironment.IsProduction() ? "public" : "internal";
+        foreach (var (propertyName, propertyValue) in analyticsPropertyProvider.PropertyItems)
+        {
+            eventData[propertyName] = propertyValue;
+        }
     }
 
     private static Dictionary<string, object> CreateSpecificEventData(BuiltInFeatureUsageStateChangedEvent @event)

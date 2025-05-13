@@ -133,7 +133,8 @@ public static class Program
                 services.AddSingleton<IServiceProvider>(sp => sp);
                 services.AddHttpClient();
 
-                services.AddGoogleTrackingServices();
+                services.AddGoogleTrackingServices()
+                    .AddSingleton<SharedAnalyticsPropertyProvider, DesktopAnalyticsPropertyProvider>();
 
                 services.AddGlobalKeyboardProxyService();
                 services.AddJavaScriptEventInterop();
