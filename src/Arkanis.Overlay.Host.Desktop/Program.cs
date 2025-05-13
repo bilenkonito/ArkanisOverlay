@@ -69,27 +69,13 @@ public static class Program
 
         try
         {
-            ApplicationConstants.LocalAppDataDir.Create();
             var host = hostBuilder.Build();
-
-            try
-            {
-                await host.MigrateDatabaseAsync<OverlayDbContext>().ConfigureAwait(false);
-            }
-            catch (DbException ex)
-            {
-                await Console.Error.WriteLineAsync($"Encountered a database error during migration: {ex.Message}");
-                await Console.Error.WriteLineAsync($"Trying auto-recovery by deleting default appdata directory at {ApplicationConstants.LocalAppDataDir}");
-
-                ApplicationConstants.LocalAppDataDir.Delete(true);
-                ApplicationConstants.LocalAppDataDir.Create();
-                await host.MigrateDatabaseAsync<OverlayDbContext>().ConfigureAwait(false);
-            }
-
+            await host.MigrateDatabaseAsync<OverlayDbContext>().ConfigureAwait(false);
             await host.RunAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
+            Log.Logger.Fatal(ex, "Host terminated unexpectedly");
             await Console.Error.WriteLineAsync($"An error occurred during app startup: {ex.Message}");
             throw;
         }
