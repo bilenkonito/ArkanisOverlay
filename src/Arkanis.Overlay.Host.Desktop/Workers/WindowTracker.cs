@@ -31,6 +31,8 @@ using Microsoft.Extensions.Logging;
 public sealed class WindowTracker : IHostedService, IDisposable
 {
     private const uint WmInvokeAction = PInvoke.WM_USER + 100;
+    private const double DefaultDpi = 96.0; // This is official and fixed by Windows logic
+
 
     private const string WindowClass = Constants.WindowClass;
     private const string WindowName = Constants.WindowName;
@@ -300,7 +302,7 @@ public sealed class WindowTracker : IHostedService, IDisposable
     {
         var monitor = PInvoke.MonitorFromWindow(hWnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
         PInvoke.GetDpiForMonitor(monitor, MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI, out var dpiX, out _);
-        return dpiX / 96.0;
+        return dpiX / DefaultDpi;
     }
 
     private bool IsWindowFocussed()
