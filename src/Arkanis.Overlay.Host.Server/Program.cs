@@ -46,6 +46,7 @@ builder.Services
     .AddJavaScriptEventInterop()
     .AddGlobalKeyboardProxyService()
     .AddGoogleTrackingServices()
+    .AddSingleton<SharedAnalyticsPropertyProvider, ServerAnalyticsPropertyProvider>()
     .AddServerOverlayControls()
     .AddInfrastructure()
     .AddInfrastructureConfiguration(builder.Configuration)

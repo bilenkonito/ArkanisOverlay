@@ -2,8 +2,8 @@
 @inject IAnalyticsEventReporter AnalyticsEventReporter
 @inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
 @inject IUserPreferencesProvider UserRePreferencesProvider
+@inject SharedAnalyticsPropertyProvider AnalyticsPropertyProvider
 @inject ILogger<AnalyticEventSender> Logger
-@using Microsoft.Extensions.Logging
 @implements IDisposable
 
 <NavigationTracker/>
@@ -56,10 +56,7 @@
         {
             Analytics.Enable();
 
-            var globalConfigData = new Dictionary<string, object>
-            {
-                ["installationId"] = preferences.InstallationId,
-            };
+            var globalConfigData = AnalyticsPropertyProvider.PropertyItems.ToDictionary();
             await Analytics.ConfigureGlobalConfigData(globalConfigData);
         }
     }

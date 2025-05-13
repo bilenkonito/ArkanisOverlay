@@ -16,4 +16,8 @@ public sealed record BlurFeatureStateChangedEvent(bool IsEnabled) : BuiltInFeatu
 
 public sealed record SearchEvent(string Query) : BuiltInAnalyticsEvent("search");
 
+public sealed record OverlayShownEvent() : BuiltInAnalyticsEvent("overlay_shown");
+
+public sealed record OverlayHiddenEvent() : BuiltInAnalyticsEvent("overlay_hidden");
+
 public sealed record DialogOpenedEvent(string DialogId) : BuiltInAnalyticsEvent(nameof(DialogOpenedEvent));
