@@ -118,14 +118,15 @@
 
     public async ValueTask DisposeAsync()
     {
+        if (_controls != null)
+        {
+            await _controls.InvokeVoidAsync("dispose");
+            await _controls.DisposeAsync();
+        }
+
         if (_module != null)
         {
             await _module.DisposeAsync();
-        }
-
-        if (_controls != null)
-        {
-            await _controls.DisposeAsync();
         }
 
         _selfReference?.Dispose();
