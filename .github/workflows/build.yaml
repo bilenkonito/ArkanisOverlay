@@ -4,11 +4,11 @@ on:
   # You can use the GitHub API to trigger a webhook event called repository_dispatch
   # when you want to trigger a workflow for activity that happens outside of GitHub.
   repository_dispatch:
-    branches: [ main, release/rc, release/nightly, dev, ci ]
+    branches: [ main, release/*, ci ]
   push:
-    branches: [ main, release/rc, release/nightly, dev, ci ]
+    branches: [ main, release/*, ci ]
   pull_request:
-    branches: [ main, release/rc, release/nightly, dev ]
+    branches: [ main, release/* ]
 
 permissions:
   contents: write       # for publishing a GitHub release
@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/_release.yaml
     secrets: inherit
     with:
-      dry_run: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/ci' || github.ref == 'refs/heads/dev' }}
+      dry_run: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/ci' || github.ref == 'refs/heads/main' }}
 
   deploy:
     name: Deployment

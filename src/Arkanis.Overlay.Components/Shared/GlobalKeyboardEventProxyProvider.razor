@@ -1,4 +1,3 @@
-@using Arkanis.Overlay.Components.Extensions
 @using Arkanis.Overlay.Components.Services.Abstractions
 @using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
@@ -59,8 +58,11 @@
             return;
         }
 
+#if WITH_KEYBOARD_DEBUGGING
         var keyboardKey = keyboardEvent.GetKey();
         Logger.LogDebug("KeyDown: {Key}", keyboardKey);
+#endif
+
         GlobalKeyboardProxy.RegisterKeyDown(keyboardEvent);
     }
 

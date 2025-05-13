@@ -33,6 +33,11 @@ GetAncestor
 WINDOW_LONG_PTR_INDEX
 WINDOW_EX_STYLE
 
+// DPI Scaling
+GetDpiForMonitor
+MonitorFromWindow
+MONITOR_DPI_TYPE
+
 // Winuser.h Event Constants
 // https://learn.microsoft.com/en-us/windows/win32/winauto/event-constants
 EVENT_*

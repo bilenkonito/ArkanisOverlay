@@ -5,4 +5,6 @@ using Models.Analytics;
 public interface IAnalyticsEventReporter
 {
     Task TrackEventAsync(AnalyticsEvent analyticsEvent);
+
+    Task TrackNavigationAsync(string uri);
 }

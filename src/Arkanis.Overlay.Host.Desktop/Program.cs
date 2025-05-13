@@ -1,6 +1,8 @@
 namespace Arkanis.Overlay.Host.Desktop;
 
 using System.Data.Common;
+using System.Globalization;
+using System.IO;
 using Common;
 using Common.Abstractions;
 using Common.Extensions;
@@ -19,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
+using Serilog;
 using Services;
 using Services.Factories;
 using UI;
@@ -43,7 +46,6 @@ public static class Program
         await HandleInstallationBehaviourAsync(args);
 
         var hostBuilder = Host.CreateDefaultBuilder(args)
-            .ConfigureLogging()
             .ConfigureSingleInstance(options =>
                 {
                     options.MutexId = $"{{{Constants.InstanceId}}}";
@@ -108,19 +110,26 @@ public static class Program
         await update.RunAsync(true, CancellationToken.None);
     }
 
-    private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder)
-        => hostBuilder.ConfigureLogging((hostContext, configLogging) =>
-            configLogging
-                .AddConfiguration(hostContext.Configuration.GetSection("Logging"))
-                .AddConsole()
-                .AddDebug()
-                .SetMinimumLevel(LogLevel.Debug)
-                .AddFilter((scope, _) => scope?.StartsWith(nameof(Arkanis), StringComparison.InvariantCulture) ?? false)
-        );
-
     private static IHostBuilder ConfigureServices(this IHostBuilder builder)
         => builder.ConfigureServices((context, services) =>
             {
+                services.AddSerilog(loggerConfig => loggerConfig
+                    .WriteTo.Console(
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
+                        formatProvider: CultureInfo.InvariantCulture
+                    )
+                    .WriteTo.File(
+                        Path.Join(ApplicationConstants.LocalAppDataPath, "logs", "app.log"),
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
+                        buffered: true,
+                        rollingInterval: RollingInterval.Day,
+                        retainedFileCountLimit: 7,
+                        formatProvider: CultureInfo.InvariantCulture
+                    )
+                    .Enrich.FromLogContext()
+                    .ReadFrom.Configuration(context.Configuration)
+                );
+
                 services.AddInfrastructureConfiguration(context.Configuration);
 
                 services.AddWpfBlazorWebView();
@@ -133,9 +142,11 @@ public static class Program
                 services.AddSingleton<IServiceProvider>(sp => sp);
                 services.AddHttpClient();
 
+                services.AddGoogleTrackingServices()
+                    .AddSingleton<SharedAnalyticsPropertyProvider, DesktopAnalyticsPropertyProvider>();
+
                 services.AddGlobalKeyboardProxyService();
                 services.AddJavaScriptEventInterop();
-                services.AddGoogleTrackingServices();
                 services.AddSingleton(typeof(WindowProvider<>));
 
                 services.AddHostedService<WindowsAutoStartManager>()
