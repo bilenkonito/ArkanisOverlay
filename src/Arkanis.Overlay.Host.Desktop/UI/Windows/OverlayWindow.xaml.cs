@@ -159,12 +159,11 @@ public partial class OverlayWindow
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
+#if WITH_KEYBOARD_DEBUGGING
         _logger.LogTrace("Overlay: KeyDown: {Key}", e.Key);
+#endif
+
         base.OnKeyDown(e);
-        if (e.Key == Key.F)
-        {
-            BlazorWebView.WebView.Focus();
-        }
     }
 
     // private void Handle_UrlLoading(object sender, UrlLoadingEventArgs urlLoadingEventArgs)
