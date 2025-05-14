@@ -219,13 +219,6 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        _searchContext = new OverlaySearchContext
-        {
-            UpdateSearch = EventCallback.Factory.Create<OverlaySearchContext>(this, OnSearchContextChange),
-            SearchBox = _searchBox,
-        };
-
         await SearchAsync();
     }
 
@@ -235,6 +228,12 @@
 
         if (firstRender && _searchBox is not null)
         {
+            _searchContext = new OverlaySearchContext
+            {
+                UpdateSearch = EventCallback.Factory.Create<OverlaySearchContext>(this, OnSearchContextChange),
+                SearchBox = _searchBox,
+            };
+
             var windowFocusHandler = EventInterop.CreateHandler(_searchBox.FocusSearchBoxAsync);
             await EventInterop.RegisterWindowEventHandlerAsync("focus", windowFocusHandler);
         }
