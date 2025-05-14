@@ -216,20 +216,16 @@
 
     private GameEntitySearchResults SearchResults { get; set; } = GameEntitySearchResults.Empty;
 
-    private string PreviousSearchText { get; set; } = string.Empty;
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        _searchContext = new OverlaySearchContext
-        {
-            ConfigChanged = EventCallback.Factory.Create<OverlaySearchContext>(this, OnSearchContextChange),
-        };
-    }
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        _searchContext = new OverlaySearchContext
+        {
+            UpdateSearch = EventCallback.Factory.Create<OverlaySearchContext>(this, OnSearchContextChange),
+            SearchBox = _searchBox,
+        };
+
         await SearchAsync();
     }
 
@@ -245,10 +241,7 @@
     }
 
     private async Task OnSearchContextChange(OverlaySearchContext newContext)
-    {
-        await SearchAsync();
-        await InvokeAsync(StateHasChanged);
-    }
+        => await SearchAsync();
 
     private async Task SearchAsync()
     {
