@@ -4,6 +4,8 @@ public static class ApplicationConstants
 {
     public const string GoogleAnalyticsTrackingId = "G-ND6WBR51VP";
 
+    public const string ApplicationName = "Arkanis Overlay";
+
     public const string LocalAppDataDirectoryName = "ArkanisOverlay";
     public const string GitHubOwner = "ArkanisCorporation";
     public const string GitHubRepository = "ArkanisOverlay";
