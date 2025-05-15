@@ -5,7 +5,7 @@
 @using Arkanis.Overlay.Domain.Models.Analytics
 @using Arkanis.Overlay.Domain.Models.Search
 @using Humanizer
-@inject ILogger<OverlayView> Logger
+@inject ILogger<SearchView> Logger
 @inject IDialogService DialogService
 @inject ISearchService SearchService
 @inject IUserPreferencesProvider UserPreferencesProvider
@@ -216,17 +216,6 @@
 
     private GameEntitySearchResults SearchResults { get; set; } = GameEntitySearchResults.Empty;
 
-    private string PreviousSearchText { get; set; } = string.Empty;
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        _searchContext = new OverlaySearchContext
-        {
-            ConfigChanged = EventCallback.Factory.Create<OverlaySearchContext>(this, OnSearchContextChange),
-        };
-    }
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -239,16 +228,19 @@
 
         if (firstRender && _searchBox is not null)
         {
+            _searchContext = new OverlaySearchContext
+            {
+                UpdateSearch = EventCallback.Factory.Create<OverlaySearchContext>(this, OnSearchContextChange),
+                SearchBox = _searchBox,
+            };
+
             var windowFocusHandler = EventInterop.CreateHandler(_searchBox.FocusSearchBoxAsync);
             await EventInterop.RegisterWindowEventHandlerAsync("focus", windowFocusHandler);
         }
     }
 
     private async Task OnSearchContextChange(OverlaySearchContext newContext)
-    {
-        await SearchAsync();
-        await InvokeAsync(StateHasChanged);
-    }
+        => await SearchAsync();
 
     private async Task SearchAsync()
     {
