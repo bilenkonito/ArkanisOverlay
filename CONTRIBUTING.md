@@ -89,12 +89,6 @@ Add body text for more context if needed.
 * Development is done primarily in JetBrains Rider. ReSharper-friendly changes are appreciated.
 * Nullable reference types are enabled solution-wide.
 
-To format code before committing:
-
-```bash
-dotnet format
-```
-
 ---
 
 ## Testing
@@ -109,6 +103,7 @@ dotnet test
 
 * Backend contributions (non-UI) should include tests where applicable.
 * Follow existing test organization under `Arkanis.Overlay.*.UnitTests` and `Arkanis.Overlay.*.IntegrationTests`.
+* You can read more in the testing-dedicated [README.md](./tests/README.md).
 
 ---
 
