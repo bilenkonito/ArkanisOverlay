@@ -91,10 +91,17 @@
         }
     }
 
-    private async Task SearchAsync(string searchText)
+    public async Task SearchAsync(string searchText)
     {
-        SearchText = searchText;
-        await SearchTextChanged.InvokeAsync(searchText);
+        if (_searchBox is not null && _searchBox.Text != searchText)
+        {
+            await _searchBox.SetText(searchText);
+        }
+        else
+        {
+            SearchText = searchText;
+            await SearchTextChanged.InvokeAsync(searchText);
+        }
     }
 
 }

@@ -24,27 +24,27 @@
     }
 </style>
 
-<PageTitle>Home</PageTitle>
+<PageTitle>@ApplicationConstants.ApplicationName — Overlay Demo</PageTitle>
 
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudContainer Class="w-100">
             <MudStack Class="w-100" AlignItems="@AlignItems.Center" Row>
                 <MudText Typo="@Typo.h5" Class="mr-4">Arkanis Overlay</MudText>
-                <MudButton StartIcon="@Icons.Material.Filled.ScreenshotMonitor" Href="/overlay">
-                    Overlay Demo
+                <MudButton StartIcon="@Icons.Material.Filled.ScreenshotMonitor" Href="/search">
+                    Demo
                 </MudButton>
-                <MudButton StartIcon="@Icons.Custom.Brands.GitHub" Href="@GitHubRepositoryUrl">
-                    GitHub Project
+                <MudButton StartIcon="@Icons.Custom.Brands.GitHub" Href="@GitHubRepositoryUrl" Target="_blank">
+                    GitHub
                 </MudButton>
                 <MudSpacer/>
                 <MudLink Href="https://discord.com/users/174617873182883841" Target="_blank">
-                    <MudAvatar>
+                    <MudAvatar title="FatalMerlin">
                         FM
                     </MudAvatar>
                 </MudLink>
                 <MudLink Href="https://discord.com/users/224580858432978944" Target="_blank">
-                    <MudAvatar>
+                    <MudAvatar title="TheKronnY">
                         TK
                     </MudAvatar>
                 </MudLink>
@@ -117,7 +117,7 @@
                 </div>
             </MudPaper>
 
-            <MudStack Justify="Justify.Center" Row>
+            <MudStack Justify="@Justify.Center" Wrap="@Wrap.Wrap" Row>
                 <MudButtonGroup OverrideStyles="false">
                     <AssetDownloadButton
                         T="GitHubAppRelease"
@@ -133,7 +133,7 @@
                 <MudButton Variant="Variant.Outlined"
                            Color="Color.Secondary"
                            StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
-                           Href="/overlay">
+                           Href="/search">
                     Try it out
                 </MudButton>
             </MudStack>
@@ -153,7 +153,7 @@
                             <MudButton Variant="Variant.Outlined"
                                        Color="Color.Secondary"
                                        StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
-                                       Href="/overlay">
+                                       Href="/search">
                                 Try it out
                             </MudButton>
                         </MudStack>
@@ -196,7 +196,7 @@
                             <MudButton Variant="Variant.Outlined"
                                        Color="Color.Secondary"
                                        StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
-                                       Href="/overlay">
+                                       Href="/search">
                                 Try it out
                             </MudButton>
                         </MudStack>
@@ -217,7 +217,7 @@
                             <MudButton Variant="Variant.Outlined"
                                        Color="Color.Secondary"
                                        StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
-                                       Href="/overlay">
+                                       Href="/search">
                                 Try it out
                             </MudButton>
                         </MudStack>

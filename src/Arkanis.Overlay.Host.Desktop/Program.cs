@@ -1,6 +1,5 @@
 namespace Arkanis.Overlay.Host.Desktop;
 
-using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using Common;
@@ -34,11 +33,7 @@ using Workers;
 // https://github.com/dapplo/Dapplo.Microsoft.Extensions.Hosting/blob/master/samples/Dapplo.Hosting.Sample.WpfDemo/Program.cs#L48
 public static class Program
 {
-    private static readonly IUpdateSource UpdateSource = new GithubSource(
-        ApplicationConstants.GitHubRepositoryUrl,
-        ApplicationConstants.GitHubReleaseToken,
-        true
-    );
+    private static readonly IUpdateSource UpdateSource = new GithubSource(ApplicationConstants.GitHubRepositoryUrl, null, false);
 
     [STAThread]
     public static async Task Main(string[] args)
@@ -69,27 +64,13 @@ public static class Program
 
         try
         {
-            ApplicationConstants.LocalAppDataDir.Create();
             var host = hostBuilder.Build();
-
-            try
-            {
-                await host.MigrateDatabaseAsync<OverlayDbContext>().ConfigureAwait(false);
-            }
-            catch (DbException ex)
-            {
-                await Console.Error.WriteLineAsync($"Encountered a database error during migration: {ex.Message}");
-                await Console.Error.WriteLineAsync($"Trying auto-recovery by deleting default appdata directory at {ApplicationConstants.LocalAppDataDir}");
-
-                ApplicationConstants.LocalAppDataDir.Delete(true);
-                ApplicationConstants.LocalAppDataDir.Create();
-                await host.MigrateDatabaseAsync<OverlayDbContext>().ConfigureAwait(false);
-            }
-
+            await host.MigrateDatabaseAsync<OverlayDbContext>().ConfigureAwait(false);
             await host.RunAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
+            Log.Logger.Fatal(ex, "Host terminated unexpectedly");
             await Console.Error.WriteLineAsync($"An error occurred during app startup: {ex.Message}");
             throw;
         }

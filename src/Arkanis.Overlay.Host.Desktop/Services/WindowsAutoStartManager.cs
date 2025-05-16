@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Host.Desktop.Services;
 
+using Common;
 using Domain.Abstractions.Services;
 using Domain.Options;
 using Microsoft.Extensions.Hosting;
@@ -19,7 +20,7 @@ public class WindowsAutoStartManager(
     /// <summary>
     ///     The key for the application in the registry.
     /// </summary>
-    public const string RegistryKeyName = Constants.ApplicationName;
+    public const string RegistryKeyName = ApplicationConstants.ApplicationName;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
@@ -61,12 +62,12 @@ public class WindowsAutoStartManager(
         {
             if (userPreferences.AutoStartWithBoot)
             {
-                logger.LogInformation($"Enabling {Constants.ApplicationName} auto-start");
+                logger.LogInformation("Enabling auto-start");
                 EnableAutoStart();
             }
             else
             {
-                logger.LogInformation($"Disabling {Constants.ApplicationName} auto-start");
+                logger.LogInformation("Disabling auto-start");
                 DisableAutoStart();
             }
         }

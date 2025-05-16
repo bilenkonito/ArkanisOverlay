@@ -1,7 +1,8 @@
-﻿@page "/overlay"
+﻿@page "/search"
+@using Arkanis.Overlay.Common
 @layout OverlayLayout
 
-<PageTitle>Overlay</PageTitle>
+<PageTitle>@ApplicationConstants.ApplicationName — Search</PageTitle>
 
 <style>
     body {
@@ -12,7 +13,7 @@
     }
 </style>
 
-<OverlayView @rendermode="@(new InteractiveServerRenderMode(false))"/>
+<SearchView @rendermode="@(new InteractiveServerRenderMode(false))"/>
 
 @code
 {
