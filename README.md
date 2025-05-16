@@ -72,6 +72,9 @@ The overlay is currently in **active development** and driven by a clear mission
 - **Open Source**
   — The project is open source, allowing anyone to contribute, suggest features, and report bugs.
   We welcome all contributions, whether big or small.
+  Check out the [contributing guidelines](CONTRIBUTING.md) for more information on how to get involved
+  and let us know you are up for the challenge by joining our [Discord server](https://join.arkanis.cc)
+  or opening [a new discussion on GitHub](https://github.com/ArkanisCorporation/ArkanisOverlay/discussions/categories/ideas).
 
 ## 🖥️ Tech Stack
 
@@ -109,7 +112,7 @@ Follow these steps to install the Arkanis Overlay application on your Windows sy
    After confirming, the application will be installed to `%LocalAppData%/ArkanisOverlay`.
 
    |             Installer - Windows UAC Step 1              |             Installer - Windows UAC Step 2              |
-            |:-------------------------------------------------------:|:-------------------------------------------------------:|
+               |:-------------------------------------------------------:|:-------------------------------------------------------:|
    | ![UAC, Step 1](docs/images/Windows_UAC-DialogOnly1.png) | ![UAC, Step 2](docs/images/Windows_UAC-DialogOnly2.png) |
 
 3. **Launch the application** from the Start Menu or by double-clicking the desktop shortcut.
@@ -133,6 +136,7 @@ The shortcut can be customized through the **preferences dialog**, allowing you 
 The preferences dialog is accessible either from the **system tray icon** or directly within the **overlay interface** itself.
 
 Within the preferences dialog, you currently can:
+
 - Enable or disable automatic launching of the application when Windows starts.
 - Choose whether the overlay application should automatically exit when Star Citizen is closed.
 - Customize the keyboard shortcut used to activate the overlay.
