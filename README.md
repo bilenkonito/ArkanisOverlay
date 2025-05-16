@@ -27,13 +27,15 @@ co-founder of the <a href="https://org.arkanis.cc" target="_blank">in-game organ
 <br/>and <a href="https://discord.com/users/224580858432978944" target="_blank"><b>TheKronnY</b></a>, <a href="https://i.redd.it/dkrdm5jdb8ce1.jpeg" target="_blank">an engineer and IT PhD student</a>.
 </h6>
 
-<h6 align="center">
-<a href="https://uexcorp.space" target="_blank">
-<img src="https://uexcorp.space/img/api/uex-api-badge-partnered.png" alt="Proud partners of the United Express (UEX) Corporation" width="200"/>
-</a>
-</h6>
-
 https://github.com/user-attachments/assets/f932f4c3-913c-4064-9174-566f0e755046
+
+---
+
+<p align="center">
+<a href="https://uexcorp.space" target="_blank">
+<img src="https://uexcorp.space/img/api/uex-api-badge-partnered.png" alt="Proud partners of the United Express (UEX) Corporation" width="150"/>
+</a>
+</p>
 
 ---
 
