@@ -114,7 +114,7 @@ Follow these steps to install the Arkanis Overlay application on your Windows sy
    After confirming, the application will be installed to `%LocalAppData%/ArkanisOverlay`.
 
    |             Installer - Windows UAC Step 1              |             Installer - Windows UAC Step 2              |
-               |:-------------------------------------------------------:|:-------------------------------------------------------:|
+   |:-------------------------------------------------------:|:-------------------------------------------------------:|
    | ![UAC, Step 1](docs/images/Windows_UAC-DialogOnly1.png) | ![UAC, Step 2](docs/images/Windows_UAC-DialogOnly2.png) |
 
 3. **Launch the application** from the Start Menu or by double-clicking the desktop shortcut.
