@@ -4,14 +4,10 @@ using Common;
 using Microsoft.Extensions.Caching.Memory;
 using Models;
 using Octokit;
-using Octokit.Internal;
 
 internal class GitHubReleasesService(IMemoryCache memoryCache)
 {
-    private readonly GitHubClient _client = new(
-        new ProductHeaderValue(ServerHostModule.Namespace),
-        new InMemoryCredentialStore(new Credentials(ApplicationConstants.GitHubReleaseToken))
-    );
+    private readonly GitHubClient _client = new(new ProductHeaderValue(ServerHostModule.Namespace));
 
     public async Task<AppRelease> GetLatestStableDownloadsAsync()
     {
