@@ -6,14 +6,14 @@
           Class="mr-n2"
           Style="height: 46px;"
           Row>
-    @if (Model is IGameLocation gameLocation and not GameTerminal)
+    @if (Model is IGameLocation gameLocation)
     {
-        var isSelectedLocation = SearchContext.CurrentLocation == gameLocation;
+        var isSelectedLocation = SearchContext?.CurrentLocation == gameLocation;
         var color = isSelectedLocation ? Color.Error : Color.Tertiary;
         var icon = isSelectedLocation ? MaterialSymbols.Outlined.FilterAltOff : MaterialSymbols.Outlined.TravelExplore;
         var callback = () => isSelectedLocation
-            ? SearchContext.ClearLocationFilterAsync()
-            : SearchContext.SetFilterAsync(gameLocation);
+            ? SearchContext?.ClearLocationFilterAsync() ?? Task.CompletedTask
+            : SearchContext?.SetFilterAsync(gameLocation) ?? Task.CompletedTask;
 
         <MudDivider Vertical FlexItem/>
         <KeyboardShortcutBadge Key="@KeyboardKey.Enter"
@@ -61,7 +61,7 @@
 {
 
     [CascadingParameter]
-    public required OverlaySearchContext SearchContext { get; set; }
+    public OverlaySearchContext? SearchContext { get; set; }
 
     [Parameter]
     public required IGameEntity Model { get; set; }

@@ -14,19 +14,6 @@ public class GameItem(int id, string fullName, GameCompany manufacturer, GamePro
     public GameCompany Manufacturer
         => manufacturer;
 
-    public override IEnumerable<SearchableTrait> SearchableAttributes
-    {
-        get
-        {
-            yield return new SearchableName(fullName);
-            yield return new SearchableManufacturer(manufacturer);
-            foreach (var searchableAttribute in base.SearchableAttributes)
-            {
-                yield return searchableAttribute;
-            }
-        }
-    }
-
     public override GameEntityName Name
         => new(
             GameEntityName.ReferenceTo(category),
@@ -47,6 +34,16 @@ public class GameItem(int id, string fullName, GameCompany manufacturer, GamePro
 
     public void UpdateSalePrices(Bounds<PriceTag> newPrices)
         => LatestSalePrices = newPrices;
+
+    protected override IEnumerable<SearchableTrait> CollectSearchableTraits()
+    {
+        yield return new SearchableName(fullName);
+        yield return new SearchableManufacturer(manufacturer);
+        foreach (var searchableAttribute in base.CollectSearchableTraits())
+        {
+            yield return searchableAttribute;
+        }
+    }
 
     public class TraitCollection : IEnumerable<GameItemTrait>
     {

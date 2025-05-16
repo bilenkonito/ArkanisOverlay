@@ -1,6 +1,9 @@
 @using System.Globalization
-@using Arkanis.Common.Extensions
+@using Arkanis.Overlay.Common.Abstractions
+@using Arkanis.Overlay.Common.Extensions
+@using Arkanis.Overlay.Common.Models
 @inject IUserPreferencesManager UserPreferencesManager
+@inject IAppVersionProvider VersionProvider
 
 <MudDialog>
     <TitleContent>
@@ -15,19 +18,49 @@
                 <MudItem xs="12" sm="6">
                     <MudSwitch
                         @bind-Value="@Preferences.TerminateOnGameExit"
+                        @bind-Value:after="@ValidateAsync"
                         Color="@Color.Success"
                         Label="Terminate on game exit"/>
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudSwitch
                         @bind-Value="@Preferences.AutoStartWithBoot"
+                        @bind-Value:after="@ValidateAsync"
                         Color="@Color.Success"
                         Label="Auto-start on system boot"/>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="@UpdateChannel"
+                               @bind-Value="@Preferences.UpdateChannel"
+                               @bind-Value:after="@ValidateAsync"
+                               Label="Update channel"
+                               Adornment="@Adornment.Start"
+                               AdornmentIcon="@MaterialSymbols.Outlined.SystemUpdateAlt"
+                               Text="@(Preferences.UpdateChannel.Name)"
+                               Required
+                               Dense>
+                        @foreach (var channel in UpdateChannel.All)
+                        {
+                            <MudSelectItem Value="@channel">
+                                @channel.Name
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                    @if (UserPreferencesManager.CurrentPreferences.UpdateChannel != Preferences.UpdateChannel)
+                    {
+                        <MudText Typo="@Typo.caption" Color="@Color.Warning" Inline="false">
+                            App restart is necessary to correctly apply
+                        </MudText>
+                    }
+                    <MudText Typo="@Typo.caption" Class="text-secondary">
+                        Current version is @VersionProvider.CurrentVersion
+                    </MudText>
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudStack Spacing="0">
                         <MudSwitch
                             @bind-Value="@Preferences.DisableAnalytics"
+                            @bind-Value:after="@ValidateAsync"
                             Color="@Color.Error"
                             Label="Disable usage analytics"/>
                         @if (UserPreferencesManager.CurrentPreferences.DisableAnalytics != Preferences.DisableAnalytics)
@@ -44,6 +77,7 @@
                 <MudItem xs="12" sm="6">
                     <MudSwitch
                         @bind-Value="@Preferences.BlurBackground"
+                        @bind-Value:after="@ValidateAsync"
                         Color="@Color.Success"
                         Label="Blur overlay background"/>
                 </MudItem>
@@ -56,6 +90,7 @@
                                      Adornment="@Adornment.Start"
                                      AdornmentIcon="@MaterialSymbols.Outlined.Language"
                                      @bind-Value="@Preferences.CustomCultureInfo"
+                                     @bind-Value:after="@ValidateAsync"
                                      Text="@Preferences.CustomCultureInfo?.EnglishName"
                                      HelperText="@CultureSelectHelpText"
                                      SearchFunc="SearchCulture"
@@ -64,9 +99,7 @@
                                      Clearable
                                      Dense>
                         <ItemTemplate Context="culture">
-                            <MudSelectItem Value="@culture">
-                                @culture.EnglishName <code>(@culture.ThreeLetterISOLanguageName)</code>
-                            </MudSelectItem>
+                            @culture.EnglishName <code>(@culture.ThreeLetterISOLanguageName)</code>
                         </ItemTemplate>
                     </MudAutocomplete>
                 </MudItem>
@@ -76,14 +109,13 @@
                                      Adornment="@Adornment.Start"
                                      AdornmentIcon="@MaterialSymbols.Outlined.Globe"
                                      @bind-Value="@Preferences.CustomRegionInfo"
+                                     @bind-Value:after="@ValidateAsync"
                                      SearchFunc="SearchRegion"
                                      ToStringFunc="@(region => region?.EnglishName)"
                                      Clearable
                                      Dense>
                         <ItemTemplate Context="region">
-                            <MudSelectItem Value="@region">
-                                @region.EnglishName <code>(@region.ThreeLetterISORegionName)</code>
-                            </MudSelectItem>
+                            @region.EnglishName <code>(@region.ThreeLetterISORegionName)</code>
                         </ItemTemplate>
                     </MudAutocomplete>
                 </MudItem>
@@ -91,7 +123,7 @@
                     <KeyboardShortcutInput
                         Label="Overlay toggle shortcut"
                         @bind-Value="@Preferences.LaunchShortcut"
-                        @bind-Value:after="@_form!.Validate"
+                        @bind-Value:after="@ValidateAsync"
                         Required/>
                 </MudItem>
             </MudGrid>
@@ -148,17 +180,22 @@
 
     private async Task SubmitAsync()
     {
-        if (_form is not null)
+        await ValidateAsync();
+        if (!IsValid)
         {
-            await _form.Validate();
-            if (!IsValid)
-            {
-                return;
-            }
+            return;
         }
 
         await UserPreferencesManager.SaveAndApplyUserPreferencesAsync(Preferences);
         MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private async Task ValidateAsync()
+    {
+        if (_form is not null)
+        {
+            await _form.Validate();
+        }
     }
 
     private void Cancel()
@@ -182,6 +219,7 @@
         {
             FullScreen = true,
             CloseOnEscapeKey = true,
+            NoHeader = true,
         };
 
         return ShowAsync(dialogService, dialogOptions);

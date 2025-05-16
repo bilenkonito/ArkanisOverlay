@@ -1,9 +1,15 @@
 <Project>
     <PropertyGroup>
         <LangVersion>preview</LangVersion>
+        <WarningsAsErrors>true</WarningsAsErrors>
         <NoWarn>
             CA1848; <!-- For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogError(ILogger, string?, params object?[])' -->
+            CA1826; <!-- Do not use Enumerable methods on indexable collections. Instead use the collection directly. -->
         </NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Copyright>Copyright © $([System.DateTime]::Now.Year) FatalMerlin, TheKronnY and contributors</Copyright>
     </PropertyGroup>
 
     <PropertyGroup>

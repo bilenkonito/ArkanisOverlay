@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -eEuo pipefail
 
+THIS_DIR="$(dirname "$(realpath "$0")")"
+
+. "${THIS_DIR}/common.sh"
+
 ### publishCmd
 #
 #| Command property | Description                                                                                                                                                                                                                                        |
@@ -9,4 +13,5 @@ set -eEuo pipefail
 #| `stdout`         | The `release` information can be written to `stdout` as parseable JSON (for example `{"name": "Release name", "url": "http://url/release/1.0.0"}`). If the command write non parseable JSON to `stdout` no `release` information will be returned. |
 #| `stderr`         | Can be used for logging.                                                                                                                                                                                                                           |
 
-exit 0
+run_sub "$THIS_DIR/release-31-publish-win64-velopack.sh"
+run_sub "$THIS_DIR/release-32-publish-server.sh"

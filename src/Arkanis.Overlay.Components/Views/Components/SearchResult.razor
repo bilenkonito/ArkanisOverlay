@@ -53,7 +53,7 @@
     private IAsyncDisposable? _registration;
 
     [CascadingParameter]
-    public required QuickAccessContainer Container { get; set; }
+    public QuickAccessContainer? Container { get; set; }
 
     [Parameter]
     [EditorRequired]
@@ -65,7 +65,10 @@
         if (firstRender)
         {
             var updateCallback = EventCallback.Factory.Create<QuickAccessContainer.ItemInfo>(this, OnVisibilityChanged);
-            _registration = await Container.RegisterAsync(_focusRegion!.ContainerElement, updateCallback);
+            if (Container is not null && _focusRegion is not null)
+            {
+                _registration = await Container.RegisterAsync(_focusRegion.ContainerElement, updateCallback);
+            }
         }
     }
 

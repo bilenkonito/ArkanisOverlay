@@ -16,19 +16,6 @@ public abstract class GameVehicle(
     public GameCompany Manufacturer
         => manufacturer;
 
-    public override IEnumerable<SearchableTrait> SearchableAttributes
-    {
-        get
-        {
-            yield return new SearchableName(fullName);
-            yield return new SearchableManufacturer(manufacturer);
-            foreach (var searchableAttribute in base.SearchableAttributes)
-            {
-                yield return searchableAttribute;
-            }
-        }
-    }
-
     public override GameEntityName Name { get; } = new(
         new GameEntityName.CompanyReference(manufacturer),
         new GameEntityName.NameWithShortVariant(fullName, shortName)
@@ -46,6 +33,16 @@ public abstract class GameVehicle(
 
     public void UpdateRentPrices(Bounds<PriceTag> newPrices)
         => LatestRentPrices = newPrices;
+
+    protected override IEnumerable<SearchableTrait> CollectSearchableTraits()
+    {
+        yield return new SearchableName(fullName);
+        yield return new SearchableManufacturer(manufacturer);
+        foreach (var searchableAttribute in base.CollectSearchableTraits())
+        {
+            yield return searchableAttribute;
+        }
+    }
 }
 
 public class GameSpaceShip(int id, string fullName, string shortName, GameCompany manufacturer) : GameVehicle(

@@ -842,6 +842,11 @@
         "resolved": "4.4.0",
         "contentHash": "QX3bsK9oFeUXk8tFsc9NkI6NnCr8Ar/ex027p+ZZ/jdLCdX2RlryDtxUqZW5j45NVwn4E4Z4hzupsoMQd6Yxtg=="
       },
+      "NuGet.Versioning": {
+        "type": "Transitive",
+        "resolved": "6.12.1",
+        "contentHash": "fJ6rFYANDnohFsdpaY79FvrJxI6murmoOxXz6nZlf819F48+IBKMnAIg3oIBRtZq5y498ObMtKnro5IitvizUg=="
+      },
       "Quartz": {
         "type": "Transitive",
         "resolved": "3.14.0",
@@ -946,7 +951,7 @@
         "resolved": "8.0.0",
         "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
       },
-      "arkanis.common": {
+      "arkanis.overlay.common": {
         "type": "Project",
         "dependencies": {
           "FluentValidation": "[11.11.0, )",
@@ -960,28 +965,29 @@
           "Microsoft.Extensions.Logging.Abstractions": "[8.0.3, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[8.0.0, )",
           "MoreAsyncLINQ": "[0.8.0, )",
+          "NuGet.Versioning": "[6.12.1, )",
           "Riok.Mapperly": "[4.2.0, )",
           "morelinq": "[4.4.0, )"
-        }
-      },
-      "arkanis.external.uex": {
-        "type": "Project",
-        "dependencies": {
-          "Arkanis.Common": "[1.0.0, )",
-          "Microsoft.Extensions.Http": "[8.0.1, )"
         }
       },
       "arkanis.overlay.domain": {
         "type": "Project",
         "dependencies": {
-          "Arkanis.Common": "[1.0.0, )"
+          "Arkanis.Overlay.Common": "[1.0.0, )"
+        }
+      },
+      "arkanis.overlay.external.uex": {
+        "type": "Project",
+        "dependencies": {
+          "Arkanis.Overlay.Common": "[1.0.0, )",
+          "Microsoft.Extensions.Http": "[8.0.1, )"
         }
       },
       "arkanis.overlay.infrastructure": {
         "type": "Project",
         "dependencies": {
-          "Arkanis.External.UEX": "[1.0.0, )",
           "Arkanis.Overlay.Domain": "[1.0.0, )",
+          "Arkanis.Overlay.External.UEX": "[1.0.0, )",
           "Microsoft.AspNetCore.Http.Extensions": "[2.3.0, )",
           "Microsoft.Data.Sqlite": "[8.0.0, )",
           "Microsoft.EntityFrameworkCore.Sqlite": "[8.0.13, )",

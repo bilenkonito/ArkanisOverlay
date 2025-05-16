@@ -6,18 +6,6 @@ using Search;
 public class GameItemTrait(int id, int itemId, string fullName)
     : GameEntity(UexApiGameEntityId.Create<GameItemTrait>(id), GameEntityCategory.ItemTrait)
 {
-    public override IEnumerable<SearchableTrait> SearchableAttributes
-    {
-        get
-        {
-            yield return new SearchableName($"{Name} {Content}");
-            foreach (var searchableAttribute in base.SearchableAttributes)
-            {
-                yield return searchableAttribute;
-            }
-        }
-    }
-
     public UexId<GameItem> ItemId { get; } = UexApiGameEntityId.Create<GameItem>(itemId);
 
     public required string Content { get; init; }
@@ -31,6 +19,15 @@ public class GameItemTrait(int id, int itemId, string fullName)
 
     public override GameEntityName Name
         => new(new GameEntityName.Name(fullName));
+
+    protected override IEnumerable<SearchableTrait> CollectSearchableTraits()
+    {
+        yield return new SearchableName($"{Name} {Content}");
+        foreach (var searchableAttribute in base.CollectSearchableTraits())
+        {
+            yield return searchableAttribute;
+        }
+    }
 
     public GameEntityName.PropertyItem ToNamePart()
         => new(fullName, Content);

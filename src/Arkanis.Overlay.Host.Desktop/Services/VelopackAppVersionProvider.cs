@@ -1,0 +1,13 @@
+namespace Arkanis.Overlay.Host.Desktop.Services;
+
+using Common.Abstractions;
+using NuGet.Versioning;
+
+public class VelopackAppVersionProvider(ArkanisOverlayUpdateManager updateManager) : IAppVersionProvider
+{
+    public SemanticVersion CurrentVersion
+        => updateManager.CurrentVersion ?? new SemanticVersion(0, 0, 1, "unknown");
+
+    public string CurrentChannel
+        => updateManager.CurrentChannel;
+}
