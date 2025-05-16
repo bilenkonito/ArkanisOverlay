@@ -55,7 +55,7 @@ The overlay is currently in **active development** and driven by a clear mission
   — Find general and commonly-needed game information fast — no more alt-tabbing to search websites.
 
 - **Integrated Community Data**
-  — Seamlessly connected with the [UEX Corporation](https://uexcorp.space) and other community tools _(in the future)_
+  — Seamlessly connected with the [UEX Corporation][uex] and other community tools _(in the future)_
   to enrich in-game decision-making.
 
 - **Automatic Startup**
@@ -73,7 +73,7 @@ The overlay is currently in **active development** and driven by a clear mission
   — The project is open source, allowing anyone to contribute, suggest features, and report bugs.
   We welcome all contributions, whether big or small.
   Check out the [contributing guidelines](CONTRIBUTING.md) for more information on how to get involved
-  and let us know you are up for the challenge by joining our [Discord server](https://join.arkanis.cc)
+  and let us know you are up for the challenge by joining our [Discord server][arkanis-discord]
   or opening [a new discussion on GitHub](https://github.com/ArkanisCorporation/ArkanisOverlay/discussions/categories/ideas).
 
 ## 🖥️ Tech Stack
@@ -90,7 +90,7 @@ The overlay is currently in **active development** and driven by a clear mission
 ---
 
 > [!TIP]
-> You can check out the in-browser demo of the overlay at [overlay.arkanis.cc](https://overlay.arkanis.cc)!
+> You can check out the in-browser demo of the overlay at [overlay.arkanis.cc][overlay-demo]!
 > It features an identical UI and functionality as the in-game version, just without the game integration.
 
 ## 🛠️ Getting Started
@@ -102,8 +102,8 @@ This section provides a quick overview of how to install and use the Arkanis Ove
 Follow these steps to install the Arkanis Overlay application on your Windows system:
 
 1. **Download** an installer for the latest (stable) release from:
-    - the [Overlay in-browser demo page](https://overlay.arkanis.cc)
-    - or the [Arkanis Overlay homepage](https://arkanis.cc/overlay)
+    - the [Overlay in-browser demo page][overlay-demo]
+    - or the [Arkanis Overlay homepage][overlay-homepage]
     - or the [GitHub releases page](https://github.com/ArkanisCorporation/ArkanisOverlay/releases)
 2. **Run the installer** to automatically install the application with a self-updater.
    <br>Windows may prompt you with a UAC (User Account Control) dialog to confirm the installation.
@@ -163,7 +163,7 @@ We're dreaming big — here's what's ahead:
 
 ### 🔗 Integrations & Tools
 
-- [x] Game entity search sourced from [UEX Corporation](https://uexcorp.space/)
+- [x] Game entity search sourced from [UEX Corporation][uex]
 - [ ] [UEX CLI](https://github.com/UEXCorp/UEX-CLI) and MFD screen integration
 - [ ] Embedded tools and services _(permissions required)_
     - [ ] [SPViewer](https://www.spviewer.eu/)
@@ -275,3 +275,7 @@ Let’s make Star Citizen a little smoother — together.
 
 ---
 
+[overlay-demo]: https://overlay.arkanis.cc
+[overlay-homepage]: https://arkanis.cc/overlay
+[arkanis-discord]: https://join.arkanis.cc
+[uex]: https://uexcorp.space
