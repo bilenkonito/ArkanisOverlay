@@ -1,6 +1,9 @@
 {
     "branches": [
-        "release/stable",
+        {
+            "name": "release/stable",
+            "channel": "stable"
+        },
         {
             "name": "release/nightly",
             "channel": "nightly",
