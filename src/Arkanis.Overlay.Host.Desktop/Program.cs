@@ -1,6 +1,5 @@
 namespace Arkanis.Overlay.Host.Desktop;
 
-using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using Common;
@@ -34,11 +33,7 @@ using Workers;
 // https://github.com/dapplo/Dapplo.Microsoft.Extensions.Hosting/blob/master/samples/Dapplo.Hosting.Sample.WpfDemo/Program.cs#L48
 public static class Program
 {
-    private static readonly IUpdateSource UpdateSource = new GithubSource(
-        ApplicationConstants.GitHubRepositoryUrl,
-        ApplicationConstants.GitHubReleaseToken,
-        true
-    );
+    private static readonly IUpdateSource UpdateSource = new GithubSource(ApplicationConstants.GitHubRepositoryUrl, null, false);
 
     [STAThread]
     public static async Task Main(string[] args)
