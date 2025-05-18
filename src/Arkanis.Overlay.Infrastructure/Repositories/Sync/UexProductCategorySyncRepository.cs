@@ -23,6 +23,6 @@ internal class UexProductCategorySyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(CategoryDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameProductCategory>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 }

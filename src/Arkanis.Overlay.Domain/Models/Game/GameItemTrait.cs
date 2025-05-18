@@ -3,6 +3,13 @@ namespace Arkanis.Overlay.Domain.Models.Game;
 using Enums;
 using Search;
 
+/// <summary>
+///     This is an item attribute in the context of the UEX API.
+///     The "Trait" suffix was selected to differentiate it from the conventional "Attribute" class suffix in C#.
+/// </summary>
+/// <param name="id">Attribute ID</param>
+/// <param name="itemId">Referenced item ID</param>
+/// <param name="fullName">Name of the trait</param>
 public class GameItemTrait(int id, int itemId, string fullName)
     : GameEntity(UexApiGameEntityId.Create<GameItemTrait>(id), GameEntityCategory.ItemTrait)
 {

@@ -10,7 +10,7 @@ public static class DependencyInjection
         => services.Configure<T>(instance => instance.Bind(configuration));
 
     public static IServiceCollection Alias<TAlias, TService>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Singleton)
-        where TService : TAlias
+        where TService : class, TAlias
     {
         var serviceDescriptor = ServiceDescriptor.Describe(
             typeof(TAlias),
@@ -18,6 +18,7 @@ public static class DependencyInjection
             lifetime
         );
         services.Add(serviceDescriptor);
+
         return services;
     }
 
@@ -32,12 +33,12 @@ public static class DependencyInjection
             typeof(TAlias),
             provider =>
             {
-                var requiredService = provider.GetRequiredService<TRegistered>();
+                var requiredService = provider.GetService<TRegistered>();
                 if (requiredService is not TService service)
                 {
                     throw new InvalidOperationException(
-                        $"Unable to create alias {typeof(TAlias)} for {typeof(TService)} registered as {typeof(TRegistered)},"
-                        + $" because the actually registered service {requiredService.GetType()} is not assignable to {typeof(TService)}."
+                        $"Unable to resolve aliased service {typeof(TAlias)} from {typeof(TService)} registered as {typeof(TRegistered)},"
+                        + $" because the actual service instance {requiredService?.GetType().ToString() ?? "<null>"} is not assignable to {typeof(TService)}."
                     );
                 }
 
@@ -46,6 +47,7 @@ public static class DependencyInjection
             lifetime
         );
         services.Add(serviceDescriptor);
+
         return services;
     }
 }
