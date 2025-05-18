@@ -3,43 +3,42 @@ namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders.UEX;
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
 using Domain.Models;
-using Domain.Models.Game;
 using Domain.Models.Trade;
+using Repositories.Local.Specialised;
 
 public class UexRentPriceProvider(
     ServiceDependencyResolver resolver,
-    IGameVehicleRentalPricingRepository vehiclePriceRepository
+    GameRentalPricingRepositoryAggregate pricingRepositoryAggregate
 ) : UexPriceProviderBase, IRentPriceProvider
 {
     public async ValueTask UpdatePriceTagAsync(IGameRentable gameEntity)
-        => await (gameEntity switch
-        {
-            GameVehicle item => UpdateVehicleAsync(item),
-            _ => ValueTask.CompletedTask,
-        });
+    {
+        var bounds = await GetBoundsAsync(gameEntity, null);
+        gameEntity.UpdateRentPrices(bounds);
+    }
 
     public async ValueTask<Bounds<PriceTag>> GetPriceTagAtAsync(IGameRentable gameEntity, IGameLocation gameLocation)
-        => gameEntity switch
+        => await GetBoundsAsync(gameEntity, gameLocation);
+
+    private async ValueTask<Bounds<PriceTag>> GetBoundsAsync(IGameRentable gameEntity, IGameLocation? gameLocation)
+    {
+        var fallback = gameLocation switch
         {
-            GameVehicle vehicle => await GetVehiclePriceTagAsync(vehicle, gameLocation),
-            _ => Bounds.All(PriceTag.Unknown),
+            not null => PriceTag.MissingFor(gameLocation),
+            _ => PriceTag.Unknown,
         };
 
-    private async ValueTask<Bounds<PriceTag>> GetVehiclePriceTagAsync(GameVehicle gameEntity, IGameLocation gameLocation)
-    {
-        var prices = await vehiclePriceRepository.GetRentalPricesForVehicleAsync(gameEntity.Id);
-        var pricesAtLocation = prices.Where(x => gameLocation.IsOrContains(x.Terminal)).ToList();
-        return CreateBoundsFrom(pricesAtLocation, price => price.Price, fallback: PriceTag.MissingFor(gameLocation));
+        var prices = await pricingRepositoryAggregate.GetAllForAsync(gameEntity.Id);
+        var filtered = gameLocation switch
+        {
+            not null => prices.Where(price => price is IGameLocatedAt locatedAt && gameLocation.IsOrContains(locatedAt.Location)).ToList(),
+            _ => prices,
+        };
+
+        return CreateBoundsFrom(filtered, price => price.Price, fallback);
     }
 
-    private async ValueTask UpdateVehicleAsync(GameVehicle gameEntity)
-    {
-        var prices = await vehiclePriceRepository.GetRentalPricesForVehicleAsync(gameEntity.Id);
-        var priceBounds = CreateBoundsFrom(prices, price => price.Price);
-        gameEntity.UpdateRentPrices(priceBounds);
-    }
-
-    protected override async Task InitializeAsyncCore(CancellationToken cancellationToken)
-        => await resolver.DependsOn(this, vehiclePriceRepository)
+    protected override Task InitializeAsyncCore(CancellationToken cancellationToken)
+        => resolver.DependsOn(this, pricingRepositoryAggregate)
             .WaitUntilReadyAsync(cancellationToken);
 }

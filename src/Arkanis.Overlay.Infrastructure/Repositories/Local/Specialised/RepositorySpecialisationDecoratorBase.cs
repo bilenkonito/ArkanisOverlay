@@ -8,8 +8,7 @@ using Services;
 
 /// <summary>
 ///     A base class for all repository decorators.
-///     Simplifies the implementation of the decorator pattern wrapping the other functionality of the decorated
-///     repository.
+///     Simplifies the implementation of the decorator pattern wrapping the other functionality of the decorated repository.
 /// </summary>
 /// <param name="decoratedRepository">The repository to be decorated</param>
 /// <typeparam name="T">Target entity type</typeparam>

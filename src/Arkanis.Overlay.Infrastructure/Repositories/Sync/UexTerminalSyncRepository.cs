@@ -32,6 +32,6 @@ internal class UexTerminalSyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(UniverseTerminalDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameTerminal>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 }

@@ -1,5 +1,7 @@
 namespace Arkanis.Overlay.External.UEX;
 
+using System.Net.Http.Headers;
+
 internal partial class UexGameApi
 {
     public UexGameApi(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
@@ -34,6 +36,9 @@ internal partial class UexMarketplaceApi
 {
     public UexMarketplaceApi(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
         => BaseUrl = UexConstants.BaseUrl;
+
+    partial void PrepareRequest(HttpClient client, HttpRequestMessage request, string url)
+        => client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "bf2b6a87035311d6f39385efab26c65a4a8519ef");
 }
 
 internal partial class UexOrganizationsApi

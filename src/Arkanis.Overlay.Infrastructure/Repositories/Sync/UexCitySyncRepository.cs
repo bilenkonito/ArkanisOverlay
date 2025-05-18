@@ -34,6 +34,6 @@ internal class UexCitySyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(UniverseCityDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameCity>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 }

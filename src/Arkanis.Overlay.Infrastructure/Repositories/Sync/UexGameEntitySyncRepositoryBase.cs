@@ -31,12 +31,11 @@ internal abstract class UexGameEntitySyncRepositoryBase<TSource, TDomain>(
     where TSource : class
     where TDomain : class, IGameEntity
 {
+    protected UexApiDtoMapper Mapper { get; } = mapper;
     protected ILogger Logger { get; } = logger;
 
     protected virtual double CacheTimeFactor
         => 1.0;
-
-    public DateTimeOffset CachedUntil { get; set; }
 
     public async ValueTask<GameEntitySyncData<TDomain>> GetAllAsync(InternalDataState internalDataState, CancellationToken cancellationToken = default)
     {
@@ -96,24 +95,6 @@ internal abstract class UexGameEntitySyncRepositoryBase<TSource, TDomain>(
             : null;
     }
 
-    public async ValueTask<InternalDataState> CreateAppDataStateFor(ExternalServiceState localDataState, CancellationToken cancellationToken = default)
-    {
-        var externalDataState = await stateProvider.LoadCurrentServiceStateAsync(cancellationToken);
-        return localDataState switch
-        {
-            ServiceUnavailableState => DataMissing.Instance,
-            ServiceAvailableState current => externalDataState switch
-            {
-                ServiceAvailableState external => new DataCached(current, DateTimeOffset.UtcNow, CachedUntil)
-                {
-                    RefreshRequired = current.Version != external.Version || DateTimeOffset.UtcNow < CachedUntil,
-                },
-                _ => new DataLoaded(current, current.UpdatedAt),
-            },
-            _ => throw new NotSupportedException($"Unable to determine app data state from current game data state: {localDataState}"),
-        };
-    }
-
     private LoadedSyncData<TDomain> CreateSyncData(UexApiResponse<ICollection<TSource>> response, ServiceAvailableState serviceState)
     {
         var responseHeaders = response.CreateResponseHeaders();
@@ -163,7 +144,7 @@ internal abstract class UexGameEntitySyncRepositoryBase<TSource, TDomain>(
     {
         try
         {
-            var domainEntity = await mapper.ToGameEntityAsync(source);
+            var domainEntity = await Mapper.ToGameEntityAsync(source);
             if (domainEntity is not TDomain resultEntity)
             {
                 throw new ObjectMappingException($"Expected {typeof(TSource)} to map to {typeof(TDomain)}, got {domainEntity.GetType()} instead.", null);

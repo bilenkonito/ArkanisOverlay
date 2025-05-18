@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders.UEX;
 
+using Domain.Abstractions.Game;
 using Domain.Models;
 using Domain.Models.Game;
 using Domain.Models.Trade;
@@ -7,7 +8,7 @@ using Domain.Models.Trade;
 public abstract class UexPriceProviderBase : SelfInitializableServiceBase
 {
     protected static Bounds<PriceTag> CreateBoundsFrom<T>(ICollection<T> prices, Func<T, GameCurrency> priceSelector, PriceTag? fallback = null)
-        where T : GameEntityPricing
+        where T : IGameEntityPrice
     {
         var minDto = prices.Where(dto => priceSelector(dto).Amount > 0).MinBy(priceSelector);
         var maxDto = prices.Where(dto => priceSelector(dto).Amount > 0).MaxBy(priceSelector);
@@ -20,15 +21,28 @@ public abstract class UexPriceProviderBase : SelfInitializableServiceBase
 
         fallback ??= PriceTag.Unknown;
         return new Bounds<PriceTag>(
-            minDto is not null
-                ? new KnownPriceTag(priceSelector(minDto), minDto.Terminal, minDto.UpdatedAt)
-                : fallback,
-            maxDto is not null
-                ? new KnownPriceTag(priceSelector(maxDto), maxDto.Terminal, maxDto.UpdatedAt)
-                : fallback,
+            CreatePriceTag(minDto),
+            CreatePriceTag(maxDto),
             avgValue is not null
                 ? new AggregatePriceTag(new GameCurrency(avgValue.Value))
                 : fallback
         );
+
+        PriceTag CreatePriceTag(T? gameEntityPrice)
+        {
+            if (gameEntityPrice is null)
+            {
+                return fallback;
+            }
+
+            var price = priceSelector(gameEntityPrice);
+            return gameEntityPrice switch
+            {
+                GameEntityTerminalPrice context => new KnownPriceTagWithLocation(price, context.Terminal, context.UpdatedAt),
+                GameEntityPrice context => new KnownPriceTag(price, context.UpdatedAt),
+                not null => new KnownPriceTag(price, DateTimeOffset.UnixEpoch),
+                _ => fallback,
+            };
+        }
     }
 }

@@ -3,8 +3,10 @@
         <LangVersion>preview</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
         <NoWarn>
+            $(NoWarn);
             CA1848; <!-- For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogError(ILogger, string?, params object?[])' -->
             CA1826; <!-- Do not use Enumerable methods on indexable collections. Instead use the collection directly. -->
+            CA1822; <!-- Member 'PrepareRequest' does not access instance data and can be marked as static. -->
         </NoWarn>
     </PropertyGroup>
 
