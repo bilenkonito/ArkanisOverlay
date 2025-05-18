@@ -1,4 +1,4 @@
-namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders.UEX;
+namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders;
 
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
@@ -7,12 +7,12 @@ using Domain.Models.Game;
 using Domain.Models.Trade;
 using Repositories.Local.Specialised;
 
-public class UexMarketplacePriceProvider(
+public class MarketplacePriceProvider(
     ServiceDependencyResolver resolver,
     GameMarketPricingRepositoryAggregate pricingRepositoryAggregate
-) : UexPriceProviderBase, IMarketPriceProvider
+) : PriceProviderBase, IMarketPriceProvider
 {
-    public async ValueTask<Bounds<PriceTag>> GetPriceTagAsync(IGameEntity gameEntity)
+    public async ValueTask<Bounds<PriceTag>> GetMarketPriceTagAsync(IGameEntity gameEntity)
     {
         var prices = await pricingRepositoryAggregate.GetAllForAsync(gameEntity.Id);
         return CreateBoundsFrom(

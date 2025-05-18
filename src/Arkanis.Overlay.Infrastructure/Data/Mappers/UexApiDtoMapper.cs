@@ -43,6 +43,7 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
             CommodityPriceBriefDTO commodityPrice => ToGameEntity(commodityPrice),
             VehiclePurchasePriceBriefDTO vehiclePurchasePrice => ToGameEntity(vehiclePurchasePrice),
             VehicleRentalPriceBriefDTO vehicleRentalPrice => ToGameEntity(vehicleRentalPrice),
+            MarketplaceListingDTO marketplaceListing => ToGameEntity(marketplaceListing),
             _ => throw new ArgumentOutOfRangeException(nameof(source), source, "Cannot map to game entity from unsupported source type."),
         };
 
@@ -236,6 +237,19 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     {
         var result = MapInternal(source);
         CacheGameEntityId<IPriceOf<GameVehicle, GameEntityRentalPrice>>(source.Id, result);
+        return result;
+    }
+
+    [UserMapping(Default = true)]
+    private GameEntityPrice ToGameEntity(MarketplaceListingDTO source)
+    {
+        GameEntityMarketPrice result = source.Operation switch
+        {
+            "buy" => MapInternalSalePrice(source), // someone wants to buy on the marketplace, so the price is the sale price
+            "sell" => MapInternalPurchasePrice(source), // someone wants to sell on the marketplace, so the price is the purchase price
+            _ => throw new ArgumentOutOfRangeException(nameof(source), source.Operation, "Unable to select marketplace price type based on operation."),
+        };
+        CacheGameEntityId<IPriceOf<GameItem, GameEntityMarketPrice>>(source.Id, result);
         return result;
     }
 

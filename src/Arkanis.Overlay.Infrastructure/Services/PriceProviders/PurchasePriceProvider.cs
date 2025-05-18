@@ -1,4 +1,4 @@
-namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders.UEX;
+namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders;
 
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
@@ -6,10 +6,10 @@ using Domain.Models;
 using Domain.Models.Trade;
 using Repositories.Local.Specialised;
 
-public class UexPurchasePriceProvider(
+public class PurchasePriceProvider(
     ServiceDependencyResolver resolver,
     GamePurchasePricingRepositoryAggregate pricingRepositoryAggregate
-) : UexPriceProviderBase, IPurchasePriceProvider
+) : PriceProviderBase, IPurchasePriceProvider
 {
     public async ValueTask UpdatePriceTagAsync(IGamePurchasable gameEntity)
     {

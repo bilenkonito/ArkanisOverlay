@@ -1,11 +1,11 @@
-namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders.UEX;
+namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders;
 
 using Domain.Abstractions.Game;
 using Domain.Models;
 using Domain.Models.Game;
 using Domain.Models.Trade;
 
-public abstract class UexPriceProviderBase : SelfInitializableServiceBase
+public abstract class PriceProviderBase : SelfInitializableServiceBase
 {
     protected static Bounds<PriceTag> CreateBoundsFrom<T>(ICollection<T> prices, Func<T, GameCurrency> priceSelector, PriceTag? fallback = null)
         where T : IGameEntityPrice

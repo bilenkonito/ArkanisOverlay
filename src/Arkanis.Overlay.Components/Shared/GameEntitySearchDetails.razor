@@ -1,6 +1,7 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Models
 @using Arkanis.Overlay.Domain.Models.Trade
+@inject IMarketPriceProvider MarketPriceProvider
 @inject IPurchasePriceProvider PurchasePriceProvider
 @inject ISalePriceProvider SalePriceProvider
 @inject IRentPriceProvider RentPriceProvider
@@ -32,6 +33,18 @@
             Model="@RentPriceTag?.Min"
             Color="@UiConstants.RentColor"/>
     }
+    @if (MarketPriceTag?.Min != PriceTag.Unknown || MarketPriceTag?.Max != PriceTag.Unknown)
+    {
+        <MudStack Spacing="0">
+            <PriceTagInfo
+                Label="Market"
+                Model="@MarketPriceTag?.Min"
+                Color="@UiConstants.PurchaseColor"/>
+            <PriceTagInfo
+                Model="@MarketPriceTag?.Max"
+                Color="@UiConstants.SellColor"/>
+        </MudStack>
+    }
 </MudStack>
 
 @code
@@ -42,6 +55,8 @@
 
     [Parameter]
     public required IGameEntity Model { get; set; }
+
+    private Bounds<PriceTag>? MarketPriceTag { get; set; }
 
     private Bounds<PriceTag>? PurchasePriceTag { get; set; }
 
@@ -55,6 +70,8 @@
         SalePriceTag = null;
         RentPriceTag = null;
         await base.OnParametersSetAsync();
+
+        MarketPriceTag ??= await MarketPriceProvider.GetMarketPriceTagAsync(Model);
 
         if (Model is IGamePurchasable purchasable)
         {

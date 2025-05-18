@@ -46,6 +46,10 @@ public static class DependencyInjection
             .Decorate<IGameEntityRepository<GameEntityRentalPrice>>(inner => new UexRentalPricingRepositorySpecialisationDecorator(inner))
             .AliasVia<IGameRentalPricingRepository, IGameEntityRepository<GameEntityRentalPrice>, UexRentalPricingRepositorySpecialisationDecorator>();
 
+        services
+            .Decorate<IGameEntityRepository<GameEntityMarketPrice>>(inner => new UexMarketPricingRepositorySpecialisationDecorator(inner))
+            .AliasVia<IGameMarketPricingRepository, IGameEntityRepository<GameEntityMarketPrice>, UexMarketPricingRepositorySpecialisationDecorator>();
+
         // decorating each trade repository with purchase and sale repository interfaces
         //   then registering each decorated repository under the appropriate interface
         services

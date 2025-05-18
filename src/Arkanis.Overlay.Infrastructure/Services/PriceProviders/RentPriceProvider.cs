@@ -1,4 +1,4 @@
-namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders.UEX;
+namespace Arkanis.Overlay.Infrastructure.Services.PriceProviders;
 
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
@@ -6,21 +6,21 @@ using Domain.Models;
 using Domain.Models.Trade;
 using Repositories.Local.Specialised;
 
-public class UexSalePriceProvider(
+public class RentPriceProvider(
     ServiceDependencyResolver resolver,
-    GameSalePricingRepositoryAggregate pricingRepositoryAggregate
-) : UexPriceProviderBase, ISalePriceProvider
+    GameRentalPricingRepositoryAggregate pricingRepositoryAggregate
+) : PriceProviderBase, IRentPriceProvider
 {
-    public async ValueTask UpdatePriceTagAsync(IGameSellable gameEntity)
+    public async ValueTask UpdatePriceTagAsync(IGameRentable gameEntity)
     {
         var bounds = await GetBoundsAsync(gameEntity, null);
-        gameEntity.UpdateSalePrices(bounds);
+        gameEntity.UpdateRentPrices(bounds);
     }
 
-    public async ValueTask<Bounds<PriceTag>> GetPriceTagAtAsync(IGameSellable gameEntity, IGameLocation gameLocation)
+    public async ValueTask<Bounds<PriceTag>> GetPriceTagAtAsync(IGameRentable gameEntity, IGameLocation gameLocation)
         => await GetBoundsAsync(gameEntity, gameLocation);
 
-    private async ValueTask<Bounds<PriceTag>> GetBoundsAsync(IGameSellable gameEntity, IGameLocation? gameLocation)
+    private async ValueTask<Bounds<PriceTag>> GetBoundsAsync(IGameRentable gameEntity, IGameLocation? gameLocation)
     {
         var fallback = gameLocation switch
         {
