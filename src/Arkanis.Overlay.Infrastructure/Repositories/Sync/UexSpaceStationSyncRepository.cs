@@ -35,6 +35,6 @@ internal class UexSpaceStationSyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(UniverseSpaceStationDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameSpaceStation>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 }

@@ -40,12 +40,22 @@ public class UexGameEntityInMemoryRepository<T>(ILogger<UexGameEntityInMemoryRep
         if (syncData is SyncDataUpToDate<T>)
         {
             logger.LogDebug("Skipping update for {EntityType} entities, already up to date", typeof(T).Name);
+            Initialized();
             return;
         }
 
         if (syncData is not LoadedSyncData<T> loadedSyncData)
         {
-            logger.LogWarning("Unable to perform update of {EntityType} entities: {@SyncData}", typeof(T).Name, syncData);
+            if (IsReady)
+            {
+                logger.LogWarning("Unable to perform update of {EntityType} entities: {@SyncData}", typeof(T).Name, syncData);
+            }
+            else
+            {
+                Initialized();
+                logger.LogError("Unable to perform initial update of {EntityType} entities: {@SyncData}", typeof(T).Name, syncData);
+            }
+
             return;
         }
 

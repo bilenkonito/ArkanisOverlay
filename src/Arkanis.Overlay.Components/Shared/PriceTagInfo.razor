@@ -13,7 +13,10 @@
         <span style="white-space: nowrap">
             @GameCurrency.Symbol @knownPriceTag.Price.Amount.ToMetric(MetricNumeralFormats.WithSpace, 3)
         </span>
-        <GameLocationLabel Model="@knownPriceTag.Location"/>
+        if (Model is KnownPriceTagWithLocation priceTagWithLocation)
+        {
+            <GameLocationLabel Model="@priceTagWithLocation.Location"/>
+        }
     }
     else if (Model is MissingPriceTag missingPriceTag)
     {

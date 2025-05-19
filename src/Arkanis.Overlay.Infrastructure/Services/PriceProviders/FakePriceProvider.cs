@@ -30,4 +30,7 @@ public class FakePriceProvider : IPriceProvider
 
     public Task WaitUntilReadyAsync(CancellationToken cancellationToken = default)
         => Task.CompletedTask;
+
+    public ValueTask<Bounds<PriceTag>> GetMarketPriceTagAsync(IGameEntity gameEntity)
+        => ValueTask.FromResult(Bounds.All(PriceTag.Unknown));
 }

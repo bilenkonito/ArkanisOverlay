@@ -32,6 +32,6 @@ internal class UexPlanetSyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(UniversePlanetDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GamePlanet>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 }

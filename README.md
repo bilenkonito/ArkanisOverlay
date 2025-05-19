@@ -4,8 +4,8 @@ for Star Citizen
 </h1>
 
 <p align="center">
-<img alt="GitHub dev branch commits since latest release" src="https://img.shields.io/github/commits-since/ArkanisCorporation/ArkanisOverlay/latest/dev?logo=github" />
-<img alt="GitHub dev branch check runs" src="https://img.shields.io/github/check-runs/ArkanisCorporation/ArkanisOverlay/dev?logo=github" />
+<img alt="GitHub dev branch commits since latest release" src="https://img.shields.io/github/commits-since/ArkanisCorporation/ArkanisOverlay/latest/main?logo=github" />
+<img alt="GitHub dev branch check runs" src="https://img.shields.io/github/check-runs/ArkanisCorporation/ArkanisOverlay/main?logo=github" />
 <a href="https://github.com/ArkanisCorporation/ArkanisOverlay/discussions" target="_blank">
  <img alt="GitHub Support" src="https://img.shields.io/badge/github-support?logo=github&label=support" />
 </a>

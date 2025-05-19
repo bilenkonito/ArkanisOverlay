@@ -23,6 +23,6 @@ internal class UexCommoditySyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(CommodityDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameCommodity>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 }
