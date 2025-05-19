@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Host.Desktop.Workers;
 
+using Domain.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ using Velopack;
 internal class UpdateProcess(
     ArkanisOverlayUpdateManager updateManager,
     WindowsNotifications notifications,
+    IStorageManager storageManager,
     ILogger<UpdateProcess> logger
 ) : IDisposable
 {
@@ -73,6 +75,12 @@ internal class UpdateProcess(
         // this is necessary to properly clean up sent notifications
         Dispose();
         notifications.Dispose();
+
+        if (newVersion.IsDowngrade)
+        {
+            //! breaking changes introduced from new version could make old versions incompatible, so we need to wipe the storage
+            await storageManager.WipeAsync(cancellationToken);
+        }
 
         //! this call uses Environment.Exit to immediately terminate the application
         updateManager.ApplyUpdatesAndRestart(newVersion);

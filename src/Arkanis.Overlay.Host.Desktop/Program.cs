@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
+using Quartz;
 using Serilog;
 using Services;
 using Services.Factories;
@@ -79,9 +80,13 @@ public static class Program
     {
         var launchHostBuilder = Host.CreateDefaultBuilder(args)
             .ConfigureServices((context, services) => services
-                .ConfigureLoggerServices(context)
+                .AddLoggerServices(context)
+                .AddVelopackServices()
                 .AddFakeAnalyticsServices()
+                .AddSingleton<IStorageManager, StorageManager>()
                 .AddSingleton<ISystemAutoStartStateProvider, NoSystemAutoStartStateProvider>()
+                .AddSingleton<ISchedulerFactory, FakeSchedulerFactory>()
+                .AddSingleton<WindowsNotifications>()
                 .AddServicesForUserPreferencesFromJsonFile()
             );
 
@@ -101,29 +106,22 @@ public static class Program
             .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
             .Run();
 
-        var updateChannel = userPreferences.UpdateChannel;
-        var updateSource = UpdateHelper.CreateSourceFor(updateChannel);
-        var updateManagerLogger = loggerFactory.CreateLogger<ArkanisOverlayUpdateManager>();
-        var updateManager = new ArkanisOverlayUpdateManager(updateSource, updateManagerLogger);
-        using var windowsNotifications = new WindowsNotifications();
-
         try
         {
-            logger.LogDebug("Starting update process for channel: {UpdateChannel}", updateChannel);
-            var updateProcessLogger = loggerFactory.CreateLogger<UpdateProcess>();
-            using var update = new UpdateProcess(updateManager, windowsNotifications, updateProcessLogger);
+            logger.LogDebug("Starting update process for channel: {UpdateChannel}", userPreferences.UpdateChannel);
+            using var update = ActivatorUtilities.CreateInstance<UpdateProcess>(launchApp.Services);
             await update.RunAsync(true, CancellationToken.None);
         }
         catch (Exception e)
         {
-            logger.LogCritical(e, "Update process failed for channel: {UpdateChannel}", updateChannel);
+            logger.LogCritical(e, "Update process failed for channel: {UpdateChannel}", userPreferences.UpdateChannel);
         }
     }
 
     private static IHostBuilder ConfigureServices(this IHostBuilder builder)
         => builder.ConfigureServices((context, services) =>
             {
-                services.ConfigureLoggerServices(context);
+                services.AddLoggerServices(context);
 
                 services.AddInfrastructureConfiguration(context.Configuration);
 
@@ -150,7 +148,7 @@ public static class Program
                 services.AddSingleton<WindowsNotifications>();
 
                 // Auto updater
-                services.ConfigureVelopackServices();
+                services.AddVelopackServices();
 
                 // Data
                 services
@@ -174,7 +172,7 @@ public static class Program
             }
         );
 
-    private static IServiceCollection ConfigureVelopackServices(this IServiceCollection services)
+    private static IServiceCollection AddVelopackServices(this IServiceCollection services)
         => services
             .AddSingleton<IUpdateSource>(provider =>
                 {
@@ -184,7 +182,7 @@ public static class Program
             )
             .AddSingleton<UpdateOptions>(provider => new UpdateOptions
                 {
-                    AllowVersionDowngrade = false,
+                    AllowVersionDowngrade = true,
                     ExplicitChannel = provider.GetRequiredService<IUserPreferencesProvider>().CurrentPreferences.UpdateChannel.VelopackChannelId,
                 }
             )
@@ -192,14 +190,14 @@ public static class Program
             .AddSingleton<IAppVersionProvider, VelopackAppVersionProvider>()
             .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>();
 
-    private static IServiceCollection ConfigureLoggerServices(this IServiceCollection services, HostBuilderContext context)
+    private static IServiceCollection AddLoggerServices(this IServiceCollection services, HostBuilderContext context)
         => services.AddSerilog(loggerConfig => loggerConfig
             .WriteTo.Console(
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
                 formatProvider: CultureInfo.InvariantCulture
             )
             .WriteTo.File(
-                Path.Join(ApplicationConstants.LocalAppDataPath, "logs", "app.log"),
+                Path.Join(ApplicationConstants.ApplicationDataDirectory.FullName, "logs", "app.log"),
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
                 buffered: true,
                 rollingInterval: RollingInterval.Day,

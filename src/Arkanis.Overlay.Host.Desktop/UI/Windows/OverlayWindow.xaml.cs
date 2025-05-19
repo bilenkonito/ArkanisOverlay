@@ -55,7 +55,7 @@ public partial class OverlayWindow
         SetupWorkerEventListeners();
         InitializeComponent();
 
-        Height =_windowTracker.CurrentWindowSize.Height;
+        Height = _windowTracker.CurrentWindowSize.Height;
         Width = _windowTracker.CurrentWindowSize.Width;
 
         Top = _windowTracker.CurrentWindowPosition.Y;
@@ -134,6 +134,7 @@ public partial class OverlayWindow
             {
                 _logger.LogDebug("Overlay: WindowFocusChanged: {IsFocused}", isFocused);
                 if (Visibility != Visibility.Visible) { return; }
+
                 Topmost = isFocused;
             }
         );
@@ -195,7 +196,7 @@ public partial class OverlayWindow
     }
 
     private void BlazorWebView_Initializing(object? sender, BlazorWebViewInitializingEventArgs e)
-        => e.UserDataFolder = Path.Join(ApplicationConstants.LocalAppDataPath, "WebView");
+        => e.UserDataFolder = Path.Join(ApplicationConstants.ApplicationDataDirectory.FullName, "WebView");
 
     private void WebView_Loaded(object? sender, CoreWebView2NavigationCompletedEventArgs e)
     {

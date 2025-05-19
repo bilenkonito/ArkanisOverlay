@@ -3,6 +3,7 @@ namespace Arkanis.Overlay.Infrastructure;
 using Common.Enums;
 using Common.Extensions;
 using Data;
+using Domain.Abstractions.Services;
 using External.UEX;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,7 @@ public static class DependencyInjection
         configure(options);
 
         services
+            .AddSingleton<IStorageManager, StorageManager>()
             .AddSingleton<ServiceDependencyResolver>()
             .AddHostedService<InitializeServicesHostedService>()
             .AddAllUexApiClients()
