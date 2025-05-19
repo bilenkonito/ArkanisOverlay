@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Repositories.Sync;
 
+using Common.Extensions;
 using Data.Mappers;
 using Domain.Abstractions.Services;
 using Domain.Models.Game;
@@ -35,8 +36,8 @@ public static class DependencyInjection
         {
             var serviceType = syncServiceManagerType.MakeGenericType(gameEntityType);
             services.AddSingleton(serviceType);
-            services.AddSingleton(typeof(ISelfInitializable), provider => provider.GetRequiredService(serviceType));
-            services.AddSingleton(typeof(ISelfUpdatable), provider => provider.GetRequiredService(serviceType));
+            services.UnsafeAlias<ISelfInitializable>(serviceType);
+            services.UnsafeAlias<ISelfUpdatable>(serviceType);
         }
 
         return services;

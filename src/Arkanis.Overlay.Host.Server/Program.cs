@@ -63,6 +63,9 @@ await app.MigrateDatabaseAsync<OverlayDbContext>();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", true);
+
+    // https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/signalr?view=aspnetcore-9.0#disable-response-compression-for-hot-reload
+    app.UseResponseCompression();
 }
 
 app.UseHttpsRedirection();

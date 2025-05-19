@@ -14,6 +14,7 @@ using Repositories;
 using Services;
 using Services.Hosted;
 using Services.Hydration;
+using Services.PriceProviders;
 
 public static class DependencyInjection
 {
@@ -42,7 +43,7 @@ public static class DependencyInjection
             .AddDatabaseExternalSyncCacheProviders()
             .AddInMemorySearchServices()
             .AddUexInMemoryGameEntityServices()
-            .AddUexPriceProviders()
+            .AddPriceProviders()
             .AddUexHydrationServices();
 
         if (options.HostingMode is HostingMode.Server)
