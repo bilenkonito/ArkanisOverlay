@@ -33,8 +33,6 @@ using Workers;
 // https://github.com/dapplo/Dapplo.Microsoft.Extensions.Hosting/blob/master/samples/Dapplo.Hosting.Sample.WpfDemo/Program.cs#L48
 public static class Program
 {
-    private static readonly IUpdateSource UpdateSource = new GithubSource(ApplicationConstants.GitHubRepositoryUrl, null, false);
-
     [STAThread]
     public static async Task Main(string[] args)
     {
@@ -70,7 +68,7 @@ public static class Program
         }
         catch (Exception ex)
         {
-            Log.Logger.Fatal(ex, "Host terminated unexpectedly");
+            Log.Fatal(ex, "Host terminated unexpectedly");
             await Console.Error.WriteLineAsync($"An error occurred during app startup: {ex.Message}");
             throw;
         }
@@ -78,6 +76,10 @@ public static class Program
 
     private static async Task HandleInstallationBehaviourAsync(string[] args)
     {
+        using var loggerFactory = LoggerFactory.Create(loggingBuilder => loggingBuilder.AddSerilog());
+        var logger = loggerFactory.CreateLogger(typeof(Program));
+        logger.LogDebug("Running velopack with args: '{Args}'", string.Join("', '", args));
+
         var userPreferenceDefaults = new UserPreferences();
         VelopackApp.Build()
             .SetArgs(args)
@@ -85,9 +87,15 @@ public static class Program
             .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
             .Run();
 
-        var updateManager = new ArkanisOverlayUpdateManager(UpdateSource);
+        var updateChannel = userPreferenceDefaults.UpdateChannel;
+        var updateSource = UpdateHelper.CreateSourceFor(updateChannel);
+        var updateManagerLogger = loggerFactory.CreateLogger<ArkanisOverlayUpdateManager>();
+        var updateManager = new ArkanisOverlayUpdateManager(updateSource, updateManagerLogger);
         using var windowsNotifications = new WindowsNotifications();
-        using var update = new UpdateProcess(updateManager, windowsNotifications);
+
+        logger.LogDebug("Loading updates for channel: {UpdateChannel}", updateChannel);
+        var updateProcessLogger = loggerFactory.CreateLogger<UpdateProcess>();
+        using var update = new UpdateProcess(updateManager, windowsNotifications, updateProcessLogger);
         await update.RunAsync(true, CancellationToken.None);
     }
 
@@ -137,7 +145,9 @@ public static class Program
 
                 // Auto updater
                 services
-                    .AddSingleton<IUpdateSource>(_ => UpdateSource)
+                    .AddSingleton<IUpdateSource>(provider
+                        => UpdateHelper.CreateSourceFor(provider.GetRequiredService<IUserPreferencesProvider>().CurrentPreferences.UpdateChannel)
+                    )
                     .AddSingleton<UpdateOptions>(provider => new UpdateOptions
                         {
                             AllowVersionDowngrade = false,

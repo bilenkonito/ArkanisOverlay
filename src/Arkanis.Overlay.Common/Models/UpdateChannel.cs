@@ -8,24 +8,30 @@ public record UpdateChannel(string Name, string InternalId, string? VelopackChan
     public static readonly UpdateChannel ReleaseCandidate = new("Release Candidate", "rc", "rc")
     {
         IsUnstable = true,
+        Description = "Contains fairly stable changes close to a stable release. May contain bugs.",
     };
 
     public static readonly UpdateChannel Nightly = new("Nightly", "nightly", "nightly")
     {
         IsUnstable = true,
+        Description = "Contains latest development changes. May contain major bugs and breaking changes.",
     };
+
+    public static readonly HashSet<UpdateChannel> Available =
+    [
+        Default, Stable, ReleaseCandidate,
+    ];
+
+    public static readonly IEnumerable<UpdateChannel> All =
+    [
+        Default,
+        Stable,
+        ReleaseCandidate,
+        Nightly,
+    ];
 
     public bool IsUnstable { get; init; }
     public string? Description { get; init; }
-
-    public static IEnumerable<UpdateChannel> All
-        =>
-        [
-            Default,
-            Stable,
-            ReleaseCandidate,
-            Nightly,
-        ];
 
     public static UpdateChannel ById(string? id)
         => All.SingleOrDefault(x => x.InternalId == id, Default);

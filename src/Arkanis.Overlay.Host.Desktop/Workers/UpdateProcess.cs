@@ -7,7 +7,11 @@ using Quartz;
 using Services;
 using Velopack;
 
-internal class UpdateProcess(ArkanisOverlayUpdateManager updateManager, WindowsNotifications notifications) : IDisposable
+internal class UpdateProcess(
+    ArkanisOverlayUpdateManager updateManager,
+    WindowsNotifications notifications,
+    ILogger<UpdateProcess> logger
+) : IDisposable
 {
     private WindowsNotifications.UpdatableNotification<WindowsNotifications.UpdateProgressParams>? _progressToast;
 
@@ -23,9 +27,17 @@ internal class UpdateProcess(ArkanisOverlayUpdateManager updateManager, WindowsN
     /// <returns>A task that represents the asynchronous operation</returns>
     public async Task RunAsync(bool forced, CancellationToken cancellationToken = default)
     {
+        logger.LogInformation(
+            "Checking for application updates for app {AppId}, in channel {CurrentChannel}, current version {CurrentVersion}",
+            updateManager.AppId,
+            updateManager.CurrentChannel,
+            updateManager.CurrentVersion
+        );
+
         if (!updateManager.IsInstalled)
         {
             // do not check for updates if the application is not installed (=app is not updatable)
+            logger.LogInformation("The application is not installed, skipping update check");
             return;
         }
 
@@ -34,20 +46,29 @@ internal class UpdateProcess(ArkanisOverlayUpdateManager updateManager, WindowsN
         if (newVersion == null)
         {
             // no updates available
+            logger.LogInformation("No updates currently available");
             return;
         }
 
-        if (!forced && !await notifications.ShouldUpdateNowAsync(newVersion, cancellationToken))
+        if (!forced)
         {
-            // the user has chosen not to update
-            return;
+            logger.LogDebug("Update is not forced, prompting user for confirmation");
+            if (!await notifications.ShouldUpdateNowAsync(newVersion, cancellationToken))
+            {
+                // the user has chosen not to update
+                logger.LogInformation("Update refused by user");
+                return;
+            }
         }
 
         // download new version
         ShowProgressToast(newVersion);
+
+        logger.LogDebug("Downloading update from {CurrentVersion} to {NewVersion}", updateManager.CurrentVersion, newVersion.TargetFullRelease.Version);
         await updateManager.DownloadUpdatesAsync(newVersion, UpdateProgressToast, cancelToken: cancellationToken);
 
         // install new version and restart app
+        logger.LogInformation("Applying update to {NewVersion}", newVersion.TargetFullRelease.Version);
         updateManager.ApplyUpdatesAndRestart(newVersion);
     }
 
