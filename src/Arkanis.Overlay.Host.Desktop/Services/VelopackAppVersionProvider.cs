@@ -8,6 +8,6 @@ public class VelopackAppVersionProvider(ArkanisOverlayUpdateManager updateManage
     public SemanticVersion CurrentVersion
         => updateManager.CurrentVersion ?? new SemanticVersion(0, 0, 1, "unknown");
 
-    public string CurrentChannel
+    public string CurrentVelopackChannelId
         => updateManager.CurrentChannel;
 }

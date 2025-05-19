@@ -11,6 +11,6 @@ public sealed class AssemblyAppVersionProvider : IAppVersionProvider
         ? SemanticVersion.Parse(versionAttribute.InformationalVersion)
         : new SemanticVersion(0, 0, 1, "dev");
 
-    public string CurrentChannel
-        => "unknown";
+    public string CurrentVelopackChannelId
+        => "__unspecified";
 }
