@@ -69,6 +69,12 @@ internal class UpdateProcess(
 
         // install new version and restart app
         logger.LogInformation("Applying update to {NewVersion}", newVersion.TargetFullRelease.Version);
+
+        // this is necessary to properly clean up sent notifications
+        Dispose();
+        notifications.Dispose();
+
+        //! this call uses Environment.Exit to immediately terminate the application
         updateManager.ApplyUpdatesAndRestart(newVersion);
     }
 
