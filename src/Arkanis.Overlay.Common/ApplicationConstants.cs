@@ -8,6 +8,7 @@ public static class ApplicationConstants
 
     public const string AppDirectoryName = "ArkanisOverlay";
     public const string DataDirectoryName = "data";
+    public const string LogsDirectoryName = "logs";
 
     public const string GitHubOwner = "ArkanisCorporation";
     public const string GitHubRepository = "ArkanisOverlay";
@@ -19,11 +20,14 @@ public static class ApplicationConstants
 
     public static readonly TimeSpan GameTimeOffset = TimeSpan.FromTicks(TimeSpan.TicksPerDay * (long)(365.25 * 930));
 
-    private static readonly string ApplicationDataDirectoryPath = Path.Join(
+    private static readonly string ApplicationDirectoryPath = Path.Join(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        AppDirectoryName,
-        DataDirectoryName
+        AppDirectoryName
     );
 
+    private static readonly string ApplicationDataDirectoryPath = Path.Join(ApplicationDirectoryPath, DataDirectoryName);
+    private static readonly string ApplicationLogsDirectoryPath = Path.Join(ApplicationDirectoryPath, LogsDirectoryName);
+
     public static readonly DirectoryInfo ApplicationDataDirectory = Directory.CreateDirectory(ApplicationDataDirectoryPath);
+    public static readonly DirectoryInfo ApplicationLogsDirectory = Directory.CreateDirectory(ApplicationLogsDirectoryPath);
 }

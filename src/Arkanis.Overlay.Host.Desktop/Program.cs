@@ -197,7 +197,7 @@ public static class Program
                 formatProvider: CultureInfo.InvariantCulture
             )
             .WriteTo.File(
-                Path.Join(ApplicationConstants.ApplicationDataDirectory.FullName, "logs", "app.log"),
+                Path.Join(ApplicationConstants.ApplicationLogsDirectory.FullName, "app.log"),
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
                 buffered: true,
                 rollingInterval: RollingInterval.Day,
