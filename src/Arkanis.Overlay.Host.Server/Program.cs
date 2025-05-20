@@ -1,5 +1,6 @@
 using System.Globalization;
 using Arkanis.Overlay.Common.Abstractions;
+using Arkanis.Overlay.Common.Enums;
 using Arkanis.Overlay.Common.Services;
 using Arkanis.Overlay.Components.Helpers;
 using Arkanis.Overlay.Components.Services;
@@ -48,7 +49,7 @@ builder.Services
     .AddGoogleTrackingServices()
     .AddSingleton<SharedAnalyticsPropertyProvider, ServerAnalyticsPropertyProvider>()
     .AddServerOverlayControls()
-    .AddInfrastructure()
+    .AddInfrastructure(options => options.HostingMode = HostingMode.Server)
     .AddInfrastructureConfiguration(builder.Configuration)
     .AddSingleton<GitHubReleasesService>()
     .AddSingleton<IAppVersionProvider, AssemblyAppVersionProvider>()

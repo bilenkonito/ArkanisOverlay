@@ -8,15 +8,36 @@ using Microsoft.Extensions.Logging;
 public static class HostExtensions
 {
     /// <summary>
-    ///     This method will apply any pending migrations to the database.
+    ///     Drops the database used by the provided <typeparamref name="TContext" />.
     /// </summary>
     /// <remarks>
     ///     Calling this method requires the <typeparamref name="TContext" /> DB context to be registered in the DI container.
     ///     This operation fails otherwise.
     /// </remarks>
-    /// <param name="host"></param>
-    /// <param name="cancellationToken"></param>
-    /// <typeparam name="TContext"></typeparam>
+    /// <param name="host">The host to drop the database for.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <typeparam name="TContext">The type of the DB context.</typeparam>
+    public static async Task DropDatabaseAsync<TContext>(this IHost host, CancellationToken cancellationToken = default) where TContext : DbContext
+    {
+        await using var serviceScope = host.Services.CreateAsyncScope();
+
+        var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<TContext>>();
+        await using var context = serviceScope.ServiceProvider.GetRequiredService<TContext>();
+
+        logger.LogWarning("Dropping database {DatabaseName}", context.Database.GetDbConnection().Database);
+        await context.Database.EnsureDeletedAsync(cancellationToken);
+    }
+
+    /// <summary>
+    ///     Migrates the database used by the provided <typeparamref name="TContext" /> to the latest version.
+    /// </summary>
+    /// <remarks>
+    ///     Calling this method requires the <typeparamref name="TContext" /> DB context to be registered in the DI container.
+    ///     This operation fails otherwise.
+    /// </remarks>
+    /// <param name="host">The host to migrate the database for.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <typeparam name="TContext">The type of the DB context.</typeparam>
     public static async Task MigrateDatabaseAsync<TContext>(this IHost host, CancellationToken cancellationToken = default) where TContext : DbContext
     {
         await using var serviceScope = host.Services.CreateAsyncScope();
@@ -31,7 +52,11 @@ public static class HostExtensions
             logger.LogDebug("Detected pending database migration: {Migration}", pendingMigration);
         }
 
-        logger.LogInformation("Applying {PendingMigrationCount} pending migrations", pendingMigrations.Count());
+        logger.LogWarning(
+            "Applying {PendingMigrationCount} pending migrations to database {DatabaseName}",
+            pendingMigrations.Count(),
+            context.Database.GetDbConnection().Database
+        );
         await context.Database.MigrateAsync(cancellationToken);
     }
 }

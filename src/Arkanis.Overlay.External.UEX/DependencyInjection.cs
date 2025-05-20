@@ -5,8 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddAllUexApiClients(this IServiceCollection services)
+    public static IServiceCollection AddAllUexApiClients(this IServiceCollection services, Func<IServiceProvider, UexApiOptions>? createOptions = null)
         => services
+            .AddSingleton(createOptions ?? (_ => new UexApiOptions()))
             .AddSingleton<IUexCrewApi, UexCrewApi>()
             .AddSingleton<IUexCommoditiesApi, UexCommoditiesApi>()
             .AddSingleton<IUexFuelApi, UexFuelApi>()

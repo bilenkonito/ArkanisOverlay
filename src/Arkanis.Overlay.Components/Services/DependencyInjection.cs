@@ -5,6 +5,7 @@ using Blazor.Analytics;
 using Blazor.Analytics.Abstractions;
 using Blazor.Analytics.GoogleAnalytics;
 using Domain.Abstractions.Services;
+using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
@@ -19,4 +20,7 @@ public static class DependencyInjection
             .AddScoped<ITrackingNavigationState, TrackingNavigationState>()
             .AddScoped<IAnalyticsEventReporter, GoogleAnalyticsEventReporter>()
             .AddSingleton<IGlobalAnalyticsReporter, GlobalAnalyticsReporter>();
+
+    public static IServiceCollection AddFakeAnalyticsServices(this IServiceCollection services)
+        => services.AddSingleton<IGlobalAnalyticsReporter, FakeAnalyticsReporter>();
 }
