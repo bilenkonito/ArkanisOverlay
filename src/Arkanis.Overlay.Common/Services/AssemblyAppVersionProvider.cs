@@ -13,4 +13,7 @@ public sealed class AssemblyAppVersionProvider : IAppVersionProvider
 
     public string CurrentVelopackChannelId
         => "__unspecified";
+
+    public DateTimeOffset? AutoUpdateCheckAt
+        => null;
 }

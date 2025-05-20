@@ -11,4 +11,6 @@ public interface IAppVersionProvider
         => UpdateChannel.ByVelopackChannelId(CurrentVelopackChannelId);
 
     string CurrentVelopackChannelId { get; }
+
+    DateTimeOffset? AutoUpdateCheckAt { get; }
 }

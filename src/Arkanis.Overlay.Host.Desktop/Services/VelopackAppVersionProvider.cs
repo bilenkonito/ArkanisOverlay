@@ -2,6 +2,7 @@ namespace Arkanis.Overlay.Host.Desktop.Services;
 
 using Common.Abstractions;
 using NuGet.Versioning;
+using Workers;
 
 public class VelopackAppVersionProvider(ArkanisOverlayUpdateManager updateManager) : IAppVersionProvider
 {
@@ -10,4 +11,7 @@ public class VelopackAppVersionProvider(ArkanisOverlayUpdateManager updateManage
 
     public string CurrentVelopackChannelId
         => updateManager.CurrentChannel;
+
+    public DateTimeOffset? AutoUpdateCheckAt
+        => UpdateProcess.CheckForUpdatesJob.Trigger.GetNextFireTimeUtc();
 }
