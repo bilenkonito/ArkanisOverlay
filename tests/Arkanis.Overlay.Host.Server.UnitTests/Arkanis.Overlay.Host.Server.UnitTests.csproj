@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Arkanis.Overlay.Infrastructure\Arkanis.Overlay.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\src\Arkanis.Overlay.Host.Server\Arkanis.Overlay.Host.Server.csproj"/>
         <ProjectReference Include="..\Arkanis.Overlay.Common.UnitTests\Arkanis.Overlay.Common.UnitTests.csproj"/>
     </ItemGroup>
 
