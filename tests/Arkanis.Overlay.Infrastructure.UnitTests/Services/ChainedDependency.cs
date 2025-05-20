@@ -2,7 +2,7 @@ namespace Arkanis.Overlay.Infrastructure.UnitTests.Services;
 
 using Domain.Abstractions;
 
-internal class ChainedDependency(IDependable dependable) : IDependable
+internal sealed class ChainedDependency(IDependable dependable) : IDependable
 {
     public bool IsReady
         => dependable.IsReady;

@@ -32,9 +32,4 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\Arkanis.Overlay.Infrastructure\Arkanis.Overlay.Infrastructure.csproj"/>
-        <ProjectReference Include="..\Arkanis.Overlay.Common.UnitTests\Arkanis.Overlay.Common.UnitTests.csproj"/>
-    </ItemGroup>
-
 </Project>
