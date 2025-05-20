@@ -77,28 +77,6 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
             ),
         };
 
-    private UexApiGameEntityId MapEntityId(object source)
-        => source switch
-        {
-            VehiclePurchasePriceBriefDTO dto => CreateGameEntityId(dto, x => x.Id),
-            VehicleRentalPriceBriefDTO dto => CreateGameEntityId(dto, x => x.Id),
-            CommodityPriceBriefDTO dto => CreateGameEntityId(dto, x => x.Id),
-            MarketplaceListingDTO dto => CreateGameEntityId(dto, x => x.Id),
-            ItemPriceBriefDTO dto => CreateGameEntityId(dto, x => x.Id),
-            _ => CreateGameEntityId(source, _ => null),
-        };
-
-    private UexApiGameEntityId MapReferencedEntityId(object source)
-        => source switch
-        {
-            VehiclePurchasePriceBriefDTO dto => UexApiGameEntityId.Create<GameVehicle>(dto.Id_vehicle ?? 0),
-            VehicleRentalPriceBriefDTO dto => UexApiGameEntityId.Create<GameVehicle>(dto.Id_vehicle ?? 0),
-            CommodityPriceBriefDTO dto => UexApiGameEntityId.Create<GameCommodity>(dto.Id_commodity ?? 0),
-            MarketplaceListingDTO dto => UexApiGameEntityId.Create<GameItem>(dto.Id_item ?? 0),
-            ItemPriceBriefDTO dto => UexApiGameEntityId.Create<GameItem>(dto.Id_item ?? 0),
-            _ => CreateGameEntityId(source, _ => null),
-        };
-
     [UserMapping(Default = true)]
     private GameStarSystem ToGameEntity(UniverseStarSystemDTO source)
     {
@@ -353,8 +331,8 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     private partial GameGroundVehicle MapInternalGroundVehicle(VehicleDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
-    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
-    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(GetEntityIdForCommodityPrice))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetReferencedEntityIdForCommodityPrice))]
     [MapProperty(nameof(CommodityPriceBriefDTO.Date_modified), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
     [MapProperty(nameof(CommodityPriceBriefDTO.Price_buy), nameof(GameEntityTradePrice.PurchasePrice), Use = nameof(MapInternalMoney))]
     [MapProperty(nameof(CommodityPriceBriefDTO.Price_sell), nameof(GameEntityTradePrice.SalePrice), Use = nameof(MapInternalMoney))]
@@ -363,8 +341,8 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     private partial GameEntityTradePrice MapInternal(CommodityPriceBriefDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
-    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
-    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(GetEntityIdForItemPrice))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetReferencedEntityIdForItemPrice))]
     [MapProperty(nameof(ItemPriceBriefDTO.Date_modified), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
     [MapProperty(nameof(ItemPriceBriefDTO.Price_buy), nameof(GameEntityTradePrice.PurchasePrice), Use = nameof(MapInternalMoney))]
     [MapProperty(nameof(ItemPriceBriefDTO.Price_sell), nameof(GameEntityTradePrice.SalePrice), Use = nameof(MapInternalMoney))]
@@ -373,8 +351,8 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     private partial GameEntityTradePrice MapInternal(ItemPriceBriefDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
-    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
-    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(GetEntityIdForVehiclePurchasePrice))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetReferencedEntityIdForVehiclePurchasePrice))]
     [MapProperty(nameof(VehiclePurchasePriceBriefDTO.Date_modified), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
     [MapProperty(nameof(VehiclePurchasePriceBriefDTO.Price_buy), nameof(GameEntityPurchasePrice.PurchasePrice), Use = nameof(MapInternalMoney))]
     [MapPropertyFromSource(nameof(GameEntityTerminalPrice.Terminal), Use = nameof(GetTerminalForVehiclePurchasePrice))]
@@ -382,8 +360,8 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     private partial GameEntityPurchasePrice MapInternal(VehiclePurchasePriceBriefDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
-    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
-    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(GetEntityIdForVehicleRentalPrice))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetReferencedEntityIdForVehicleRentalPrice))]
     [MapProperty(nameof(VehicleRentalPriceBriefDTO.Date_modified), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
     [MapProperty(nameof(VehicleRentalPriceBriefDTO.Price_rent), nameof(GameEntityRentalPrice.RentalPrice), Use = nameof(MapInternalMoney))]
     [MapPropertyFromSource(nameof(GameEntityTerminalPrice.Terminal), Use = nameof(GetTerminalForVehicleRentalPrice))]
@@ -392,8 +370,8 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapValue(nameof(GameEntityMarketPrice.MarketName), "UEX")]
-    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
-    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(GetEntityIdForMarketplaceListing))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetReferencedEntityIdForMarketplaceListing))]
     [MapProperty(nameof(MarketplaceListingDTO.Date_added), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
     [MapProperty(nameof(MarketplaceListingDTO.Price), nameof(GameEntityMarketPurchasePrice.PurchasePrice), Use = nameof(MapInternalMoney))]
     [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetEntityForMarketPrice))]
@@ -401,8 +379,8 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapValue(nameof(GameEntityMarketPrice.MarketName), "UEX")]
-    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
-    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(GetEntityIdForMarketplaceListing))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetReferencedEntityIdForMarketplaceListing))]
     [MapProperty(nameof(MarketplaceListingDTO.Date_added), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
     [MapProperty(nameof(MarketplaceListingDTO.Price), nameof(GameEntityMarketSalePrice.SalePrice), Use = nameof(MapInternalMoney))]
     [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetEntityForMarketPrice))]
@@ -425,6 +403,36 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     [DoesNotReturn]
     private static TTarget ThrowMissingMappingException<TTarget, TSource>(double? sourceId)
         => throw new ObjectMappingException($"Could not find correct mapping for {typeof(TTarget)} in {typeof(TSource)} with ID {sourceId}.", null);
+
+    private UexApiGameEntityId GetEntityIdForVehiclePurchasePrice(VehiclePurchasePriceBriefDTO source)
+        => CreateGameEntityId(source, dto => dto.Id);
+
+    private UexApiGameEntityId GetEntityIdForVehicleRentalPrice(VehicleRentalPriceBriefDTO source)
+        => CreateGameEntityId(source, dto => dto.Id);
+
+    private UexApiGameEntityId GetEntityIdForCommodityPrice(CommodityPriceBriefDTO source)
+        => CreateGameEntityId(source, dto => dto.Id);
+
+    private UexApiGameEntityId GetEntityIdForMarketplaceListing(MarketplaceListingDTO source)
+        => CreateGameEntityId(source, dto => dto.Id);
+
+    private UexApiGameEntityId GetEntityIdForItemPrice(ItemPriceBriefDTO source)
+        => CreateGameEntityId(source, dto => dto.Id);
+
+    private UexApiGameEntityId GetReferencedEntityIdForVehiclePurchasePrice(VehiclePurchasePriceBriefDTO source)
+        => UexApiGameEntityId.Create<GameVehicle>(source.Id_vehicle ?? 0);
+
+    private UexApiGameEntityId GetReferencedEntityIdForVehicleRentalPrice(VehicleRentalPriceBriefDTO source)
+        => UexApiGameEntityId.Create<GameVehicle>(source.Id_vehicle ?? 0);
+
+    private UexApiGameEntityId GetReferencedEntityIdForCommodityPrice(CommodityPriceBriefDTO source)
+        => UexApiGameEntityId.Create<GameCommodity>(source.Id_commodity ?? 0);
+
+    private UexApiGameEntityId GetReferencedEntityIdForMarketplaceListing(MarketplaceListingDTO source)
+        => UexApiGameEntityId.Create<GameItem>(source.Id_item ?? 0);
+
+    private UexApiGameEntityId GetReferencedEntityIdForItemPrice(ItemPriceBriefDTO source)
+        => UexApiGameEntityId.Create<GameItem>(source.Id_item ?? 0);
 
     private GameLocationEntity GetGameLocationForPlanet(UniversePlanetDTO planet)
         => ResolveCachedGameEntity<GameStarSystem>(planet.Id_star_system)
