@@ -54,9 +54,19 @@
                     <span>Application auto-update disabled.</span>
                 }
             </MudText>
-            <MudImage
-                Src="@LinkHelper.GetPathToAsset("img/MadeByTheCommunity_Black.png")"
-                Style="opacity: 70%; width: 50%"/>
+
+            @if (ThemeProvider?.IsDarkMode == true)
+            {
+                <MudImage
+                    Src="@LinkHelper.GetPathToAsset("img/MadeByTheCommunity_Black.png")"
+                    Style="opacity: 70%; width: 50%"/>
+            }
+            else
+            {
+                <MudImage
+                    Src="@LinkHelper.GetPathToAsset("img/MadeByTheCommunity_White.png")"
+                    Style="opacity: 70%; width: 50%"/>
+            }
 
             <MudDivider DividerType="@DividerType.FullWidth"/>
             <MudStack AlignItems="@AlignItems.Center"
