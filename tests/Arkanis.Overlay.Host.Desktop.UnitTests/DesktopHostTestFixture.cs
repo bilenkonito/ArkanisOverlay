@@ -1,4 +1,4 @@
-namespace Arkanis.Overlay.Host.Server.UnitTests;
+namespace Arkanis.Overlay.Host.Desktop.UnitTests;
 
 using Common.UnitTests;
 using Infrastructure.Data;
@@ -10,7 +10,7 @@ using Xunit.Microsoft.DependencyInjection;
 using Xunit.Microsoft.DependencyInjection.Abstracts;
 using Xunit.Sdk;
 
-public class ServerHostTestFixture : TestBedFixture
+public class DesktopHostTestFixture : TestBedFixture
 {
     protected override void AddUserSecrets(IConfigurationBuilder configurationBuilder)
         => configurationBuilder.AddInMemoryCollection(
@@ -27,7 +27,7 @@ public class ServerHostTestFixture : TestBedFixture
         services
             .AddSingleton<IHostEnvironment, UnitTestHostEnvironment>()
             .AddSingleton(configuration)
-            .AddAllServerHostServices(configuration);
+            .AddAllDesktopHostServices(configuration);
     }
 
     protected override IEnumerable<TestAppSettings> GetTestAppSettings()
