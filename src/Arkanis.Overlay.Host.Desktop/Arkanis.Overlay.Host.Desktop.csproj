@@ -13,6 +13,7 @@
         <Platform>x64</Platform>
         <StartupObject>Arkanis.Overlay.Host.Desktop.Program</StartupObject>
         <ServerGarbageCollection>false</ServerGarbageCollection>
+        <PackageId>Arkanis.Overlay.Host.Desktop</PackageId>
         <AssemblyName>ArkanisOverlay</AssemblyName>
     </PropertyGroup>
 
