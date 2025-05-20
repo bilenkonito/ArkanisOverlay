@@ -1,4 +1,5 @@
 @using Arkanis.Overlay.Common.Abstractions
+@using Humanizer
 @inject IAppVersionProvider VersionProvider
 
 <MudDialog>
@@ -12,7 +13,7 @@
             }
         </style>
         <MudStack AlignItems="@AlignItems.Center" Class="mb-6">
-            <MudText Typo="@Typo.subtitle1">
+            <MudText Typo="@Typo.subtitle1" GutterBottom="false">
                 Created by
                 <MudLink Href="https://discord.com/users/174617873182883841"
                          Target="_blank"
@@ -34,18 +35,38 @@
                 </MudLink>
                 .
             </MudText>
-            <MudText Align="@Align.Center" Class="mb-2">
+
+            <MudText Align="@Align.Center" GutterBottom="false">
                 <span>Program version</span>
                 <MudLink
                     Href="@($"https://github.com/ArkanisCorporation/ArkanisOverlay/releases/tag/v{VersionProvider.CurrentVersion.ToNormalizedString()}")"
                     Target="_blank"
                     Color="@Color.Info">
-                    @VersionProvider.CurrentVersion
+                    @($"v{VersionProvider.CurrentVersion.ToNormalizedString()}")
                 </MudLink>
+                .
+                @if (VersionProvider.AutoUpdateCheckAt is { } updateCheckAt)
+                {
+                    <span>Update check in @((updateCheckAt - DateTimeOffset.Now).Humanize()).</span>
+                }
+                else
+                {
+                    <span>Application auto-update disabled.</span>
+                }
             </MudText>
-            <MudImage
-                Src="@LinkHelper.GetPathToAsset("img/MadeByTheCommunity_Black.png")"
-                Style="opacity: 70%; width: 50%"/>
+
+            @if (ThemeProvider?.IsDarkMode == true)
+            {
+                <MudImage
+                    Src="@LinkHelper.GetPathToAsset("img/MadeByTheCommunity_Black.png")"
+                    Style="opacity: 70%; width: 50%"/>
+            }
+            else
+            {
+                <MudImage
+                    Src="@LinkHelper.GetPathToAsset("img/MadeByTheCommunity_White.png")"
+                    Style="opacity: 70%; width: 50%"/>
+            }
 
             <MudDivider DividerType="@DividerType.FullWidth"/>
             <MudStack AlignItems="@AlignItems.Center"

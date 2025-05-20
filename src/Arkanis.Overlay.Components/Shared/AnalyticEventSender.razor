@@ -14,10 +14,10 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-        await ConfigureAnalyticsAsync(UserRePreferencesProvider.CurrentPreferences);
 
         if (firstRender)
         {
+            await ConfigureAnalyticsAsync(UserRePreferencesProvider.CurrentPreferences);
             await GlobalAnalyticsReporter.LinkReporterAsync(AnalyticsEventReporter);
         }
     }

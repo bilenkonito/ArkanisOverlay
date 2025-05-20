@@ -41,20 +41,18 @@
                                Dense>
                         @foreach (var channel in UpdateChannel.All)
                         {
-                            <MudSelectItem Value="@channel">
-                                @channel.Name
+                            <MudSelectItem Value="@channel" Disabled="@(!UpdateChannel.Available.Contains(channel))">
+                                <span>@channel.Name</span>
                             </MudSelectItem>
                         }
                     </MudSelect>
+                    <UpdateChannelDetails Model="@Preferences.UpdateChannel"/>
                     @if (UserPreferencesManager.CurrentPreferences.UpdateChannel != Preferences.UpdateChannel)
                     {
-                        <MudText Typo="@Typo.caption" Color="@Color.Warning" Inline="false">
+                        <MudText Typo="@Typo.caption" Color="@Color.Warning" HtmlTag="p">
                             App restart is necessary to correctly apply
                         </MudText>
                     }
-                    <MudText Typo="@Typo.caption" Class="text-secondary">
-                        Current version is @VersionProvider.CurrentVersion
-                    </MudText>
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudStack Spacing="0">

@@ -47,11 +47,6 @@ public partial class App
             // Task.Delay(2000).ContinueWith(_ => splashScreen.Close(TimeSpan.FromSeconds(0.5)));
         }
 
-        if (!Directory.Exists(ApplicationConstants.LocalAppDataPath))
-        {
-            Directory.CreateDirectory(ApplicationConstants.LocalAppDataPath);
-        }
-
         Resources.Add("services", _serviceProvider);
 
         var overlayWindow = _serviceProvider.GetRequiredService<OverlayWindow>();

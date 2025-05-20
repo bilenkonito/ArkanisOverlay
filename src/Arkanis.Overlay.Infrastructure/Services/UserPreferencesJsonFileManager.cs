@@ -29,7 +29,7 @@ public class UserPreferencesJsonFileManager(IGlobalAnalyticsReporter analyticsRe
     };
 
     private static FileInfo PreferencesFileInfo
-        => new(Path.Combine(ApplicationConstants.LocalAppDataPath, "userPreferences.json"));
+        => new(Path.Combine(ApplicationConstants.ApplicationDataDirectory.FullName, "userPreferences.json"));
 
     public UserPreferences CurrentPreferences { get; private set; } = new();
 

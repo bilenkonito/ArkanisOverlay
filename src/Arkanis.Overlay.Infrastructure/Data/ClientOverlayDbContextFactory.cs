@@ -18,7 +18,9 @@ public class ClientOverlayDbContextFactory(
     public OverlayDbContext CreateDbContext()
     {
         var connectionString = configuration.GetConnectionString(ConnectionName);
-        connectionString ??= $"Data Source={ApplicationConstants.LocalAppDataDir}/Overlay.db;Cache=Shared";
+
+        var databaseFilePath = Path.Combine(ApplicationConstants.ApplicationDataDirectory.FullName, "Overlay.db");
+        connectionString ??= $"Data Source={databaseFilePath};Cache=Shared";
 
         logger.LogDebug("Connecting to {ConnectionString}", connectionString);
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();

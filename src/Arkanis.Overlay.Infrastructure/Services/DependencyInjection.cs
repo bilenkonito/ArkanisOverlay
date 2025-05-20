@@ -27,9 +27,15 @@ public static class DependencyInjection
     public static IServiceCollection AddInMemorySearchServices(this IServiceCollection services)
         => services.AddScoped<ISearchService, InMemorySearchService>();
 
-    public static IServiceCollection AddUserPreferencesFileManagerServices(this IServiceCollection services)
+    public static IServiceCollection AddServicesForUserPreferencesFromJsonFile(this IServiceCollection services)
+        => services.AddUserPreferencesServices<UserPreferencesJsonFileManager>();
+
+    public static IServiceCollection AddServicesForInMemoryUserPreferences(this IServiceCollection services)
+        => services.AddUserPreferencesServices<InMemoryUserPreferencesManager>();
+
+    public static IServiceCollection AddUserPreferencesServices<T>(this IServiceCollection services) where T : class, IUserPreferencesManager
         => services
-            .AddSingleton<IUserPreferencesManager, UserPreferencesJsonFileManager>()
+            .AddSingleton<IUserPreferencesManager, T>()
             .AddSingleton<IUserPreferencesProvider>(provider => provider.GetRequiredService<IUserPreferencesManager>())
             .AddHostedService<AutoStartUserPreferencesUpdater>()
             .AddHostedService<UserPreferencesLoader>();
