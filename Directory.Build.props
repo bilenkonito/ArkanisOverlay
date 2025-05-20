@@ -1,6 +1,7 @@
 <Project>
     <PropertyGroup>
         <LangVersion>preview</LangVersion>
+        <AnalysisLevel>preview</AnalysisLevel>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn>
             $(NoWarn);
