@@ -28,7 +28,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="$(AssemblyName).UnitTests"/>
-        <InternalsVisibleTo Include="$(AssemblyName).IntegrationTests"/>
+        <InternalsVisibleTo Include="$(PackageId).UnitTests"/>
+        <InternalsVisibleTo Include="$(PackageId).IntegrationTests"/>
     </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Arkanis.Overlay.Infrastructure\Arkanis.Overlay.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\src\Arkanis.Overlay.Host.Desktop\Arkanis.Overlay.Host.Desktop.csproj"/>
         <ProjectReference Include="..\Arkanis.Overlay.Common.UnitTests\Arkanis.Overlay.Common.UnitTests.csproj"/>
     </ItemGroup>
 
