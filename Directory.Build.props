@@ -13,6 +13,7 @@
 
     <PropertyGroup>
         <PublisherName>Arkanis Corporation</PublisherName>
+        <Company>Arkanis Corporation</Company>
         <Authors>FatalMerlin, TheKronnY and contributors</Authors>
         <Copyright>Copyright © $([System.DateTime]::Now.Year) FatalMerlin, TheKronnY and contributors</Copyright>
     </PropertyGroup>
