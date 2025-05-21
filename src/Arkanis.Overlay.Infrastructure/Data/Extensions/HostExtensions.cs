@@ -10,16 +10,12 @@ public static class HostExtensions
     /// <summary>
     ///     Drops the database used by the provided <typeparamref name="TContext" />.
     /// </summary>
-    /// <remarks>
-    ///     Calling this method requires the <typeparamref name="TContext" /> DB context to be registered in the DI container.
-    ///     This operation fails otherwise.
-    /// </remarks>
-    /// <param name="host">The host to drop the database for.</param>
+    /// <param name="serviceProvider">The service provider used to resolve the context.</param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
-    /// <typeparam name="TContext">The type of the DB context.</typeparam>
-    public static async Task DropDatabaseAsync<TContext>(this IHost host, CancellationToken cancellationToken = default) where TContext : DbContext
+    public static async Task DropDatabaseAsync<TContext>(this IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+        where TContext : DbContext
     {
-        await using var serviceScope = host.Services.CreateAsyncScope();
+        await using var serviceScope = serviceProvider.CreateAsyncScope();
 
         var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<TContext>>();
         await using var context = serviceScope.ServiceProvider.GetRequiredService<TContext>();
@@ -39,8 +35,25 @@ public static class HostExtensions
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <typeparam name="TContext">The type of the DB context.</typeparam>
     public static async Task MigrateDatabaseAsync<TContext>(this IHost host, CancellationToken cancellationToken = default) where TContext : DbContext
+        => await host.Services.MigrateDatabaseAsync<TContext>(cancellationToken);
+
+    /// <summary>
+    ///     Migrates the database used by the provided <typeparamref name="TContext" /> to the latest version.
+    /// </summary>
+    /// <remarks>
+    ///     Calling this method requires the <typeparamref name="TContext" /> DB context to be registered in the DI container.
+    ///     This operation fails otherwise.
+    /// </remarks>
+    /// <param name="serviceProvider">
+    ///     The service provider to use for resolving the <typeparamref name="TContext" /> DB
+    ///     context.
+    /// </param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <typeparam name="TContext">The type of the DB context.</typeparam>
+    public static async Task MigrateDatabaseAsync<TContext>(this IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+        where TContext : DbContext
     {
-        await using var serviceScope = host.Services.CreateAsyncScope();
+        await using var serviceScope = serviceProvider.CreateAsyncScope();
 
         var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<TContext>>();
         await using var context = serviceScope.ServiceProvider.GetRequiredService<TContext>();

@@ -7,7 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPriceProviderServices(this IServiceCollection services)
+    public static IServiceCollection AddPriceProviders(this IServiceCollection services)
+        => services
+            .AddSingleton<IPriceProvider, PriceProviderAggregate>()
+            .AddPriceProviderServices();
+
+    private static IServiceCollection AddPriceProviderServices(this IServiceCollection services)
         => services
             .AddSingleton<MarketplacePriceProvider>()
             .Alias<IMarketPriceProvider, MarketplacePriceProvider>()

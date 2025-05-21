@@ -13,6 +13,7 @@
         <Platform>x64</Platform>
         <StartupObject>Arkanis.Overlay.Host.Desktop.Program</StartupObject>
         <ServerGarbageCollection>false</ServerGarbageCollection>
+        <PackageId>Arkanis.Overlay.Host.Desktop</PackageId>
         <AssemblyName>ArkanisOverlay</AssemblyName>
     </PropertyGroup>
 
@@ -33,14 +34,13 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.12"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.0.100"/>
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0"/>
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.2"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.13"/>
         <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1"/>
@@ -56,7 +56,7 @@
         <PackageReference Include="MudBlazor.FontIcons.MaterialSymbols" Version="1.2.0"/>
         <PackageReference Include="Serilog" Version="4.2.0"/>
         <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0"/>
-        <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0"/>
+        <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.4"/>
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0"/>
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
         <PackageReference Include="SingleInstanceCore" Version="2.2.2"/>

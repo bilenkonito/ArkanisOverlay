@@ -30,9 +30,9 @@
       },
       "Microsoft.Extensions.Configuration.FileExtensions": {
         "type": "Direct",
-        "requested": "[8.0.0, )",
-        "resolved": "8.0.0",
-        "contentHash": "McP+Lz/EKwvtCv48z0YImw+L1gi1gy5rHhNaNIY2CrjloV+XY8gydT8DjMR6zWeL13AFK+DioVpppwAuO1Gi1w==",
+        "requested": "[8.0.1, )",
+        "resolved": "8.0.1",
+        "contentHash": "EJzSNO9oaAXnTdtdNO6npPRsIIeZCBSNmdQ091VDO7fBiOtJAAeEq6dtrVXIi3ZyjC5XRSAtVvF8SzcneRHqKQ==",
         "dependencies": {
           "Microsoft.Extensions.Configuration": "8.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
@@ -43,15 +43,14 @@
       },
       "Microsoft.Extensions.Configuration.Json": {
         "type": "Direct",
-        "requested": "[8.0.0, )",
-        "resolved": "8.0.0",
-        "contentHash": "C2wqUoh9OmRL1akaCcKSTmRU8z0kckfImG7zLNI8uyi47Lp+zd5LWAD17waPQEqCz3ioWOCrFUo+JJuoeZLOBw==",
+        "requested": "[8.0.1, )",
+        "resolved": "8.0.1",
+        "contentHash": "L89DLNuimOghjV3tLx0ArFDwVEJD6+uGB3BMCMX01kaLzXkaXHb2021xOMl2QOxUxbdePKUZsUY7n2UUkycjRg==",
         "dependencies": {
           "Microsoft.Extensions.Configuration": "8.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
-          "Microsoft.Extensions.Configuration.FileExtensions": "8.0.0",
-          "Microsoft.Extensions.FileProviders.Abstractions": "8.0.0",
-          "System.Text.Json": "8.0.0"
+          "Microsoft.Extensions.Configuration.FileExtensions": "8.0.1",
+          "Microsoft.Extensions.FileProviders.Abstractions": "8.0.0"
         }
       },
       "Microsoft.NET.Test.Sdk": {
@@ -609,17 +608,17 @@
       },
       "Microsoft.Data.Sqlite": {
         "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "H+iC5IvkCCKSNHXzL3JARvDn7VpkvuJM91KVB89sKjeTF/KX/BocNNh93ZJtX5MCQKb/z4yVKgkU2sVIq+xKfg==",
+        "resolved": "8.0.16",
+        "contentHash": "K4qA8VtCYnKX2lyRn1hJUgcCo1nxmlerBLMemlH84/DvsJqfnG1qEQeMOldd/yh/42D1wa5sK/oOHbkYzjdZiw==",
         "dependencies": {
-          "Microsoft.Data.Sqlite.Core": "8.0.0",
+          "Microsoft.Data.Sqlite.Core": "8.0.16",
           "SQLitePCLRaw.bundle_e_sqlite3": "2.1.6"
         }
       },
       "Microsoft.Data.Sqlite.Core": {
         "type": "Transitive",
-        "resolved": "8.0.13",
-        "contentHash": "OpNpA2EPMzXXnftLg2JcVGBDRbPLLmerhoTIjQ78rLTdqUfIJQ0Schn+Ev5ngmMFMD2kpN9bOqkgbS+csrn5Vg==",
+        "resolved": "8.0.16",
+        "contentHash": "kkXtEh85rTxzBtNluE6jhaj47Fj7xR9gxo1TRp2xTmbqKSFKKHs6IVxuDSKmKtLuJ6sLJAyRQmt0h/+QvUJT2Q==",
         "dependencies": {
           "SQLitePCLRaw.core": "2.1.6"
         }
@@ -1004,14 +1003,6 @@
         "resolved": "8.0.0",
         "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
       },
-      "System.Text.Json": {
-        "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "OdrZO2WjkiEG6ajEFRABTRCi/wuXQPxeV6g8xvUJqdxMvvuCCEk86zPla8UiIQJz3durtUEbNyY/3lIhS0yZvQ==",
-        "dependencies": {
-          "System.Text.Encodings.Web": "8.0.0"
-        }
-      },
       "xunit.abstractions": {
         "type": "Transitive",
         "resolved": "2.0.3",
@@ -1071,6 +1062,22 @@
           "morelinq": "[4.4.0, )"
         }
       },
+      "arkanis.overlay.common.unittests": {
+        "type": "Project",
+        "dependencies": {
+          "Arkanis.Overlay.Common": "[1.0.0, )",
+          "Microsoft.Extensions.Configuration": "[8.0.0, )",
+          "Microsoft.Extensions.Configuration.EnvironmentVariables": "[8.0.0, )",
+          "Microsoft.Extensions.Configuration.FileExtensions": "[8.0.1, )",
+          "Microsoft.Extensions.Configuration.Json": "[8.0.1, )",
+          "Microsoft.Extensions.FileProviders.Physical": "[8.0.0, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[8.0.1, )",
+          "Microsoft.NET.Test.Sdk": "[17.13.0, )",
+          "Shouldly": "[4.3.0, )",
+          "Xunit.Microsoft.DependencyInjection": "[8.2.2, )",
+          "xunit": "[2.9.3, )"
+        }
+      },
       "arkanis.overlay.domain": {
         "type": "Project",
         "dependencies": {
@@ -1090,7 +1097,7 @@
           "Arkanis.Overlay.Domain": "[1.0.0, )",
           "Arkanis.Overlay.External.UEX": "[1.0.0, )",
           "Microsoft.AspNetCore.Http.Extensions": "[2.3.0, )",
-          "Microsoft.Data.Sqlite": "[8.0.0, )",
+          "Microsoft.Data.Sqlite": "[8.0.16, )",
           "Microsoft.EntityFrameworkCore.Sqlite": "[8.0.13, )",
           "Microsoft.Extensions.Http": "[8.0.1, )",
           "Quartz": "[3.14.0, )",
