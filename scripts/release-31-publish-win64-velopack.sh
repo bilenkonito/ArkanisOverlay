@@ -12,7 +12,8 @@ set -eEuo pipefail
 [[ -z "${VERSION_TAG+x}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
 [[ -z "${VERSION_CHANNEL+x}" ]] && >&2 echo "VERSION_CHANNEL is not set" && exit 2
 [[ -z "${GITHUB_TOKEN+x}" ]] && >&2 echo "GITHUB_TOKEN is not set" && exit 2
-[[ -z "${REPOSITORY_URL+x}" ]] && REPOSITORY_URL="https://github.com/ArkanisCorporation/ArkanisOverlay"
+[[ -z "${GITHUB_REPOSITORY+x}" ]] && GITHUB_REPOSITORY="ArkanisCorporation/ArkanisOverlay"
+[[ -z "${REPOSITORY_URL+x}" ]] && REPOSITORY_URL="https://github.com/${GITHUB_REPOSITORY}"
 
 if [[ ! -d publish-win64 ]]; then
   >&2 echo "publish directory does not exist"
@@ -24,6 +25,22 @@ if [[ ! -d release-win64 ]]; then
   exit 2
 fi
 
+for attempt in {1..6} # wait for up to 1 minute
+do
+  if [[ $attempt -gt 1 ]]; then
+    >&2 echo -e "\tWaiting for 10 seconds before retrying..."
+    sleep 10
+  fi
+
+  >&2 echo "Checking that the GitHub release for ${VERSION_TAG} has been created... (attempt #$attempt)"
+  if gh api "/repos/${GITHUB_REPOSITORY}/releases/tags/${VERSION_TAG}" >/dev/null; then
+    >&2 echo -e "\tGitHub release for ${VERSION_TAG} exists!"
+    break
+  fi
+
+  >&2 echo -e "\tGitHub release for ${VERSION_TAG} does not exist yet..."
+done
+
 >&2 echo "Uploading the packed application..."
 dotnet vpk upload github \
     --repoUrl "${REPOSITORY_URL}" \
@@ -32,5 +49,4 @@ dotnet vpk upload github \
     --outputDir release-win64 \
     --releaseName "${VERSION_TAG}" \
     --tag "${VERSION_TAG}" \
-    --targetCommitish "${VERSION_TAG}" \
     --merge
