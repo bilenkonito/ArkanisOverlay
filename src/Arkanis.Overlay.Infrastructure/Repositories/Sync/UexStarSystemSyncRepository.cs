@@ -26,6 +26,6 @@ internal class UexStarSystemSyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(UniverseStarSystemDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameStarSystem>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 }

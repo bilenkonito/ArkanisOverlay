@@ -29,7 +29,7 @@ internal class UexSpaceShipSyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(VehicleDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameVehicle>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 
     /// <remarks>

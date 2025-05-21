@@ -22,7 +22,7 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
 {
     internal readonly ConcurrentDictionary<string, IGameEntity> CachedGameEntities = [];
 
-    public async ValueTask<IGameEntity> ToGameEntityAsync<TSource>(TSource source)
+    public async ValueTask<IGameEntity> ToGameEntityAsync<TSource>(TSource source) where TSource : class
     {
         IGameEntity result = source switch
         {
@@ -43,12 +43,61 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
             CommodityPriceBriefDTO commodityPrice => ToGameEntity(commodityPrice),
             VehiclePurchasePriceBriefDTO vehiclePurchasePrice => ToGameEntity(vehiclePurchasePrice),
             VehicleRentalPriceBriefDTO vehicleRentalPrice => ToGameEntity(vehicleRentalPrice),
+            MarketplaceListingDTO marketplaceListing => ToGameEntity(marketplaceListing),
             _ => throw new ArgumentOutOfRangeException(nameof(source), source, "Cannot map to game entity from unsupported source type."),
         };
 
         await hydrationService.HydrateAsync(result);
         return result;
     }
+
+    public UexApiGameEntityId CreateGameEntityId<TSource>(TSource source, Func<TSource, double?> getSourceId) where TSource : class
+        => source switch
+        {
+            UniverseStarSystemDTO => UexApiGameEntityId.Create<GameStarSystem>(getSourceId(source) ?? 0),
+            UniversePlanetDTO => UexApiGameEntityId.Create<GamePlanet>(getSourceId(source) ?? 0),
+            UniverseMoonDTO => UexApiGameEntityId.Create<GameMoon>(getSourceId(source) ?? 0),
+            UniverseSpaceStationDTO => UexApiGameEntityId.Create<GameSpaceStation>(getSourceId(source) ?? 0),
+            UniverseCityDTO => UexApiGameEntityId.Create<GameCity>(getSourceId(source) ?? 0),
+            UniverseOutpostDTO => UexApiGameEntityId.Create<GameOutpost>(getSourceId(source) ?? 0),
+            UniverseTerminalDTO => UexApiGameEntityId.Create<GameTerminal>(getSourceId(source) ?? 0),
+            CommodityDTO => UexApiGameEntityId.Create<GameCommodity>(getSourceId(source) ?? 0),
+            ItemDTO => UexApiGameEntityId.Create<GameItem>(getSourceId(source) ?? 0),
+            ItemAttributeDTO => UexApiGameEntityId.Create<GameItemTrait>(getSourceId(source) ?? 0),
+            CompanyDTO => UexApiGameEntityId.Create<GameCompany>(getSourceId(source) ?? 0),
+            CategoryDTO => UexApiGameEntityId.Create<GameProductCategory>(getSourceId(source) ?? 0),
+            VehicleDTO => UexApiGameEntityId.Create<GameVehicle>(getSourceId(source) ?? 0),
+            ItemPriceBriefDTO => UexApiGameEntityId.Create<IPriceOf<GameItem, GameEntityTradePrice>>(getSourceId(source) ?? 0),
+            CommodityPriceBriefDTO => UexApiGameEntityId.Create<IPriceOf<GameCommodity, GameEntityTradePrice>>(getSourceId(source) ?? 0),
+            VehiclePurchasePriceBriefDTO => UexApiGameEntityId.Create<IPriceOf<GameVehicle, GameEntityPurchasePrice>>(getSourceId(source) ?? 0),
+            VehicleRentalPriceBriefDTO => UexApiGameEntityId.Create<IPriceOf<GameVehicle, GameEntityRentalPrice>>(getSourceId(source) ?? 0),
+            MarketplaceListingDTO => UexApiGameEntityId.Create<IPriceOf<GameEntity, GameEntityMarketPrice>>(getSourceId(source) ?? 0),
+            _ => throw new InvalidOperationException(
+                $"Unable to create internal {typeof(UexApiGameEntityId)}, unsupported source game entity type: {source.GetType()}"
+            ),
+        };
+
+    private UexApiGameEntityId MapEntityId(object source)
+        => source switch
+        {
+            VehiclePurchasePriceBriefDTO dto => CreateGameEntityId(dto, x => x.Id),
+            VehicleRentalPriceBriefDTO dto => CreateGameEntityId(dto, x => x.Id),
+            CommodityPriceBriefDTO dto => CreateGameEntityId(dto, x => x.Id),
+            MarketplaceListingDTO dto => CreateGameEntityId(dto, x => x.Id),
+            ItemPriceBriefDTO dto => CreateGameEntityId(dto, x => x.Id),
+            _ => CreateGameEntityId(source, _ => null),
+        };
+
+    private UexApiGameEntityId MapReferencedEntityId(object source)
+        => source switch
+        {
+            VehiclePurchasePriceBriefDTO dto => UexApiGameEntityId.Create<GameVehicle>(dto.Id_vehicle ?? 0),
+            VehicleRentalPriceBriefDTO dto => UexApiGameEntityId.Create<GameVehicle>(dto.Id_vehicle ?? 0),
+            CommodityPriceBriefDTO dto => UexApiGameEntityId.Create<GameCommodity>(dto.Id_commodity ?? 0),
+            MarketplaceListingDTO dto => UexApiGameEntityId.Create<GameItem>(dto.Id_item ?? 0),
+            ItemPriceBriefDTO dto => UexApiGameEntityId.Create<GameItem>(dto.Id_item ?? 0),
+            _ => CreateGameEntityId(source, _ => null),
+        };
 
     [UserMapping(Default = true)]
     private GameStarSystem ToGameEntity(UniverseStarSystemDTO source)
@@ -160,34 +209,47 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     }
 
     [UserMapping(Default = true)]
-    private GameEntityPricing ToGameEntity(CommodityPriceBriefDTO source)
+    private GameEntityPrice ToGameEntity(CommodityPriceBriefDTO source)
     {
-        var purchaseResult = MapInternalPurchasePrice(source);
-        CacheGameEntityId<GameCommodityPricing>(source.Id, purchaseResult);
+        var purchaseResult = MapInternal(source);
+        CacheGameEntityId<IPriceOf<GameCommodity, GameEntityTradePrice>>(source.Id, purchaseResult);
         return purchaseResult;
     }
 
     [UserMapping(Default = true)]
-    private GameEntityPricing ToGameEntity(ItemPriceBriefDTO source)
+    private GameEntityPrice ToGameEntity(ItemPriceBriefDTO source)
     {
         var result = MapInternal(source);
-        CacheGameEntityId<GameItemPurchasePricing>(source.Id, result);
+        CacheGameEntityId<IPriceOf<GameItem, GameEntityTradePrice>>(source.Id, result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    private GameEntityPricing ToGameEntity(VehiclePurchasePriceBriefDTO source)
+    private GameEntityPrice ToGameEntity(VehiclePurchasePriceBriefDTO source)
     {
         var result = MapInternal(source);
-        CacheGameEntityId<GameVehiclePurchasePricing>(source.Id, result);
+        CacheGameEntityId<IPriceOf<GameVehicle, GameEntityPurchasePrice>>(source.Id, result);
         return result;
     }
 
     [UserMapping(Default = true)]
-    private GameEntityPricing ToGameEntity(VehicleRentalPriceBriefDTO source)
+    private GameEntityPrice ToGameEntity(VehicleRentalPriceBriefDTO source)
     {
         var result = MapInternal(source);
-        CacheGameEntityId<GameVehicleRentalPricing>(source.Id, result);
+        CacheGameEntityId<IPriceOf<GameVehicle, GameEntityRentalPrice>>(source.Id, result);
+        return result;
+    }
+
+    [UserMapping(Default = true)]
+    private GameEntityPrice ToGameEntity(MarketplaceListingDTO source)
+    {
+        GameEntityMarketPrice result = source.Operation switch
+        {
+            "buy" => MapInternalSalePrice(source), // someone wants to buy on the marketplace, so the price is the sale price
+            "sell" => MapInternalPurchasePrice(source), // someone wants to sell on the marketplace, so the price is the purchase price
+            _ => throw new ArgumentOutOfRangeException(nameof(source), source.Operation, "Unable to select marketplace price type based on operation."),
+        };
+        CacheGameEntityId<IPriceOf<GameItem, GameEntityMarketPrice>>(source.Id, result);
         return result;
     }
 
@@ -291,38 +353,60 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     private partial GameGroundVehicle MapInternalGroundVehicle(VehicleDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
-    [MapProperty(nameof(CommodityPriceBriefDTO.Id_commodity), nameof(GameEntityPricing.OwnerId))]
-    [MapProperty(nameof(CommodityPriceBriefDTO.Date_modified), nameof(GameEntityPricing.UpdatedAt), Use = nameof(MapInternalDate))]
-    [MapProperty(nameof(CommodityPriceBriefDTO.Price_buy), nameof(GameCommodityPricing.PurchasePrice), Use = nameof(MapInternalMoney))]
-    [MapProperty(nameof(CommodityPriceBriefDTO.Price_sell), nameof(GameCommodityPricing.SalePrice), Use = nameof(MapInternalMoney))]
-    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.Terminal), Use = nameof(GetTerminalForCommodityPrice))]
-    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.OwnerId), Use = nameof(GetCommodityForPrice))]
-    private partial GameCommodityPricing MapInternalPurchasePrice(CommodityPriceBriefDTO source);
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapProperty(nameof(CommodityPriceBriefDTO.Date_modified), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
+    [MapProperty(nameof(CommodityPriceBriefDTO.Price_buy), nameof(GameEntityTradePrice.PurchasePrice), Use = nameof(MapInternalMoney))]
+    [MapProperty(nameof(CommodityPriceBriefDTO.Price_sell), nameof(GameEntityTradePrice.SalePrice), Use = nameof(MapInternalMoney))]
+    [MapPropertyFromSource(nameof(GameEntityTerminalPrice.Terminal), Use = nameof(GetTerminalForCommodityPrice))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetCommodityForPrice))]
+    private partial GameEntityTradePrice MapInternal(CommodityPriceBriefDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
-    [MapProperty(nameof(ItemPriceBriefDTO.Id_item), nameof(GameEntityPricing.OwnerId))]
-    [MapProperty(nameof(ItemPriceBriefDTO.Date_modified), nameof(GameEntityPricing.UpdatedAt), Use = nameof(MapInternalDate))]
-    [MapProperty(nameof(ItemPriceBriefDTO.Price_buy), nameof(GameItemPurchasePricing.PurchasePrice), Use = nameof(MapInternalMoney))]
-    [MapProperty(nameof(ItemPriceBriefDTO.Price_sell), nameof(GameItemPurchasePricing.SalePrice), Use = nameof(MapInternalMoney))]
-    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.Terminal), Use = nameof(GetTerminalForItemPrice))]
-    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.OwnerId), Use = nameof(GetItemForPrice))]
-    private partial GameItemPurchasePricing MapInternal(ItemPriceBriefDTO source);
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapProperty(nameof(ItemPriceBriefDTO.Date_modified), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
+    [MapProperty(nameof(ItemPriceBriefDTO.Price_buy), nameof(GameEntityTradePrice.PurchasePrice), Use = nameof(MapInternalMoney))]
+    [MapProperty(nameof(ItemPriceBriefDTO.Price_sell), nameof(GameEntityTradePrice.SalePrice), Use = nameof(MapInternalMoney))]
+    [MapPropertyFromSource(nameof(GameEntityTerminalPrice.Terminal), Use = nameof(GetTerminalForItemPrice))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetItemForPrice))]
+    private partial GameEntityTradePrice MapInternal(ItemPriceBriefDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
-    [MapProperty(nameof(VehiclePurchasePriceBriefDTO.Id_vehicle), nameof(GameEntityPricing.OwnerId))]
-    [MapProperty(nameof(VehiclePurchasePriceBriefDTO.Date_modified), nameof(GameEntityPricing.UpdatedAt), Use = nameof(MapInternalDate))]
-    [MapProperty(nameof(VehiclePurchasePriceBriefDTO.Price_buy), nameof(GameVehiclePurchasePricing.Price), Use = nameof(MapInternalMoney))]
-    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.Terminal), Use = nameof(GetTerminalForVehiclePurchasePrice))]
-    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.OwnerId), Use = nameof(GetVehicleForPurchasePrice))]
-    private partial GameVehiclePurchasePricing MapInternal(VehiclePurchasePriceBriefDTO source);
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapProperty(nameof(VehiclePurchasePriceBriefDTO.Date_modified), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
+    [MapProperty(nameof(VehiclePurchasePriceBriefDTO.Price_buy), nameof(GameEntityPurchasePrice.PurchasePrice), Use = nameof(MapInternalMoney))]
+    [MapPropertyFromSource(nameof(GameEntityTerminalPrice.Terminal), Use = nameof(GetTerminalForVehiclePurchasePrice))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetVehicleForPurchasePrice))]
+    private partial GameEntityPurchasePrice MapInternal(VehiclePurchasePriceBriefDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
-    [MapProperty(nameof(VehicleRentalPriceBriefDTO.Id_vehicle), nameof(GameEntityPricing.OwnerId))]
-    [MapProperty(nameof(VehicleRentalPriceBriefDTO.Date_modified), nameof(GameEntityPricing.UpdatedAt), Use = nameof(MapInternalDate))]
-    [MapProperty(nameof(VehicleRentalPriceBriefDTO.Price_rent), nameof(GameVehicleRentalPricing.Price), Use = nameof(MapInternalMoney))]
-    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.Terminal), Use = nameof(GetTerminalForVehicleRentalPrice))]
-    [MapPropertyFromSource(nameof(GameEntityPricing<IGameEntity>.OwnerId), Use = nameof(GetVehicleForRentalPrice))]
-    private partial GameVehicleRentalPricing MapInternal(VehicleRentalPriceBriefDTO source);
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapProperty(nameof(VehicleRentalPriceBriefDTO.Date_modified), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
+    [MapProperty(nameof(VehicleRentalPriceBriefDTO.Price_rent), nameof(GameEntityRentalPrice.RentalPrice), Use = nameof(MapInternalMoney))]
+    [MapPropertyFromSource(nameof(GameEntityTerminalPrice.Terminal), Use = nameof(GetTerminalForVehicleRentalPrice))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetVehicleForRentalPrice))]
+    private partial GameEntityRentalPrice MapInternal(VehicleRentalPriceBriefDTO source);
+
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapValue(nameof(GameEntityMarketPrice.MarketName), "UEX")]
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapProperty(nameof(MarketplaceListingDTO.Date_added), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
+    [MapProperty(nameof(MarketplaceListingDTO.Price), nameof(GameEntityMarketPurchasePrice.PurchasePrice), Use = nameof(MapInternalMoney))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetEntityForMarketPrice))]
+    private partial GameEntityMarketPurchasePrice MapInternalPurchasePrice(MarketplaceListingDTO source);
+
+    [MapperIgnoreTarget(nameof(GameEntity.Name))]
+    [MapValue(nameof(GameEntityMarketPrice.MarketName), "UEX")]
+    [MapPropertyFromSource(nameof(GameEntityPrice.Id), Use = nameof(MapEntityId))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(MapReferencedEntityId))]
+    [MapProperty(nameof(MarketplaceListingDTO.Date_added), nameof(GameEntityPrice.UpdatedAt), Use = nameof(MapInternalDate))]
+    [MapProperty(nameof(MarketplaceListingDTO.Price), nameof(GameEntityMarketSalePrice.SalePrice), Use = nameof(MapInternalMoney))]
+    [MapPropertyFromSource(nameof(GameEntityPrice.OwnerId), Use = nameof(GetEntityForMarketPrice))]
+    private partial GameEntityMarketSalePrice MapInternalSalePrice(MarketplaceListingDTO source);
 
     [UserMapping(Default = true)]
     private static GameCurrency MapInternalMoney(double? amount)
@@ -435,4 +519,11 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     private GameProductCategory GetCategoryForItem(ItemDTO item)
         => ResolveCachedGameEntity<GameProductCategory>(item.Id_category)
            ?? ThrowMissingMappingException<GameProductCategory, ItemDTO>(item.Id);
+
+    private GameEntity GetEntityForMarketPrice(MarketplaceListingDTO item)
+        => ThrowMissingMappingException<GameEntity, MarketplaceListingDTO>(item.Id);
+
+    private interface IPriceOf<TEntity, TPrice> : IGameEntity
+        where TEntity : IGameEntity
+        where TPrice : class, IGameEntityPrice;
 }

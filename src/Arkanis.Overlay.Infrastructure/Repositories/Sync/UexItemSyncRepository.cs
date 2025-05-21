@@ -62,6 +62,6 @@ internal class UexItemSyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(ItemDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameItem>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 }

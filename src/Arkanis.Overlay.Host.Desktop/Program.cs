@@ -4,22 +4,24 @@ using System.Globalization;
 using System.IO;
 using Common;
 using Common.Abstractions;
+using Common.Enums;
 using Common.Extensions;
 using Components.Helpers;
 using Components.Services;
 using Dapplo.Microsoft.Extensions.Hosting.AppServices;
 using Dapplo.Microsoft.Extensions.Hosting.Wpf;
 using Domain.Abstractions.Services;
-using Domain.Options;
 using Helpers;
 using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Data.Extensions;
+using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
+using Quartz;
 using Serilog;
 using Services;
 using Services.Factories;
@@ -33,8 +35,6 @@ using Workers;
 // https://github.com/dapplo/Dapplo.Microsoft.Extensions.Hosting/blob/master/samples/Dapplo.Hosting.Sample.WpfDemo/Program.cs#L48
 public static class Program
 {
-    private static readonly IUpdateSource UpdateSource = new GithubSource(ApplicationConstants.GitHubRepositoryUrl, null, false);
-
     [STAThread]
     public static async Task Main(string[] args)
     {
@@ -70,7 +70,7 @@ public static class Program
         }
         catch (Exception ex)
         {
-            Log.Logger.Fatal(ex, "Host terminated unexpectedly");
+            Log.Fatal(ex, "Host terminated unexpectedly");
             await Console.Error.WriteLineAsync($"An error occurred during app startup: {ex.Message}");
             throw;
         }
@@ -78,38 +78,50 @@ public static class Program
 
     private static async Task HandleInstallationBehaviourAsync(string[] args)
     {
-        var userPreferenceDefaults = new UserPreferences();
+        var launchHostBuilder = Host.CreateDefaultBuilder(args)
+            .ConfigureServices((context, services) => services
+                .AddLoggerServices(context)
+                .AddVelopackServices()
+                .AddFakeAnalyticsServices()
+                .AddSingleton<IStorageManager, StorageManager>()
+                .AddSingleton<ISystemAutoStartStateProvider, NoSystemAutoStartStateProvider>()
+                .AddSingleton<ISchedulerFactory, FakeSchedulerFactory>()
+                .AddSingleton<WindowsNotifications>()
+                .AddServicesForUserPreferencesFromJsonFile()
+            );
+
+        using var launchApp = launchHostBuilder.Build();
+        using var loggerFactory = launchApp.Services.GetRequiredService<ILoggerFactory>();
+
+        var preferencesManager = launchApp.Services.GetRequiredService<IUserPreferencesManager>();
+        await preferencesManager.LoadUserPreferencesAsync();
+
+        var logger = loggerFactory.CreateLogger(typeof(Program));
+        logger.LogDebug("Running velopack with args: '{Args}'", string.Join("', '", args));
+
+        var userPreferences = preferencesManager.CurrentPreferences;
         VelopackApp.Build()
             .SetArgs(args)
-            .WithFirstRun(_ => WindowsNotifications.ShowWelcomeToast(userPreferenceDefaults))
+            .WithFirstRun(_ => WindowsNotifications.ShowWelcomeToast(userPreferences))
             .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
             .Run();
 
-        var updateManager = new ArkanisOverlayUpdateManager(UpdateSource);
-        using var windowsNotifications = new WindowsNotifications();
-        using var update = new UpdateProcess(updateManager, windowsNotifications);
-        await update.RunAsync(true, CancellationToken.None);
+        try
+        {
+            logger.LogDebug("Starting update process for channel: {UpdateChannel}", userPreferences.UpdateChannel);
+            using var update = ActivatorUtilities.CreateInstance<UpdateProcess>(launchApp.Services);
+            await update.RunAsync(true, CancellationToken.None);
+        }
+        catch (Exception e)
+        {
+            logger.LogCritical(e, "Update process failed for channel: {UpdateChannel}", userPreferences.UpdateChannel);
+        }
     }
 
     private static IHostBuilder ConfigureServices(this IHostBuilder builder)
         => builder.ConfigureServices((context, services) =>
             {
-                services.AddSerilog(loggerConfig => loggerConfig
-                    .WriteTo.Console(
-                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
-                        formatProvider: CultureInfo.InvariantCulture
-                    )
-                    .WriteTo.File(
-                        Path.Join(ApplicationConstants.LocalAppDataPath, "logs", "app.log"),
-                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
-                        buffered: true,
-                        rollingInterval: RollingInterval.Day,
-                        retainedFileCountLimit: 7,
-                        formatProvider: CultureInfo.InvariantCulture
-                    )
-                    .Enrich.FromLogContext()
-                    .ReadFrom.Configuration(context.Configuration)
-                );
+                services.AddLoggerServices(context);
 
                 services.AddInfrastructureConfiguration(context.Configuration);
 
@@ -136,23 +148,13 @@ public static class Program
                 services.AddSingleton<WindowsNotifications>();
 
                 // Auto updater
-                services
-                    .AddSingleton<IUpdateSource>(_ => UpdateSource)
-                    .AddSingleton<UpdateOptions>(provider => new UpdateOptions
-                        {
-                            AllowVersionDowngrade = false,
-                            ExplicitChannel = provider.GetRequiredService<IUserPreferencesProvider>().CurrentPreferences.UpdateChannel.VelopackChannelId,
-                        }
-                    )
-                    .AddSingleton<ArkanisOverlayUpdateManager>(provider => ActivatorUtilities.CreateInstance<ArkanisOverlayUpdateManager>(provider))
-                    .AddSingleton<IAppVersionProvider, VelopackAppVersionProvider>()
-                    .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>();
+                services.AddVelopackServices();
 
                 // Data
                 services
                     .AddWindowsOverlayControls()
                     .AddPreferenceServiceCollection()
-                    .AddInfrastructure();
+                    .AddInfrastructure(options => options.HostingMode = HostingMode.LocalSingleUser);
 
                 // Singleton Services
                 services.AddSingleton<BlurHelper>();
@@ -168,5 +170,41 @@ public static class Program
                 services.AddSingleton<GlobalHotkey>()
                     .Alias<IHostedService, GlobalHotkey>();
             }
+        );
+
+    private static IServiceCollection AddVelopackServices(this IServiceCollection services)
+        => services
+            .AddSingleton<IUpdateSource>(provider =>
+                {
+                    var userPreferencesProvider = provider.GetRequiredService<IUserPreferencesProvider>();
+                    return UpdateHelper.CreateSourceFor(userPreferencesProvider.CurrentPreferences.UpdateChannel);
+                }
+            )
+            .AddSingleton<UpdateOptions>(provider => new UpdateOptions
+                {
+                    AllowVersionDowngrade = true,
+                    ExplicitChannel = provider.GetRequiredService<IUserPreferencesProvider>().CurrentPreferences.UpdateChannel.VelopackChannelId,
+                }
+            )
+            .AddSingleton<ArkanisOverlayUpdateManager>(provider => ActivatorUtilities.CreateInstance<ArkanisOverlayUpdateManager>(provider))
+            .AddSingleton<IAppVersionProvider, VelopackAppVersionProvider>()
+            .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>();
+
+    private static IServiceCollection AddLoggerServices(this IServiceCollection services, HostBuilderContext context)
+        => services.AddSerilog(loggerConfig => loggerConfig
+            .WriteTo.Console(
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
+                formatProvider: CultureInfo.InvariantCulture
+            )
+            .WriteTo.File(
+                Path.Join(ApplicationConstants.ApplicationLogsDirectory.FullName, "app.log"),
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
+                buffered: true,
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 7,
+                formatProvider: CultureInfo.InvariantCulture
+            )
+            .Enrich.FromLogContext()
+            .ReadFrom.Configuration(context.Configuration)
         );
 }

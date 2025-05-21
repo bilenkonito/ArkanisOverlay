@@ -16,7 +16,7 @@ internal class UexVehicleRentPriceSyncRepository(
     UexServiceStateProvider stateProvider,
     UexApiDtoMapper mapper,
     ILogger<UexVehicleRentPriceSyncRepository> logger
-) : UexGameEntitySyncRepositoryBase<VehicleRentalPriceBriefDTO, GameVehicleRentalPricing>(stateProvider, cacheProvider, mapper, logger)
+) : UexGameEntitySyncRepositoryBase<VehicleRentalPriceBriefDTO, GameEntityRentalPrice>(stateProvider, cacheProvider, mapper, logger)
 {
     protected override IDependable GetDependencies()
         => dependencyResolver.DependsOn<GameTerminal>(this);
@@ -29,11 +29,11 @@ internal class UexVehicleRentPriceSyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(VehicleRentalPriceBriefDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameCommodityPricing>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 
     /// <remarks>
-    ///     Only process prices which have a non-zero price.
+    ///     Only process prices which have a non-zero value.
     /// </remarks>
     protected override bool IncludeSourceModel(VehicleRentalPriceBriefDTO sourceModel)
         => sourceModel is { Price_rent: > 0 };

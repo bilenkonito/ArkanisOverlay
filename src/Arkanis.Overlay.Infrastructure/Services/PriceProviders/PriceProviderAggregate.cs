@@ -7,6 +7,7 @@ using Domain.Models.Trade;
 
 public class PriceProviderAggregate(
     ServiceDependencyResolver serviceDependencyResolver,
+    IMarketPriceProvider marketPriceProvider,
     IPurchasePriceProvider purchasePriceProvider,
     ISalePriceProvider salePriceProvider,
     IRentPriceProvider rentPriceProvider
@@ -28,6 +29,9 @@ public class PriceProviderAggregate(
             .WaitUntilReadyAsync(cancellationToken)
             .ContinueWith(_ => IsReady = true, cancellationToken)
             .ConfigureAwait(false);
+
+    public ValueTask<Bounds<PriceTag>> GetMarketPriceTagAsync(IGameEntity gameEntity)
+        => marketPriceProvider.GetMarketPriceTagAsync(gameEntity);
 
     public ValueTask<Bounds<PriceTag>> GetPriceTagAtAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
         => purchasePriceProvider.GetPriceTagAtAsync(gameEntity, gameLocation);

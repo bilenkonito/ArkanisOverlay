@@ -141,7 +141,7 @@
     <MudStack id="searchContainer" Class="d-flex justify-start align-center flex-grow-1 px-3">
         <div style="padding: 7.5vh"></div>
 
-        <CascadingValue Value="@_searchContext" IsFixed>
+        <CascadingValue Value="@_searchContext">
             <SearchBox
                 @ref="_searchBox"
                 @bind-SearchText="@SearchText"

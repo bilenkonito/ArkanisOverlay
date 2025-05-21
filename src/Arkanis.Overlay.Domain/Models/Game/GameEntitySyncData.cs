@@ -2,7 +2,28 @@ namespace Arkanis.Overlay.Domain.Models.Game;
 
 using Abstractions.Game;
 
-public abstract record GameEntitySyncData<T> where T : class, IGameEntity;
+public abstract record GameEntitySyncData<T> where T : class, IGameEntity
+{
+    public static readonly GameEntitySyncData<T> Missing = MissingSyncData<T>.Instance;
+
+    public GameEntitySyncData<T> MergeWith(GameEntitySyncData<T> other)
+        => this switch
+        {
+            LoadedSyncData<T> loaded => other switch
+            {
+                LoadedSyncData<T> otherLoaded => new LoadedSyncData<T>(
+                    loaded.GameEntities.Union(otherLoaded.GameEntities),
+                    loaded.DataState // TODO: Merge / Select of the two
+                ),
+                _ => this,
+            },
+            _ => other switch
+            {
+                LoadedSyncData<T> otherLoaded => otherLoaded,
+                _ => this,
+            },
+        };
+}
 
 public sealed record SyncDataUpToDate<T> : GameEntitySyncData<T> where T : class, IGameEntity;
 

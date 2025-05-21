@@ -28,7 +28,7 @@
                                        Origin="@(Origin.BottomCenter)"
                                        Color="@(context.ContainsFocus ? Color.Error : Color.Tertiary)"
                                        Class="w-100"
-                                       OnKeyPress="@(FocusSearchBoxAsync)">
+                                       OnKeyPress="@(OnSearchBoxKeyboardShortcut)">
                     <MudTextField
                         id="searchBox"
                         @ref="_searchBox"
@@ -59,7 +59,7 @@
 {
 
     private FocusRegion? _searchBoxFocusRegion;
-    private static MudTextField<string>? _searchBox;
+    private MudTextField<string>? _searchBox;
 
     [CascadingParameter]
     public OverlaySearchContext? SearchContext { get; set; }
@@ -76,18 +76,23 @@
     [Parameter]
     public string MinWidth { get; set; } = "60vw";
 
-    public async Task FocusSearchBoxAsync()
+    public async Task OnSearchBoxKeyboardShortcut()
     {
         if (_searchBoxFocusRegion?.HasFocus == true)
         {
-            await OverlayControls.HideAsync();
+            await InvokeAsync(async () => await OverlayControls.HideAsync());
         }
         else
         {
-            if (_searchBox is not null)
-            {
-                await _searchBox.SelectAsync();
-            }
+            await FocusSearchBoxAsync();
+        }
+    }
+
+    public async Task FocusSearchBoxAsync()
+    {
+        if (_searchBox is not null && _searchBoxFocusRegion?.HasFocus == false)
+        {
+            await InvokeAsync(async () => await _searchBox.SelectAsync());
         }
     }
 
@@ -95,12 +100,12 @@
     {
         if (_searchBox is not null && _searchBox.Text != searchText)
         {
-            await _searchBox.SetText(searchText);
+            await InvokeAsync(async () => await _searchBox.SetText(searchText));
         }
         else
         {
             SearchText = searchText;
-            await SearchTextChanged.InvokeAsync(searchText);
+            await InvokeAsync(async () => await SearchTextChanged.InvokeAsync(searchText));
         }
     }
 

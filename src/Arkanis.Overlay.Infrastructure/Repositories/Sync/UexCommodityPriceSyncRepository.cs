@@ -16,13 +16,13 @@ internal class UexCommodityPriceSyncRepository(
     IExternalSyncCacheProvider<UexCommodityPriceSyncRepository> cacheProvider,
     UexApiDtoMapper mapper,
     ILogger<UexCommodityPriceSyncRepository> logger
-) : UexGameEntitySyncRepositoryBase<CommodityPriceBriefDTO, GameCommodityPricing>(stateProvider, cacheProvider, mapper, logger)
+) : UexGameEntitySyncRepositoryBase<CommodityPriceBriefDTO, GameEntityTradePrice>(stateProvider, cacheProvider, mapper, logger)
 {
-    protected override IDependable GetDependencies()
-        => dependencyResolver.DependsOn<GameTerminal>(this);
-
     protected override double CacheTimeFactor
         => 0.5;
+
+    protected override IDependable GetDependencies()
+        => dependencyResolver.DependsOn<GameTerminal>(this);
 
     protected override async Task<UexApiResponse<ICollection<CommodityPriceBriefDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
@@ -32,11 +32,11 @@ internal class UexCommodityPriceSyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(CommodityPriceBriefDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameCommodityPricing>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 
     /// <remarks>
-    ///     Only process prices which have a non-zero price.
+    ///     Only process prices which have a non-zero value.
     /// </remarks>
     protected override bool IncludeSourceModel(CommodityPriceBriefDTO sourceModel)
         => sourceModel is { Price_buy: > 0 } or { Price_sell: > 0 };

@@ -3,21 +3,22 @@ namespace Arkanis.Overlay.Infrastructure.Services;
 using Domain.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using PriceProviders;
-using PriceProviders.UEX;
 
 public static class DependencyInjection
 {
     public static IServiceCollection AddFakePriceProviders(this IServiceCollection services)
         => services
-            .AddSingleton<IPriceProvider, FakePriceProvider>()
-            .AddSingleton<IPurchasePriceProvider>(provider => provider.GetRequiredService<IPriceProvider>())
-            .AddSingleton<ISalePriceProvider>(provider => provider.GetRequiredService<IPriceProvider>())
-            .AddSingleton<IRentPriceProvider>(provider => provider.GetRequiredService<IPriceProvider>());
+            .AddSingleton<FakePriceProvider>()
+            .AddSingleton<IPriceProvider>(provider => provider.GetRequiredService<FakePriceProvider>())
+            .AddSingleton<IMarketPriceProvider>(provider => provider.GetRequiredService<FakePriceProvider>())
+            .AddSingleton<IPurchasePriceProvider>(provider => provider.GetRequiredService<FakePriceProvider>())
+            .AddSingleton<ISalePriceProvider>(provider => provider.GetRequiredService<FakePriceProvider>())
+            .AddSingleton<IRentPriceProvider>(provider => provider.GetRequiredService<FakePriceProvider>());
 
     public static IServiceCollection AddUexPriceProviders(this IServiceCollection services)
         => services
             .AddSingleton<IPriceProvider, PriceProviderAggregate>()
-            .AddUexPriceProviderServices();
+            .AddPriceProviderServices();
 
     public static IServiceCollection AddDatabaseExternalSyncCacheProviders(this IServiceCollection services)
         => services
@@ -26,9 +27,15 @@ public static class DependencyInjection
     public static IServiceCollection AddInMemorySearchServices(this IServiceCollection services)
         => services.AddScoped<ISearchService, InMemorySearchService>();
 
-    public static IServiceCollection AddUserPreferencesFileManagerServices(this IServiceCollection services)
+    public static IServiceCollection AddServicesForUserPreferencesFromJsonFile(this IServiceCollection services)
+        => services.AddUserPreferencesServices<UserPreferencesJsonFileManager>();
+
+    public static IServiceCollection AddServicesForInMemoryUserPreferences(this IServiceCollection services)
+        => services.AddUserPreferencesServices<InMemoryUserPreferencesManager>();
+
+    public static IServiceCollection AddUserPreferencesServices<T>(this IServiceCollection services) where T : class, IUserPreferencesManager
         => services
-            .AddSingleton<IUserPreferencesManager, UserPreferencesJsonFileManager>()
+            .AddSingleton<IUserPreferencesManager, T>()
             .AddSingleton<IUserPreferencesProvider>(provider => provider.GetRequiredService<IUserPreferencesManager>())
             .AddHostedService<AutoStartUserPreferencesUpdater>()
             .AddHostedService<UserPreferencesLoader>();
