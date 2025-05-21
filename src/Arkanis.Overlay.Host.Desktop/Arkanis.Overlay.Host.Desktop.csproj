@@ -28,38 +28,39 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.AppServices" Version="1.0.14"/>
-        <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Plugins" Version="1.0.14"/>
-        <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Wpf" Version="1.0.14"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.12"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.0.100"/>
-        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
+        <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.AppServices"/>
+        <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Plugins"/>
+        <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Wpf"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf"/>
+        <PackageReference Include="Microsoft.AspNetCore.Http"/>
+        <PackageReference Include="Microsoft.Data.Sqlite"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.13"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0"/>
-        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3"/>
-        <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0"/>
-        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting"/>
+        <PackageReference Include="Microsoft.Extensions.Http"/>
+        <PackageReference Include="Microsoft.Extensions.Logging"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Console"/>
+        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations"/>
+        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications"/>
+        <PackageReference Include="Microsoft.Win32.Registry"/>
+        <PackageReference Include="Microsoft.Windows.CsWin32">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Serilog" Version="4.2.0"/>
-        <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0"/>
-        <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.4"/>
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0"/>
-        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
-        <PackageReference Include="SingleInstanceCore" Version="2.2.2"/>
-        <PackageReference Include="TrayIcon" Version="1.1.1.1"/>
-        <PackageReference Include="Velopack" Version="0.0.1053"/>
+        <PackageReference Include="Serilog"/>
+        <PackageReference Include="Serilog.Extensions.Hosting"/>
+        <PackageReference Include="Serilog.Settings.Configuration"/>
+        <PackageReference Include="Serilog.Sinks.Console"/>
+        <PackageReference Include="Serilog.Sinks.File"/>
+        <PackageReference Include="SingleInstanceCore"/>
+        <PackageReference Include="TrayIcon"/>
+        <PackageReference Include="Velopack"/>
     </ItemGroup>
 
     <ItemGroup>
