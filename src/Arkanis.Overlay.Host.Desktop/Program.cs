@@ -107,8 +107,8 @@ public static class Program
         var userPreferences = preferencesManager.CurrentPreferences;
         VelopackApp.Build()
             .SetArgs(args)
-            .WithFirstRun(_ => WindowsNotifications.ShowWelcomeToast(userPreferences))
-            .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
+            .OnFirstRun(_ => WindowsNotifications.ShowWelcomeToast(userPreferences))
+            .OnAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
             .Run();
 
         try

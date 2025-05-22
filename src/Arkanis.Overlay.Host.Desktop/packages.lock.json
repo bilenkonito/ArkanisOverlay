@@ -291,12 +291,11 @@
       },
       "Velopack": {
         "type": "Direct",
-        "requested": "[0.0.1053, )",
-        "resolved": "0.0.1053",
-        "contentHash": "hbSFBfwAAEg5GGKkocDPiyYA+FxyrkXo2pJJCcrgOv1xnSupINpYXk2l9M/M7LEjKiH42pq+NmcG/+CwQvTbvA==",
+        "requested": "[0.0.1251, )",
+        "resolved": "0.0.1251",
+        "contentHash": "rDojkZXbakJgTKn8wmw4/kPGP+j63AO87dKRhzwYIVYL1rj7KZKXw+uhA6R6nCXMnHZ0isW9QXNW0O2h7bTVAQ==",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
-          "NuGet.Versioning": "6.12.1"
+          "NuGet.Versioning": "6.13.2"
         }
       },
       "Dapplo.Microsoft.Extensions.Hosting.UiThread": {
