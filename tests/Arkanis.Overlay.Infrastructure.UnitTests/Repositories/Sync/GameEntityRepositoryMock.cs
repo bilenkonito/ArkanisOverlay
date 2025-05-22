@@ -7,7 +7,7 @@ using Domain.Models;
 using Domain.Models.Game;
 using Infrastructure.Services;
 
-internal class GameEntityRepositoryMock<T>(IGameEntityExternalSyncRepository<T> repository) : InitializableBase, IGameEntityRepository<T>
+internal sealed class GameEntityRepositoryMock<T>(IGameEntityExternalSyncRepository<T> repository) : InitializableBase, IGameEntityRepository<T>
     where T : class, IGameEntity
 {
     internal List<T> Entities { get; set; } = [];
