@@ -67,9 +67,11 @@ internal abstract class UexGameEntitySyncRepositoryBase<TSource, TDomain>(
                 throw new ExternalApiResponseProcessingException($"Unsupported external game data state: {serviceState}");
             }
 
+            Logger.LogDebug("Performing uncached API request for: {Type}", typeof(TDomain).Name);
             var response = await GetInternalResponseAsync(cancellationToken).ConfigureAwait(false);
             var result = CreateSyncData(response, serviceAvailableState);
 
+            Logger.LogDebug("Caching data for: {Type}", typeof(TDomain).Name);
             await cacheProvider.StoreAsync(response, result.DataState, cancellationToken);
             return result;
         }
