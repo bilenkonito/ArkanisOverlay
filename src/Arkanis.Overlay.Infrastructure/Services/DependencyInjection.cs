@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Services;
 
+using Common.Extensions;
 using Domain.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using PriceProviders;
@@ -9,16 +10,11 @@ public static class DependencyInjection
     public static IServiceCollection AddFakePriceProviders(this IServiceCollection services)
         => services
             .AddSingleton<FakePriceProvider>()
-            .AddSingleton<IPriceProvider>(provider => provider.GetRequiredService<FakePriceProvider>())
-            .AddSingleton<IMarketPriceProvider>(provider => provider.GetRequiredService<FakePriceProvider>())
-            .AddSingleton<IPurchasePriceProvider>(provider => provider.GetRequiredService<FakePriceProvider>())
-            .AddSingleton<ISalePriceProvider>(provider => provider.GetRequiredService<FakePriceProvider>())
-            .AddSingleton<IRentPriceProvider>(provider => provider.GetRequiredService<FakePriceProvider>());
-
-    public static IServiceCollection AddUexPriceProviders(this IServiceCollection services)
-        => services
-            .AddSingleton<IPriceProvider, PriceProviderAggregate>()
-            .AddPriceProviderServices();
+            .Alias<IPriceProvider, FakePriceProvider>()
+            .Alias<IMarketPriceProvider, FakePriceProvider>()
+            .Alias<IPurchasePriceProvider, FakePriceProvider>()
+            .Alias<ISalePriceProvider, FakePriceProvider>()
+            .Alias<IRentPriceProvider, FakePriceProvider>();
 
     public static IServiceCollection AddDatabaseExternalSyncCacheProviders(this IServiceCollection services)
         => services
@@ -35,8 +31,9 @@ public static class DependencyInjection
 
     public static IServiceCollection AddUserPreferencesServices<T>(this IServiceCollection services) where T : class, IUserPreferencesManager
         => services
-            .AddSingleton<IUserPreferencesManager, T>()
-            .AddSingleton<IUserPreferencesProvider>(provider => provider.GetRequiredService<IUserPreferencesManager>())
+            .AddSingleton<T>()
+            .Alias<IUserPreferencesManager, T>()
+            .Alias<IUserPreferencesProvider, T>()
             .AddHostedService<AutoStartUserPreferencesUpdater>()
             .AddHostedService<UserPreferencesLoader>();
 }

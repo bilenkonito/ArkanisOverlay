@@ -2,7 +2,7 @@ namespace Arkanis.Overlay.Infrastructure.UnitTests.Services;
 
 using Domain.Abstractions;
 
-internal class FulfillableDependency : IDependable
+internal sealed class FulfillableDependency : IDependable
 {
     private readonly TaskCompletionSource _completionSource = new();
 

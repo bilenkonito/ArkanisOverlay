@@ -1,0 +1,8 @@
+<Project>
+    <PropertyGroup>
+        <NoWarn>
+            $(NoWarn);
+            CA1707; <!-- CA1707: Remove the underscores from member name -->
+        </NoWarn>
+    </PropertyGroup>
+</Project>

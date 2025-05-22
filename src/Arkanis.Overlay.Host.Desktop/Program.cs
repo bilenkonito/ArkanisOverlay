@@ -17,6 +17,7 @@ using Infrastructure.Data;
 using Infrastructure.Data.Extensions;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -38,6 +39,10 @@ public static class Program
     [STAThread]
     public static async Task Main(string[] args)
     {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+            .CreateBootstrapLogger();
+
         await HandleInstallationBehaviourAsync(args);
 
         var hostBuilder = Host.CreateDefaultBuilder(args)
@@ -50,7 +55,7 @@ public static class Program
                     };
                 }
             )
-            .ConfigureServices()
+            .ConfigureServices((context, services) => services.AddAllDesktopHostServices(context.Configuration))
             .ConfigureWpf(options =>
                 {
                     options.UseApplication<App>();
@@ -80,7 +85,7 @@ public static class Program
     {
         var launchHostBuilder = Host.CreateDefaultBuilder(args)
             .ConfigureServices((context, services) => services
-                .AddLoggerServices(context)
+                .AddLoggerServices(context.Configuration)
                 .AddVelopackServices()
                 .AddFakeAnalyticsServices()
                 .AddSingleton<IStorageManager, StorageManager>()
@@ -102,8 +107,8 @@ public static class Program
         var userPreferences = preferencesManager.CurrentPreferences;
         VelopackApp.Build()
             .SetArgs(args)
-            .WithFirstRun(_ => WindowsNotifications.ShowWelcomeToast(userPreferences))
-            .WithAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
+            .OnFirstRun(_ => WindowsNotifications.ShowWelcomeToast(userPreferences))
+            .OnAfterUpdateFastCallback(WindowsNotifications.ShowUpdatedToast)
             .Run();
 
         try
@@ -118,61 +123,61 @@ public static class Program
         }
     }
 
-    private static IHostBuilder ConfigureServices(this IHostBuilder builder)
-        => builder.ConfigureServices((context, services) =>
+    internal static IServiceCollection AddAllDesktopHostServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddLoggerServices(configuration);
+
+        services.AddInfrastructureConfiguration(configuration);
+
+        services.AddWpfBlazorWebView();
+        services.AddMudServices(config =>
             {
-                services.AddLoggerServices(context);
-
-                services.AddInfrastructureConfiguration(context.Configuration);
-
-                services.AddWpfBlazorWebView();
-                services.AddMudServices(config =>
-                    {
-                        config.SnackbarConfiguration.NewestOnTop = true;
-                        config.SnackbarConfiguration.MaxDisplayedSnackbars = 1;
-                    }
-                );
-                services.AddSingleton<IServiceProvider>(sp => sp);
-                services.AddHttpClient();
-
-                services.AddGoogleTrackingServices()
-                    .AddSingleton<SharedAnalyticsPropertyProvider, DesktopAnalyticsPropertyProvider>();
-
-                services.AddGlobalKeyboardProxyService();
-                services.AddJavaScriptEventInterop();
-                services.AddSingleton(typeof(WindowProvider<>));
-
-                services.AddHostedService<WindowsAutoStartManager>()
-                    .AddSingleton<ISystemAutoStartStateProvider, WindowsAutoStartStateProvider>();
-
-                services.AddSingleton<WindowsNotifications>();
-
-                // Auto updater
-                services.AddVelopackServices();
-
-                // Data
-                services
-                    .AddWindowsOverlayControls()
-                    .AddPreferenceServiceCollection()
-                    .AddInfrastructure(options => options.HostingMode = HostingMode.LocalSingleUser);
-
-                // Singleton Services
-                services.AddSingleton<BlurHelper>();
-                services.AddMemoryCache();
-
-                // Factories
-                services.AddSingleton<PreferencesWindowFactory>();
-
-                // Workers
-                services.AddSingleton<WindowTracker>()
-                    .Alias<IHostedService, WindowTracker>();
-
-                services.AddSingleton<GlobalHotkey>()
-                    .Alias<IHostedService, GlobalHotkey>();
+                config.SnackbarConfiguration.NewestOnTop = true;
+                config.SnackbarConfiguration.MaxDisplayedSnackbars = 1;
             }
         );
+        services.AddSingleton<IServiceProvider>(sp => sp);
+        services.AddHttpClient();
 
-    private static IServiceCollection AddVelopackServices(this IServiceCollection services)
+        services.AddGoogleTrackingServices()
+            .AddSingleton<SharedAnalyticsPropertyProvider, DesktopAnalyticsPropertyProvider>();
+
+        services.AddGlobalKeyboardProxyService();
+        services.AddJavaScriptEventInterop();
+        services.AddSingleton(typeof(WindowProvider<>));
+
+        services.AddHostedService<WindowsAutoStartManager>()
+            .AddSingleton<ISystemAutoStartStateProvider, WindowsAutoStartStateProvider>();
+
+        services.AddSingleton<WindowsNotifications>();
+
+        // Auto updater
+        services.AddVelopackServices();
+
+        // Data
+        services
+            .AddWindowsOverlayControls()
+            .AddPreferenceServiceCollection()
+            .AddInfrastructure(options => options.HostingMode = HostingMode.LocalSingleUser);
+
+        // Singleton Services
+        services.AddSingleton<BlurHelper>();
+        services.AddMemoryCache();
+
+        // Factories
+        services.AddSingleton<PreferencesWindowFactory>();
+
+        // Workers
+        services.AddSingleton<WindowTracker>()
+            .Alias<IHostedService, WindowTracker>();
+
+        services.AddSingleton<GlobalHotkey>()
+            .Alias<IHostedService, GlobalHotkey>();
+
+        return services;
+    }
+
+    internal static IServiceCollection AddVelopackServices(this IServiceCollection services)
         => services
             .AddSingleton<IUpdateSource>(provider =>
                 {
@@ -190,7 +195,7 @@ public static class Program
             .AddSingleton<IAppVersionProvider, VelopackAppVersionProvider>()
             .AddHostedService<UpdateProcess.CheckForUpdatesJob.SelfScheduleService>();
 
-    private static IServiceCollection AddLoggerServices(this IServiceCollection services, HostBuilderContext context)
+    internal static IServiceCollection AddLoggerServices(this IServiceCollection services, IConfiguration configuration)
         => services.AddSerilog(loggerConfig => loggerConfig
             .WriteTo.Console(
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
@@ -205,6 +210,6 @@ public static class Program
                 formatProvider: CultureInfo.InvariantCulture
             )
             .Enrich.FromLogContext()
-            .ReadFrom.Configuration(context.Configuration)
+            .ReadFrom.Configuration(configuration)
         );
 }

@@ -11,6 +11,29 @@ public abstract class ServiceCacheDecorator(ILogger logger)
 {
     private const string CacheDirName = ".data";
 
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        WriteIndented = true,
+    };
+
+    private readonly Action<ILogger, string, string, Exception?> _logCacheRead = LoggerMessage.Define<string, string>(
+        LogLevel.Debug,
+        new EventId(),
+        "Loading cached result from {FilePath} for a call to {MethodName}"
+    );
+
+    private readonly Action<ILogger, string, string, Exception?> _logCacheWrite = LoggerMessage.Define<string, string>(
+        LogLevel.Debug,
+        new EventId(),
+        "Writing cached result to {FilePath} from a call to {MethodName}"
+    );
+
+    private readonly Action<ILogger, string, string, Exception?> _logCall = LoggerMessage.Define<string, string>(
+        LogLevel.Debug,
+        new EventId(),
+        "Proxying call to {MethodName} with params: {MethodParams}"
+    );
+
     protected abstract string CacheSubPath { get; }
 
     [SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms")]
@@ -22,7 +45,7 @@ public abstract class ServiceCacheDecorator(ILogger logger)
     )
     {
         var serializedParams = JsonSerializer.Serialize(methodParams);
-        logger.LogDebug("Proxying call to {MethodName} with params: {MethodParams}", methodName, serializedParams);
+        _logCall(logger, methodName, serializedParams, null);
 
         var paramsId = Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(serializedParams)));
         TResult? result = default;
@@ -36,18 +59,18 @@ public abstract class ServiceCacheDecorator(ILogger logger)
         var cacheFilePath = Path.Join(cacheFileDir, cacheFileName);
         if (File.Exists(cacheFilePath))
         {
-            logger.LogDebug("Loading cached result from {FilePath} for a call to {MethodName}", cacheFilePath, methodName);
-            result = await JsonSerializer.DeserializeAsync<TResult>(File.OpenRead(cacheFilePath));
+            _logCacheRead(logger, cacheFilePath, methodName, null);
+            result = await JsonSerializer.DeserializeAsync<TResult>(File.OpenRead(cacheFilePath), SerializerOptions);
         }
 
         if (result is null)
         {
             result = await runAsync(methodParams);
-            logger.LogDebug("Writing cached result to {FilePath} from a call to {MethodName}", cacheFilePath, methodName);
+            _logCacheWrite(logger, cacheFilePath, methodName, null);
 
             Directory.CreateDirectory(cacheFileDir);
             await using var file = File.OpenWrite(cacheFilePath);
-            await JsonSerializer.SerializeAsync(file, result);
+            await JsonSerializer.SerializeAsync(file, result, SerializerOptions);
         }
 
         return result;
