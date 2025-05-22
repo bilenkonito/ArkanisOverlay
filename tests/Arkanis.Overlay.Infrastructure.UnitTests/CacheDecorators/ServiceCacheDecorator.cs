@@ -11,6 +11,11 @@ public abstract class ServiceCacheDecorator(ILogger logger)
 {
     private const string CacheDirName = ".data";
 
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        WriteIndented = true,
+    };
+
     private readonly Action<ILogger, string, string, Exception?> _logCacheRead = LoggerMessage.Define<string, string>(
         LogLevel.Debug,
         new EventId(),
@@ -55,7 +60,7 @@ public abstract class ServiceCacheDecorator(ILogger logger)
         if (File.Exists(cacheFilePath))
         {
             _logCacheRead(logger, cacheFilePath, methodName, null);
-            result = await JsonSerializer.DeserializeAsync<TResult>(File.OpenRead(cacheFilePath));
+            result = await JsonSerializer.DeserializeAsync<TResult>(File.OpenRead(cacheFilePath), SerializerOptions);
         }
 
         if (result is null)
@@ -65,7 +70,7 @@ public abstract class ServiceCacheDecorator(ILogger logger)
 
             Directory.CreateDirectory(cacheFileDir);
             await using var file = File.OpenWrite(cacheFilePath);
-            await JsonSerializer.SerializeAsync(file, result);
+            await JsonSerializer.SerializeAsync(file, result, SerializerOptions);
         }
 
         return result;
