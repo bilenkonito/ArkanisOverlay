@@ -238,11 +238,20 @@ internal class WindowsNotifications : IDisposable
 
     public class Notification(ToastNotifierCompat notifier)
     {
+        private bool _hidden;
+
         protected ToastNotifierCompat Notifier { get; } = notifier;
         public required ToastNotification Toast { get; init; }
 
         public void Hide()
-            => Notifier.Hide(Toast);
+        {
+            if (!_hidden)
+            {
+                Notifier.Hide(Toast);
+            }
+
+            _hidden = true;
+        }
     }
 
     public sealed class UpdatableNotification<T>(ToastNotifierCompat notifier) : Notification(notifier) where T : Params
