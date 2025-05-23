@@ -1,6 +1,7 @@
 namespace Arkanis.Overlay.Host.Desktop.Services;
 
 using System.Globalization;
+using System.Runtime.InteropServices;
 using Windows.Foundation.Collections;
 using Windows.UI.Notifications;
 using Domain.Options;
@@ -25,7 +26,13 @@ internal class WindowsNotifications : IDisposable
     {
         foreach (var toastNotification in _notificationsShown.ToList())
         {
-            toastNotification.Hide();
+            try
+            {
+                toastNotification.Hide();
+            }
+            catch (COMException)
+            {
+            }
         }
     }
 
