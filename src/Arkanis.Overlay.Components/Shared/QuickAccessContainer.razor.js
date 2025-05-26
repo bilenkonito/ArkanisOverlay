@@ -74,16 +74,18 @@ export class QuickAccessContainer {
      * @param {DotNet.DotNetObject} componentRef
      * @param {HTMLElement} containerElement
      * @param {String} childElementSelector
+     * @param {Array<String>} features
      *
      * @returns {QuickAccessContainer}
      */
-    static createFor(componentRef, containerElement, childElementSelector) {
-        return new QuickAccessContainer(componentRef, containerElement, childElementSelector);
+    static createFor(componentRef, containerElement, childElementSelector, features) {
+        return new QuickAccessContainer(componentRef, containerElement, childElementSelector, features);
     }
 
     /**
-     * Performs the internal update process based on DOM change.
+     * Disposes of resources held by the QuickAccessContainer instance.
      *
+     * @remarks This method is called from .NET code.
      */
     async dispose() {
         console.debug("dispose requested from .NET component %o", this.componentRef);
