@@ -165,7 +165,7 @@
                         <MudStack Class="mr-n2">
                             @foreach (var item in Items)
                             {
-                                <SearchResult Model="@item"/>
+                                <SearchResultItem Model="@item"/>
                             }
                         </MudStack>
                     </MudPaper>
@@ -178,7 +178,7 @@
                         <MudStack Class="mr-n2">
                             @foreach (var commodity in Commodities)
                             {
-                                <SearchResult Model="@commodity"/>
+                                <SearchResultItem Model="@commodity"/>
                             }
                         </MudStack>
                     </MudPaper>
@@ -229,7 +229,7 @@
                         <MudStack Class="mr-n2">
                             @foreach (var terminal in Terminals)
                             {
-                                <SearchResult Model="@terminal"/>
+                                <SearchResultItem Model="@terminal"/>
                             }
                         </MudStack>
                     </MudPaper>

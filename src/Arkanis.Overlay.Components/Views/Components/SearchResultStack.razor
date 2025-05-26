@@ -1,0 +1,54 @@
+@using Arkanis.Overlay.Domain.Abstractions.Game
+@using Arkanis.Overlay.Domain.Models.Search
+@using MoreLinq
+<QuickAccessContainer QuerySelector=".search-result-container">
+    <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
+        @if (Virtualize)
+        {
+            <MudVirtualize Items="@Model.GameEntities.Distinct().ToList()" ItemSize="66" Enabled Context="result">
+                <SearchResultItem
+                    @key="@result.GetHashCode()"
+                    Model="@result.Subject"/>
+            </MudVirtualize>
+        }
+        else
+        {
+            @foreach (var result in BatchedSearchResults.Distinct())
+            {
+                <SearchResultItem
+                    @key="@result.GetHashCode()"
+                    Model="@result.Subject"/>
+            }
+        }
+    </MudStack>
+</QuickAccessContainer>
+
+@code
+{
+
+    [Parameter]
+    [EditorRequired]
+    public GameEntitySearchResults Model { get; set; } = GameEntitySearchResults.Empty;
+
+    [Parameter]
+    public bool Virtualize { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (!Virtualize)
+        {
+            BatchedSearchResults = [];
+            foreach (var resultBatch in Model.GameEntities.Batch(50))
+            {
+                BatchedSearchResults.AddRange(resultBatch);
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(25);
+            }
+        }
+    }
+
+    private List<SearchMatchResult<IGameEntity>> BatchedSearchResults { get; set; } = [];
+
+}

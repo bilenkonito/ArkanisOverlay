@@ -1,4 +1,3 @@
-@using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
 @inject IJSRuntime JsRuntime
@@ -57,7 +56,13 @@
 
         if (_controls is not null)
         {
-            await _controls.InvokeVoidAsync("updateDebounced", 150);
+            try
+            {
+                await _controls.InvokeVoidAsync("updateDebounced", 150);
+            }
+            catch (JSDisconnectedException)
+            {
+            }
         }
     }
 
@@ -118,15 +123,21 @@
 
     public async ValueTask DisposeAsync()
     {
-        if (_controls != null)
+        try
         {
-            await _controls.InvokeVoidAsync("dispose");
-            await _controls.DisposeAsync();
-        }
+            if (_controls != null)
+            {
+                await _controls.InvokeVoidAsync("dispose");
+                await _controls.DisposeAsync();
+            }
 
-        if (_module != null)
+            if (_module != null)
+            {
+                await _module.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
         {
-            await _module.DisposeAsync();
         }
 
         _selfReference?.Dispose();
