@@ -34,7 +34,7 @@ public abstract class PriceProviderBase : SelfInitializableServiceBase
         var minPriceTag = prices.Min();
         var maxPriceTag = prices.Max();
 
-        int? avgValue = prices.OfType<BarePriceTag>().Any()
+        int? avgValue = maxPriceTag is BarePriceTag
             ? (int)prices.OfType<BarePriceTag>()
                 .Select(priceTag => priceTag.Price)
                 .Where(money => money.Amount > 0)
@@ -71,6 +71,7 @@ public abstract class PriceProviderBase : SelfInitializableServiceBase
         var price = selectPrice(gameEntityPrice);
         return gameEntityPrice switch
         {
+            _ when price.Amount is 0 => fallback,
             GameEntityTerminalPrice context => new KnownPriceTagWithLocation(price, context.Terminal, context.UpdatedAt),
             GameEntityPrice context => new KnownPriceTag(price, context.UpdatedAt),
             not null => new BarePriceTag(price),
