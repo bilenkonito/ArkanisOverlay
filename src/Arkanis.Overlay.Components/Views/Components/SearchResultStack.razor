@@ -1,16 +1,21 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Models.Search
 @using MoreLinq
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+
 <QuickAccessContainer QuerySelector=".search-result-container"
                       ContentVirtualized="@Virtualize">
     <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
         @if (Virtualize)
         {
-            <MudVirtualize Items="@Model.GameEntities.Distinct().ToList()" ItemSize="66" Enabled Context="result">
+            <Virtualize Items="@Model.GameEntities.Distinct().ToList()"
+                        ItemSize="66"
+                        OverscanCount="25"
+                        Context="result">
                 <SearchResultItem
                     @key="@result.GetHashCode()"
                     Model="@result.Subject"/>
-            </MudVirtualize>
+            </Virtualize>
         }
         else
         {
@@ -32,7 +37,7 @@
     public GameEntitySearchResults Model { get; set; } = GameEntitySearchResults.Empty;
 
     [Parameter]
-    public bool Virtualize { get; set; }
+    public bool Virtualize { get; set; } = true;
 
     protected override async Task OnParametersSetAsync()
     {
