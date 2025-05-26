@@ -1,4 +1,5 @@
 const SEARCH_BAR_HEIGHT_PX = 100;
+const FEAT_DOM_OBSERVER = "dom";
 
 /**
  * @module QuickAccessContainer
@@ -38,8 +39,9 @@ export class QuickAccessContainer {
      * @param {DotNet.DotNetObject} componentRef
      * @param {HTMLElement} containerElement
      * @param {String} childElementSelector
+     * @param {Array<String>} features
      */
-    constructor(componentRef, containerElement, childElementSelector) {
+    constructor(componentRef, containerElement, childElementSelector, features) {
         this.componentRef = componentRef;
         this.containerElement = containerElement;
         this.childElementSelector = childElementSelector;
@@ -48,12 +50,15 @@ export class QuickAccessContainer {
         this.lastUpdateWindowTopScroll = 0;
 
         this.domObserver = new MutationObserver(this.handleDomChange.bind(this));
-        // this.domObserver.observe(containerElement, {
-        //     attributes: false,
-        //     characterData: false,
-        //     childList: true,
-        //     subtree: true,
-        // })
+        if (features && features.includes(FEAT_DOM_OBSERVER)) {
+            console.debug("MutationObserver enabled for", this.childElementSelector);
+            this.domObserver.observe(containerElement, {
+                attributes: false,
+                characterData: false,
+                childList: true,
+                subtree: true,
+            })
+        }
 
         this.scrollEventHandler = this.handleScroll.bind(this);
         document.addEventListener('scroll', this.scrollEventHandler);
@@ -95,15 +100,25 @@ export class QuickAccessContainer {
      */
     async handleDomChange(changes, observer) {
         console.debug("DOM change detected, updating visible elements");
-        this.updateDebounced();
+        this.updateDebounced(250);
+    }
+
+    updateScroll() {
+        // TODO: Based on global window scroll, not just the container element
+        this.lastUpdateWindowTopScroll = window.scrollY;
+    }
+
+    getScrollChange() {
+        // TODO: Based on global window scroll, not just the container element
+        return Math.abs(this.lastUpdateWindowTopScroll - window.scrollY);
     }
 
     /**
      * Performs the internal update process based on window scroll change.
      */
     async handleScroll() {
-        if (Math.abs(this.lastUpdateWindowTopScroll - window.scrollY) > 25) {
-            this.lastUpdateWindowTopScroll = window.scrollY;
+        if (this.getScrollChange() > 25) {
+            this.updateScroll();
             this.updateDebounced();
         }
     }
@@ -129,7 +144,7 @@ export class QuickAccessContainer {
      */
     async pushUpdateToDotNet() {
         if (this.disposed) {
-            console.debug("parent .NET component has disposed this interop instance, preventingupdate");
+            console.debug("parent .NET component has disposed this interop instance, preventing update");
             return;
         }
 
