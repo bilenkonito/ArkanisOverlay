@@ -4,7 +4,7 @@
 @inject IJSRuntime JsRuntime
 @inject ILogger<QuickAccessContainer> Logger
 
-<FocusRegion @ref="_regionRef">
+<FocusRegion @ref="_regionRef" Class="@Class">
     <CascadingValue Value="@(this)" IsFixed>
         @ChildContent(this)
     </CascadingValue>
@@ -26,6 +26,9 @@
 
     [Parameter]
     public string QuerySelector { get; set; } = "*";
+
+    [Parameter]
+    public string? Class { get; set; }
 
     public async Task<IAsyncDisposable> RegisterAsync(ElementReference element, EventCallback<ItemInfo> callback)
     {

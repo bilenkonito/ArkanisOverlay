@@ -86,8 +86,8 @@
     }
 
     #searchContainer {
-        position: sticky;
         z-index: 1;
+        height: 100vh;
         margin: 0 auto;
 
         .mud-input-control {
@@ -115,9 +115,27 @@
     .mud-icon-button.focus {
         border-radius: 0;
     }
+
+    .scrollable {
+        justify-items: center;
+        scrollbar-width: none;
+        overflow-y: auto;
+        width: 100%;
+    }
 </style>
 
-<div style="@ContainerCss">
+<!-- TODO: fix Hotkey Chips -->
+
+<script>
+    document.getElementById('pageContainer').addEventListener('wheel', function (e) {
+        document.querySelector('.scrollable')?.scrollBy({
+            top: e.deltaY,
+            behavior: 'auto'
+        });
+    }, {passive: false});
+</script>
+
+<div id="pageContainer" style="@ContainerCss">
     <div class="controls-container">
         <div class="controls-inner-wrapper right pa-4">
             <MudStack Spacing="1" AlignItems="@AlignItems.End" Justify="@Justify.FlexEnd">
@@ -154,7 +172,7 @@
                     Found @SearchResults.GameEntities.Count results in @SearchResults.SearchTime.Humanize()
                 </MudChip>
 
-                <QuickAccessContainer QuerySelector=".search-result-container">
+                <QuickAccessContainer QuerySelector=".search-result-container" Class="scrollable">
                     <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
                         <MudVirtualize Items="@SearchResults.GameEntities" ItemSize="66" Enabled Context="result">
                             <SearchResult
