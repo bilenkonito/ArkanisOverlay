@@ -38,14 +38,14 @@
     private async Task OnFocusReceived()
     {
         HasFocus = true;
-        await InitializeInteropAsync();
+        await InvokeAsync(InitializeInteropAsync);
     }
 
     private async Task OnFocusLost()
     {
         HasFocus = false;
         await InvokeAsync(StateHasChanged);
-        await DisposeInteropAsync();
+        await InvokeAsync(DisposeInteropAsync);
     }
 
     private async Task InitializeInteropAsync()
