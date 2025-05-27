@@ -73,6 +73,10 @@
     [EditorRequired]
     public required IGameEntity Model { get; set; }
 
+    [Parameter]
+    [EditorRequired]
+    public required int ItemIndex { get; set; }
+
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
@@ -91,13 +95,19 @@
             var updateCallback = EventCallback.Factory.Create<QuickAccessContainer.ItemInfo>(this, OnVisibilityChanged);
             if (Container is not null && _focusRegion is not null)
             {
-                _registration = await Container.RegisterAsync(_focusRegion.ContainerElement, updateCallback);
+                _registration = await Container.RegisterAsync(ItemIndex, _focusRegion.ContainerElement, updateCallback);
             }
         }
     }
 
     private async Task OnVisibilityChanged(QuickAccessContainer.ItemInfo info)
     {
+        if (_itemInfo == info)
+        {
+            // prevent unnecessary re-rendering when the state is equivalent
+            return;
+        }
+
         _itemInfo = info;
         await InvokeAsync(StateHasChanged);
     }
@@ -107,6 +117,7 @@
         if (_registration != null)
         {
             await _registration.DisposeAsync();
+            _registration = null;
         }
     }
 

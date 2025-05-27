@@ -1,5 +1,4 @@
 @using Microsoft.JSInterop
-@using MoreLinq
 @implements IAsyncDisposable
 @inject IJSRuntime JsRuntime
 @inject ILogger<QuickAccessContainer> Logger
@@ -30,10 +29,11 @@
     [Parameter]
     public bool ContentVirtualized { get; set; }
 
-    public async Task<IAsyncDisposable> RegisterAsync(ElementReference element, EventCallback<ItemInfo> callback)
+    public async Task<IAsyncDisposable> RegisterAsync(int index, ElementReference element, EventCallback<ItemInfo> callback)
     {
         var item = new Item
         {
+            Index = index,
             Element = element,
             Callback = callback,
             DisposeFunc = UnregisterAsync,
@@ -41,6 +41,7 @@
         lock (_items)
         {
             _items.Add(item);
+            _items.Sort();
         }
 
         if (_controls is not null)
@@ -111,13 +112,13 @@
         Logger.LogDebug("Updating {ItemCount} items within this quick access container", items.Length);
         var firstVisibleItemIndex = await FindFirstVisibleItemIndex(items);
         var pastVisibleItems = false;
-        foreach (var (itemIndex, item) in items.Index())
+        foreach (var item in items)
         {
-            var visibilityInfo = itemIndex < firstVisibleItemIndex || pastVisibleItems
+            var visibilityInfo = item.Index < firstVisibleItemIndex || pastVisibleItems
                 ? ItemInfo.Empty
                 : await _controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
 
-            if (itemIndex > firstVisibleItemIndex && !visibilityInfo.IsVisible)
+            if (item.Index > firstVisibleItemIndex && !visibilityInfo.IsVisible)
             {
                 pastVisibleItems = true;
             }
@@ -140,7 +141,7 @@
                 if (itemIndex == 0)
                 {
                     // this item is visible and is the first item, so we can skip the rest
-                    return 0;
+                    return item.Index;
                 }
 
                 // this item is visible, so we can change the direction and find the first visible item
@@ -151,7 +152,7 @@
             {
                 // this item is not visible, but we have already found a visible item before,
                 //  so the previous item is the first visible item
-                return itemIndex + 1;
+                return items[itemIndex + 1].Index;
             }
             else if (itemIndexOffset < 4)
             {
@@ -163,22 +164,15 @@
         return null;
     }
 
-    public class Item : IAsyncDisposable
+    public class Item : IComparable<Item>, IAsyncDisposable
     {
-        private ItemInfo? _previousInfo;
-
+        public required int Index { get; init; }
         public required Func<Item, Task> DisposeFunc { get; init; }
         public required ElementReference Element { get; init; }
         public required EventCallback<ItemInfo> Callback { get; init; }
 
         public async ValueTask UpdateInfoAsync(ItemInfo info)
         {
-            if (info == _previousInfo)
-            {
-                return;
-            }
-
-            _previousInfo = info;
             if (Callback.HasDelegate)
             {
                 await Callback.InvokeAsync(info);
@@ -187,6 +181,9 @@
 
         public async ValueTask DisposeAsync()
             => await DisposeFunc(this);
+
+        public int CompareTo(Item? other)
+            => Index.CompareTo(other?.Index ?? int.MinValue);
     }
 
     public record ItemInfo(int Index, bool IsVisible)

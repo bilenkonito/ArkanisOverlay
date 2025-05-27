@@ -1,29 +1,29 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Models.Search
 @using MoreLinq
-@using Microsoft.AspNetCore.Components.Web.Virtualization
-
 <QuickAccessContainer QuerySelector=".search-result-container"
                       ContentVirtualized="@Virtualize">
     <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
+        <Virtualize Items="@IndexedEntries"
+                    ItemSize="66"
+                    OverscanCount="25"
+                    Context="entry">
+            <SearchResultItem
+                @key="@entry.Result.Subject.GetHashCode()"
+                Model="@entry.Result.Subject"
+                ItemIndex="@entry.Index"/>
+        </Virtualize>
         @if (Virtualize)
         {
-            <Virtualize Items="@Model.GameEntities.Distinct().ToList()"
-                        ItemSize="66"
-                        OverscanCount="25"
-                        Context="result">
-                <SearchResultItem
-                    @key="@result.GetHashCode()"
-                    Model="@result.Subject"/>
-            </Virtualize>
         }
         else
         {
-            @foreach (var result in BatchedSearchResults.Distinct())
+            @foreach (var (itemIndex, result) in IndexedEntries.DistinctBy(x => x.Result.Subject))
             {
                 <SearchResultItem
-                    @key="@result.GetHashCode()"
-                    Model="@result.Subject"/>
+                    @key="@result.Subject.GetHashCode()"
+                    Model="@result.Subject"
+                    ItemIndex="@itemIndex"/>
             }
         }
     </MudStack>
@@ -45,19 +45,32 @@
 
         if (!Virtualize)
         {
-            BatchedSearchResults = Model.GameEntities.Take(50).ToList();
+            IndexedEntries = Model.GameEntities.Take(50).Index().Select(Entry.Create).ToList();
             await InvokeAsync(StateHasChanged);
             await Task.Delay(500);
 
             foreach (var resultBatch in Model.GameEntities.Batch(500))
             {
-                BatchedSearchResults.AddRange(resultBatch);
+                var entries = resultBatch.Index().Select(x => Entry.CreateWithOffset(x, IndexedEntries.Count));
+                IndexedEntries.AddRange(entries);
                 await InvokeAsync(StateHasChanged);
                 await Task.Delay(500);
             }
         }
+        else
+        {
+            IndexedEntries = Model.GameEntities.Index().Select(Entry.Create).ToList();
+        }
     }
 
-    private List<SearchMatchResult<IGameEntity>> BatchedSearchResults { get; set; } = [];
+    private List<Entry> IndexedEntries { get; set; } = [];
 
+    private record Entry(int Index, SearchMatchResult<IGameEntity> Result)
+    {
+        public static Entry Create(KeyValuePair<int, SearchMatchResult<IGameEntity>> item)
+            => new(item.Key, item.Value);
+
+        public static Entry CreateWithOffset(KeyValuePair<int, SearchMatchResult<IGameEntity>> item, int offset)
+            => new(item.Key + offset, item.Value);
+    }
 }
