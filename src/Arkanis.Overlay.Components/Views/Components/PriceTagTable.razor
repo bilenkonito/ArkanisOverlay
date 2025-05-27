@@ -1,70 +1,75 @@
 @using Arkanis.Overlay.Domain.Models.Trade
 @using Humanizer
-<MudSimpleTable Class="h-100"
-                FixedHeader
-                Square
-                Hover
-                Dense>
-    <caption class="mt-2">@CaptionContent</caption>
-    <thead>
-    <MudTr>
-        <MudTh Class="py-0">Price</MudTh>
-        <MudTh Class="py-0">Location</MudTh>
-        <MudTh Class="py-0">Reported</MudTh>
-    </MudTr>
-    </thead>
-    <tbody>
-    @foreach (var priceTag in Models)
-    {
+@*
+ * it is necessary to create the wrapper and table manually as <MudSimpleTable> contains
+ * another wrapping element which prevents us from injecting custom tabindex attribute
+ * in order to prevent unwanted tab navigation behaviour
+ *@
+<div class="mud-table mud-simple-table mud-table-dense mud-table-hover mud-table-square mud-table-sticky-header h-100"
+     style="overflow-y: auto"
+     tabindex="-1">
+    <table>
+        <caption class="mt-2">@CaptionContent</caption>
+        <thead>
         <MudTr>
-            <MudTd>
-                @if (priceTag is BarePriceTag barePriceTag)
-                {
-                    <GamePriceLabel Model="@barePriceTag.Price"/>
-                }
-                else
-                {
-                    <i class="text-secondary">Unknown</i>
-                }
-            </MudTd>
-            <MudTd>
-                @if (priceTag is KnownPriceTagWithLocation priceTagWithLocation)
-                {
-                    <GameLocationLabel Model="@priceTagWithLocation.Location"/>
-                }
-                else
-                {
-                    <i class="text-secondary">Unknown</i>
-                }
-            </MudTd>
-            <MudTd>
-                @if (priceTag is KnownPriceTag knownPriceTag)
-                {
-                    <span>
-                        @knownPriceTag.UpdatedAt.Humanize(DateTimeOffset.Now)
-                    </span>
-                }
-                else
-                {
-                    <i class="text-secondary">Unknown</i>
-                }
-            </MudTd>
+            <MudTh Class="py-0">Price</MudTh>
+            <MudTh Class="py-0">Location</MudTh>
+            <MudTh Class="py-0">Reported</MudTh>
         </MudTr>
-    }
-    @if (Models.Count == 0)
-    {
-        <MudTr>
-            <MudTd colspan="999">
-                <MudText Typo="@Typo.body2"
-                         Align="@Align.Center"
-                         Class="text-secondary">
-                    No price entries available.
-                </MudText>
-            </MudTd>
-        </MudTr>
-    }
-    </tbody>
-</MudSimpleTable>
+        </thead>
+        <tbody>
+        @foreach (var priceTag in Models)
+        {
+            <MudTr>
+                <MudTd>
+                    @if (priceTag is BarePriceTag barePriceTag)
+                    {
+                        <GamePriceLabel Model="@barePriceTag.Price"/>
+                    }
+                    else
+                    {
+                        <i class="text-secondary">Unknown</i>
+                    }
+                </MudTd>
+                <MudTd>
+                    @if (priceTag is KnownPriceTagWithLocation priceTagWithLocation)
+                    {
+                        <GameLocationLabel Model="@priceTagWithLocation.Location"/>
+                    }
+                    else
+                    {
+                        <i class="text-secondary">Unknown</i>
+                    }
+                </MudTd>
+                <MudTd>
+                    @if (priceTag is KnownPriceTag knownPriceTag)
+                    {
+                        <span>
+                            @knownPriceTag.UpdatedAt.Humanize(DateTimeOffset.Now)
+                        </span>
+                    }
+                    else
+                    {
+                        <i class="text-secondary">Unknown</i>
+                    }
+                </MudTd>
+            </MudTr>
+        }
+        @if (Models.Count == 0)
+        {
+            <MudTr>
+                <MudTd colspan="999">
+                    <MudText Typo="@Typo.body2"
+                             Align="@Align.Center"
+                             Class="text-secondary">
+                        No price entries available.
+                    </MudText>
+                </MudTd>
+            </MudTr>
+        }
+        </tbody>
+    </table>
+</div>
 
 @code
 {
