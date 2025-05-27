@@ -11,9 +11,7 @@
 
 @code
 {
-    private IJSObjectReference? _module;
-    private IJSObjectReference? _controls;
-    private DotNetObjectReference<QuickAccessContainer>? _selfReference;
+    private JsComponentLifetimeInterop<QuickAccessContainer>? _interop;
 
     private readonly List<Item> _items = [];
 
@@ -44,9 +42,9 @@
             _items.Sort();
         }
 
-        if (_controls is not null)
+        if (_interop?.IsInitialized == true)
         {
-            await _controls.InvokeVoidAsync("updateDebounced", 150);
+            await _interop.Controls.InvokeVoidAsync("updateDebounced", 150);
         }
 
         return item;
@@ -59,11 +57,11 @@
             _items.Remove(item);
         }
 
-        if (_controls is not null)
+        if (_interop?.IsInitialized == true)
         {
             try
             {
-                await _controls.InvokeVoidAsync("updateDebounced", 150);
+                await _interop.Controls.InvokeVoidAsync("updateDebounced", 150);
             }
             catch (JSDisconnectedException)
             {
@@ -75,15 +73,11 @@
     {
         if (firstRender)
         {
-            _selfReference = DotNetObjectReference.Create(this);
-            _module ??= await JsRuntime.InvokeAsync<IJSObjectReference>(
-                "import",
-                $"./_content/{SharedComponentsModule.Namespace}/{nameof(Shared)}/{nameof(QuickAccessContainer)}.razor.js"
-            );
+            _interop = JsRuntime.CreateLifetimeInterop(this);
             IEnumerable<string> features = ContentVirtualized
                 ? []
                 : ["dom"];
-            _controls = await _module.InvokeAsync<IJSObjectReference>("QuickAccessContainer.createFor", _selfReference, _regionRef!.ContainerElement, QuerySelector, features);
+            await _interop.InitializeAsync(_regionRef!.ContainerElement, QuerySelector, features);
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -91,10 +85,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_controls is not null && ContentVirtualized)
+        if (_interop?.IsInitialized == true && ContentVirtualized)
         {
             Logger.LogDebug("Requesting JavaScript logic to update");
-            await _controls.InvokeVoidAsync("updateDebounced", 150);
+            await _interop.Controls.InvokeVoidAsync("updateDebounced", 150);
         }
 
         await base.OnParametersSetAsync();
@@ -116,7 +110,7 @@
         {
             var visibilityInfo = item.Index < firstVisibleItemIndex || pastVisibleItems
                 ? ItemInfo.Empty
-                : await _controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
+                : await _interop!.Controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
 
             if (item.Index > firstVisibleItemIndex && !visibilityInfo.IsVisible)
             {
@@ -135,7 +129,7 @@
         for (var itemIndex = 0; itemIndex < items.Length; itemIndex += itemIndexOffset)
         {
             var item = items[itemIndex];
-            var visibilityInfo = await _controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
+            var visibilityInfo = await _interop!.Controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
             if (visibilityInfo.IsVisible)
             {
                 if (itemIndex == 0)
@@ -193,23 +187,9 @@
 
     public async ValueTask DisposeAsync()
     {
-        try
+        if (_interop is not null)
         {
-            if (_controls != null)
-            {
-                await _controls.InvokeVoidAsync("dispose");
-                await _controls.DisposeAsync();
-            }
-
-            if (_module != null)
-            {
-                await _module.DisposeAsync();
-            }
+            await _interop.DisposeAsync();
         }
-        catch (JSDisconnectedException)
-        {
-        }
-
-        _selfReference?.Dispose();
     }
 }

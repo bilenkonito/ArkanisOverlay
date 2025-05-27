@@ -36,8 +36,8 @@ export class QuickAccessContainer {
     /**
      * Initializes the QuickAccessContainer and links it to the .NET component (via DotNet ObjectReference).
      *
-     * @param {DotNet.DotNetObject} componentRef
-     * @param {HTMLElement} containerElement
+     * @param {DotNet.DotNetObject} componentRef - The reference to the .NET component.
+     * @param {HTMLElement} containerElement - The HTML element to be associated with the QuickAccessContainer.
      * @param {String} childElementSelector
      * @param {Array<String>} features
      */
@@ -51,7 +51,7 @@ export class QuickAccessContainer {
 
         this.domObserver = new MutationObserver(this.handleDomChange.bind(this));
         if (features && features.includes(FEAT_DOM_OBSERVER)) {
-            console.debug("MutationObserver enabled for", this.childElementSelector);
+            console.debug("DOM change tracking enabled for", this.childElementSelector);
             this.domObserver.observe(containerElement, {
                 attributes: false,
                 characterData: false,
@@ -71,14 +71,15 @@ export class QuickAccessContainer {
      *
      * @remarks This method is called from .NET code.
      *
-     * @param {DotNet.DotNetObject} componentRef
-     * @param {HTMLElement} containerElement
+     * @param {DotNet.DotNetObject} componentRef - The reference to the .NET component.
+     * @param {HTMLElement} containerElement - The HTML element to be associated with the QuickAccessContainer.
      * @param {String} childElementSelector
      * @param {Array<String>} features
      *
-     * @returns {QuickAccessContainer}
+     * @returns {QuickAccessContainer} A new instance of QuickAccessContainer.
      */
     static createFor(componentRef, containerElement, childElementSelector, features) {
+        console.debug("Creating new QuickAccessContainer instance for", componentRef, containerElement);
         return new QuickAccessContainer(componentRef, containerElement, childElementSelector, features);
     }
 
@@ -88,6 +89,10 @@ export class QuickAccessContainer {
      * @remarks This method is called from .NET code.
      */
     async dispose() {
+        if (this.disposed) {
+            return;
+        }
+
         console.debug("dispose requested from .NET component %o", this.componentRef);
         document.removeEventListener('scroll', this.scrollEventHandler);
         this.domObserver.disconnect()
