@@ -60,8 +60,10 @@ export class FocusRegion {
      */
     unfocusTargetWhenOutOfViewport(change) {
         if (change.intersectionRatio === 0) {
-            console.debug("focus region container detected out of viewport %o", this.containerElement);
-            document.activeElement.blur();
+            console.debug("focus region container detected out of viewport: %o", change);
+            //! this region may not have any focused element
+            this.containerElement.querySelector(":focus")?.blur();
+            this.containerElement.blur();
         }
     }
 
