@@ -29,21 +29,43 @@
                     IsFocused="@context.ContainsFocus"/>
             </MudStack>
         </KeyboardShortcutBadge>
-        @if (_focusRegion?.HasFocus == true)
+        @if (DisplayContext)
         {
             <MudDivider Class="my-2"/>
-            <MudStack Style="max-height: calc(2 * 62px + 12px)">
-                @foreach (var priceTag in PriceTags)
+            <MudGrid Class="my-n2" Style="height: calc(3 * 62px + 2 * 12px);">
+                @if (Model is IGamePurchasable)
                 {
-                    <div>@priceTag</div>
+                    <MudItem md="6" Class="pt-0 h-100">
+                        <PriceTagTable Models="@PurchasePriceTags">
+                            <CaptionContent>
+                                All available <b>purchase</b> prices
+                            </CaptionContent>
+                        </PriceTagTable>
+                    </MudItem>
                 }
-            </MudStack>
+                @if (Model is IGameSellable)
+                {
+                    <MudItem md="6" Class="pt-0 h-100">
+                        <PriceTagTable Models="@SalePriceTags">
+                            <CaptionContent>
+                                All available <b>sale</b> prices
+                            </CaptionContent>
+                        </PriceTagTable>
+                    </MudItem>
+                }
+            </MudGrid>
         }
     </MudPaper>
 </FocusRegion>
 
 @code
 {
+
+    private readonly bool _displayContext = false;
+
+    private bool DisplayContext
+        => (_focusRegion?.HasFocus == true || _displayContext)
+           && Model is IGamePurchasable or IGameSellable;
 
     private KeyboardKey KeyboardShortcut
         => _itemInfo?.IsVisible switch
@@ -58,13 +80,14 @@
         };
 
     private bool KeyboardShortcutActive
-        => KeyboardShortcut is not KeyboardKey.Unknown && (!_focusRegion?.HasFocus ?? false);
+        => KeyboardShortcut is not KeyboardKey.Unknown && _focusRegion?.HasFocus != true;
 
     private QuickAccessContainer.ItemInfo? _itemInfo;
     private FocusRegion? _focusRegion;
     private IAsyncDisposable? _registration;
 
-    private ICollection<PriceTag> PriceTags { get; set; } = [];
+    private ICollection<PriceTag> PurchasePriceTags { get; set; } = [];
+    private ICollection<PriceTag> SalePriceTags { get; set; } = [];
 
     [CascadingParameter]
     public QuickAccessContainer? Container { get; set; }
@@ -83,7 +106,13 @@
 
         if (Model is IGamePurchasable purchasable)
         {
-            PriceTags = await PriceProvider.GetPriceTagsWithinAsync(purchasable, null);
+            PurchasePriceTags = await PriceProvider.GetPriceTagsWithinAsync(purchasable, null);
+        }
+
+        if (Model is IGameSellable sellable)
+        {
+            SalePriceTags = await PriceProvider.GetPriceTagsWithinAsync(sellable, null);
+            SalePriceTags = SalePriceTags.Reverse().ToArray();
         }
     }
 
