@@ -9,7 +9,7 @@
                     OverscanCount="25"
                     Context="entry">
             <SearchResultItem
-                @key="@entry.Result.Subject.GetHashCode()"
+                @key="@entry.Result.Subject.Id"
                 Model="@entry.Result.Subject"
                 ItemIndex="@entry.Index"/>
         </Virtualize>
@@ -18,10 +18,10 @@
         }
         else
         {
-            @foreach (var (itemIndex, result) in IndexedEntries.DistinctBy(x => x.Result.Subject))
+            @foreach (var (itemIndex, result) in IndexedEntries.DistinctBy(x => x.Result.Subject.Id))
             {
                 <SearchResultItem
-                    @key="@result.Subject.GetHashCode()"
+                    @key="@result.Subject.Id"
                     Model="@result.Subject"
                     ItemIndex="@itemIndex"/>
             }
