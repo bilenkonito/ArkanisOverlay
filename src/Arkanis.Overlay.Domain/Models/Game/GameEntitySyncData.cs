@@ -20,6 +20,7 @@ public abstract record GameEntitySyncData<T> where T : class, IGameEntity
             _ => other switch
             {
                 LoadedSyncData<T> otherLoaded => otherLoaded,
+                SyncDataUpToDate<T> otherUpToDate => otherUpToDate,
                 _ => this,
             },
         };
