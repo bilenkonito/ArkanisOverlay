@@ -4,6 +4,8 @@ using Common;
 
 public record GameCurrency(int Amount) : IComparable<GameCurrency>, IFormattable
 {
+    public static readonly GameCurrency Zero = new(0);
+
     public static string Name
         => ApplicationConstants.CurrencyName;
 
