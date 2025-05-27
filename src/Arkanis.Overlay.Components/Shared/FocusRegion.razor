@@ -1,5 +1,6 @@
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
+@inject IOverlayEventProvider OverlayEventProvider
 @inject IJSRuntime JsRuntime
 
 <div class="focus-region @Class"
@@ -41,6 +42,24 @@
         await InvokeAsync(InitializeInteropAsync);
     }
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        OverlayEventProvider.OverlayBlurred += OnOverlayOutOfFocus;
+    }
+
+    private async void OnOverlayOutOfFocus(object? sender, EventArgs e)
+    {
+        try
+        {
+            await OnFocusLost();
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+    }
+
     private async Task OnFocusLost()
     {
         HasFocus = false;
@@ -73,5 +92,8 @@
     }
 
     public async ValueTask DisposeAsync()
-        => await DisposeInteropAsync();
+    {
+        OverlayEventProvider.OverlayBlurred -= OnOverlayOutOfFocus;
+        await DisposeInteropAsync();
+    }
 }
