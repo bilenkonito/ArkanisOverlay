@@ -24,6 +24,7 @@ public static class DependencyInjection
 
         services.AddLogging();
         services.AddHttpClient();
+        services.AddHealthChecks();
 
         services.AddMemoryCache();
 

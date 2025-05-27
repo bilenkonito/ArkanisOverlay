@@ -23,6 +23,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", true);
 }
 
+app.MapHealthChecks("/healthz");
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
