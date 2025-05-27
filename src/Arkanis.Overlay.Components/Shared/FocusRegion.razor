@@ -1,15 +1,19 @@
-@inject EventInterop EventInterop
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JsRuntime
 
 <div class="focus-region @Class"
      style="@Style"
      @ref="@ContainerElement"
-     @onfocusin="@FocusReceived"
-     @onfocusout="@FocusLost">
+     @onfocusin="@OnFocusReceived"
+     @onfocusout="@OnFocusLost">
     @ChildContent(CurrentContext)
 </div>
 
 @code
 {
+
+    private JsComponentLifetimeInterop<FocusRegion>? _interop;
 
     [Parameter]
     [EditorRequired]
@@ -29,27 +33,34 @@
         => new(this);
 
     public async Task FocusAsync()
+        => await ContainerElement.MudFocusFirstAsync();
+
+    private async Task OnFocusReceived()
     {
-        await ContainerElement.MudFocusFirstAsync();
+        HasFocus = true;
+        await InitializeInteropAsync();
     }
 
-    private void FocusReceived()
-        => HasFocus = true;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (firstRender)
-        {
-            await EventInterop.RegisterWindowEventHandlerAsync("blur", EventInterop.CreateHandler(FocusLost));
-        }
-    }
-
-    private async Task FocusLost()
+    private async Task OnFocusLost()
     {
         HasFocus = false;
         await InvokeAsync(StateHasChanged);
+        await DisposeInteropAsync();
+    }
+
+    private async Task InitializeInteropAsync()
+    {
+        _interop = JsRuntime.CreateLifetimeInterop(this);
+        await _interop.InitializeAsync(ContainerElement);
+    }
+
+    private async Task DisposeInteropAsync()
+    {
+        if (_interop is not null)
+        {
+            await _interop.DisposeAsync();
+            _interop = null;
+        }
     }
 
     public record Context(FocusRegion SourceRegion)
@@ -61,4 +72,6 @@
             => !ContainsFocus;
     }
 
+    public async ValueTask DisposeAsync()
+        => await DisposeInteropAsync();
 }
