@@ -26,7 +26,11 @@ public class RentPriceProvider(
             _ => prices,
         };
 
-        return filtered.Select(price => CreatePriceTag(price)).ToArray();
+        return filtered
+            .Select(price => CreatePriceTag(price))
+            .OfType<BarePriceTag>()
+            .OrderBy(x => x.Price)
+            .ToArray();
     }
 
     public async ValueTask<Bounds<PriceTag>> GetPriceTagAtAsync(IGameRentable gameEntity, IGameLocation gameLocation)

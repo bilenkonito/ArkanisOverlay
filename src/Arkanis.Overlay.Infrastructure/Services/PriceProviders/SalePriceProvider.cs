@@ -29,7 +29,11 @@ public class SalePriceProvider(
             _ => prices,
         };
 
-        return filtered.Select(price => CreatePriceTag(price)).ToArray();
+        return filtered
+            .Select(price => CreatePriceTag(price))
+            .OfType<BarePriceTag>()
+            .OrderBy(x => x.Price)
+            .ToArray();
     }
 
     private async ValueTask<Bounds<PriceTag>> GetBoundsAsync(IGameSellable gameEntity, IGameLocation? gameLocation)
