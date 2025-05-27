@@ -8,21 +8,21 @@ using Microsoft.JSInterop;
 public static class JsComponentLifetimeInterop
 {
     /// <inheritdoc cref="Create{T}" />
-    public static JsComponentLifetimeInterop<T> CreateLifetimeInterop<T>(this IJSRuntime jsRuntime, T component) where T : ComponentBase
+    public static JsComponentInterop<T> CreateLifetimeInterop<T>(this IJSRuntime jsRuntime, T component) where T : ComponentBase
         => Create(jsRuntime, component);
 
     /// <summary>
-    ///     Creates a new instance of <see cref="JsComponentLifetimeInterop{T}" /> for the specified component.
+    ///     Creates a new instance of <see cref="JsComponentInterop{T}" /> for the specified component.
     /// </summary>
     /// <typeparam name="T">The type of the component, which must inherit from <see cref="ComponentBase" />.</typeparam>
     /// <param name="jsRuntime">The JavaScript runtime to be used for interop calls.</param>
     /// <param name="component">The component for which to create the interop instance.</param>
-    /// <returns>A new instance of <see cref="JsComponentLifetimeInterop{T}" />.</returns>
-    private static JsComponentLifetimeInterop<T> Create<T>(IJSRuntime jsRuntime, T component) where T : ComponentBase
+    /// <returns>A new instance of <see cref="JsComponentInterop{T}" />.</returns>
+    private static JsComponentInterop<T> Create<T>(IJSRuntime jsRuntime, T component) where T : ComponentBase
         => new(jsRuntime, component);
 }
 
-public sealed class JsComponentLifetimeInterop<T>(IJSRuntime jsRuntime, T component) : IAsyncDisposable where T : ComponentBase
+public sealed class JsComponentInterop<T>(IJSRuntime jsRuntime, T component) : IAsyncDisposable where T : ComponentBase
 {
     private const string StaticFactoryMethodName = "createFor";
     private const string ContentScriptPath = "./_content";
@@ -40,6 +40,20 @@ public sealed class JsComponentLifetimeInterop<T>(IJSRuntime jsRuntime, T compon
 
     public string ProjectNamespace { get; init; } = SharedComponentsModule.Namespace;
 
+    /// <summary>
+    ///     Releases allocated JavaScript-interop objects.
+    /// </summary>
+    /// <remarks>
+    ///     If the component JavaScript logic has been initialized,
+    ///     this method disposes the JavaScript module and its controls.
+    ///     Otherwise, this is a no-op.
+    ///     <para>
+    ///         This method is idempotent.
+    ///     </para>
+    ///     <para>
+    ///         It is safe to call this method even in case the JavaScript interop has already been disconnected.
+    ///     </para>
+    /// </remarks>
     public async ValueTask DisposeAsync()
     {
         try
