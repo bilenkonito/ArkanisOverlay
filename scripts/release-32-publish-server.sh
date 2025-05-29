@@ -10,13 +10,16 @@ set -eEuo pipefail
 #| `stderr`         | Can be used for logging.
 
 [[ -z "${VERSION_TAG+x}" ]] && echo "VERSION_TAG is not set" && exit 2
+[[ -z "${GITHUB_REPOSITORY+x}" ]] && GITHUB_REPOSITORY="ArkanisCorporation/ArkanisOverlay"
 [[ -z "${REGISTRY+x}" ]] && REGISTRY="ghcr.io"
 
+IMAGE_NAME=$(echo "${REGISTRY}/${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
+
 >&2 echo "Building the server web application container..."
-docker build -f ./src/Arkanis.Overlay.Host.Server/Dockerfile -t "${REGISTRY}/${VERSION_TAG}" -t "${REGISTRY}"/latest .
+docker build -f ./src/Arkanis.Overlay.Host.Server/Dockerfile -t "${IMAGE_NAME}:${VERSION_TAG}" -t "${IMAGE_NAME}":latest .
 
 >&2 echo "Pushing the server web application container..."
-docker push "${REGISTRY}/${VERSION_TAG}"
-docker push "${REGISTRY}"/latest
+docker push "${IMAGE_NAME}:${VERSION_TAG}"
+docker push "${IMAGE_NAME}":latest
 
 >&2 echo "Successfully published the server web application container"
