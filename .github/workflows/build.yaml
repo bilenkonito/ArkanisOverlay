@@ -36,12 +36,7 @@ jobs:
   deploy-production:
     name: Deployment
     needs: release
-    if: ${{ needs.release.outputs.new_tag != '' }}
-    uses: ./.github/workflows/_deploy-ssh-docker.yaml
+    if: ${{ github.ref == 'refs/heads/release/stable' && needs.release.outputs.new_tag != '' }}
+    uses: ./.github/workflows/_deploy-production.yaml
     with:
       image_ref: ${{ needs.release.outputs.new_tag }}
-    secrets:
-      PRODUCTION_SSH_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
-      PRODUCTION_SSH_PORT: ${{ secrets.PRODUCTION_SSH_PORT }}
-      PRODUCTION_SSH_USER: ${{ secrets.PRODUCTION_SSH_USER }}
-      PRODUCTION_SSH_KEY : ${{ secrets.PRODUCTION_SSH_KEY  }}

@@ -20,26 +20,13 @@ on:
       image_ref:
         type: string
         required: true
-    secrets:
-      PRODUCTION_SSH_HOST:
-        required: true
-      PRODUCTION_SSH_PORT:
-        required: true
-      PRODUCTION_SSH_USER:
-        required: true
-      PRODUCTION_SSH_KEY:
-        required: true
 
 jobs:
   deploy-production:
     name: Production
-    uses: ./.github/workflows/_deploy-ssh-docker.yml
+    uses: ./.github/workflows/_deploy-docker-self-hosted.yaml
     with:
       image_ref: ${{ inputs.image_ref }}
-      container_name: arkanis-overlay
+      container_label: arkanis-overlay
+      container_port: 12345
       environment_name: Production
-    secrets:
-      SSH_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
-      SSH_PORT: ${{ secrets.PRODUCTION_SSH_PORT }}
-      SSH_USER: ${{ secrets.PRODUCTION_SSH_USER }}
-      SSH_KEY : ${{ secrets.PRODUCTION_SSH_KEY  }}
