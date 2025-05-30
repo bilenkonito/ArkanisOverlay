@@ -18,14 +18,16 @@
         </GlobalKeyboardEventProxyProvider>
     </ChildContent>
     <ErrorContent>
-        <MudStack Class="h-100 w-100" AlignItems="@AlignItems.Center" Justify="@Justify.Center">
+        <MudStack Class="h-100 w-100 pa-6" AlignItems="@AlignItems.Center" Justify="@Justify.Center">
             <div style="min-width: 20vw">
                 <div class="mb-2">
                     <h1>Sorry, an unrecoverable error has occured</h1>
-                    <pre>@context.Message</pre>
+                    <pre style="white-space: pre-line;">@context.Message</pre>
                 </div>
                 <MudExpansionPanel Text="Error Details">
-                    <pre>@context.ToString()</pre>
+                    <div style="overflow-y: scroll">
+                        <pre>@context.ToString()</pre>
+                    </div>
                 </MudExpansionPanel>
                 <MudStack Class="mt-4" Row>
                     <MudButton Color="@Color.Success"

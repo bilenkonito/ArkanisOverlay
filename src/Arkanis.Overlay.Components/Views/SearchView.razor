@@ -154,24 +154,7 @@
                     Found @SearchResults.GameEntities.Count results in @SearchResults.SearchTime.Humanize()
                 </MudChip>
 
-                <QuickAccessContainer QuerySelector=".search-result-container">
-                    <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
-                        <MudVirtualize Items="@SearchResults.GameEntities" ItemSize="66" Enabled Context="result">
-                            <SearchResult
-                                @key="@result.Subject.GetHashCode()"
-                                Model="@result.Subject"/>
-                            @* <div>@result.ScoreTotal</div> *@
-                            @* @foreach (var resultMatch in result.Matches) *@
-                            @* { *@
-                            @*     <div>@resultMatch</div> *@
-                            @* } *@
-                            @* @foreach (var unmatchedQueries in result.UnmatchedQueries) *@
-                            @* { *@
-                            @*     <div style="color: red">@unmatchedQueries</div> *@
-                            @* } *@
-                        </MudVirtualize>
-                    </MudStack>
-                </QuickAccessContainer>
+                <SearchResultStack Model="SearchResults"/>
             }
         </CascadingValue>
 
@@ -274,7 +257,6 @@
             _searchCancellation = new CancellationTokenSource();
             SearchResults = await SearchService.SearchAsync(searchQueries, _searchCancellation.Token);
             await GlobalAnalyticsReporter.TrackEventAsync(new SearchEvent(SearchText));
-            await InvokeAsync(StateHasChanged);
         }
         catch (OperationCanceledException)
         {
