@@ -33,10 +33,10 @@ jobs:
     with:
       dry_run: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/ci' || github.ref == 'refs/heads/main' }}
 
-  deploy:
+  deploy-production:
     name: Deployment
-    if: ${{ needs.release.outputs.new_version != '' }}
     needs: release
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Would run deployment pipeline here"
+    if: ${{ github.ref == 'refs/heads/release/stable' && needs.release.outputs.new_tag != '' }}
+    uses: ./.github/workflows/_deploy-production.yaml
+    with:
+      image_ref: ${{ needs.release.outputs.new_tag }}

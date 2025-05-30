@@ -1,5 +1,4 @@
 @using Arkanis.Overlay.Domain.Models.Trade
-@using Humanizer
 <MudStack Style="@PriceTagCss"
           Spacing="0"
           Justify="@Justify.Center"
@@ -10,9 +9,7 @@
     }
     @if (Model is KnownPriceTag knownPriceTag)
     {
-        <span style="white-space: nowrap">
-            @GameCurrency.Symbol @knownPriceTag.Price.Amount.ToMetric(MetricNumeralFormats.WithSpace, 3)
-        </span>
+        <GamePriceLabel Model="@knownPriceTag.Price"/>
         if (Model is KnownPriceTagWithLocation priceTagWithLocation)
         {
             <GameLocationLabel Model="@priceTagWithLocation.Location"/>

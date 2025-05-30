@@ -16,7 +16,7 @@ public class DesktopHostTestFixture : TestBedFixture
         => configurationBuilder.AddInMemoryCollection(
             new Dictionary<string, string?>
             {
-                ["ConnectionStrings:OverlayDatabase"] = $"Data Source={Path.Combine(Path.GetTempPath(), "Overlay.db")};Cache=Shared",
+                ["ConnectionStrings:OverlayDatabase"] = $"Data Source={Path.GetRandomFileName()}",
             }
         );
 

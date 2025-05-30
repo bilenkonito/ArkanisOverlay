@@ -1,4 +1,3 @@
-@using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
 @inject IJSRuntime JsRuntime
@@ -12,9 +11,7 @@
 
 @code
 {
-    private IJSObjectReference? _module;
-    private IJSObjectReference? _controls;
-    private DotNetObjectReference<QuickAccessContainer>? _selfReference;
+    private JsComponentInterop<QuickAccessContainer>? _interop;
 
     private readonly List<Item> _items = [];
 
@@ -27,10 +24,14 @@
     [Parameter]
     public string QuerySelector { get; set; } = "*";
 
-    public async Task<IAsyncDisposable> RegisterAsync(ElementReference element, EventCallback<ItemInfo> callback)
+    [Parameter]
+    public bool ContentVirtualized { get; set; }
+
+    public async Task<IAsyncDisposable> RegisterAsync(int index, ElementReference element, EventCallback<ItemInfo> callback)
     {
         var item = new Item
         {
+            Index = index,
             Element = element,
             Callback = callback,
             DisposeFunc = UnregisterAsync,
@@ -38,11 +39,12 @@
         lock (_items)
         {
             _items.Add(item);
+            _items.Sort();
         }
 
-        if (_controls is not null)
+        if (_interop?.IsInitialized == true)
         {
-            await _controls.InvokeVoidAsync("updateDebounced", 150);
+            await _interop.Controls.InvokeVoidAsync("updateDebounced", 150);
         }
 
         return item;
@@ -55,9 +57,15 @@
             _items.Remove(item);
         }
 
-        if (_controls is not null)
+        if (_interop?.IsInitialized == true)
         {
-            await _controls.InvokeVoidAsync("updateDebounced", 150);
+            try
+            {
+                await _interop.Controls.InvokeVoidAsync("updateDebounced", 150);
+            }
+            catch (JSDisconnectedException)
+            {
+            }
         }
     }
 
@@ -65,12 +73,11 @@
     {
         if (firstRender)
         {
-            _selfReference = DotNetObjectReference.Create(this);
-            _module ??= await JsRuntime.InvokeAsync<IJSObjectReference>(
-                "import",
-                $"./_content/{SharedComponentsModule.Namespace}/{nameof(Shared)}/{nameof(QuickAccessContainer)}.razor.js"
-            );
-            _controls = await _module.InvokeAsync<IJSObjectReference>("QuickAccessContainer.createFor", _selfReference, _regionRef!.ContainerElement, QuerySelector);
+            _interop = JsRuntime.CreateLifetimeInterop(this);
+            IEnumerable<string> features = ContentVirtualized
+                ? []
+                : ["dom"];
+            await _interop.InitializeAsync(_regionRef!.ContainerElement, QuerySelector, features);
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -78,10 +85,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_controls is not null)
+        if (_interop?.IsInitialized == true && ContentVirtualized)
         {
             Logger.LogDebug("Requesting JavaScript logic to update");
-            await _controls.InvokeVoidAsync("updateDebounced", 150);
+            await _interop.Controls.InvokeVoidAsync("updateDebounced", 150);
         }
 
         await base.OnParametersSetAsync();
@@ -90,45 +97,99 @@
     [JSInvokable]
     public async Task OnJsUpdateAsync()
     {
-        ICollection<Item> items = [];
+        Item[] items = [];
         lock (_items)
         {
-            items = _items.ToList();
+            items = _items.ToArray();
         }
 
-        Logger.LogDebug("Updating {ItemCount} items within this quick access container", items.Count);
+        Logger.LogDebug("Updating {ItemCount} items within this quick access container", items.Length);
+        var firstVisibleItemIndex = await FindFirstVisibleItemIndex(items);
+        var pastVisibleItems = false;
         foreach (var item in items)
         {
-            var visibilityInfo = await _controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
-            await item.Callback.InvokeAsync(visibilityInfo);
+            var visibilityInfo = item.Index < firstVisibleItemIndex || pastVisibleItems
+                ? ItemInfo.Empty
+                : await _interop!.Controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
+
+            if (item.Index > firstVisibleItemIndex && !visibilityInfo.IsVisible)
+            {
+                pastVisibleItems = true;
+            }
+
+            await item.UpdateInfoAsync(visibilityInfo);
         }
     }
 
-    public class Item : IAsyncDisposable
+    private async Task<int?> FindFirstVisibleItemIndex(Item[] items)
     {
+        var itemIndexOffset = 1;
+        var alreadyFoundVisible = false;
+
+        for (var itemIndex = 0; itemIndex < items.Length; itemIndex += itemIndexOffset)
+        {
+            var item = items[itemIndex];
+            var visibilityInfo = await _interop!.Controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
+            if (visibilityInfo.IsVisible)
+            {
+                if (itemIndex == 0)
+                {
+                    // this item is visible and is the first item, so we can skip the rest
+                    return item.Index;
+                }
+
+                // this item is visible, so we can change the direction and find the first visible item
+                alreadyFoundVisible = true;
+                itemIndexOffset = -1;
+            }
+            else if (alreadyFoundVisible)
+            {
+                // this item is not visible, but we have already found a visible item before,
+                //  so the previous item is the first visible item
+                return items[itemIndex + 1].Index;
+            }
+            else if (itemIndexOffset < 4)
+            {
+                // we haven't found a visible item yet, increase the offset to skip more items
+                itemIndexOffset *= 2;
+            }
+        }
+
+        return null;
+    }
+
+    public class Item : IComparable<Item>, IAsyncDisposable
+    {
+        public required int Index { get; init; }
         public required Func<Item, Task> DisposeFunc { get; init; }
         public required ElementReference Element { get; init; }
         public required EventCallback<ItemInfo> Callback { get; init; }
 
+        public async ValueTask UpdateInfoAsync(ItemInfo info)
+        {
+            if (Callback.HasDelegate)
+            {
+                await Callback.InvokeAsync(info);
+            }
+        }
+
         public async ValueTask DisposeAsync()
             => await DisposeFunc(this);
+
+        public int CompareTo(Item? other)
+            => Index.CompareTo(other?.Index ?? int.MinValue);
     }
 
-    public record ItemInfo(int Index, bool IsVisible);
+    public record ItemInfo(int Index, bool IsVisible)
+    {
+        public static readonly ItemInfo Empty = new(0, false);
+    }
 
     public async ValueTask DisposeAsync()
     {
-        if (_controls != null)
+        if (_interop is not null)
         {
-            await _controls.InvokeVoidAsync("dispose");
-            await _controls.DisposeAsync();
+            await _interop.DisposeAsync();
         }
-
-        if (_module != null)
-        {
-            await _module.DisposeAsync();
-        }
-
-        _selfReference?.Dispose();
     }
 }

@@ -1,0 +1,103 @@
+name: Self-hosted Deploy
+
+permissions:
+  packages: write # for publishing packages in repository registry
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      image_ref:
+        description: "Container image reference (tag) that will be deployed"
+        required: true
+        type: string
+      environment_name:
+        description: "ASPNETCORE_ENVIRONMENT"
+        required: true
+        type: string
+      container_label:
+        description: "Container label to identify existing containers"
+        required: true
+        type: string
+      container_port:
+        description: "Container port"
+        required: false
+        type: number
+        default: 12345
+      container_startup_timeout:
+        description: "Container startup timeout"
+        required: false
+        type: number
+        default: 60
+      debug:
+        required: false
+        type: boolean
+        default: false
+
+env:
+  REGISTRY_NAME: ghcr.io
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.image_ref }} to ${{ inputs.environment_name }}
+    runs-on: [ self-hosted, daedalus ]
+    env:
+      ENVIRONMENT_NAME: ${{ inputs.environment_name }}
+      IMAGE_NAME: ${{ github.repository }}
+      IMAGE_REF: ${{ inputs.image_ref }}
+      CONTAINER_NAME: ${{ inputs.container_name }}
+      IS_DEVELOPMENT: ${{ inputs.environment_name != 'Production' && 'true' || 'false' }}
+    steps:
+      - name: Deploy the Docker image
+        run: |
+          TIMEOUT=${{ inputs.container_startup_timeout }}
+          PORT=${{ inputs.container_port }}
+
+
+          echo "Stopping any old containers..."
+          docker stop $(docker ps -qf "label=${{ inputs.container_label }}") || true
+          docker rm $(docker ps -aqf "label=${{ inputs.container_label }}") || true
+
+          echo Starting container...
+          containerId=$(
+            docker run \
+            --label ${{ inputs.container_label }} \
+            --env ASPNETCORE_ENVIRONMENT=${{ inputs.environment_name }} \
+            --detach \
+            --publish $PORT:8080 \
+            --env ASPNETCORE_URLS=http://0.0.0.0:8080 \
+            --env ASPNETCORE_ENVIRONMENT=$ENVIRONMENT_NAME \
+            --env DetailedErrors=$IS_DEVELOPMENT \
+            --volume arkanis-overlay-data:/app/ArkanisOverlay \
+            --volume /etc/timezone:/etc/timezone:ro \
+            --volume /etc/localtime:/etc/localtime:ro \
+            ${{ env.REGISTRY_NAME }}/${{ inputs.image_name }}:${{ inputs.image_ref }}
+          )
+
+          # truncate ID for later filtering, as docker uses 12 character IDs
+          containerId=$(head -c 12 <<<$containerId)
+          echo New container: "$containerId"
+
+          SECONDS=0 # this is a bash magic variable that keeps counting up automatically
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' "$containerId" 2>/dev/null)" = "healthy" ]; do
+            echo "Waiting for container to become healthy... (${SECONDS}s)"
+
+            if [ $SECONDS -gt $TIMEOUT ]; then
+              echo "Container failed to become healthy!"
+              exit 1
+            fi
+
+            sleep 1
+          done
+
+          # only let container restart automatically after it has proven once
+          # that it is a good boy and will behave
+          echo Container started successfully!
+          docker update --restart unless-stopped "$containerId"
+
+          echo "Removing dangling images..."
+          docker image prune -f -a
+
+          echo ""
+          echo "Done!"
+          echo ""

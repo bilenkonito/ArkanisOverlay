@@ -1,6 +1,8 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Models.Keyboard
+@using Arkanis.Overlay.Domain.Models.Trade
 @implements IAsyncDisposable
+@inject IPriceProvider PriceProvider
 
 <FocusRegion @ref="_focusRegion" Class="search-result-container">
     <MudPaper Class="w-100 search-result px-4 py-2 focus" tabindex="0">
@@ -27,11 +29,44 @@
                     IsFocused="@context.ContainsFocus"/>
             </MudStack>
         </KeyboardShortcutBadge>
+        @if (DisplayContext)
+        {
+            <MudDivider Class="my-2"/>
+            <MudGrid Class="my-n2"
+                     Style="height: calc(3 * 62px + 3 * 12px);"> @* 3 * <result item height> + 3 * <item spacing> *@
+                @if (Model is IGamePurchasable)
+                {
+                    <MudItem md="6" Class="pt-0 h-100">
+                        <PriceTagTable Models="@PurchasePriceTags">
+                            <CaptionContent>
+                                All available <b>purchase</b> prices
+                            </CaptionContent>
+                        </PriceTagTable>
+                    </MudItem>
+                }
+                @if (Model is IGameSellable)
+                {
+                    <MudItem md="6" Class="pt-0 h-100">
+                        <PriceTagTable Models="@SalePriceTags">
+                            <CaptionContent>
+                                All available <b>sale</b> prices
+                            </CaptionContent>
+                        </PriceTagTable>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
     </MudPaper>
 </FocusRegion>
 
 @code
 {
+
+    private readonly bool _displayContext = false;
+
+    private bool DisplayContext
+        => (_focusRegion?.HasFocus == true || _displayContext)
+           && Model is IGamePurchasable or IGameSellable;
 
     private KeyboardKey KeyboardShortcut
         => _itemInfo?.IsVisible switch
@@ -46,11 +81,14 @@
         };
 
     private bool KeyboardShortcutActive
-        => KeyboardShortcut is not KeyboardKey.Unknown && (!_focusRegion?.HasFocus ?? false);
+        => KeyboardShortcut is not KeyboardKey.Unknown && _focusRegion?.HasFocus != true;
 
     private QuickAccessContainer.ItemInfo? _itemInfo;
     private FocusRegion? _focusRegion;
     private IAsyncDisposable? _registration;
+
+    private ICollection<PriceTag> PurchasePriceTags { get; set; } = [];
+    private ICollection<PriceTag> SalePriceTags { get; set; } = [];
 
     [CascadingParameter]
     public QuickAccessContainer? Container { get; set; }
@@ -58,6 +96,26 @@
     [Parameter]
     [EditorRequired]
     public required IGameEntity Model { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public required int ItemIndex { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (Model is IGamePurchasable purchasable)
+        {
+            PurchasePriceTags = await PriceProvider.GetPriceTagsWithinAsync(purchasable, null);
+        }
+
+        if (Model is IGameSellable sellable)
+        {
+            SalePriceTags = await PriceProvider.GetPriceTagsWithinAsync(sellable, null);
+            SalePriceTags = SalePriceTags.Reverse().ToArray();
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -67,13 +125,19 @@
             var updateCallback = EventCallback.Factory.Create<QuickAccessContainer.ItemInfo>(this, OnVisibilityChanged);
             if (Container is not null && _focusRegion is not null)
             {
-                _registration = await Container.RegisterAsync(_focusRegion.ContainerElement, updateCallback);
+                _registration = await Container.RegisterAsync(ItemIndex, _focusRegion.ContainerElement, updateCallback);
             }
         }
     }
 
     private async Task OnVisibilityChanged(QuickAccessContainer.ItemInfo info)
     {
+        if (_itemInfo == info)
+        {
+            // prevent unnecessary re-rendering when the state is equivalent
+            return;
+        }
+
         _itemInfo = info;
         await InvokeAsync(StateHasChanged);
     }
@@ -83,6 +147,7 @@
         if (_registration != null)
         {
             await _registration.DisposeAsync();
+            _registration = null;
         }
     }
 

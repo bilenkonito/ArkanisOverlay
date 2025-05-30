@@ -17,6 +17,22 @@ public class PurchasePriceProvider(
         gameEntity.UpdatePurchasePrices(bounds);
     }
 
+    public async ValueTask<ICollection<PriceTag>> GetPriceTagsWithinAsync(IGamePurchasable gameEntity, IGameLocation? gameLocation)
+    {
+        var prices = await pricingRepositoryAggregate.GetAllForAsync(gameEntity.Id);
+        var filtered = gameLocation switch
+        {
+            not null => prices.Where(price => price is IGameLocatedAt locatedAt && gameLocation.IsOrContains(locatedAt.Location)),
+            _ => prices,
+        };
+
+        return filtered
+            .Select(price => CreatePriceTag(price))
+            .OfType<BarePriceTag>()
+            .OrderBy(x => x.Price)
+            .ToArray();
+    }
+
     public async ValueTask<Bounds<PriceTag>> GetPriceTagAtAsync(IGamePurchasable gameEntity, IGameLocation gameLocation)
         => await GetBoundsAsync(gameEntity, gameLocation);
 
@@ -28,14 +44,8 @@ public class PurchasePriceProvider(
             _ => PriceTag.Unknown,
         };
 
-        var prices = await pricingRepositoryAggregate.GetAllForAsync(gameEntity.Id);
-        var filtered = gameLocation switch
-        {
-            not null => prices.Where(price => price is IGameLocatedAt locatedAt && gameLocation.IsOrContains(locatedAt.Location)).ToList(),
-            _ => prices,
-        };
-
-        return CreateBoundsFrom(filtered, price => price.Price, fallback);
+        var filtered = await GetPriceTagsWithinAsync(gameEntity, gameLocation);
+        return CreateBoundsFrom(filtered, fallback);
     }
 
     protected override Task InitializeAsyncCore(CancellationToken cancellationToken)
