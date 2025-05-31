@@ -81,21 +81,22 @@ jobs:
           echo "New container: ${CONTAINER_ID}"
 
           SECONDS=0 # this is a bash magic variable that keeps counting up automatically
-          until [ "$(docker inspect -f '{{.State.Health.Status}}' "${CONTAINER_ID}" 2>/dev/null)" = "healthy" ]; do
-            echo "Waiting for container to become healthy... (${SECONDS}s)"
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' "${CONTAINER_ID}")" = "healthy" ]; do
+            echo "Current container state: $(docker inspect -f '{{json .State}}' "${CONTAINER_ID}")"
 
             if [ $SECONDS -gt $TIMEOUT ]; then
               echo "Container failed to become healthy!"
               exit 1
             fi
 
-            sleep 1
+            echo "Waiting for container to become healthy... (${SECONDS}s)"
+            sleep 5
           done
 
           # only let container restart automatically after it has proven once
           # that it is a good boy and will behave
           echo "Container started successfully!"
-          docker update --restart unless-stopped "$containerId"
+          docker update --restart unless-stopped "${CONTAINER_ID}"
 
           echo "Removing dangling images..."
           docker image prune -f -a
