@@ -45,7 +45,7 @@ jobs:
       ENVIRONMENT_NAME: ${{ inputs.environment_name }}
       IMAGE_NAME: ${{ github.repository }}
       IMAGE_REF: ${{ inputs.image_ref }}
-      CONTAINER_NAME: ${{ inputs.container_name }}
+      CONTAINER_NAME: ${{ inputs.container_label }}
       IS_DEVELOPMENT: ${{ inputs.environment_name != 'Production' && 'true' || 'false' }}
     steps:
       - name: Deploy the Docker image
