@@ -22,7 +22,7 @@ using Workers;
 /// <summary>
 ///     Interaction logic for OverlayWindow.xaml
 /// </summary>
-public partial class OverlayWindow
+public sealed partial class OverlayWindow : IDisposable
 {
     private readonly BlurHelper _blurHelper;
     private readonly GlobalHotkey _globalHotkey;
@@ -249,4 +249,18 @@ public partial class OverlayWindow
 
     public void Exit()
         => Dispatcher.Invoke(() => OnExitCommand(this, new RoutedEventArgs()));
+
+    public void Dispose()
+    {
+        _globalHotkey.Dispose();
+        _windowTracker.Dispose();
+        if (BlazorWebView is IDisposable blazorWebViewDisposable)
+        {
+            blazorWebViewDisposable.Dispose();
+        }
+        else if (BlazorWebView != null)
+        {
+            _ = BlazorWebView.DisposeAsync().AsTask();
+        }
+    }
 }
