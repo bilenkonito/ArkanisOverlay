@@ -89,7 +89,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          PR_URL=$(gh pr new --base ${{ github.event.repository.default_branch }} --head ${{ github.ref_name }} --title "Backpropagate release version to default branch: ${{ steps.semantic-release.outputs.new_release_version }}" --body "This is an automated post-release action." --reviewer ArkanisCorporation/overlay-maintainers --label ci --label automated)
+          PR_URL=$(gh pr new --base ${{ github.event.repository.default_branch }} --head ${{ github.ref_name }} --title "Backpropagate release version to default branch: ${{ steps.semantic-release.outputs.new_release_version }}" --body "This is an automated post-release action." --label ci --label automated)
           PR_NUMBER=${PR_URL##*/}
           gh pr merge --merge --auto ${PR_URL}
           curl -X POST \
