@@ -43,12 +43,18 @@ jobs:
     runs-on: [ self-hosted, daedalus ]
     env:
       IS_DEVELOPMENT: ${{ inputs.environment_name != 'Production' && 'true' || 'false' }}
+      REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
+      REGISTRY_USER: ${{ github.actor }}
+      REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Deploy the Docker image
         run: |
           TIMEOUT=${{ inputs.container_startup_timeout }}
           PORT=${{ inputs.container_port }}
-          IMAGE_NAME=$(echo "${{ env.REGISTRY_NAME }}/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_NAME=$(echo "${REGISTRY_NAME}/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
+          echo "Setting up Docker login to ${REGISTRY_NAME} using ${REGISTRY_USER}"
+          docker login -p ${REGISTRY_PASSWORD} -u ${REGISTRY_USER} ${REGISTRY_NAME}
 
           echo "Looking for any old containers..."
           CONTAINER_ID=$(docker ps -aqf "label=${{ inputs.container_label }}")
@@ -96,6 +102,9 @@ jobs:
 
           echo "Removing dangling images..."
           docker image prune -f -a
+
+          echo "Logging out of Docker registry ${REGISTRY_NAME}"
+          docker logout ${REGISTRY_NAME}
 
           echo ""
           echo "Done!"
