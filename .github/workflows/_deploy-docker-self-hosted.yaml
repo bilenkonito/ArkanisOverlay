@@ -42,44 +42,43 @@ jobs:
     name: Deploy ${{ inputs.image_ref }} to ${{ inputs.environment_name }}
     runs-on: [ self-hosted, daedalus ]
     env:
-      ENVIRONMENT_NAME: ${{ inputs.environment_name }}
-      IMAGE_NAME: ${{ github.repository }}
-      IMAGE_REF: ${{ inputs.image_ref }}
-      CONTAINER_NAME: ${{ inputs.container_label }}
       IS_DEVELOPMENT: ${{ inputs.environment_name != 'Production' && 'true' || 'false' }}
     steps:
       - name: Deploy the Docker image
         run: |
           TIMEOUT=${{ inputs.container_startup_timeout }}
           PORT=${{ inputs.container_port }}
+          IMAGE_NAME=$(echo "${{ env.REGISTRY_NAME }}/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
 
+          echo "Looking for any old containers..."
+          CONTAINER_ID=$(docker ps -aqf "label=${{ inputs.container_label }}")
+          if [ -n "${CONTAINER_ID}" ]; then
+            echo "Stopping old containers: ${CONTAINER_ID}"
+            docker stop ${CONTAINER_ID} || true
+            docker rm ${CONTAINER_ID} || true
+          fi
 
-          echo "Stopping any old containers..."
-          docker stop $(docker ps -qf "label=${{ inputs.container_label }}") || true
-          docker rm $(docker ps -aqf "label=${{ inputs.container_label }}") || true
-
-          echo Starting container...
-          containerId=$(
+          echo "Starting container..."
+          CONTAINER_ID=$(
             docker run \
-            --label ${{ inputs.container_label }} \
-            --env ASPNETCORE_ENVIRONMENT=${{ inputs.environment_name }} \
             --detach \
-            --publish $PORT:8080 \
+            --label ${{ inputs.container_label }} \
+            --publish ${PORT}:8080 \
             --env ASPNETCORE_URLS=http://0.0.0.0:8080 \
-            --env ASPNETCORE_ENVIRONMENT=$ENVIRONMENT_NAME \
-            --env DetailedErrors=$IS_DEVELOPMENT \
-            --volume arkanis-overlay-data:/app/ArkanisOverlay \
+            --env ASPNETCORE_ENVIRONMENT=${{ inputs.environment_name }} \
+            --env DetailedErrors=${IS_DEVELOPMENT} \
+            --volume ${{ inputs.container_label }}-data:/app/ArkanisOverlay \
             --volume /etc/timezone:/etc/timezone:ro \
             --volume /etc/localtime:/etc/localtime:ro \
-            ${{ env.REGISTRY_NAME }}/${{ inputs.image_name }}:${{ inputs.image_ref }}
+            "${{ env.REGISTRY_NAME }}/${IMAGE_NAME}:${{ inputs.image_ref }}"
           )
 
           # truncate ID for later filtering, as docker uses 12 character IDs
-          containerId=$(head -c 12 <<<$containerId)
-          echo New container: "$containerId"
+          CONTAINER_ID=$(head -c 12 <<<${CONTAINER_ID})
+          echo "New container: ${CONTAINER_ID}"
 
           SECONDS=0 # this is a bash magic variable that keeps counting up automatically
-          until [ "$(docker inspect -f '{{.State.Health.Status}}' "$containerId" 2>/dev/null)" = "healthy" ]; do
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' "${CONTAINER_ID}" 2>/dev/null)" = "healthy" ]; do
             echo "Waiting for container to become healthy... (${SECONDS}s)"
 
             if [ $SECONDS -gt $TIMEOUT ]; then
@@ -92,7 +91,7 @@ jobs:
 
           # only let container restart automatically after it has proven once
           # that it is a good boy and will behave
-          echo Container started successfully!
+          echo "Container started successfully!"
           docker update --restart unless-stopped "$containerId"
 
           echo "Removing dangling images..."
