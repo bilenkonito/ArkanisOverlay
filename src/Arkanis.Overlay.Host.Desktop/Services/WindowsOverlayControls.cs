@@ -23,6 +23,9 @@ public class WindowsOverlayControls : IOverlayControls, IOverlayEventProvider, I
     {
     }
 
+    public void Shutdown()
+        => OverlayWindow.Instance?.Exit();
+
     public void OnFocusGained()
         => OverlayFocused?.Invoke(this, EventArgs.Empty);
 

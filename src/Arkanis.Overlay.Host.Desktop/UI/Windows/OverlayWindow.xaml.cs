@@ -246,4 +246,7 @@ public partial class OverlayWindow
 
     private void OnExitCommand(object sender, RoutedEventArgs e)
         => Application.Current.Shutdown();
+
+    public void Exit()
+        => Dispatcher.Invoke(() => OnExitCommand(this, new RoutedEventArgs()));
 }
