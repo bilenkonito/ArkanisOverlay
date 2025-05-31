@@ -34,16 +34,13 @@ on:
         type: boolean
         default: false
 
-env:
-  REGISTRY_NAME: ghcr.io
-
 jobs:
   deploy:
     name: Deploy ${{ inputs.image_ref }} to ${{ inputs.environment_name }}
     runs-on: [ self-hosted, daedalus ]
     env:
       IS_DEVELOPMENT: ${{ inputs.environment_name != 'Production' && 'true' || 'false' }}
-      REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
+      REGISTRY_NAME: ghcr.io
       REGISTRY_USER: ${{ github.actor }}
       REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     steps:
