@@ -70,7 +70,7 @@ jobs:
             --volume ${{ inputs.container_label }}-data:/app/ArkanisOverlay \
             --volume /etc/timezone:/etc/timezone:ro \
             --volume /etc/localtime:/etc/localtime:ro \
-            "${{ env.REGISTRY_NAME }}/${IMAGE_NAME}:${{ inputs.image_ref }}"
+            "${IMAGE_NAME}:${{ inputs.image_ref }}"
           )
 
           # truncate ID for later filtering, as docker uses 12 character IDs
