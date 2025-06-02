@@ -49,20 +49,48 @@
                          Visible="@_isOpen"
                          Overlap>
                 <ChildContent>
-                    <MudBadge Content="@_unassignedEntityCount"
-                              Visible="@(_unassignedEntityCount > 0)"
-                              Origin="@Origin.TopCenter"
-                              Color="@Color.Info"
-                              Overlap>
-                        <MudTooltip Text="Manage inventory"
-                                    Placement="@Placement.Top">
-                            <MudIconButton
-                                Icon="@MaterialSymbols.Outlined.Warehouse"
-                                OnClick="@OnManageInventoryClickAsync"
-                                Class="focus"
-                                tabindex="1"/>
-                        </MudTooltip>
-                    </MudBadge>
+                    <CustomBadge Visible="@(_assignedEntries.Length > 0)"
+                                 Origin="@Origin.TopCenter"
+                                 Color="@Color.Info"
+                                 Overlap>
+                        <BadgeWrapperContent>
+                            <MudTooltip Text="Inventory entries"
+                                        Placement="@Placement.Top"
+                                        RootClass="d-flex justify-center">
+                                @context
+                            </MudTooltip>
+                        </BadgeWrapperContent>
+                        <BadgeContent>
+                            @_assignedEntries.Length
+                        </BadgeContent>
+                        <ChildContent>
+                            <CustomBadge Visible="@(_unassignedEntries.Length > 0)"
+                                         Origin="@Origin.TopRight"
+                                         Color="@Color.Warning"
+                                         Overlap>
+                                <BadgeWrapperContent>
+                                    <MudTooltip Text="Unassigned inventory entries"
+                                                Placement="@Placement.Top"
+                                                RootClass="d-flex justify-center">
+                                        @context
+                                    </MudTooltip>
+                                </BadgeWrapperContent>
+                                <BadgeContent>
+                                    @_unassignedEntries.Length
+                                </BadgeContent>
+                                <ChildContent>
+                                    <MudTooltip Text="Manage inventory"
+                                                Placement="@Placement.Top">
+                                        <MudIconButton
+                                            Icon="@MaterialSymbols.Outlined.Warehouse"
+                                            OnClick="@OnManageInventoryClickAsync"
+                                            Class="focus"
+                                            tabindex="1"/>
+                                    </MudTooltip>
+                                </ChildContent>
+                            </CustomBadge>
+                        </ChildContent>
+                    </CustomBadge>
                 </ChildContent>
                 <BadgeContent>
                     <MudPaper>
@@ -122,8 +150,14 @@
 @code
 {
 
-    private ICollection<InventoryEntryBase> _unassignedEntries = [];
-    private int _unassignedEntityCount;
+    private ICollection<InventoryEntryBase> _allEntries = [];
+
+    private InventoryEntryBase[] _unassignedEntries = [];
+    private Quantity[] _unassignedQuantities = [];
+
+    private InventoryEntryBase[] _assignedEntries = [];
+    private Quantity[] _assignedQuantities = [];
+
     private bool _isOpen;
 
     [CascadingParameter]
@@ -138,8 +172,12 @@
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        _unassignedEntries = await InventoryManager.GetUnassignedForAsync(Model.Id);
-        _unassignedEntityCount = _unassignedEntries.Sum(x => x.Quantity.Amount);
+        _allEntries = await InventoryManager.GetEntriesForAsync(Model.Id);
+        _unassignedEntries = _allEntries.Where(x => x.Type is InventoryEntryBase.EntryType.Virtual).ToArray();
+        _unassignedQuantities = Quantity.Aggregate(_unassignedEntries.Select(x => x.Quantity)).ToArray();
+
+        _assignedEntries = _allEntries.Where(x => x.Type is not InventoryEntryBase.EntryType.Virtual).ToArray();
+        _assignedQuantities = Quantity.Aggregate(_assignedEntries.Select(x => x.Quantity)).ToArray();
 
         if (!IsFocused)
         {

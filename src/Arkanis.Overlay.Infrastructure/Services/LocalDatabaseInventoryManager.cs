@@ -25,7 +25,11 @@ internal class LocalDatabaseInventoryManager(
         return entities.Count(x => x.EntryType is InventoryEntryBase.EntryType.Virtual);
     }
 
-    public async Task<ICollection<InventoryEntryBase>> GetUnassignedForAsync(IDomainId domainId, CancellationToken cancellationToken = default)
+    public async Task<ICollection<InventoryEntryBase>> GetEntriesForAsync(
+        IDomainId domainId,
+        InventoryEntryBase.EntryType entryType,
+        CancellationToken cancellationToken = default
+    )
     {
         if (domainId is not UexApiGameEntityId uexId)
         {
@@ -38,7 +42,24 @@ internal class LocalDatabaseInventoryManager(
             .ToArrayAsync(cancellationToken);
 
         return entities
-            .Where(x => x.EntryType is InventoryEntryBase.EntryType.Virtual)
+            .Where(x => x.EntryType == entryType)
+            .Select(x => mapper.Map(x))
+            .ToArray();
+    }
+
+    public async Task<ICollection<InventoryEntryBase>> GetEntriesForAsync(IDomainId domainId, CancellationToken cancellationToken = default)
+    {
+        if (domainId is not UexApiGameEntityId uexId)
+        {
+            return [];
+        }
+
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var entities = await dbContext.InventoryEntries
+            .Where(x => x.GameEntityId == uexId)
+            .ToArrayAsync(cancellationToken);
+
+        return entities
             .Select(x => mapper.Map(x))
             .ToArray();
     }
