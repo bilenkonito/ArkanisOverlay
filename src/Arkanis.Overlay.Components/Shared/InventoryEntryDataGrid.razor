@@ -45,6 +45,8 @@
         <SelectColumn/>
         <PropertyColumn Property="@(x => x.Quantity.Amount)"
                         AggregateDefinition="@(new AggregateDefinition<InventoryEntryBase>())"
+                        Groupable="false"
+                        HeaderStyle="width: 80px"
                         HeaderClass="text-right flex-row-reverse pr-1"
                         CellClass="text-right pr-1"
                         FooterClass="text-right pr-1">
@@ -52,16 +54,32 @@
                 @context.Item.Quantity.Amount
             </CellTemplate>
             <AggregateTemplate>
-                @context.Sum(x => x.Quantity.Amount).ToMetric(MetricNumeralFormats.WithSpace, 3)
+                <MudStack Spacing="0">
+                    @foreach (var quantitiesByUnit in context.Select(x => x.Quantity).GroupBy(x => x.Unit))
+                    {
+                        <span>
+                            @quantitiesByUnit.Sum(x => x.Amount).ToMetric(MetricNumeralFormats.WithSpace, 3)
+                        </span>
+                    }
+                </MudStack>
             </AggregateTemplate>
         </PropertyColumn>
         <PropertyColumn Property="@(x => x.Quantity.Unit)"
-                        AggregateDefinition="@(new AggregateDefinition<InventoryEntryBase>())">
+                        AggregateDefinition="@(new AggregateDefinition<InventoryEntryBase>())"
+                        CellClass="pl-1"
+                        FooterClass="pl-1">
             <CellTemplate>
                 @Quantity.GetUnitString(context.Item.Quantity.Unit)
             </CellTemplate>
             <AggregateTemplate>
-                @Quantity.GetUnitString(context.First().Quantity.Unit)
+                <MudStack Spacing="0">
+                    @foreach (var quantitiesByUnit in context.Select(x => x.Quantity).GroupBy(x => x.Unit))
+                    {
+                        <span>
+                            @Quantity.GetUnitString(quantitiesByUnit.Key)
+                        </span>
+                    }
+                </MudStack>
             </AggregateTemplate>
         </PropertyColumn>
         <PropertyColumn Title="Entity"
