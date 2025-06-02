@@ -80,3 +80,7 @@
         opacity: 1;
     }
 }
+
+.mud-popover .mud-list.mud-menu-list {
+    overflow: visible;
+}

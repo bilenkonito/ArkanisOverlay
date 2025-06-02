@@ -1,5 +1,7 @@
 namespace Arkanis.Overlay.Components.Services;
 
+using Domain.Abstractions.Services;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 
 public class OverlayModules
@@ -17,6 +19,11 @@ public class OverlayModules
             Url = "/inventory",
             Name = "Inventory",
             Icon = Icons.Material.Filled.Warehouse,
+            GetUpdateCountAsync = async serviceProvider =>
+            {
+                var inventoryManager = serviceProvider.GetRequiredService<IInventoryManager>();
+                return await inventoryManager.GetUnassignedCountAsync();
+            },
         },
     ];
 
@@ -29,5 +36,7 @@ public class OverlayModules
         public required string Name { get; init; }
 
         public string Icon { get; init; } = Icons.Material.Filled.ViewModule;
+
+        public Func<IServiceProvider, ValueTask<int>> GetUpdateCountAsync { get; set; } = _ => ValueTask.FromResult(0);
     }
 }

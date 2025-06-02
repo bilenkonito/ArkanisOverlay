@@ -5,6 +5,8 @@ using Models.Inventory;
 
 public interface IInventoryManager
 {
+    Task<int> GetUnassignedCountAsync(CancellationToken cancellationToken = default);
+
     Task<ICollection<InventoryEntryBase>> GetUnassignedForAsync(IDomainId domainId, CancellationToken cancellationToken = default);
 
     Task<ICollection<InventoryEntryBase>> GetAllEntriesAsync(CancellationToken cancellationToken = default);

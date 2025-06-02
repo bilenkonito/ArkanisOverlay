@@ -16,6 +16,15 @@ internal class LocalDatabaseInventoryManager(
     InventoryEntityMapper mapper
 ) : IInventoryManager
 {
+    public async Task<int> GetUnassignedCountAsync(CancellationToken cancellationToken = default)
+    {
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var entities = await dbContext.InventoryEntries
+            .ToArrayAsync(cancellationToken);
+
+        return entities.Count(x => x.EntryType is InventoryEntryBase.EntryType.Virtual);
+    }
+
     public async Task<ICollection<InventoryEntryBase>> GetUnassignedForAsync(IDomainId domainId, CancellationToken cancellationToken = default)
     {
         if (domainId is not UexApiGameEntityId uexId)
