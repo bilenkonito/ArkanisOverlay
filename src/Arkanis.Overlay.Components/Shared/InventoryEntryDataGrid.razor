@@ -1,6 +1,7 @@
 @using Arkanis.Overlay.Common.Extensions
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Models.Inventory
+@using Humanizer
 <style>
     .mud-data-grid .mud-table-cell.mud-datagrid-group {
         background-color: inherit;
@@ -25,6 +26,10 @@
     tfoot tr.mud-table-row td.mud-table-cell.footer-cell:first-child:before {
         content: "Global";
     }
+
+    .flex-row-reverse > .column-header {
+        flex-direction: row-reverse;
+    }
 </style>
 <MudDataGrid @ref="_dataGridRef"
              Items="@SortedModels"
@@ -38,13 +43,25 @@
              Hover>
     <Columns>
         <SelectColumn/>
-        <PropertyColumn Property="@(x => x.Quantity)"
-                        AggregateDefinition="@(new AggregateDefinition<InventoryEntryBase>())">
+        <PropertyColumn Property="@(x => x.Quantity.Amount)"
+                        AggregateDefinition="@(new AggregateDefinition<InventoryEntryBase>())"
+                        HeaderClass="text-right flex-row-reverse pr-1"
+                        CellClass="text-right pr-1"
+                        FooterClass="text-right pr-1">
             <CellTemplate>
-                <QuantityLabel Model="@context.Item.Quantity"/>
+                @context.Item.Quantity.Amount
             </CellTemplate>
             <AggregateTemplate>
-                <QuantityAggregateLabel Models="@context.Select(x => x.Quantity)"/>
+                @context.Sum(x => x.Quantity.Amount).ToMetric(MetricNumeralFormats.WithSpace, 3)
+            </AggregateTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="@(x => x.Quantity.Unit)"
+                        AggregateDefinition="@(new AggregateDefinition<InventoryEntryBase>())">
+            <CellTemplate>
+                @Quantity.GetUnitString(context.Item.Quantity.Unit)
+            </CellTemplate>
+            <AggregateTemplate>
+                @Quantity.GetUnitString(context.First().Quantity.Unit)
             </AggregateTemplate>
         </PropertyColumn>
         <PropertyColumn Title="Entity"
