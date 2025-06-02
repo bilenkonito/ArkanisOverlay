@@ -1,5 +1,5 @@
 @using Arkanis.Overlay.Domain.Models.Inventory
-<MudStack>
+<MudStack Spacing="@Spacing">
     @foreach (var aggregateModel in _aggregateModels)
     {
         <QuantityLabel Model="@aggregateModel"/>
@@ -14,6 +14,9 @@
     [Parameter]
     [EditorRequired]
     public IEnumerable<Quantity> Models { get; set; } = [];
+
+    [Parameter]
+    public int Spacing { get; set; }
 
     protected override void OnParametersSet()
     {

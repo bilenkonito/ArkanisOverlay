@@ -119,9 +119,16 @@
                     <MudSpacer/>
                     @if (SelectedModels.Intersect(context.Grouping).ToArray() is { Length: > 0 } selected)
                     {
-                        <MudChip
-                            Value="@selected.Length"
-                            Color="@Color.Info"/>
+                        <MudTooltip>
+                            <TooltipContent>
+                                <QuantityAggregateLabel Models="@selected.Select(x => x.Quantity)"/>
+                            </TooltipContent>
+                            <ChildContent>
+                                <MudChip
+                                    Value="@selected.Length"
+                                    Color="@Color.Info"/>
+                            </ChildContent>
+                        </MudTooltip>
                     }
                 </MudStack>
             </GroupTemplate>
@@ -206,9 +213,16 @@
                     <MudSpacer/>
                     @if (SelectedModels.Intersect(context.Grouping).ToArray() is { Length: > 0 } selected)
                     {
-                        <MudChip
-                            Value="@selected.Length"
-                            Color="@Color.Info"/>
+                        <MudTooltip>
+                            <TooltipContent>
+                                <QuantityAggregateLabel Models="@selected.Select(x => x.Quantity)"/>
+                            </TooltipContent>
+                            <ChildContent>
+                                <MudChip
+                                    Value="@selected.Length"
+                                    Color="@Color.Info"/>
+                            </ChildContent>
+                        </MudTooltip>
                     }
                 </MudStack>
             </GroupTemplate>
@@ -275,9 +289,16 @@
                     <MudSpacer/>
                     @if (SelectedModels.Intersect(context.Grouping).ToArray() is { Length: > 0 } selected)
                     {
-                        <MudChip
-                            Value="@selected.Length"
-                            Color="@Color.Info"/>
+                        <MudTooltip>
+                            <TooltipContent>
+                                <QuantityAggregateLabel Models="@selected.Select(x => x.Quantity)"/>
+                            </TooltipContent>
+                            <ChildContent>
+                                <MudChip
+                                    Value="@selected.Length"
+                                    Color="@Color.Info"/>
+                            </ChildContent>
+                        </MudTooltip>
                     }
                 </MudStack>
             </GroupTemplate>

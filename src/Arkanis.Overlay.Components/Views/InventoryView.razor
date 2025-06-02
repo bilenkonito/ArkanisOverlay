@@ -89,7 +89,7 @@
     <MudMainContent Class="pb-8">
         <MudContainer>
 
-            <MudStack Spacing="4">
+            <MudStack Spacing="6">
                 <MudPaper Style="position: sticky; top: 0; z-index: 100"
                           Elevation="4"
                           Class="py-2 px-4">
@@ -181,14 +181,24 @@
 
                 <MudExpansionPanels Gutters="false">
                     @{ var panelIndex = 0; }
-                    @if (UnassignedEntries.Length is var unassignedCount and > 0)
+                    @if (UnassignedEntries.Length > 0)
                     {
-                        <MudExpansionPanel Gutters="false" Expanded="@(panelIndex++ == 0)">
+                        <MudExpansionPanel Gutters="false"
+                                           Expanded="@(panelIndex++ == 0)">
                             <TitleContent>
                                 <MudStack AlignItems="@AlignItems.Center" Row>
-                                    <MudChip
-                                        Value="@unassignedCount"
-                                        Color="@Color.Info"/>
+
+                                    <MudTooltip>
+                                        <TooltipContent>
+                                            <QuantityAggregateLabel
+                                                Models="@UnassignedEntries.Select(x => x.Quantity)"/>
+                                        </TooltipContent>
+                                        <ChildContent>
+                                            <MudChip
+                                                Value="@UnassignedEntries.Length"
+                                                Color="@Color.Info"/>
+                                        </ChildContent>
+                                    </MudTooltip>
                                     <MudText Typo="@Typo.h4">
                                         Unassigned inventory
                                     </MudText>
@@ -205,6 +215,7 @@
                                 <InventoryEntryDataGrid Models="@UnassignedEntries.ToList()"
                                                         @bind-SelectedModels="@SelectedEntries"
                                                         Lists="@AllLists"
+                                                        Class="mb-n2"
                                                         ExpandAll="true">
                                     <ListActionsContent>
                                         @ListActions(context)
