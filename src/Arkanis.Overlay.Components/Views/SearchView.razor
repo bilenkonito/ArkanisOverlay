@@ -131,6 +131,11 @@
                     Class="action"
                     Icon="@MaterialSymbols.Outlined.Settings"
                     OnClick="OpenUserOptionsDialogAsync"/>
+                <MudIconButton
+                    Color="Color.Error"
+                    Class="action"
+                    Icon="@MaterialSymbols.Outlined.PowerSettingsNew"
+                    OnClick="OpenShutdownDialogAsync"/>
             </MudStack>
             <MudSpacer/>
             <MudStack Spacing="1" AlignItems="@AlignItems.End" Justify="@Justify.FlexEnd">
@@ -273,5 +278,8 @@
 
     private async Task OpenAboutDialogAsync()
         => await AboutDialog.ShowAsync(DialogService);
+
+    private async Task OpenShutdownDialogAsync()
+        => await ShutdownDialog.ShowAsync(DialogService);
 
 }
