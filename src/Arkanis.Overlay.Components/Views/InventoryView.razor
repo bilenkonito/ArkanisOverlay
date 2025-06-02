@@ -3,6 +3,7 @@
 @using Arkanis.Overlay.Domain.Abstractions
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Models.Inventory
+@using Arkanis.Overlay.Domain.Models.Keyboard
 @inject IDialogService DialogService
 @inject IInventoryManager InventoryManager
 
@@ -17,28 +18,71 @@
     :not(:hover) * .visible-on-parent-hover {
         display: none;
     }
+
+    .mud-tabs-tabbar-content {
+        overflow: visible !important;
+    }
+
+    .mud-tabs-tabbar-content .mud-badge.mud-badge-top.center.mud-badge-overlap {
+        bottom: calc(100% - 8px);
+    }
+
+    .mud-tabs-tabbar .mud-tabs-scroll-button {
+        display: none;
+    }
+
+    .mud-tabs-tabbar-wrapper {
+        display: flex !important;
+        width: 100% !important;
+        transform: none !important;
+    }
+
+    .mud-tabs-tabbar-wrapper .mud-badge-root {
+        width: 100%;
+    }
+
+    .mud-tabs-tabbar-wrapper > * {
+        flex: 1;
+    }
 </style>
 
 <div class="fixed pa-8" style="right: 0; bottom: 0">
-    <MudMenu ActivationEvent="@MouseEvent.MouseOver"
-             AnchorOrigin="@Origin.CenterCenter"
-             TransformOrigin="@Origin.BottomRight">
-        <ActivatorContent>
-            <MudFab
-                Color="@Color.Primary"
-                StartIcon="@Icons.Material.Filled.Add"/>
-        </ActivatorContent>
-        <ChildContent>
-            <MudMenuItem Icon="@Icons.Material.Filled.Add"
-                         OnClick="@CreateNewEntryAsync">
-                New entry
-            </MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.PlaylistAdd"
-                         OnClick="@CreateNewListAsync">
-                New list
-            </MudMenuItem>
-        </ChildContent>
-    </MudMenu>
+    <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyA])"
+                           OnKeyPress="@(() => _fabMenuOpen = true)"
+                           IsActive="@(!_fabMenuOpen)"
+                           Origin="@Origin.CenterLeft">
+        <MudMenu ActivationEvent="@MouseEvent.MouseOver"
+                 AnchorOrigin="@Origin.CenterCenter"
+                 TransformOrigin="@Origin.BottomRight"
+                 Class="overflow-visible"
+                 @bind-Open="_fabMenuOpen">
+            <ActivatorContent>
+                <MudFab
+                    Color="@Color.Primary"
+                    StartIcon="@Icons.Material.Filled.Add"/>
+            </ActivatorContent>
+            <ChildContent>
+                <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyE])"
+                                       OnKeyPress="@CreateNewEntryAsync"
+                                       Origin="@Origin.CenterLeft"
+                                       Class="d-flex">
+                    <MudMenuItem Icon="@Icons.Material.Filled.Add"
+                                 OnClick="@CreateNewEntryAsync">
+                        New entry
+                    </MudMenuItem>
+                </KeyboardShortcutBadge>
+                <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyL])"
+                                       OnKeyPress="@CreateNewListAsync"
+                                       Origin="@Origin.CenterLeft"
+                                       Class="d-flex">
+                    <MudMenuItem Icon="@Icons.Material.Filled.PlaylistAdd"
+                                 OnClick="@CreateNewListAsync">
+                        New list
+                    </MudMenuItem>
+                </KeyboardShortcutBadge>
+            </ChildContent>
+        </MudMenu>
+    </KeyboardShortcutBadge>
 </div>
 
 <div>
@@ -137,7 +181,7 @@
 
                 <MudExpansionPanels Gutters="false">
                     @{ var panelIndex = 0; }
-                    @if (UnassignedEntries.Count() is var unassignedCount and > 0)
+                    @if (UnassignedEntries.Length is var unassignedCount and > 0)
                     {
                         <MudExpansionPanel Gutters="false" Expanded="@(panelIndex++ == 0)">
                             <TitleContent>
@@ -175,8 +219,23 @@
                 </MudExpansionPanels>
 
                 <MudPaper>
-                    <MudTabs Rounded>
+                    <MudTabs @bind-ActivePanelIndex="@_activePanelIndex"
+                             AlwaysShowScrollButtons="false"
+                             Rounded>
                         <MudTabPanel>
+                            <TabWrapperContent>
+                                <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.KeyQ])"
+                                                       OnKeyPress="@(() => _activePanelIndex -= 1)"
+                                                       IsActive="@(IsPanelInactive(Panel.ByStorage))"
+                                                       Origin="@Origin.CenterLeft">
+                                    <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.KeyS])"
+                                                           OnKeyPress="@(() => SetActivePanel(Panel.ByStorage))"
+                                                           IsActive="@(IsPanelInactive(Panel.ByStorage))"
+                                                           Origin="@Origin.TopCenter">
+                                        @context
+                                    </KeyboardShortcutBadge>
+                                </KeyboardShortcutBadge>
+                            </TabWrapperContent>
                             <TabContent>
                                 <MudStack AlignItems="@AlignItems.Center" Spacing="0">
                                     <MudChip T="string" Size="@Size.Small">
@@ -205,6 +264,14 @@
                         </MudTabPanel>
 
                         <MudTabPanel>
+                            <TabWrapperContent>
+                                <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.KeyL])"
+                                                       OnKeyPress="@(() => SetActivePanel(Panel.ByList))"
+                                                       IsActive="@(IsPanelInactive(Panel.ByList))"
+                                                       Origin="@Origin.TopCenter">
+                                    @context
+                                </KeyboardShortcutBadge>
+                            </TabWrapperContent>
                             <TabContent>
                                 <MudStack AlignItems="@AlignItems.Center" Spacing="0">
                                     <MudChip T="string" Size="@Size.Small">
@@ -233,6 +300,14 @@
                         </MudTabPanel>
 
                         <MudTabPanel>
+                            <TabWrapperContent>
+                                <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.KeyN])"
+                                                       OnKeyPress="@(() => SetActivePanel(Panel.ByEntity))"
+                                                       IsActive="@(IsPanelInactive(Panel.ByEntity))"
+                                                       Origin="@Origin.TopCenter">
+                                    @context
+                                </KeyboardShortcutBadge>
+                            </TabWrapperContent>
                             <TabContent>
                                 <MudStack AlignItems="@AlignItems.Center" Spacing="0">
                                     <MudChip T="string" Size="@Size.Small">
@@ -261,6 +336,14 @@
                         </MudTabPanel>
 
                         <MudTabPanel>
+                            <TabWrapperContent>
+                                <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.KeyM])"
+                                                       OnKeyPress="@(() => SetActivePanel(Panel.OnlyMatching))"
+                                                       IsActive="@(IsPanelInactive(Panel.OnlyMatching))"
+                                                       Origin="@Origin.TopCenter">
+                                    @context
+                                </KeyboardShortcutBadge>
+                            </TabWrapperContent>
                             <TabContent>
                                 <MudStack AlignItems="@AlignItems.Center" Spacing="0">
                                     <MudChip T="string" Size="@Size.Small">
@@ -287,6 +370,19 @@
                         </MudTabPanel>
 
                         <MudTabPanel>
+                            <TabWrapperContent>
+                                <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.KeyE])"
+                                                       OnKeyPress="@(() => _activePanelIndex += 1)"
+                                                       IsActive="@(IsPanelInactive(Panel.AllInventory))"
+                                                       Origin="@Origin.CenterRight">
+                                    <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.KeyA])"
+                                                           OnKeyPress="@(() => SetActivePanel(Panel.AllInventory))"
+                                                           IsActive="@(IsPanelInactive(Panel.AllInventory))"
+                                                           Origin="@Origin.TopCenter">
+                                        @context
+                                    </KeyboardShortcutBadge>
+                                </KeyboardShortcutBadge>
+                            </TabWrapperContent>
                             <TabContent>
                                 <MudStack AlignItems="@AlignItems.Center" Spacing="0">
                                     <MudChip T="string" Size="@Size.Small">
@@ -321,9 +417,11 @@
 
 @code
 {
+    private bool _fabMenuOpen;
     private string? _searchText;
     private IGameLocation? _selectedLocation;
     private InventoryEntryList? _selectedList;
+    private int _activePanelIndex;
 
     private bool FiltersActive
         => this is { _searchText: not null } or { _selectedLocation: not null } or { _selectedList: not null };
@@ -449,6 +547,7 @@
 
     private async Task CreateNewEntryAsync()
     {
+        _fabMenuOpen = false;
         if (await InventoryEntryCreateDialog.ShowAsync(DialogService) is not null)
         {
             await RefreshDataAsync();
@@ -458,6 +557,7 @@
 
     private async Task CreateNewListAsync()
     {
+        _fabMenuOpen = false;
         if (await InventoryListDialog.ShowAsync(DialogService) is not null)
         {
             await RefreshDataAsync();
@@ -641,4 +741,18 @@
     public static bool AcceptLocation(IGameLocation location)
         => location is GameSpaceStation or GameCity or GameOutpost;
 
+    private enum Panel
+    {
+        ByStorage,
+        ByList,
+        ByEntity,
+        OnlyMatching,
+        AllInventory,
+    }
+
+    private void SetActivePanel(Panel panel)
+        => _activePanelIndex = (int)panel;
+
+    private bool IsPanelInactive(Panel panel)
+        => _activePanelIndex != (int)panel;
 }
