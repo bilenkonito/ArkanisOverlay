@@ -208,7 +208,7 @@
             </CellTemplate>
         </TemplateColumn>
         <TemplateColumn Title="List"
-                        GroupBy="@(x => x.List)"
+                        GroupBy="@(x => x.List?.Id)"
                         Grouping="@Groupings.Contains(Column.List)"
                         GroupByOrder="@Groupings.IndexOfOrDefault(Column.List)"
                         GroupExpanded="@ExpandAll"
@@ -229,7 +229,7 @@
                         </MudTooltip>
                     </div>
 
-                    @if (context.Grouping.Key is InventoryEntryList list)
+                    @if (context.Grouping.FirstOrDefault()?.List is { } list)
                     {
                         <MudStack Spacing="0">
                             <MudText Typo="@Typo.h6">
