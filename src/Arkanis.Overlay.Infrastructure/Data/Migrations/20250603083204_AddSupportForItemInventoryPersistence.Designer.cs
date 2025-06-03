@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Arkanis.Overlay.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(OverlayDbContext))]
-    [Migration("20250601094213_FixListDeletion")]
-    partial class FixListDeletion
+    [Migration("20250603083204_AddSupportForItemInventoryPersistence")]
+    partial class AddSupportForItemInventoryPersistence
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
