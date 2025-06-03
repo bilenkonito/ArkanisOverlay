@@ -9,6 +9,7 @@
 
 <PageTitle>@ApplicationConstants.ApplicationName — Inventory</PageTitle>
 
+<!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
 <style>
     .mud-main-content .mud-paper,
     .mud-main-content .mud-expansion-panels {
@@ -46,44 +47,46 @@
     }
 </style>
 
-<div class="fixed pa-8" style="right: 0; bottom: 0">
-    <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyA])"
-                           OnKeyPress="@(() => _fabMenuOpen = true)"
-                           IsActive="@(!_fabMenuOpen)"
-                           Origin="@Origin.CenterLeft">
-        <MudMenu ActivationEvent="@MouseEvent.MouseOver"
-                 AnchorOrigin="@Origin.CenterCenter"
-                 TransformOrigin="@Origin.BottomRight"
-                 Class="overflow-visible"
-                 @bind-Open="_fabMenuOpen">
-            <ActivatorContent>
-                <MudFab
-                    Color="@Color.Primary"
-                    StartIcon="@Icons.Material.Filled.Add"/>
-            </ActivatorContent>
-            <ChildContent>
-                <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyE])"
-                                       OnKeyPress="@CreateNewEntryAsync"
-                                       Origin="@Origin.CenterLeft"
-                                       Class="d-flex">
-                    <MudMenuItem Icon="@Icons.Material.Filled.Add"
-                                 OnClick="@CreateNewEntryAsync">
-                        New entry
-                    </MudMenuItem>
-                </KeyboardShortcutBadge>
-                <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyL])"
-                                       OnKeyPress="@CreateNewListAsync"
-                                       Origin="@Origin.CenterLeft"
-                                       Class="d-flex">
-                    <MudMenuItem Icon="@Icons.Material.Filled.PlaylistAdd"
-                                 OnClick="@CreateNewListAsync">
-                        New list
-                    </MudMenuItem>
-                </KeyboardShortcutBadge>
-            </ChildContent>
-        </MudMenu>
-    </KeyboardShortcutBadge>
-</div>
+<SectionContent SectionId="@RenderSections.OverlayControls.BottomRight">
+    <div class="pa-4">
+        <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyA])"
+                               OnKeyPress="@(() => _fabMenuOpen = true)"
+                               IsActive="@(!_fabMenuOpen)"
+                               Origin="@Origin.CenterLeft">
+            <MudMenu ActivationEvent="@MouseEvent.MouseOver"
+                     AnchorOrigin="@Origin.CenterCenter"
+                     TransformOrigin="@Origin.BottomRight"
+                     Class="overflow-visible"
+                     @bind-Open="_fabMenuOpen">
+                <ActivatorContent>
+                    <MudFab
+                        Color="@Color.Primary"
+                        StartIcon="@Icons.Material.Filled.Add"/>
+                </ActivatorContent>
+                <ChildContent>
+                    <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyE])"
+                                           OnKeyPress="@CreateNewEntryAsync"
+                                           Origin="@Origin.CenterLeft"
+                                           Class="d-flex">
+                        <MudMenuItem Icon="@Icons.Material.Filled.Add"
+                                     OnClick="@CreateNewEntryAsync">
+                            New entry
+                        </MudMenuItem>
+                    </KeyboardShortcutBadge>
+                    <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyL])"
+                                           OnKeyPress="@CreateNewListAsync"
+                                           Origin="@Origin.CenterLeft"
+                                           Class="d-flex">
+                        <MudMenuItem Icon="@Icons.Material.Filled.PlaylistAdd"
+                                     OnClick="@CreateNewListAsync">
+                            New list
+                        </MudMenuItem>
+                    </KeyboardShortcutBadge>
+                </ChildContent>
+            </MudMenu>
+        </KeyboardShortcutBadge>
+    </div>
+</SectionContent>
 
 <div>
     <MudMainContent Class="pb-8">
