@@ -54,10 +54,18 @@
                                  Color="@Color.Info"
                                  Overlap>
                         <BadgeWrapperContent>
-                            <MudTooltip Text="Inventory entries"
-                                        Placement="@Placement.Top"
+                            <MudTooltip Placement="@Placement.Top"
                                         RootClass="d-flex justify-center">
-                                @context
+                                <TooltipContent>
+                                    <span>
+                                        @WithLocationSuffix($"{_assignedEntries.Length} entries")
+                                    </span>
+                                    <QuantityAggregateLabel
+                                        Models="@_assignedQuantities"/>
+                                </TooltipContent>
+                                <ChildContent>
+                                    @context
+                                </ChildContent>
                             </MudTooltip>
                         </BadgeWrapperContent>
                         <BadgeContent>
@@ -169,6 +177,9 @@
     [Parameter]
     public bool IsFocused { get; set; }
 
+    private IGameLocation? CurrentLocation
+        => SearchContext?.CurrentLocation;
+
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
@@ -176,7 +187,7 @@
         _unassignedEntries = _allEntries.Where(x => x.Type is InventoryEntryBase.EntryType.Virtual).ToArray();
         _unassignedQuantities = Quantity.Aggregate(_unassignedEntries.Select(x => x.Quantity)).ToArray();
 
-        _assignedEntries = _allEntries.Where(x => x.Type is not InventoryEntryBase.EntryType.Virtual).ToArray();
+        _assignedEntries = _allEntries.Where(x => x is IGameLocatedAt locatedAt && CurrentLocation?.IsOrContains(locatedAt.Location) != false).ToArray();
         _assignedQuantities = Quantity.Aggregate(_assignedEntries.Select(x => x.Quantity)).ToArray();
 
         if (!IsFocused)
@@ -185,6 +196,11 @@
         }
     }
 
+    private string WithLocationSuffix(string content, string glue = "within")
+        => CurrentLocation is not null
+            ? $"{content} {glue} {CurrentLocation.Name.MainContent.FullName}"
+            : content;
+
     private async Task OnManageInventoryClickAsync()
     {
         _isOpen = !_isOpen;
@@ -192,5 +208,5 @@
     }
 
     private async Task OnAddAsync()
-        => await InventoryEntryUpdateDialog.ShowEditAsync(DialogService, Model);
+        => await InventoryEntryUpdateDialog.ShowEditAsync(DialogService, Model, CurrentLocation);
 }
