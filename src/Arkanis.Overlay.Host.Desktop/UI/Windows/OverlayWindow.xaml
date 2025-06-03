@@ -27,7 +27,7 @@
                               Panel.ZIndex="99"
                               Focusable="True"
                               Services="{DynamicResource services}"
-                              StartPath="/overlay">
+                              StartPath="/search">
             <blazor:BlazorWebView.RootComponents>
                 <blazor:RootComponent Selector="#app" ComponentType="{x:Type ui:RazorApp}" />
             </blazor:BlazorWebView.RootComponents>

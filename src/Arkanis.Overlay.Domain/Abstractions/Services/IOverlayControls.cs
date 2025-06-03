@@ -6,4 +6,6 @@ public interface IOverlayControls
     ValueTask HideAsync();
 
     void SetBlurEnabled(bool isEnabled);
+
+    void Shutdown();
 }

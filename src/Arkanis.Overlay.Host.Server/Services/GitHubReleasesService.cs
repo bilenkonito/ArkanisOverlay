@@ -5,7 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Models;
 using Octokit;
 
-internal class GitHubReleasesService(IMemoryCache memoryCache)
+internal class GitHubReleasesService(IMemoryCache memoryCache, ILogger<GitHubReleasesService> logger)
 {
     private readonly GitHubClient _client = new(new ProductHeaderValue(ServerHostModule.Namespace));
 
@@ -79,8 +79,21 @@ internal class GitHubReleasesService(IMemoryCache memoryCache)
                $"{nameof(GitHubReleasesService)}-{nameof(GetReleaseAssetsAsync)}",
                async entry =>
                {
-                   entry.SetSlidingExpiration(TimeSpan.FromHours(1));
-                   return await _client.Repository.Release.GetAllAssets(ApplicationConstants.GitHubOwner, ApplicationConstants.GitHubRepository, release.Id);
+                   try
+                   {
+                       entry.SetSlidingExpiration(TimeSpan.FromHours(1));
+                       return await _client.Repository.Release.GetAllAssets(
+                           ApplicationConstants.GitHubOwner,
+                           ApplicationConstants.GitHubRepository,
+                           release.Id
+                       );
+                   }
+                   catch (Exception ex)
+                   {
+                       logger.LogError(ex, "Failed loading available release assets for {ReleaseId}", release.Id);
+                       entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(15));
+                       return [];
+                   }
                }
            )
            ?? [];
@@ -90,8 +103,17 @@ internal class GitHubReleasesService(IMemoryCache memoryCache)
                $"{nameof(GitHubReleasesService)}-{nameof(GetLatestStableDownloadsAsync)}",
                async entry =>
                {
-                   entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
-                   return await _client.Repository.Release.GetAll(ApplicationConstants.GitHubOwner, ApplicationConstants.GitHubRepository);
+                   try
+                   {
+                       entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+                       return await _client.Repository.Release.GetAll(ApplicationConstants.GitHubOwner, ApplicationConstants.GitHubRepository);
+                   }
+                   catch (Exception ex)
+                   {
+                       logger.LogError(ex, "Failed loading available releases");
+                       entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(15));
+                       return [];
+                   }
                }
            )
            ?? [];
