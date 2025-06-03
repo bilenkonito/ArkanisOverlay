@@ -66,9 +66,9 @@ internal class ExternalSyncDatabaseCacheProvider<TRepository>(
                 return new ExpiredCache<TSource>(cacheRecord.CachedUntil);
             }
 
-            logger.LogInformation(
+            logger.LogWarning(
                 "Using expired cache for {Type} entities due to the state of an external service: {ServiceState}",
-                typeof(TSource).Name,
+                typeof(TSource).ShortDisplayName(),
                 currentServiceState
             );
         }
