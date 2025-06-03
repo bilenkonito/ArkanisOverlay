@@ -11,6 +11,7 @@ using MoreLinq;
 using Shouldly;
 using Xunit.Abstractions;
 
+[Collection(TestConstants.Collections.DbContext)]
 public class LocalDatabaseInventoryManagerUnitTests(ITestOutputHelper testOutputHelper, LocalDatabaseServiceTestBedFixture fixture)
     : DbContextTestBed<LocalDatabaseServiceTestBedFixture, OverlayDbContext>(testOutputHelper, fixture)
 {

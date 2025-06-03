@@ -23,6 +23,7 @@ public class InventoryEntryEntityUnitTests(ITestOutputHelper testOutputHelper, O
         await using (var dbContext = await CreateDbContextAsync())
         {
             var loadedItem = await dbContext.InventoryEntries.SingleAsync(x => x.Id == sourceItem.Id);
+            loadedItem.List = sourceItem.List = null; // do not compare equivalence of related entities recursively
             loadedItem.ShouldBeEquivalentTo(sourceItem);
         }
     }
