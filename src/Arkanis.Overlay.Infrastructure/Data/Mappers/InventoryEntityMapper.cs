@@ -52,6 +52,8 @@ internal partial class InventoryEntityMapper(UexApiDtoMapper uexMapper)
 
     [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.GameEntityId))]
     [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.Discriminator))]
+    [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.GameEntityCategory))]
+    [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.EntryType))]
     [MapValue(nameof(InventoryEntryEntityBase.List), null)]
     private partial VirtualItemInventoryEntryEntity Map(
         VirtualItemInventoryEntry entry,
@@ -60,6 +62,8 @@ internal partial class InventoryEntityMapper(UexApiDtoMapper uexMapper)
 
     [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.GameEntityId))]
     [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.Discriminator))]
+    [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.GameEntityCategory))]
+    [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.EntryType))]
     [MapValue(nameof(InventoryEntryEntityBase.List), null)]
     private partial PhysicalItemInventoryEntryEntity Map(
         PhysicalItemInventoryEntry entry,
@@ -68,6 +72,8 @@ internal partial class InventoryEntityMapper(UexApiDtoMapper uexMapper)
 
     [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.GameEntityId))]
     [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.Discriminator))]
+    [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.GameEntityCategory))]
+    [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.EntryType))]
     [MapValue(nameof(InventoryEntryEntityBase.List), null)]
     private partial VirtualCommodityInventoryEntryEntity Map(
         VirtualCommodityInventoryEntry entry,
@@ -76,6 +82,8 @@ internal partial class InventoryEntityMapper(UexApiDtoMapper uexMapper)
 
     [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.GameEntityId))]
     [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.Discriminator))]
+    [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.GameEntityCategory))]
+    [MapperIgnoreTarget(nameof(InventoryEntryEntityBase.EntryType))]
     [MapValue(nameof(InventoryEntryEntityBase.List), null)]
     private partial PhysicalCommodityInventoryEntryEntity Map(
         PhysicalCommodityInventoryEntry entry,

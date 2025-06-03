@@ -36,10 +36,7 @@ internal class LocalDatabaseInventoryManager(
                 entry.SetSlidingExpiration(TimeSpan.FromHours(1));
 
                 await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-                var entities = await dbContext.InventoryEntries
-                    .ToArrayAsync(cancellationToken);
-
-                return entities.Count(x => x.EntryType is InventoryEntryBase.EntryType.Virtual);
+                return await dbContext.InventoryEntries.CountAsync(x => x.EntryType == InventoryEntryBase.EntryType.Virtual, cancellationToken);
             }
         );
 
@@ -63,10 +60,10 @@ internal class LocalDatabaseInventoryManager(
                    await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
                    var entities = await dbContext.InventoryEntries
                        .Where(x => x.GameEntityId == uexId)
+                       .Where(x => x.EntryType == entryType)
                        .ToArrayAsync(cancellationToken);
 
                    return entities
-                       .Where(x => x.EntryType == entryType)
                        .Select(x => mapper.Map(x))
                        .ToArray();
                }
