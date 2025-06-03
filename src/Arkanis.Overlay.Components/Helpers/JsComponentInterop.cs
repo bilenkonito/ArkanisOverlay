@@ -5,7 +5,7 @@ using Exceptions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-public static class JsComponentLifetimeInterop
+public static class JsComponentInterop
 {
     /// <inheritdoc cref="Create{T}" />
     public static JsComponentInterop<T> CreateLifetimeInterop<T>(this IJSRuntime jsRuntime, T component) where T : ComponentBase
@@ -71,6 +71,11 @@ public sealed class JsComponentInterop<T>(IJSRuntime jsRuntime, T component) : I
         }
         catch (JSDisconnectedException)
         {
+            // JS no longer available
+        }
+        catch (ObjectDisposedException)
+        {
+            // already disposed
         }
         finally
         {

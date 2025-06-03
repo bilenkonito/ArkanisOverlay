@@ -5,6 +5,9 @@
         Shutdown Arkanis Overlay?
     </TitleContent>
     <DialogContent>
+        <MudText Typo="@Typo.body2">
+            Are you sure you would like to shut down the Overlay app?
+        </MudText>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -42,4 +45,5 @@
         var dialogRef = await dialogService.ShowAsync<ShutdownDialog>(null, dialogOptions);
         return await dialogRef.Result ?? DialogResult.Cancel();
     }
+
 }

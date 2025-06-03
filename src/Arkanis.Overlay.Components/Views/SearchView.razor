@@ -1,43 +1,16 @@
 @using System.Text
-@using Arkanis.Overlay.Components.Shared.Dialogs
 @using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Enums
 @using Arkanis.Overlay.Domain.Models.Analytics
 @using Arkanis.Overlay.Domain.Models.Search
 @using Humanizer
 @inject ILogger<SearchView> Logger
-@inject IDialogService DialogService
 @inject ISearchService SearchService
-@inject IUserPreferencesProvider UserPreferencesProvider
 @inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
 @inject EventInterop EventInterop
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
 <style>
-    .controls-container {
-        position: sticky;
-        width: 100%;
-        top: 0;
-        z-index: 100;
-
-        & > .controls-inner-wrapper {
-            position: absolute;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-
-            &.right {
-                right: 0;
-                align-items: flex-end;
-            }
-
-            &.left {
-                left: 0;
-                align-items: flex-start;
-            }
-        }
-    }
-
     #currentLocation > div {
         border: 1px solid var(--mud-palette-lines-inputs);
         border-radius: var(--mud-default-borderradius);
@@ -52,28 +25,6 @@
                 border-top-left-radius: 0;
                 border-bottom-left-radius: 0;
             }
-        }
-    }
-
-    @@keyframes fadeInDown {
-        0% {
-            transform: translateY(-50%);
-            opacity: 0;
-        }
-        100% {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    @@keyframes fadeInLeft {
-        0% {
-            transform: translateX(10%);
-            opacity: 0;
-        }
-        100% {
-            transform: translateX(0);
-            opacity: 1;
         }
     }
 
@@ -104,10 +55,6 @@
         }
     }
 
-    .focus:focus {
-        outline: 2px solid var(--mud-palette-primary);
-    }
-
     .mud-snackbar {
         min-width: 0;
     }
@@ -117,32 +64,7 @@
     }
 </style>
 
-<div style="@ContainerCss">
-    <div class="controls-container">
-        <div class="controls-inner-wrapper right pa-4">
-            <MudStack Spacing="1" AlignItems="@AlignItems.End" Justify="@Justify.FlexEnd">
-                <MudIconButton
-                    Color="Color.Primary"
-                    Class="action"
-                    Icon="@MaterialSymbols.Outlined.Info"
-                    OnClick="OpenAboutDialogAsync"/>
-                <MudIconButton
-                    Color="Color.Primary"
-                    Class="action"
-                    Icon="@MaterialSymbols.Outlined.Settings"
-                    OnClick="OpenUserOptionsDialogAsync"/>
-                <MudIconButton
-                    Color="Color.Error"
-                    Class="action"
-                    Icon="@MaterialSymbols.Outlined.PowerSettingsNew"
-                    OnClick="OpenShutdownDialogAsync"/>
-            </MudStack>
-            <MudSpacer/>
-            <MudStack Spacing="1" AlignItems="@AlignItems.End" Justify="@Justify.FlexEnd">
-                <UEXBadge/>
-            </MudStack>
-        </div>
-    </div>
+<div>
     <MudStack id="searchContainer" Class="d-flex justify-start align-center flex-grow-1 px-3">
         <div style="padding: 7.5vh"></div>
 
@@ -190,14 +112,6 @@
     };
 
     private OverlaySearchContext _searchContext = new();
-
-    private string ContainerCss
-        => $"min-height: 100vh; {ContainerBlurCss}";
-
-    private string ContainerBlurCss
-        => UserPreferencesProvider.CurrentPreferences.BlurBackground
-            ? "backdrop-filter: blur(12px);"
-            : "";
 
     private string ShortcutsText
         => new StringBuilder().AppendJoin(", ", _categorySearchShortcuts.Select(search => $"{search.Key} {search.Value.Category.Humanize().Pluralize()}")).ToString();
@@ -272,14 +186,5 @@
             Logger.LogError(ex, "Error during search");
         }
     }
-
-    private async Task OpenUserOptionsDialogAsync()
-        => await UserPreferencesEditDialog.ShowAsync(DialogService);
-
-    private async Task OpenAboutDialogAsync()
-        => await AboutDialog.ShowAsync(DialogService);
-
-    private async Task OpenShutdownDialogAsync()
-        => await ShutdownDialog.ShowAsync(DialogService);
 
 }
