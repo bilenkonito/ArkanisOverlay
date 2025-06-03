@@ -2,6 +2,9 @@ export class KeyboardEventHelper {
     /** @type {DotNet.DotNetObject} */
     static componentRef;
 
+    /** @type {RegExp} */
+    static functionKeysRegex = /^F\d+$/;
+
     /**
      * @param {DotNet.DotNetObject} componentRef
      */
@@ -18,7 +21,8 @@ export class KeyboardEventHelper {
      * @returns {boolean}
      */
     static shouldConsumeEvent(event) {
-        return event.key.startsWith('F'); // consume all function keys
+        return event.key.match(KeyboardEventHelper.functionKeysRegex) // consume all function keys
+            || event.altKey;
     }
 
     /**
