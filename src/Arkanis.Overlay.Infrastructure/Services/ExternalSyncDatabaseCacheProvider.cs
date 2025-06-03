@@ -60,17 +60,27 @@ internal class ExternalSyncDatabaseCacheProvider<TRepository>(
         if (cacheRecord.CachedUntil < DateTimeOffset.UtcNow)
         {
             // the cached record has expired
-            if (currentServiceState is not ServiceUnavailableState)
+            if (currentServiceState is ServiceUnavailableState)
             {
-                // only respect the cache time if the service is available
+                logger.LogWarning(
+                    "Permitting use of expired cache for {Type} entities due to the state of an external service: {ServiceState}",
+                    typeof(TSource).ShortDisplayName(),
+                    currentServiceState
+                );
+            }
+            else if (currentDataState is not DataProcessingErrored)
+            {
+                logger.LogWarning(
+                    "Permitting use of expired cache for {Type} entities due to the current internal data state: {DataState}",
+                    typeof(TSource).ShortDisplayName(),
+                    currentDataState
+                );
+            }
+            else
+            {
+                // only respect the cache time if the service is available and internal load state did not error
                 return new ExpiredCache<TSource>(cacheRecord.CachedUntil);
             }
-
-            logger.LogWarning(
-                "Using expired cache for {Type} entities due to the state of an external service: {ServiceState}",
-                typeof(TSource).ShortDisplayName(),
-                currentServiceState
-            );
         }
 
         var cachedServiceState = cacheRecord.DataAvailableState;
