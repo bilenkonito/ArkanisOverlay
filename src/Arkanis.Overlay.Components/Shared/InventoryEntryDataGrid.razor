@@ -1,7 +1,8 @@
 @using Arkanis.Overlay.Common.Extensions
 @using Arkanis.Overlay.Domain.Abstractions.Game
-@using Arkanis.Overlay.Domain.Models.Game
 @using Arkanis.Overlay.Domain.Models.Inventory
+@using Humanizer
+<!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
 <style>
     .mud-data-grid .mud-table-cell.mud-datagrid-group {
         background-color: inherit;
@@ -13,6 +14,22 @@
 
     .mud-table-row.selected .mud-table-cell {
         background-color: var(--mud-palette-background);
+    }
+
+    tfoot .mud-table-cell {
+        background-color: var(--mud-palette-surface) !important;
+    }
+
+    tbody tr.mud-table-row td.mud-table-cell.footer-cell:first-child:before {
+        content: "Local";
+    }
+
+    tfoot tr.mud-table-row td.mud-table-cell.footer-cell:first-child:before {
+        content: "Global";
+    }
+
+    .flex-row-reverse > .column-header {
+        flex-direction: row-reverse;
     }
 </style>
 <MudDataGrid @ref="_dataGridRef"
@@ -27,13 +44,43 @@
              Hover>
     <Columns>
         <SelectColumn/>
-        <PropertyColumn Property="@(x => x.Quantity)"
-                        AggregateDefinition="@(new AggregateDefinition<InventoryEntryBase>())">
+        <PropertyColumn Property="@(x => x.Quantity.Amount)"
+                        AggregateDefinition="@(new AggregateDefinition<InventoryEntryBase>())"
+                        Groupable="false"
+                        HeaderStyle="width: 80px"
+                        HeaderClass="text-right flex-row-reverse pr-1"
+                        CellClass="text-right pr-1"
+                        FooterClass="text-right pr-1">
             <CellTemplate>
-                <QuantityLabel Model="@context.Item.Quantity"/>
+                @context.Item.Quantity.Amount
             </CellTemplate>
             <AggregateTemplate>
-                <QuantityAggregateLabel Models="@context.Select(x => x.Quantity)"/>
+                <MudStack Spacing="0">
+                    @foreach (var quantitiesByUnit in context.Select(x => x.Quantity).GroupBy(x => x.Unit))
+                    {
+                        <span>
+                            @quantitiesByUnit.Sum(x => x.Amount).ToMetric(MetricNumeralFormats.WithSpace, 3)
+                        </span>
+                    }
+                </MudStack>
+            </AggregateTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="@(x => x.Quantity.Unit)"
+                        AggregateDefinition="@(new AggregateDefinition<InventoryEntryBase>())"
+                        CellClass="pl-1"
+                        FooterClass="pl-1">
+            <CellTemplate>
+                @Quantity.GetUnitString(context.Item.Quantity.Unit)
+            </CellTemplate>
+            <AggregateTemplate>
+                <MudStack Spacing="0">
+                    @foreach (var quantitiesByUnit in context.Select(x => x.Quantity).GroupBy(x => x.Unit))
+                    {
+                        <span>
+                            @Quantity.GetUnitString(quantitiesByUnit.Key)
+                        </span>
+                    }
+                </MudStack>
             </AggregateTemplate>
         </PropertyColumn>
         <PropertyColumn Title="Entity"
@@ -73,9 +120,16 @@
                     <MudSpacer/>
                     @if (SelectedModels.Intersect(context.Grouping).ToArray() is { Length: > 0 } selected)
                     {
-                        <MudChip
-                            Value="@selected.Length"
-                            Color="@Color.Info"/>
+                        <MudTooltip>
+                            <TooltipContent>
+                                <QuantityAggregateLabel Models="@selected.Select(x => x.Quantity)"/>
+                            </TooltipContent>
+                            <ChildContent>
+                                <MudChip
+                                    Value="@selected.Length"
+                                    Color="@Color.Info"/>
+                            </ChildContent>
+                        </MudTooltip>
                     }
                 </MudStack>
             </GroupTemplate>
@@ -160,9 +214,16 @@
                     <MudSpacer/>
                     @if (SelectedModels.Intersect(context.Grouping).ToArray() is { Length: > 0 } selected)
                     {
-                        <MudChip
-                            Value="@selected.Length"
-                            Color="@Color.Info"/>
+                        <MudTooltip>
+                            <TooltipContent>
+                                <QuantityAggregateLabel Models="@selected.Select(x => x.Quantity)"/>
+                            </TooltipContent>
+                            <ChildContent>
+                                <MudChip
+                                    Value="@selected.Length"
+                                    Color="@Color.Info"/>
+                            </ChildContent>
+                        </MudTooltip>
                     }
                 </MudStack>
             </GroupTemplate>
@@ -180,7 +241,7 @@
             </CellTemplate>
         </TemplateColumn>
         <TemplateColumn Title="List"
-                        GroupBy="@(x => x.List)"
+                        GroupBy="@(x => x.List?.Id)"
                         Grouping="@Groupings.Contains(Column.List)"
                         GroupByOrder="@Groupings.IndexOfOrDefault(Column.List)"
                         GroupExpanded="@ExpandAll"
@@ -201,7 +262,7 @@
                         </MudTooltip>
                     </div>
 
-                    @if (context.Grouping.Key is InventoryEntryList list)
+                    @if (context.Grouping.FirstOrDefault()?.List is { } list)
                     {
                         <MudStack Spacing="0">
                             <MudText Typo="@Typo.h6">
@@ -229,9 +290,16 @@
                     <MudSpacer/>
                     @if (SelectedModels.Intersect(context.Grouping).ToArray() is { Length: > 0 } selected)
                     {
-                        <MudChip
-                            Value="@selected.Length"
-                            Color="@Color.Info"/>
+                        <MudTooltip>
+                            <TooltipContent>
+                                <QuantityAggregateLabel Models="@selected.Select(x => x.Quantity)"/>
+                            </TooltipContent>
+                            <ChildContent>
+                                <MudChip
+                                    Value="@selected.Length"
+                                    Color="@Color.Info"/>
+                            </ChildContent>
+                        </MudTooltip>
                     }
                 </MudStack>
             </GroupTemplate>

@@ -18,6 +18,14 @@
     color: var(--mud-palette-text-disabled);
 }
 
+.text-right {
+    text-align: right !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
 .formatted {
     white-space: pre;
 }
@@ -71,4 +79,8 @@
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+.mud-popover .mud-list.mud-menu-list {
+    overflow: visible;
 }

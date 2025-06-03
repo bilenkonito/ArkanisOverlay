@@ -47,6 +47,10 @@ public record Quantity(int Amount, Quantity.UnitType Unit) : IComparable, ICompa
             : Amount.CompareTo(other.Amount);
     }
 
+    public static IEnumerable<Quantity> Aggregate(IEnumerable<Quantity> quantities)
+        => quantities.GroupBy(x => x.Unit)
+            .Select(group => new Quantity(group.Sum(quantity => quantity.Amount), group.Key));
+
     public override string ToString()
         => $"{Amount.ToMetric(MetricNumeralFormats.WithSpace, 3)} {GetUnitString(Unit)}";
 

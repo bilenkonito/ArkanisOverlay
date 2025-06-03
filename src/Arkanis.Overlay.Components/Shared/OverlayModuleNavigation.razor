@@ -1,5 +1,9 @@
+@using System.Collections.Concurrent
 @using Arkanis.Overlay.Domain.Models.Keyboard
+@using Microsoft.AspNetCore.Components.Routing
 @using MoreLinq
+@implements IDisposable
+@inject IServiceProvider ServiceProvider
 @inject NavigationManager NavigationManager
 @inject OverlayModules OverlayModules
 
@@ -8,24 +12,37 @@
     {
         var moduleShortcut = GetKeyForIndex(moduleIndex);
         var isModuleActive = IsActive(module);
-        <KeyboardShortcutBadge Key="@moduleShortcut"
+        var updateCount = GetUpdateCount(module);
+        <KeyboardShortcutBadge @key="@module.Name"
+                               Key="@moduleShortcut"
                                IsActive="@(!isModuleActive)"
                                OnKeyPress="@GetActivationCallbackFor(module)"
-                               Origin="@Origin"
-                               Elevation="4">
-            <MudButton Variant="@Variant.Filled"
-                       Color="@Color.Primary"
-                       StartIcon="@module.Icon"
-                       OnClick="@GetActivationCallbackFor(module)"
-                       Disabled="@isModuleActive">
-                @module.Name
-            </MudButton>
+                               Origin="@KeybindsOrigin"
+                               Elevation="4"
+                               DoNotOverlap="@DoNotOverlapKeybinds">
+            <MudBadge Content="@updateCount"
+                      Max="999"
+                      Color="@Color.Warning"
+                      Origin="@UpdatesOrigin"
+                      Overlap="@(!DoNotOverlapUpdates)"
+                      Visible="@(updateCount > 0)">
+                <MudButton Variant="@Variant.Filled"
+                           Color="@Color.Primary"
+                           StartIcon="@module.Icon"
+                           OnClick="@GetActivationCallbackFor(module)"
+                           Disabled="@isModuleActive">
+                    @module.Name
+                </MudButton>
+            </MudBadge>
         </KeyboardShortcutBadge>
     }
 </MudStack>
 
 @code
 {
+
+    private Timer? _timer;
+    private readonly ConcurrentDictionary<string, int> _moduleUpdates = [];
 
     [Parameter]
     public string Class { get; set; } = string.Empty;
@@ -37,10 +54,54 @@
     public bool Horizontal { get; set; }
 
     [Parameter]
-    public Origin Origin { get; set; } = Origin.TopRight;
+    public Origin KeybindsOrigin { get; set; } = Origin.TopRight;
+
+    [Parameter]
+    public bool DoNotOverlapKeybinds { get; set; }
+
+    [Parameter]
+    public Origin UpdatesOrigin { get; set; } = Origin.TopCenter;
+
+    [Parameter]
+    public bool DoNotOverlapUpdates { get; set; }
 
     private bool IsActive(OverlayModules.Entry module)
-        => NavigationManager.ToAbsoluteUri(module.Url).IsBaseOf(new Uri(NavigationManager.Uri));
+        => NavigationManager.Uri.StartsWith(NavigationManager.ToAbsoluteUri(module.Url).ToString());
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _timer = new Timer(UpdateDataAsync, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+        NavigationManager.LocationChanged += OnLocationChangedAsync;
+    }
+
+    private async void UpdateDataAsync(object? state)
+    {
+        try
+        {
+            async Task<bool> LoadAsync(OverlayModules.Entry entry)
+            {
+                var previousValue = GetUpdateCount(entry);
+                var currentValue = await entry.GetUpdateCountAsync(ServiceProvider);
+                _moduleUpdates[entry.Name] = currentValue;
+                return previousValue != currentValue;
+            }
+
+            var updateTasks = OverlayModules.GetAll().Select(LoadAsync);
+            var changes = await Task.WhenAll(updateTasks);
+            if (changes.Any())
+            {
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (Exception)
+        {
+            // ignore
+        }
+    }
+
+    private void OnLocationChangedAsync(object? _, LocationChangedEventArgs e)
+        => UpdateDataAsync(null);
 
     private KeyboardKey GetKeyForIndex(int index)
         => index < 12
@@ -52,5 +113,14 @@
 
     private void Activate(OverlayModules.Entry module)
         => NavigationManager.NavigateTo(module.Url);
+
+    private int GetUpdateCount(OverlayModules.Entry module)
+        => _moduleUpdates.GetValueOrDefault(module.Name);
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+        NavigationManager.LocationChanged -= OnLocationChangedAsync;
+    }
 
 }

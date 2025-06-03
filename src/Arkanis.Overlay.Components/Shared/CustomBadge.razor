@@ -4,9 +4,14 @@
     <div class="@WrapperClassname">
         @if (Visible)
         {
-            <div class="@BadgeClassname" style="height: auto">
-                @BadgeContent
-            </div>
+            if (BadgeWrapperContent is not null)
+            {
+                @BadgeWrapperContent(BadgeWrapper)
+            }
+            else
+            {
+                @BadgeWrapper
+            }
         }
     </div>
 </div>
@@ -21,6 +26,9 @@
     [Parameter]
     [EditorRequired]
     public required RenderFragment BadgeContent { get; set; }
+
+    [Parameter]
+    public required RenderFragment<RenderFragment>? BadgeWrapperContent { get; set; }
 
     [Parameter]
     public Origin Origin { get; set; } = Origin.TopRight;
@@ -48,6 +56,11 @@
 
     [Parameter]
     public string? BadgeClass { get; set; }
+
+    protected RenderFragment BadgeWrapper
+        => @<div class="@BadgeClassname" style="height: auto">
+            @BadgeContent
+        </div>;
 
     protected string RootClassname
         => new CssBuilder("mud-badge-root")
