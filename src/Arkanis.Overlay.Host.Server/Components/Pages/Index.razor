@@ -2,6 +2,7 @@
 @using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Abstractions.Services
 @using Arkanis.Overlay.Domain.Models.Game
+@using Arkanis.Overlay.Domain.Models.Inventory
 @using Arkanis.Overlay.Host.Server.Models
 @using Arkanis.Overlay.Host.Server.Services
 @using MoreLinq
@@ -17,6 +18,10 @@
         background: #833AB4;
         background: linear-gradient(90deg, rgba(131, 58, 180, .33) 0%, rgba(253, 29, 29, .33) 50%, rgba(252, 176, 69, .33) 100%);
         overflow: auto;
+
+        & * {
+            white-space: nowrap;
+        }
 
         & > * {
             width: fit-content;
@@ -67,7 +72,7 @@
     <MudMainContent Class="pb-8">
         <MudContainer MaxWidth="MaxWidth.Large" Class="mt-12">
             <MudPaper Class="pa-6 text-center">
-                <MudText Typo="Typo.h3" Class="mb-2">Welcome to the Arkanis Overlay Demo</MudText>
+                <MudText Typo="Typo.h2" Class="mb-2">Welcome to the Arkanis Overlay Demo</MudText>
                 <MudText Typo="Typo.subtitle1" Class="mb-4">
                     Experience a new level of usability in Star Citizen
                     — search tools, trading info, location data, and more.
@@ -112,41 +117,19 @@
 
             <MudDivider Class="my-8"/>
 
-            <MudText Typo="Typo.body2" Align="Align.Center" Class="mb-4">
-                Instantly find Star Citizen items, commodities, or locations. Start typing to explore what the 'verse
-                has to offer — fast, accurate, and always in-game.
-            </MudText>
+            <div class="mb-8">
+                <MudText Typo="@Typo.h3"
+                         Align="Align.Center">
+                    Entity Search
+                </MudText>
 
-            <MudPaper Class="pa-12 mb-4 embed-wrapper">
-                <div class="mr-n2">
-                    <SearchBox
-                        HelperText="Use the search as you normally would in the game overlay! Check out the demo."
-                        MinWidth="100%"/>
-                </div>
-            </MudPaper>
-
-            <MudStack Justify="@Justify.Center" Wrap="@Wrap.Wrap" Row>
-                <MudButtonGroup OverrideStyles="false">
-                    <AssetDownloadButton
-                        T="GitHubAppRelease"
-                        Name="Installer"
-                        Release="ReleaseAppRelease"
-                        AssetSelector="@(release => release.InstallerAsset)"/>
-                    <AssetDownloadButton
-                        T="GitHubAppRelease"
-                        Name="Portable"
-                        Release="ReleaseAppRelease"
-                        AssetSelector="@(release => release.PortableAsset)"/>
-                </MudButtonGroup>
-                <MudButton Variant="Variant.Outlined"
-                           Color="Color.Secondary"
-                           StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
-                           Href="/search">
-                    Try it out
-                </MudButton>
-            </MudStack>
-
-            <MudDivider Class="my-8"/>
+                <MudText Typo="Typo.body2"
+                         Align="Align.Center">
+                    Instantly find Star Citizen items, commodities, or locations. Start typing to explore what the
+                    'verse
+                    has to offer — fast, accurate, and always in-game.
+                </MudText>
+            </div>
 
             <MudGrid Justify="@Justify.Center" Class="mb-4 align-center">
                 <MudItem xs="12" md="4">
@@ -161,7 +144,7 @@
                             <MudButton Variant="Variant.Outlined"
                                        Color="Color.Secondary"
                                        StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
-                                       Href="/search">
+                                       Href="/search?q=:i%20Artimex">
                                 Try it out
                             </MudButton>
                         </MudStack>
@@ -208,16 +191,15 @@
                             <MudButton Variant="Variant.Outlined"
                                        Color="Color.Secondary"
                                        StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
-                                       Href="/search">
+                                       Href="/search?q=:c%20Gold">
                                 Try it out
                             </MudButton>
                         </MudStack>
                     </MudPaper>
                 </MudItem>
-
             </MudGrid>
-            <MudGrid Justify="@Justify.Center" Class="my-4 align-center">
 
+            <MudGrid Justify="@Justify.Center" Class="my-4 align-center">
                 <MudItem xs="12" md="4">
                     <MudPaper Class="pa-4">
                         <MudStack>
@@ -229,7 +211,7 @@
                             <MudButton Variant="Variant.Outlined"
                                        Color="Color.Secondary"
                                        StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
-                                       Href="/search">
+                                       Href="/search?q=:l%20Orison">
                                 Try it out
                             </MudButton>
                         </MudStack>
@@ -249,6 +231,83 @@
                     </MudPaper>
                 </MudItem>
             </MudGrid>
+
+            <MudDivider Class="my-8"/>
+
+            <MudStack Spacing="6">
+                <div>
+                    <MudText Typo="@Typo.h3"
+                             Align="Align.Center">
+                        Inventory Management
+                    </MudText>
+
+                    <MudText Typo="Typo.body2"
+                             Align="Align.Center">
+                        Stay organized and informed with the powerful inventory module built into Arkanis Overlay.
+                        Whether you’re managing trade commodities, mining yields, or personal gear, this tool gives you
+                        a fast, accurate view of your assets—wherever they are in the universe.
+                    </MudText>
+                </div>
+
+                <MudGrid Justify="@Justify.Center">
+                    <MudItem xs="12" sm="8" md="6">
+                        <MudPaper Class="pa-4">
+                            <MudStack>
+                                <MudText Typo="Typo.h6">🗃️ Quantity & Location Tracking</MudText>
+                                <MudText Typo="Typo.body2">
+                                    Get a precise overview of how much you have and where it’s stored—by planet, moon,
+                                    station, or outpost.
+                                    Easily monitor your item quantities across the 'verse with minimal effort.
+                                </MudText>
+                                <MudButton Variant="Variant.Outlined"
+                                           Color="Color.Secondary"
+                                           StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
+                                           Href="/inventory">
+                                    Try it out
+                                </MudButton>
+                            </MudStack>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+
+                <MudPaper Class="pa-12 embed-wrapper">
+                    <InventoryEntryDataGrid
+                        Models="@InventoryEntries"
+                        Lists="@InventoryLists"
+                        Groupings="@( [InventoryEntryDataGrid.Column.Location])"
+                        ExpandAll/>
+                </MudPaper>
+
+                <MudGrid Justify="@Justify.Center">
+                    <MudItem xs="12" sm="8" md="6">
+                        <MudPaper Class="pa-4">
+                            <MudStack>
+                                <MudText Typo="Typo.h6">🏷️ Custom List Tags</MudText>
+                                <MudText Typo="Typo.body2">
+                                    Organize your inventory your way.
+                                    Apply custom tags to items for mission loadouts, trading plans, salvage runs, or any
+                                    personal system.
+                                    Group and retrieve your gear exactly how you prefer.
+                                </MudText>
+                                <MudButton Variant="Variant.Outlined"
+                                           Color="Color.Secondary"
+                                           StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
+                                           Href="/inventory">
+                                    Try it out
+                                </MudButton>
+                            </MudStack>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+
+                <MudPaper Class="pa-12 embed-wrapper reverse">
+                    <InventoryEntryDataGrid
+                        Models="@InventoryEntries"
+                        Lists="@InventoryLists"
+                        Groupings="@( [InventoryEntryDataGrid.Column.List])"
+                        ExpandAll/>
+                </MudPaper>
+            </MudStack>
 
             <MudDivider Class="my-8"/>
 
@@ -291,6 +350,9 @@
     private GameCommodity[] Commodities { get; set; } = [];
     private GameItem[] Items { get; set; } = [];
 
+    private InventoryEntryBase[] InventoryEntries { get; set; } = [];
+    private InventoryEntryList[] InventoryLists { get; set; } = [];
+
     private ContributorEntry[] Contributors { get; } =
     [
         new()
@@ -306,13 +368,6 @@
             Link = "https://discord.com/users/224580858432978944",
         },
     ];
-
-    private class ContributorEntry
-    {
-        public required string Name { get; set; }
-        public required string AvatarLink { get; set; }
-        public required string Link { get; set; }
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -341,6 +396,44 @@
             .Where(commodity => commodity is not null)
             .OfType<GameCommodity>()
             .ToArray();
+
+        InventoryLists =
+        [
+            new InventoryEntryList
+            {
+                Name = "Personal",
+            },
+            new InventoryEntryList
+            {
+                Name = "For Sale",
+            },
+        ];
+
+        InventoryEntries =
+        [
+            InventoryEntry.Create(Commodities[0], NewScu(11), Terminals[0], InventoryLists[0]),
+            InventoryEntry.Create(Commodities[1], NewScu(34), Terminals[0], InventoryLists[1]),
+            InventoryEntry.Create(Commodities[1], NewScu(8), Terminals[1], InventoryLists[1]),
+            InventoryEntry.Create(Commodities[2], NewScu(27), Terminals[1]),
+            InventoryEntry.Create(Items[0], new Quantity(3, Quantity.UnitType.Count), Terminals[0], InventoryLists[0]),
+            InventoryEntry.Create(Items[0], new Quantity(4, Quantity.UnitType.Count), Terminals[1], InventoryLists[1]),
+            InventoryEntry.Create(Items[0], new Quantity(1, Quantity.UnitType.Count), Terminals[2]),
+            InventoryEntry.Create(Items[1], new Quantity(1, Quantity.UnitType.Count), Terminals[1], InventoryLists[1]),
+            InventoryEntry.Create(Items[1], new Quantity(1, Quantity.UnitType.Count), Terminals[2]),
+            InventoryEntry.Create(Items[2], new Quantity(4, Quantity.UnitType.Count), Terminals[2]),
+        ];
+
+        return;
+
+        Quantity NewScu(int amount)
+            => new(amount, Quantity.UnitType.StandardCargoUnit);
+    }
+
+    private class ContributorEntry
+    {
+        public required string Name { get; set; }
+        public required string AvatarLink { get; set; }
+        public required string Link { get; set; }
     }
 
 }
