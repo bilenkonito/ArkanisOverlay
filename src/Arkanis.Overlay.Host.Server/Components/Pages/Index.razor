@@ -16,7 +16,12 @@
     .embed-wrapper {
         background: #833AB4;
         background: linear-gradient(90deg, rgba(131, 58, 180, .33) 0%, rgba(253, 29, 29, .33) 50%, rgba(252, 176, 69, .33) 100%);
-        overflow: hidden;
+        overflow: auto;
+
+        & > * {
+            width: fit-content;
+            min-width: 100%;
+        }
 
         &.reverse {
             background: linear-gradient(90deg, rgba(252, 176, 69, .33) 0%, rgba(253, 29, 29, .33) 50%, rgba(131, 58, 180, .33) 100%);
@@ -37,17 +42,20 @@
                 <MudButton StartIcon="@Icons.Custom.Brands.GitHub" Href="@GitHubRepositoryUrl" Target="_blank">
                     GitHub
                 </MudButton>
+
                 <MudSpacer/>
-                <MudLink Href="https://discord.com/users/174617873182883841" Target="_blank">
-                    <MudAvatar title="FatalMerlin">
-                        FM
-                    </MudAvatar>
-                </MudLink>
-                <MudLink Href="https://discord.com/users/224580858432978944" Target="_blank">
-                    <MudAvatar title="TheKronnY">
-                        TK
-                    </MudAvatar>
-                </MudLink>
+                @foreach (var contributor in Contributors)
+                {
+                    <MudLink Href="@contributor.Link" Target="_blank">
+                        <MudTooltip Text="@contributor.Name">
+                            <MudAvatar>
+                                <MudImage
+                                    Src="@contributor.AvatarLink"
+                                    alt="avatar"/>
+                            </MudAvatar>
+                        </MudTooltip>
+                    </MudLink>
+                }
                 <MudIconButton
                     Icon="@Icons.Material.Outlined.Info"
                     Color="Color.Inherit"
@@ -161,8 +169,8 @@
                 </MudItem>
 
                 <MudItem xs="12" md="8">
-                    <MudPaper Class="py-12 pl-12 embed-wrapper">
-                        <MudStack Class="mr-n2">
+                    <MudPaper Class="pa-12 embed-wrapper">
+                        <MudStack>
                             @foreach (var (index, item) in Items.Index())
                             {
                                 <SearchResultItem
@@ -176,8 +184,8 @@
 
             <MudGrid Justify="@Justify.Center" Class="my-4 align-center flex-wrap-reverse">
                 <MudItem xs="12" md="8">
-                    <MudPaper Class="py-12 pl-12 embed-wrapper reverse">
-                        <MudStack Class="mr-n2">
+                    <MudPaper Class="pa-12 embed-wrapper reverse">
+                        <MudStack>
                             @foreach (var (index, commodity) in Commodities.Index())
                             {
                                 <SearchResultItem
@@ -229,8 +237,8 @@
                 </MudItem>
 
                 <MudItem xs="12" md="8">
-                    <MudPaper Class="py-12 pl-12 embed-wrapper">
-                        <MudStack Class="mr-n2">
+                    <MudPaper Class="pa-12 embed-wrapper">
+                        <MudStack>
                             @foreach (var (index, terminal) in Terminals.Index())
                             {
                                 <SearchResultItem
@@ -282,6 +290,29 @@
     private GameTerminal[] Terminals { get; set; } = [];
     private GameCommodity[] Commodities { get; set; } = [];
     private GameItem[] Items { get; set; } = [];
+
+    private ContributorEntry[] Contributors { get; } =
+    [
+        new()
+        {
+            Name = "FatalMerlin",
+            AvatarLink = "https://cdn.discordapp.com/avatars/174617873182883841/b797e2c4b2a60a934704456655d13f7c.webp?size=64",
+            Link = "https://discord.com/users/174617873182883841",
+        },
+        new()
+        {
+            Name = "FatalMerlin",
+            AvatarLink = "https://robertsspaceindustries.com/media/vik3yf6mmx64tr/avatar/7c6031e0-1f66-47c0-A147-C801168e1c09.jpg",
+            Link = "https://discord.com/users/224580858432978944",
+        },
+    ];
+
+    private class ContributorEntry
+    {
+        public required string Name { get; set; }
+        public required string AvatarLink { get; set; }
+        public required string Link { get; set; }
+    }
 
     protected override async Task OnInitializedAsync()
     {
