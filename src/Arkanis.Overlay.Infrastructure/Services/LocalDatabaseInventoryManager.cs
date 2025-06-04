@@ -29,7 +29,7 @@ internal class LocalDatabaseInventoryManager(
 
     public async Task<int> GetUnassignedCountAsync(CancellationToken cancellationToken = default)
         => await memoryCache.GetOrCreateAsync(
-            $"{nameof(LocalDatabaseInventoryManager)}-{nameof(GetUnassignedCountAsync)}",
+            CacheId.UnassignedCountQuery,
             async entry =>
             {
                 entry.AddExpirationToken(ChangeToken);
@@ -45,8 +45,8 @@ internal class LocalDatabaseInventoryManager(
         InventoryEntryBase.EntryType entryType,
         CancellationToken cancellationToken = default
     )
-        => await memoryCache.GetOrCreateAsync<ICollection<InventoryEntryBase>>(
-               $"{nameof(LocalDatabaseInventoryManager)}-{nameof(GetEntriesForAsync)}-{domainId}-{entryType}",
+        => await memoryCache.GetOrCreateAsync(
+               new CacheId.GetMatchingEntries(domainId, entryType),
                async entry =>
                {
                    entry.AddExpirationToken(ChangeToken);
@@ -71,8 +71,8 @@ internal class LocalDatabaseInventoryManager(
            ?? [];
 
     public async Task<ICollection<InventoryEntryBase>> GetEntriesForAsync(IDomainId domainId, CancellationToken cancellationToken = default)
-        => await memoryCache.GetOrCreateAsync<ICollection<InventoryEntryBase>>(
-               $"{nameof(LocalDatabaseInventoryManager)}-{nameof(GetEntriesForAsync)}-{domainId}",
+        => await memoryCache.GetOrCreateAsync(
+               new CacheId.GetMatchingEntries(domainId, InventoryEntryBase.EntryType.Undefined),
                async entry =>
                {
                    entry.AddExpirationToken(ChangeToken);
@@ -96,11 +96,19 @@ internal class LocalDatabaseInventoryManager(
            ?? [];
 
     public async Task<ICollection<InventoryEntryBase>> GetAllEntriesAsync(CancellationToken cancellationToken = default)
-    {
-        await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        var entities = await dbContext.InventoryEntries.ToArrayAsync(cancellationToken);
-        return entities.Select(x => mapper.Map(x)).ToArray();
-    }
+        => await memoryCache.GetOrCreateAsync(
+               CacheId.AllEntriesQuery,
+               async entry =>
+               {
+                   entry.AddExpirationToken(ChangeToken);
+                   entry.SetSlidingExpiration(TimeSpan.FromHours(1));
+
+                   await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+                   var entities = await dbContext.InventoryEntries.ToArrayAsync(cancellationToken);
+                   return entities.Select(x => mapper.Map(x)).ToArray();
+               }
+           )
+           ?? [];
 
     public async Task AddOrUpdateEntryAsync(InventoryEntryBase entry, CancellationToken cancellationToken = default)
     {
@@ -125,20 +133,35 @@ internal class LocalDatabaseInventoryManager(
     }
 
     public async Task<InventoryEntryList?> GetListAsync(InventoryEntryListId listId, CancellationToken cancellationToken = default)
-    {
-        await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        var entity = await dbContext.InventoryLists.SingleOrDefaultAsync(x => x.Id == listId, cancellationToken);
-        return entity is not null
-            ? mapper.Map(entity)
-            : null;
-    }
+        => await memoryCache.GetOrCreateAsync(
+            new CacheId.GetList(listId),
+            async entry =>
+            {
+                entry.AddExpirationToken(ChangeToken);
+                entry.SetSlidingExpiration(TimeSpan.FromHours(1));
+
+                await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+                var entity = await dbContext.InventoryLists.SingleOrDefaultAsync(x => x.Id == listId, cancellationToken);
+                return entity is not null
+                    ? mapper.Map(entity)
+                    : null;
+            }
+        );
 
     public async Task<ICollection<InventoryEntryList>> GetAllListsAsync(CancellationToken cancellationToken = default)
-    {
-        await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        var entities = await dbContext.InventoryLists.ToArrayAsync(cancellationToken);
-        return entities.Select(mapper.Map).ToArray();
-    }
+        => await memoryCache.GetOrCreateAsync(
+               CacheId.AllListsQuery,
+               async entry =>
+               {
+                   entry.AddExpirationToken(ChangeToken);
+                   entry.SetSlidingExpiration(TimeSpan.FromHours(1));
+
+                   await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+                   var entities = await dbContext.InventoryLists.ToArrayAsync(cancellationToken);
+                   return entities.Select(mapper.Map).ToArray();
+               }
+           )
+           ?? [];
 
     public async Task AddOrUpdateListAsync(InventoryEntryList list, CancellationToken cancellationToken = default)
     {
@@ -240,5 +263,22 @@ internal class LocalDatabaseInventoryManager(
 
         dbContext.InventoryEntries.Update(current);
         await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    private static class CacheId
+    {
+        public static readonly GetCount UnassignedCountQuery = new(InventoryEntryBase.EntryType.Virtual);
+
+        public static readonly GetAll AllEntriesQuery = new(typeof(InventoryEntryEntityBase));
+
+        public static readonly GetAll AllListsQuery = new(typeof(InventoryEntryListEntity));
+
+        public record GetCount(InventoryEntryBase.EntryType Type);
+
+        public record GetAll(Type EntityType);
+
+        public record GetMatchingEntries(IDomainId DomainId, InventoryEntryBase.EntryType Type) : GetAll(typeof(InventoryEntryEntityBase));
+
+        public record GetList(InventoryEntryListId ListId);
     }
 }
