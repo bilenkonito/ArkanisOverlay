@@ -47,7 +47,6 @@ export class QuickAccessContainer {
     constructor(componentRef, containerElement, childElementSelector, features) {
         this.componentRef = componentRef;
         this.containerElement = containerElement;
-        this.scrollableParent = QuickAccessContainer.getScrollableParent(containerElement);
         this.childElementSelector = childElementSelector;
 
         this.visibleElements = [];
@@ -65,7 +64,12 @@ export class QuickAccessContainer {
         }
 
         this.scrollEventHandler = this.handleScroll.bind(this);
-        this.scrollableParent.addEventListener('scroll', this.scrollEventHandler);
+        this.scrollableParent = QuickAccessContainer.getClosestScrollable(containerElement);
+        if (this.scrollableParent !== null) {
+            this.scrollableParent.addEventListener('scroll', this.scrollEventHandler);
+        } else {
+            console.debug("targeted quick access container is not scrollable and does not have any scrollable parent")
+        }
 
         this.updateDebounced();
     }
@@ -77,7 +81,7 @@ export class QuickAccessContainer {
      *
      * @returns {HTMLElement | null} The first scrollable parent element.
      */
-    static getScrollableParent(element) {
+    static getClosestScrollable(element) {
         if (element == null) {
             return null;
         }
@@ -86,7 +90,7 @@ export class QuickAccessContainer {
             return element;
         }
 
-        return QuickAccessContainer.getScrollableParent(element.parentElement);
+        return QuickAccessContainer.getClosestScrollable(element.parentElement);
     }
 
     /**
@@ -117,7 +121,10 @@ export class QuickAccessContainer {
         }
 
         console.debug("dispose requested from .NET component %o", this.componentRef);
-        this.scrollableParent.removeEventListener('scroll', this.scrollEventHandler);
+        if (this.scrollableParent !== null) {
+            this.scrollableParent.removeEventListener('scroll', this.scrollEventHandler);
+        }
+
         this.domObserver.disconnect()
         this.disposed = true;
     }
