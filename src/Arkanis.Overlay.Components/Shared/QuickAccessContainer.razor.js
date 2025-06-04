@@ -1,4 +1,4 @@
-const SEARCH_BAR_HEIGHT_PX = 100;
+const SEARCH_BAR_HEIGHT_PX = 104 + 48; // search box + app bar
 const FEAT_DOM_OBSERVER = "dom";
 
 /**
@@ -11,6 +11,9 @@ export class QuickAccessContainer {
 
     /** @type {HTMLElement} */
     containerElement;
+
+    /** @type {HTMLElement} */
+    scrollableParent;
 
     /** @type {String} */
     childElementSelector;
@@ -44,6 +47,7 @@ export class QuickAccessContainer {
     constructor(componentRef, containerElement, childElementSelector, features) {
         this.componentRef = componentRef;
         this.containerElement = containerElement;
+        this.scrollableParent = QuickAccessContainer.getScrollableParent(containerElement);
         this.childElementSelector = childElementSelector;
 
         this.visibleElements = [];
@@ -61,9 +65,28 @@ export class QuickAccessContainer {
         }
 
         this.scrollEventHandler = this.handleScroll.bind(this);
-        document.addEventListener('scroll', this.scrollEventHandler);
+        this.scrollableParent.addEventListener('scroll', this.scrollEventHandler);
 
         this.updateDebounced();
+    }
+
+    /**
+     * Returns the first scrollable parent of the given HTML element or null if no such parent is found.
+     *
+     * @param {HTMLElement} element
+     *
+     * @returns {HTMLElement | null} The first scrollable parent element.
+     */
+    static getScrollableParent(element) {
+        if (element == null) {
+            return null;
+        }
+
+        if (element.scrollHeight > element.clientHeight) {
+            return element;
+        }
+
+        return QuickAccessContainer.getScrollableParent(element.parentElement);
     }
 
     /**
@@ -94,7 +117,7 @@ export class QuickAccessContainer {
         }
 
         console.debug("dispose requested from .NET component %o", this.componentRef);
-        document.removeEventListener('scroll', this.scrollEventHandler);
+        this.scrollableParent.removeEventListener('scroll', this.scrollEventHandler);
         this.domObserver.disconnect()
         this.disposed = true;
     }
@@ -111,13 +134,11 @@ export class QuickAccessContainer {
     }
 
     updateScroll() {
-        // TODO: Based on global window scroll, not just the container element
-        this.lastUpdateWindowTopScroll = window.scrollY;
+        this.lastUpdateWindowTopScroll = this.scrollableParent.scrollTop;
     }
 
     getScrollChange() {
-        // TODO: Based on global window scroll, not just the container element
-        return Math.abs(this.lastUpdateWindowTopScroll - window.scrollY);
+        return Math.abs(this.lastUpdateWindowTopScroll - this.scrollableParent.scrollTop);
     }
 
     /**
