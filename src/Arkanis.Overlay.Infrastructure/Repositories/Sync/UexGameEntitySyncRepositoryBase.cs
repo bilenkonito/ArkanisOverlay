@@ -73,12 +73,12 @@ internal abstract class UexGameEntitySyncRepositoryBase<TSource, TDomain>(
         catch (ExternalApiResponseProcessingException ex)
         {
             Logger.LogError(ex, "Failed processing response from remote API");
-            return await TryGetCachedAsync(internalDataState, cancellationToken);
+            return await TryGetCachedAsync(new DataProcessingErrored(ex), cancellationToken);
         }
         catch (Exception ex)
         {
             Logger.LogCritical(ex, "Failed properly loading {Type} entities", typeof(TDomain).Name);
-            return await TryGetCachedAsync(internalDataState, cancellationToken);
+            return await TryGetCachedAsync(new DataProcessingErrored(ex), cancellationToken);
         }
     }
 
