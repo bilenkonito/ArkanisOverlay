@@ -4,34 +4,15 @@
 @using Humanizer
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
 <style>
-    .mud-data-grid .mud-table-cell.mud-datagrid-group {
-        background-color: inherit;
-    }
-
-    .mud-table-row .mud-table-cell {
-        background-color: var(--mud-palette-background-gray);
-    }
-
-    .mud-table-row.selected .mud-table-cell {
-        background-color: var(--mud-palette-background);
-    }
-
-    tfoot .mud-table-cell {
-        background-color: var(--mud-palette-surface) !important;
-    }
-
-    tbody tr.mud-table-row td.mud-table-cell.footer-cell:first-child:before {
+    .mud-data-grid tbody tr.mud-table-row td.mud-table-cell.footer-cell:first-child:before {
         content: "Local";
     }
 
-    tfoot tr.mud-table-row td.mud-table-cell.footer-cell:first-child:before {
+    .mud-data-grid tfoot tr.mud-table-row td.mud-table-cell.footer-cell:first-child:before {
         content: "Global";
     }
-
-    .flex-row-reverse > .column-header {
-        flex-direction: row-reverse;
-    }
 </style>
+
 <MudDataGrid @ref="_dataGridRef"
              Items="@SortedModels"
              SelectedItems="@SelectedModels"
@@ -361,7 +342,7 @@
     public RenderFragment<InventoryEntryList>? ListActionsContent { get; set; }
 
     [Parameter]
-    public string? Class { get; set; }
+    public string? Class { get; set; } = "bg-gray";
 
     [Parameter]
     public bool ExpandAll { get; set; }
