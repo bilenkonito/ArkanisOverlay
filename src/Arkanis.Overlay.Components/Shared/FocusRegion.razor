@@ -1,5 +1,6 @@
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
+@inject ILogger<FocusRegion> Logger
 @inject IOverlayEventProvider OverlayEventProvider
 @inject IJSRuntime JsRuntime
 
@@ -31,13 +32,18 @@
 
     public bool HasFocus { get; private set; }
 
-    public ElementReference ContainerElement { get; private set; }
+    public ElementReference? ContainerElement { get; private set; }
 
     private Context CurrentContext
         => new(this);
 
     public async Task FocusAsync()
-        => await ContainerElement.MudFocusFirstAsync();
+    {
+        if (ContainerElement is not null)
+        {
+            await ContainerElement.Value.MudFocusFirstAsync();
+        }
+    }
 
     private async Task OnFocusReceived()
     {
@@ -49,6 +55,7 @@
         }
 
         HasFocus = true;
+        Logger.LogDebug("Focus received");
         await InvokeAsync(InitializeInteropAsync);
     }
 
@@ -85,14 +92,18 @@
         }
 
         HasFocus = false;
+        Logger.LogDebug("Focus lost");
         await InvokeAsync(StateHasChanged);
         await InvokeAsync(DisposeInteropAsync);
     }
 
     private async Task InitializeInteropAsync()
     {
-        _interop = JsRuntime.CreateLifetimeInterop(this);
-        await _interop.InitializeAsync(ContainerElement);
+        if (ContainerElement is not null)
+        {
+            _interop ??= JsRuntime.CreateLifetimeInterop(this);
+            await _interop.InitializeAsync(ContainerElement);
+        }
     }
 
     private async Task DisposeInteropAsync()
