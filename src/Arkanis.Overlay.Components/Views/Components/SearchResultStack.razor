@@ -6,7 +6,7 @@
     <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
         <Virtualize Items="@IndexedEntries"
                     ItemSize="66"
-                    OverscanCount="25"
+                    OverscanCount="0"
                     Context="entry">
             <SearchResultItem
                 @key="@entry.Result.Subject.Id"

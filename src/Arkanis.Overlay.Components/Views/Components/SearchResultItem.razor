@@ -1,3 +1,4 @@
+@implements QuickAccessContainer.IEntry
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Models.Keyboard
 @using Arkanis.Overlay.Domain.Models.Trade
@@ -33,10 +34,11 @@
         {
             <MudDivider Class="my-2"/>
             <MudGrid Class="my-n2"
-                     Style="height: calc(3 * 62px + 3 * 12px);"> @* 3 * <result item height> + 3 * <item spacing> *@
+                     Spacing="2"
+                     Style="height: calc(3 * 62px + 3 * 12px); scrollbar-width: thin;"> @* 3 * <result item height> + 3 * <item spacing> *@
                 @if (Model is IGamePurchasable)
                 {
-                    <MudItem md="6" Class="pt-0 h-100">
+                    <MudItem xs="6" Class="pt-0 h-100">
                         <PriceTagTable Models="@PurchasePriceTags">
                             <CaptionContent>
                                 All available <b>purchase</b> prices
@@ -46,7 +48,7 @@
                 }
                 @if (Model is IGameSellable)
                 {
-                    <MudItem md="6" Class="pt-0 h-100">
+                    <MudItem xs="6" Class="pt-0 h-100">
                         <PriceTagTable Models="@SalePriceTags">
                             <CaptionContent>
                                 All available <b>sale</b> prices
@@ -83,9 +85,12 @@
     private bool KeyboardShortcutActive
         => KeyboardShortcut is not KeyboardKey.Unknown && _focusRegion?.HasFocus != true;
 
-    private QuickAccessContainer.ItemInfo? _itemInfo;
     private FocusRegion? _focusRegion;
-    private IAsyncDisposable? _registration;
+    private QuickAccessContainer.EntryInfo? _itemInfo;
+    private QuickAccessContainer.EntryRegistration? _registration;
+
+    public ElementReference PageElement
+        => _focusRegion?.ContainerElement ?? default;
 
     private ICollection<PriceTag> PurchasePriceTags { get; set; } = [];
     private ICollection<PriceTag> SalePriceTags { get; set; } = [];
@@ -122,15 +127,19 @@
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            var updateCallback = EventCallback.Factory.Create<QuickAccessContainer.ItemInfo>(this, OnVisibilityChanged);
-            if (Container is not null && _focusRegion is not null)
-            {
-                _registration = await Container.RegisterAsync(ItemIndex, _focusRegion.ContainerElement, updateCallback);
-            }
+            RegisterToQuickAccessContainer();
         }
     }
 
-    private async Task OnVisibilityChanged(QuickAccessContainer.ItemInfo info)
+    private void RegisterToQuickAccessContainer()
+    {
+        if (Container is not null && _focusRegion is not null)
+        {
+            _registration = Container.Register(this);
+        }
+    }
+
+    public async Task OnQuickAccessInfoChanged(QuickAccessContainer.EntryInfo info)
     {
         if (_itemInfo == info)
         {
@@ -142,13 +151,14 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         if (_registration != null)
         {
-            await _registration.DisposeAsync();
+            _registration.Dispose();
             _registration = null;
         }
-    }
 
+        return ValueTask.CompletedTask;
+    }
 }

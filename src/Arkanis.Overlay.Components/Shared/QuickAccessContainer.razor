@@ -3,7 +3,7 @@
 @inject IJSRuntime JsRuntime
 @inject ILogger<QuickAccessContainer> Logger
 
-<FocusRegion @ref="_regionRef">
+<FocusRegion @ref="@_regionRef">
     <CascadingValue Value="@(this)" IsFixed>
         @ChildContent(this)
     </CascadingValue>
@@ -11,11 +11,10 @@
 
 @code
 {
-    private JsComponentInterop<QuickAccessContainer>? _interop;
 
-    private readonly List<Item> _items = [];
-
+    private Timer? _timer;
     private FocusRegion? _regionRef;
+    private JsComponentInterop<QuickAccessContainer>? _interop;
 
     [Parameter]
     [EditorRequired]
@@ -27,46 +26,59 @@
     [Parameter]
     public bool ContentVirtualized { get; set; }
 
-    public async Task<IAsyncDisposable> RegisterAsync(int index, ElementReference element, EventCallback<ItemInfo> callback)
+    private readonly HashSet<IEntry> _entries = [];
+
+    public EntryRegistration Register(IEntry entry)
     {
-        var item = new Item
+        lock (_entries)
         {
-            Index = index,
-            Element = element,
-            Callback = callback,
-            DisposeFunc = UnregisterAsync,
+            _entries.Add(entry);
+        }
+
+        RequestDebouncedUpdate();
+        return new EntryRegistration(this)
+        {
+            Entry = entry,
         };
-        lock (_items)
-        {
-            _items.Add(item);
-            _items.Sort();
-        }
-
-        if (_interop?.IsInitialized == true)
-        {
-            await _interop.Controls.InvokeVoidAsync("updateDebounced", 150);
-        }
-
-        return item;
     }
 
-    private async Task UnregisterAsync(Item item)
+    public void Unregister(IEntry item)
     {
-        lock (_items)
+        lock (_entries)
         {
-            _items.Remove(item);
+            _entries.Remove(item);
         }
 
+        RequestDebouncedUpdate();
+    }
+
+    private void RequestDebouncedUpdate()
+    {
         if (_interop?.IsInitialized == true)
         {
-            try
+            _timer?.Change(TimeSpan.FromMilliseconds(100), Timeout.InfiniteTimeSpan);
+        }
+    }
+
+    private async void InvokeJsUpdateAsync(object? _ = null)
+    {
+        try
+        {
+            if (_interop?.Controls is not null)
             {
-                await _interop.Controls.InvokeVoidAsync("updateDebounced", 150);
-            }
-            catch (JSDisconnectedException)
-            {
+                await _interop.Controls.InvokeVoidAsync("updateDebounced", 100);
             }
         }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Debounced update has failed");
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _timer = new Timer(InvokeJsUpdateAsync, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -97,31 +109,33 @@
     [JSInvokable]
     public async Task OnJsUpdateAsync()
     {
-        Item[] items = [];
-        lock (_items)
+        IEntry[] entries;
+        lock (_entries)
         {
-            items = _items.ToArray();
+            //? sort is essential due to the visibility call optimizations below
+            //! sort must be performed here as the item index changes without notice
+            entries = _entries.Order(IEntry.Comparer.Default).ToArray();
         }
 
-        Logger.LogDebug("Updating {ItemCount} items within this quick access container", items.Length);
-        var firstVisibleItemIndex = await FindFirstVisibleItemIndex(items);
+        Logger.LogDebug("Updating {ItemCount} items within this quick access container", entries.Length);
+        var firstVisibleItemIndex = await FindFirstVisibleItemIndex(entries);
         var pastVisibleItems = false;
-        foreach (var item in items)
+        foreach (var entry in entries)
         {
-            var visibilityInfo = item.Index < firstVisibleItemIndex || pastVisibleItems
-                ? ItemInfo.Empty
-                : await _interop!.Controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
+            var visibilityInfo = entry.ItemIndex < firstVisibleItemIndex || pastVisibleItems
+                ? EntryInfo.Empty
+                : await _interop!.Controls!.InvokeAsync<EntryInfo>("getVisibilityInfo", entry.PageElement);
 
-            if (item.Index > firstVisibleItemIndex && !visibilityInfo.IsVisible)
+            if (entry.ItemIndex > firstVisibleItemIndex && !visibilityInfo.IsVisible)
             {
                 pastVisibleItems = true;
             }
 
-            await item.UpdateInfoAsync(visibilityInfo);
+            await entry.OnQuickAccessInfoChanged(visibilityInfo);
         }
     }
 
-    private async Task<int?> FindFirstVisibleItemIndex(Item[] items)
+    private async Task<int?> FindFirstVisibleItemIndex(IEntry[] items)
     {
         var itemIndexOffset = 1;
         var alreadyFoundVisible = false;
@@ -129,13 +143,13 @@
         for (var itemIndex = 0; itemIndex < items.Length; itemIndex += itemIndexOffset)
         {
             var item = items[itemIndex];
-            var visibilityInfo = await _interop!.Controls!.InvokeAsync<ItemInfo>("getVisibilityInfo", item.Element);
+            var visibilityInfo = await _interop!.Controls!.InvokeAsync<EntryInfo>("getVisibilityInfo", item.PageElement);
             if (visibilityInfo.IsVisible)
             {
                 if (itemIndex == 0)
                 {
                     // this item is visible and is the first item, so we can skip the rest
-                    return item.Index;
+                    return item.ItemIndex;
                 }
 
                 // this item is visible, so we can change the direction and find the first visible item
@@ -146,7 +160,7 @@
             {
                 // this item is not visible, but we have already found a visible item before,
                 //  so the previous item is the first visible item
-                return items[itemIndex + 1].Index;
+                return items[itemIndex + 1].ItemIndex;
             }
             else if (itemIndexOffset < 4)
             {
@@ -158,38 +172,52 @@
         return null;
     }
 
-    public class Item : IComparable<Item>, IAsyncDisposable
-    {
-        public required int Index { get; init; }
-        public required Func<Item, Task> DisposeFunc { get; init; }
-        public required ElementReference Element { get; init; }
-        public required EventCallback<ItemInfo> Callback { get; init; }
-
-        public async ValueTask UpdateInfoAsync(ItemInfo info)
-        {
-            if (Callback.HasDelegate)
-            {
-                await Callback.InvokeAsync(info);
-            }
-        }
-
-        public async ValueTask DisposeAsync()
-            => await DisposeFunc(this);
-
-        public int CompareTo(Item? other)
-            => Index.CompareTo(other?.Index ?? int.MinValue);
-    }
-
-    public record ItemInfo(int Index, bool IsVisible)
-    {
-        public static readonly ItemInfo Empty = new(0, false);
-    }
-
     public async ValueTask DisposeAsync()
     {
         if (_interop is not null)
         {
             await _interop.DisposeAsync();
         }
+    }
+
+    public interface IEntry
+    {
+        int ItemIndex { get; }
+        ElementReference PageElement { get; }
+
+        Task OnQuickAccessInfoChanged(EntryInfo info);
+
+        public class Comparer : IComparer<IEntry>
+        {
+            public static readonly Comparer Default = new();
+
+            public int Compare(IEntry? x, IEntry? y)
+            {
+                if (x is null)
+                {
+                    return -1;
+                }
+
+                if (y is null)
+                {
+                    return 1;
+                }
+
+                return x.ItemIndex.CompareTo(y.ItemIndex);
+            }
+        }
+    }
+
+    public class EntryRegistration(QuickAccessContainer container) : IDisposable
+    {
+        public required IEntry Entry { get; init; }
+
+        public void Dispose()
+            => container.Unregister(Entry);
+    }
+
+    public record EntryInfo(int Index, bool IsVisible)
+    {
+        public static readonly EntryInfo Empty = new(-1, false);
     }
 }

@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 [Index(nameof(GameEntityId))]
-internal abstract class InventoryEntryEntityBase : IDatabaseEntity<InventoryEntryId>
+internal abstract class InventoryEntryEntityBase(GameEntityCategory entityCategory, InventoryEntryBase.EntryType entryType) : IDatabaseEntity<InventoryEntryId>
 {
     private readonly string? _discriminator;
 
     public abstract UexApiGameEntityId GameEntityId { get; set; }
 
-    public abstract GameEntityCategory GameEntityCategory { get; }
+    public GameEntityCategory GameEntityCategory { get; private init; } = entityCategory;
 
-    public abstract InventoryEntryBase.EntryType EntryType { get; }
+    public InventoryEntryBase.EntryType EntryType { get; private init; } = entryType;
 
     public required Quantity Quantity { get; set; }
 
@@ -70,13 +70,10 @@ internal abstract class InventoryEntryEntityBase : IDatabaseEntity<InventoryEntr
     }
 }
 
-internal abstract class ItemInventoryEntryEntityBase : InventoryEntryEntityBase
+internal abstract class ItemInventoryEntryEntityBase(InventoryEntryBase.EntryType entryType) : InventoryEntryEntityBase(GameEntityCategory.Item, entryType)
 {
     [NotMapped]
     public required UexId<GameItem> ItemId { get; set; }
-
-    public override GameEntityCategory GameEntityCategory
-        => GameEntityCategory.Item;
 
     public override UexApiGameEntityId GameEntityId
     {
@@ -85,11 +82,8 @@ internal abstract class ItemInventoryEntryEntityBase : InventoryEntryEntityBase
     }
 }
 
-internal sealed class VirtualItemInventoryEntryEntity : ItemInventoryEntryEntityBase
+internal sealed class VirtualItemInventoryEntryEntity() : ItemInventoryEntryEntityBase(InventoryEntryBase.EntryType.Virtual)
 {
-    public override InventoryEntryBase.EntryType EntryType
-        => InventoryEntryBase.EntryType.Virtual;
-
     internal new class Configuration : IEntityTypeConfiguration<VirtualItemInventoryEntryEntity>
     {
         public void Configure(EntityTypeBuilder<VirtualItemInventoryEntryEntity> builder)
@@ -99,11 +93,8 @@ internal sealed class VirtualItemInventoryEntryEntity : ItemInventoryEntryEntity
     }
 }
 
-internal sealed class PhysicalItemInventoryEntryEntity : ItemInventoryEntryEntityBase, IDatabaseEntityWithLocation
+internal sealed class PhysicalItemInventoryEntryEntity() : ItemInventoryEntryEntityBase(InventoryEntryBase.EntryType.Physical), IDatabaseEntityWithLocation
 {
-    public override InventoryEntryBase.EntryType EntryType
-        => InventoryEntryBase.EntryType.Physical;
-
     [Column(nameof(LocationId))]
     public required UexApiGameEntityId LocationId { get; set; }
 
@@ -121,13 +112,11 @@ internal sealed class PhysicalItemInventoryEntryEntity : ItemInventoryEntryEntit
     }
 }
 
-internal abstract class CommodityInventoryEntryEntityBase : InventoryEntryEntityBase
+internal abstract class CommodityInventoryEntryEntityBase(InventoryEntryBase.EntryType entryType)
+    : InventoryEntryEntityBase(GameEntityCategory.Commodity, entryType)
 {
     [NotMapped]
     public required UexId<GameCommodity> CommodityId { get; set; }
-
-    public override GameEntityCategory GameEntityCategory
-        => GameEntityCategory.Commodity;
 
     public override UexApiGameEntityId GameEntityId
     {
@@ -138,11 +127,8 @@ internal abstract class CommodityInventoryEntryEntityBase : InventoryEntryEntity
     }
 }
 
-internal sealed class VirtualCommodityInventoryEntryEntity : CommodityInventoryEntryEntityBase
+internal sealed class VirtualCommodityInventoryEntryEntity() : CommodityInventoryEntryEntityBase(InventoryEntryBase.EntryType.Virtual)
 {
-    public override InventoryEntryBase.EntryType EntryType
-        => InventoryEntryBase.EntryType.Virtual;
-
     internal new class Configuration : IEntityTypeConfiguration<VirtualCommodityInventoryEntryEntity>
     {
         public void Configure(EntityTypeBuilder<VirtualCommodityInventoryEntryEntity> builder)
@@ -152,11 +138,9 @@ internal sealed class VirtualCommodityInventoryEntryEntity : CommodityInventoryE
     }
 }
 
-internal sealed class PhysicalCommodityInventoryEntryEntity : CommodityInventoryEntryEntityBase, IDatabaseEntityWithLocation
+internal sealed class PhysicalCommodityInventoryEntryEntity()
+    : CommodityInventoryEntryEntityBase(InventoryEntryBase.EntryType.Physical), IDatabaseEntityWithLocation
 {
-    public override InventoryEntryBase.EntryType EntryType
-        => InventoryEntryBase.EntryType.Physical;
-
     [Column(nameof(LocationId))]
     public required UexApiGameEntityId LocationId { get; set; }
 

@@ -64,8 +64,9 @@
                         StartIcon="@Icons.Material.Filled.Add"/>
                 </ActivatorContent>
                 <ChildContent>
-                    <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyE])"
+                    <KeyboardShortcutBadge Key="@KeyboardKey.KeyN"
                                            OnKeyPress="@CreateNewEntryAsync"
+                                           IsActive="@_fabMenuOpen"
                                            Origin="@Origin.CenterLeft"
                                            Class="d-flex">
                         <MudMenuItem Icon="@Icons.Material.Filled.Add"
@@ -73,8 +74,9 @@
                             New entry
                         </MudMenuItem>
                     </KeyboardShortcutBadge>
-                    <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardKey.ShiftLeft, KeyboardKey.KeyL])"
+                    <KeyboardShortcutBadge Key="@KeyboardKey.KeyL"
                                            OnKeyPress="@CreateNewListAsync"
+                                           IsActive="@_fabMenuOpen"
                                            Origin="@Origin.CenterLeft"
                                            Class="d-flex">
                         <MudMenuItem Icon="@Icons.Material.Filled.PlaylistAdd"
