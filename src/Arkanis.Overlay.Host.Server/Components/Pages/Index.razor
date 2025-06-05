@@ -1,5 +1,7 @@
 ﻿@page "/"
+@using Arkanis.Overlay.Common.Abstractions
 @using Arkanis.Overlay.Components.Views.Components
+@using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Abstractions.Services
 @using Arkanis.Overlay.Domain.Models.Game
 @using Arkanis.Overlay.Domain.Models.Inventory
@@ -7,8 +9,10 @@
 @using Arkanis.Overlay.Host.Server.Services
 @using MoreLinq
 @inject IDialogService DialogService
+@inject IAppVersionProvider VersionProvider
 @inject GitHubReleasesService GitHubReleasesService
-@inject IGameEntityRepository<GameTerminal> GameTerminalRepository
+@inject IGameEntityRepository<GameSpaceStation> GameSpaceStationRepository
+@inject IGameEntityRepository<GameCity> GameCityRepository
 @inject IGameEntityRepository<GameItem> GameItemRepository
 @inject IGameEntityRepository<GameCommodity> GameCommodityRepository
 
@@ -221,7 +225,7 @@
                 <MudItem xs="12" md="8">
                     <MudPaper Class="pa-12 embed-wrapper">
                         <MudStack>
-                            @foreach (var (index, terminal) in Terminals.Index())
+                            @foreach (var (index, terminal) in Locations.Index())
                             {
                                 <SearchResultItem
                                     Model="@terminal"
@@ -311,7 +315,7 @@
 
             <MudDivider Class="my-8"/>
 
-            <MudPaper Elevation="0" Class="pa-6 text-center">
+            <MudPaper Elevation="0" Class="pa-6">
                 <MudText Typo="Typo.h5" Class="mb-2">Built with the Community in Mind</MudText>
                 <MudText Typo="Typo.body1" Class="mb-4">
                     Arkanis Overlay is free to use and open source.
@@ -334,6 +338,12 @@
                     </MudButton>
                 </MudStack>
             </MudPaper>
+
+            <MudDivider Class="my-8"/>
+
+            <div class="text-center">
+                @VersionProvider.CurrentVersion.ToNormalizedString()
+            </div>
         </MudContainer>
 
     </MudMainContent>
@@ -346,7 +356,7 @@
     private const string DiscordUrl = "https://join.arkanis.cc";
 
     private AppRelease ReleaseAppRelease { get; set; } = AppReleaseMissing.Instance;
-    private GameTerminal[] Terminals { get; set; } = [];
+    private IGameLocation[] Locations { get; set; } = [];
     private GameCommodity[] Commodities { get; set; } = [];
     private GameItem[] Items { get; set; } = [];
 
@@ -373,12 +383,12 @@
     {
         await base.OnInitializedAsync();
         ReleaseAppRelease = await GitHubReleasesService.GetLatestStableDownloadsAsync();
-        Terminals = Array.Empty<GameTerminal>()
-            .Append(await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(259)))
-            .Append(await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(511)))
-            .Append(await GameTerminalRepository.GetAsync(UexApiGameEntityId.Create<GameTerminal>(13)))
+        Locations = Array.Empty<IGameLocation>()
+            .Append(await GameCityRepository.GetAsync(UexApiGameEntityId.Create<GameCity>(5)))
+            .Append(await GameSpaceStationRepository.GetAsync(UexApiGameEntityId.Create<GameSpaceStation>(10)))
+            .Append(await GameSpaceStationRepository.GetAsync(UexApiGameEntityId.Create<GameSpaceStation>(27)))
             .Where(terminal => terminal is not null)
-            .OfType<GameTerminal>()
+            .OfType<IGameLocation>()
             .ToArray();
 
         Items = Array.Empty<GameItem>()
@@ -409,19 +419,22 @@
             },
         ];
 
-        InventoryEntries =
-        [
-            InventoryEntry.Create(Commodities[0], NewScu(11), Terminals[0], InventoryLists[0]),
-            InventoryEntry.Create(Commodities[1], NewScu(34), Terminals[0], InventoryLists[1]),
-            InventoryEntry.Create(Commodities[1], NewScu(8), Terminals[1], InventoryLists[1]),
-            InventoryEntry.Create(Commodities[2], NewScu(27), Terminals[1]),
-            InventoryEntry.Create(Items[0], new Quantity(3, Quantity.UnitType.Count), Terminals[0], InventoryLists[0]),
-            InventoryEntry.Create(Items[0], new Quantity(4, Quantity.UnitType.Count), Terminals[1], InventoryLists[1]),
-            InventoryEntry.Create(Items[0], new Quantity(1, Quantity.UnitType.Count), Terminals[2]),
-            InventoryEntry.Create(Items[1], new Quantity(1, Quantity.UnitType.Count), Terminals[1], InventoryLists[1]),
-            InventoryEntry.Create(Items[1], new Quantity(1, Quantity.UnitType.Count), Terminals[2]),
-            InventoryEntry.Create(Items[2], new Quantity(4, Quantity.UnitType.Count), Terminals[2]),
-        ];
+        if (this is { Commodities.Length: >= 3, Items.Length: >= 3, Locations.Length: >= 3, InventoryLists.Length: >= 2 })
+        {
+            InventoryEntries =
+            [
+                InventoryEntry.Create(Commodities[0], NewScu(11), Locations[0], InventoryLists[0]),
+                InventoryEntry.Create(Commodities[1], NewScu(34), Locations[0], InventoryLists[1]),
+                InventoryEntry.Create(Commodities[1], NewScu(8), Locations[1], InventoryLists[1]),
+                InventoryEntry.Create(Commodities[2], NewScu(27), Locations[1]),
+                InventoryEntry.Create(Items[0], new Quantity(3, Quantity.UnitType.Count), Locations[0], InventoryLists[0]),
+                InventoryEntry.Create(Items[0], new Quantity(4, Quantity.UnitType.Count), Locations[1], InventoryLists[1]),
+                InventoryEntry.Create(Items[0], new Quantity(1, Quantity.UnitType.Count), Locations[2]),
+                InventoryEntry.Create(Items[1], new Quantity(1, Quantity.UnitType.Count), Locations[1], InventoryLists[1]),
+                InventoryEntry.Create(Items[1], new Quantity(1, Quantity.UnitType.Count), Locations[2]),
+                InventoryEntry.Create(Items[2], new Quantity(4, Quantity.UnitType.Count), Locations[2]),
+            ];
+        }
 
         return;
 
