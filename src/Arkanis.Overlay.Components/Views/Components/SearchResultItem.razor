@@ -34,7 +34,8 @@
         {
             <MudDivider Class="my-2"/>
             <MudGrid Class="my-n2"
-                     Style="height: calc(3 * 62px + 3 * 12px);"> @* 3 * <result item height> + 3 * <item spacing> *@
+                     Spacing="2"
+                     Style="height: calc(3 * 62px + 3 * 12px); scrollbar-width: thin;"> @* 3 * <result item height> + 3 * <item spacing> *@
                 @if (Model is IGamePurchasable)
                 {
                     <MudItem xs="6" Class="pt-0 h-100">
