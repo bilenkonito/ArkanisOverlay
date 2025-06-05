@@ -12,7 +12,7 @@
 @code
 {
 
-    private Timer? _timer;
+    private DebounceHelper? _debounceHelper;
     private FocusRegion? _regionRef;
     private JsComponentInterop<QuickAccessContainer>? _interop;
 
@@ -53,32 +53,20 @@
     }
 
     private void RequestDebouncedUpdate()
-    {
-        if (_interop?.IsInitialized == true)
-        {
-            _timer?.Change(TimeSpan.FromMilliseconds(100), Timeout.InfiniteTimeSpan);
-        }
-    }
+        => _debounceHelper?.RequestDebounced();
 
-    private async void InvokeJsUpdateAsync(object? _ = null)
+    private async Task InvokeJsUpdateAsync()
     {
-        try
+        if (_interop?.Controls is not null)
         {
-            if (_interop?.Controls is not null)
-            {
-                await _interop.Controls.InvokeVoidAsync("updateDebounced", 100);
-            }
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "Debounced update has failed");
+            await _interop.Controls.InvokeVoidAsync("updateDebounced", 100);
         }
     }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        _timer = new Timer(InvokeJsUpdateAsync, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+        _debounceHelper = new DebounceHelper(InvokeJsUpdateAsync, Logger);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -97,10 +85,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_interop?.IsInitialized == true && ContentVirtualized)
+        if (ContentVirtualized && _debounceHelper is not null)
         {
             Logger.LogDebug("Requesting JavaScript logic to update");
-            await _interop.Controls.InvokeVoidAsync("updateDebounced", 150);
+            _debounceHelper.RequestDebounced();
         }
 
         await base.OnParametersSetAsync();
