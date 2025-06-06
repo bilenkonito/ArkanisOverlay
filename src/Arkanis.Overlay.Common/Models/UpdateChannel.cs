@@ -26,7 +26,10 @@ public record UpdateChannel(string Name, string InternalId, string? VelopackChan
 
     public static readonly HashSet<UpdateChannel> Available =
     [
-        Default, Stable, ReleaseCandidate,
+        Default,
+        Stable,
+        ReleaseCandidate,
+        Nightly,
     ];
 
     public static readonly IEnumerable<UpdateChannel> All =
