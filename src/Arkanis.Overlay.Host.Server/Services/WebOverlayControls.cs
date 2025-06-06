@@ -46,6 +46,15 @@ internal sealed class WebOverlayControls : IOverlayControls, IOverlayEventProvid
         return ValueTask.CompletedTask;
     }
 
+    public void Shutdown()
+        => _snackbar.Add(
+            "This would exit the overlay",
+            configure: options =>
+            {
+                options.ShowCloseIcon = false;
+            }
+        );
+
     public void SetBlurEnabled(bool isEnabled)
     {
     }

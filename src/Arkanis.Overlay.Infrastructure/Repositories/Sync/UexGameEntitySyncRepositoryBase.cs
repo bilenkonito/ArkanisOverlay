@@ -45,20 +45,15 @@ internal abstract class UexGameEntitySyncRepositoryBase<TSource, TDomain>(
         {
             if (internalDataState is not DataCached { RefreshRequired: true })
             {
-                var cachedData = await cacheProvider.LoadAsync<UexApiResponse<ICollection<TSource>>>(internalDataState, cancellationToken);
-                if (cachedData is LoadedSyncDataCache<UexApiResponse<ICollection<TSource>>> loadedData)
+                var cached = await TryGetCachedAsync(internalDataState, cancellationToken);
+                if (cached is not MissingSyncData<TDomain>)
                 {
-                    Logger.LogDebug("Loaded {EntityCount} cached {Type} entities", loadedData.Data.Result.Count, typeof(TDomain).Name);
-                    return CreateSyncData(loadedData.Data, loadedData.State.SourcedState);
+                    return cached;
                 }
-
-                if (cachedData is AlreadyUpToDateWithCache<UexApiResponse<ICollection<TSource>>>)
-                {
-                    Logger.LogDebug("Loaded data for {Type} are already up to date: {@CachedData}", typeof(TDomain).Name, cachedData);
-                    return new SyncDataUpToDate<TDomain>();
-                }
-
-                Logger.LogWarning("Could not load cached {Type} entities: {@CachedData}", typeof(TDomain).Name, cachedData);
+            }
+            else
+            {
+                Logger.LogDebug("Ignoring potential data cache: {DataState}", internalDataState);
             }
 
             var serviceState = await stateProvider.LoadCurrentServiceStateAsync(cancellationToken);
@@ -78,12 +73,12 @@ internal abstract class UexGameEntitySyncRepositoryBase<TSource, TDomain>(
         catch (ExternalApiResponseProcessingException ex)
         {
             Logger.LogError(ex, "Failed processing response from remote API");
-            return MissingSyncData<TDomain>.Instance;
+            return await TryGetCachedAsync(new DataProcessingErrored(ex), cancellationToken);
         }
         catch (Exception ex)
         {
             Logger.LogCritical(ex, "Failed properly loading {Type} entities", typeof(TDomain).Name);
-            return MissingSyncData<TDomain>.Instance;
+            return await TryGetCachedAsync(new DataProcessingErrored(ex), cancellationToken);
         }
     }
 
@@ -95,6 +90,25 @@ internal abstract class UexGameEntitySyncRepositoryBase<TSource, TDomain>(
         return result is not null
             ? await MapToDomainAsync(result)
             : null;
+    }
+
+    private async ValueTask<GameEntitySyncData<TDomain>> TryGetCachedAsync(InternalDataState internalDataState, CancellationToken cancellationToken)
+    {
+        var cachedData = await cacheProvider.LoadAsync<UexApiResponse<ICollection<TSource>>>(internalDataState, cancellationToken);
+        if (cachedData is LoadedSyncDataCache<UexApiResponse<ICollection<TSource>>> loadedData)
+        {
+            Logger.LogDebug("Loaded {EntityCount} cached {Type} entities", loadedData.Data.Result.Count, typeof(TDomain).Name);
+            return CreateSyncData(loadedData.Data, loadedData.State.SourcedState);
+        }
+
+        if (cachedData is AlreadyUpToDateWithCache<UexApiResponse<ICollection<TSource>>>)
+        {
+            Logger.LogDebug("Loaded data for {Type} are already up to date: {@CachedData}", typeof(TDomain).Name, cachedData);
+            return new SyncDataUpToDate<TDomain>();
+        }
+
+        Logger.LogWarning("Could not load cached {Type} entities: {@CachedData}", typeof(TDomain).Name, cachedData);
+        return GameEntitySyncData<TDomain>.Missing;
     }
 
     private LoadedSyncData<TDomain> CreateSyncData(UexApiResponse<ICollection<TSource>> response, ServiceAvailableState serviceState)

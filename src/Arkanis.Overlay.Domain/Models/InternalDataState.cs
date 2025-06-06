@@ -13,6 +13,8 @@ public sealed record DataCached(ServiceAvailableState SourcedState, DateTimeOffs
     public bool RefreshRequired { get; set; }
 }
 
+public sealed record DataProcessingErrored(Exception Exception) : InternalDataState;
+
 public sealed record DataMissing : InternalDataState
 {
     public static readonly InternalDataState Instance = new DataMissing();

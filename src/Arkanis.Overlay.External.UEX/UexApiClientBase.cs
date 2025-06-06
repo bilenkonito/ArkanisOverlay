@@ -21,6 +21,7 @@ internal abstract class UexApiClientBase
     {
         var httpClient = _httpClientFactory?.CreateClient(GetType().Name);
         httpClient ??= new HttpClient();
+        httpClient.Timeout = _options.Timeout;
 
         if (_options.ApplicationToken is { } applicationToken)
         {

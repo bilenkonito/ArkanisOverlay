@@ -1,5 +1,16 @@
 @using Arkanis.Overlay.Domain.Models.Trade
 @using Humanizer
+<!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
+<style>
+    .mud-table thead th {
+        box-shadow: inset 0 -1px 0 var(--mud-palette-table-lines);
+    }
+
+    .mud-table.mud-table-sticky-header thead {
+        position: sticky;
+        top: 0;
+    }
+</style>
 @*
  * it is necessary to create the wrapper and table manually as <MudSimpleTable> contains
  * another wrapping element which prevents us from injecting custom tabindex attribute

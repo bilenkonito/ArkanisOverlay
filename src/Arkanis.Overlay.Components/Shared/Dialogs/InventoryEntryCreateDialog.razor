@@ -1,0 +1,104 @@
+@using Arkanis.Overlay.Domain.Abstractions.Game
+@using Arkanis.Overlay.Domain.Enums
+@using Arkanis.Overlay.Domain.Models.Inventory
+@inject IInventoryManager InventoryManager
+@inject ILogger<InventoryEntryCreateDialog> Logger
+
+<MudDialog DefaultFocus="@DefaultFocus.Element" ContentClass="py-2">
+    <TitleContent>
+        New Inventory Entry
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12">
+                <GameEntitySelectBox
+                    Label="Item or commodity"
+                    Accept="@(location => location is GameItem or GameCommodity)"
+                    @bind-Value="TargetEntity"
+                    Required/>
+            </MudItem>
+            <MudItem xs="12">
+                <QuantityField @bind-Value="@TargetQuantity"/>
+            </MudItem>
+            <MudItem xs="12">
+                <GameEntitySelectBox
+                    Label="Location"
+                    EntityCategory="@GameEntityCategory.Location"
+                    Accept="@(location => location is GameSpaceStation or GameCity or GameOutpost)"
+                    @bind-Value="TargetLocationEntity"/>
+            </MudItem>
+            <MudItem xs="12">
+                <InventoryListSelect
+                    @bind-Value="@TargetList"/>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Cancel">Cancel</MudButton>
+        <MudButton Color="@Color.Success"
+                   OnClick="@SubmitAsync"
+                   Disabled="@(!CanSubmit)">
+            Submit
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+
+    private bool CanSubmit
+        => TargetEntity is not null && TargetQuantity.Amount > 0;
+
+    [CascadingParameter]
+    public required IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public Quantity TargetQuantity { get; set; } = Quantity.Default;
+
+    [Parameter]
+    public IGameEntity? TargetEntity { get; set; }
+
+    [Parameter]
+    public IGameEntity? TargetLocationEntity { get; set; }
+
+    [Parameter]
+    public InventoryEntryList? TargetList { get; set; }
+
+    public IGameLocation? TargetLocation
+        => TargetLocationEntity as IGameLocation;
+
+    private async Task SubmitAsync()
+    {
+        if (TargetEntity is null)
+        {
+            return;
+        }
+
+        var inventoryEntry = InventoryEntry.Create(TargetEntity, TargetQuantity, TargetLocation, TargetList);
+        await InventoryManager.AddOrUpdateEntryAsync(inventoryEntry);
+        MudDialog.Close(DialogResult.Ok(inventoryEntry));
+    }
+
+    private void Cancel()
+        => MudDialog.Cancel();
+
+    public static async Task<InventoryEntryBase?> ShowAsync(IDialogService dialogService, IGameEntity? entity = null, IGameLocation? location = null)
+    {
+        var dialogParameters = new DialogParameters<InventoryEntryCreateDialog>
+        {
+            [nameof(TargetEntity)] = entity,
+            [nameof(TargetLocationEntity)] = location,
+        };
+        var dialogOptions = new DialogOptions
+        {
+            FullWidth = true,
+            MaxWidth = MaxWidth.Small,
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+        };
+
+        var dialogRef = await dialogService.ShowAsync<InventoryEntryCreateDialog>(null, dialogParameters, dialogOptions);
+        return await dialogRef.GetReturnValueAsync<InventoryEntryBase>();
+    }
+
+}

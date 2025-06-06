@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Data.Extensions;
 
+using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,7 +36,7 @@ public static class HostExtensions
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <typeparam name="TContext">The type of the DB context.</typeparam>
     public static async Task MigrateDatabaseAsync<TContext>(this IHost host, CancellationToken cancellationToken = default) where TContext : DbContext
-        => await host.Services.MigrateDatabaseAsync<TContext>(cancellationToken);
+        => await host.Services.MigrateDatabaseAsync<TContext>(cancellationToken: cancellationToken);
 
     /// <summary>
     ///     Migrates the database used by the provided <typeparamref name="TContext" /> to the latest version.
@@ -48,9 +49,14 @@ public static class HostExtensions
     ///     The service provider to use for resolving the <typeparamref name="TContext" /> DB
     ///     context.
     /// </param>
+    /// <param name="dropDatabaseAndRetryOnFailure">Self-explanatory.</param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <typeparam name="TContext">The type of the DB context.</typeparam>
-    public static async Task MigrateDatabaseAsync<TContext>(this IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+    public static async Task MigrateDatabaseAsync<TContext>(
+        this IServiceProvider serviceProvider,
+        bool dropDatabaseAndRetryOnFailure = true,
+        CancellationToken cancellationToken = default
+    )
         where TContext : DbContext
     {
         await using var serviceScope = serviceProvider.CreateAsyncScope();
@@ -70,6 +76,24 @@ public static class HostExtensions
             pendingMigrations.Count(),
             context.Database.GetDbConnection().Database
         );
-        await context.Database.MigrateAsync(cancellationToken);
+        try
+        {
+            await context.Database.MigrateAsync(cancellationToken);
+        }
+        catch (DbException ex)
+        {
+            if (!dropDatabaseAndRetryOnFailure)
+            {
+                throw;
+            }
+
+            logger.LogError(ex, "Migration failed, wiping database and retrying...");
+            await context.Database.EnsureDeletedAsync(cancellationToken);
+            await MigrateDatabaseAsync<TContext>(
+                serviceProvider,
+                dropDatabaseAndRetryOnFailure: false,
+                cancellationToken: cancellationToken
+            );
+        }
     }
 }

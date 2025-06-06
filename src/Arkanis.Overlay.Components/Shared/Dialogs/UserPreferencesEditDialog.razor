@@ -47,6 +47,14 @@
                         }
                     </MudSelect>
                     <UpdateChannelDetails Model="@Preferences.UpdateChannel"/>
+                    @if (UserPreferencesManager.CurrentPreferences.UpdateChannel != Preferences.UpdateChannel
+                         && (UserPreferencesManager.CurrentPreferences.UpdateChannel.IsUnstable
+                             || Preferences.UpdateChannel.IsUnstable))
+                    {
+                        <MudText Typo="@Typo.caption" Color="@Color.Error">
+                            Potential version downgrade will lead to <b>full wipe</b> of persistent local storage.
+                        </MudText>
+                    }
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudStack Spacing="0">

@@ -18,10 +18,90 @@
     color: var(--mud-palette-text-disabled);
 }
 
+.text-right {
+    text-align: right !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
 .formatted {
     white-space: pre;
 }
 
 .no-wrap {
     white-space: nowrap;
+}
+
+.focus:focus,
+.focus:focus-within {
+    outline: 2px solid var(--mud-palette-primary);
+}
+
+.mud-paper:not(.mud-paper-square) .mud-table-root tr:last-of-type > :first-child,
+.mud-expansion-panels:not(.mud-expansion-panels-square) .mud-table-root tr:last-of-type > :first-child {
+    border-bottom-left-radius: var(--mud-default-borderradius) !important;
+}
+
+.mud-paper:not(.mud-paper-square) .mud-table-root tr:last-of-type > :last-child,
+.mud-expansion-panels:not(.mud-expansion-panels-square) .mud-table-root tr:last-of-type > :last-child {
+    border-bottom-right-radius: var(--mud-default-borderradius) !important;
+}
+
+.flex-truncate {
+    flex-shrink: 1;
+
+    &, & * {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@keyframes fadeInDown {
+    0% {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInLeft {
+    0% {
+        transform: translateX(10%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.mud-popover .mud-list.mud-menu-list {
+    overflow: visible;
+}
+
+.mud-data-grid .mud-table-row .mud-table-cell.mud-datagrid-group,
+.mud-table .mud-table-row th.mud-table-cell {
+    background-color: var(--mud-palette-surface);
+}
+
+.mud-table.bg-gray .mud-table-row .mud-table-cell:not(.mud-datagrid-group) {
+    background-color: var(--mud-palette-background-gray);
+}
+
+.mud-table.bg-gray tfoot .mud-table-cell {
+    background-color: var(--mud-palette-surface) !important;
+}
+
+.mud-table.bg-gray .mud-table-row.selected .mud-table-cell {
+    background-color: var(--mud-palette-background);
+}
+
+.mud-data-grid .flex-row-reverse > .column-header {
+    flex-direction: row-reverse;
 }

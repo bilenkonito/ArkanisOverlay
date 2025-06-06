@@ -22,7 +22,11 @@ export class FocusRegion {
             root: document,
             threshold: [0, .25, .50, .75, 1]
         });
-        this.intersectionObserver.observe(this.containerElement);
+        if (this.containerElement) {
+            this.intersectionObserver.observe(this.containerElement);
+        } else {
+            console.error("invalid container element provided for initialization")
+        }
     }
 
     /**
@@ -61,9 +65,11 @@ export class FocusRegion {
     unfocusTargetWhenOutOfViewport(change) {
         if (change.intersectionRatio === 0) {
             console.debug("focus region container detected out of viewport: %o", change);
-            //! this region may not have any focused element
-            this.containerElement.querySelector(":focus")?.blur();
-            this.containerElement.blur();
+            if (this.containerElement) {
+                //! this region may not have any focused element
+                this.containerElement.querySelector(":focus")?.blur();
+                this.containerElement.blur();
+            }
         }
     }
 
