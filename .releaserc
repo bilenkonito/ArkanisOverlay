@@ -7,7 +7,7 @@
         {
             "name": "main",
             "channel": "nightly",
-            "prerelease": "preview"
+            "prerelease": "nightly"
         },
         {
             "name": "release/rc",
