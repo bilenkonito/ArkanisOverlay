@@ -1,9 +1,11 @@
+@using System.Globalization
 @using System.Text
 @using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Enums
 @using Arkanis.Overlay.Domain.Models.Analytics
 @using Arkanis.Overlay.Domain.Models.Search
 @using Humanizer
+@using MathEvaluation
 @inject ILogger<SearchView> Logger
 @inject ISearchService SearchService
 @inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
@@ -74,8 +76,15 @@
                 @bind-SearchText="@SearchText"
                 @bind-SearchText:after="@SearchAsync"
                 HelperText="@ShortcutsText"/>
-
-            @if (SearchResults.GameEntities.Count > 0)
+            @if (CalculatorResult is { } result)
+            {
+                <MudStack Class="mt-10 w-100" Style="width: fit-content; min-width: 60vw;">
+                    <CalculationResult
+                        Model="@result"
+                        HasError="@HasCalculatorError"/>
+                </MudStack>
+            }
+            else if (SearchResults.GameEntities.Count > 0)
             {
                 <MudChip T="string" Variant="@Variant.Text">
                     Found @SearchResults.GameEntities.Count results in @SearchResults.SearchTime.Humanize()
@@ -92,7 +101,7 @@
 {
 
     [SupplyParameterFromQuery(Name = "q")]
-    public string SearchText { get; set; } = string.Empty;
+    public string? SearchText { get; set; } = string.Empty;
 
     private const StringSplitOptions SplittingOptions
         = StringSplitOptions.RemoveEmptyEntries
@@ -114,7 +123,10 @@
     private OverlaySearchContext _searchContext = new();
 
     private string ShortcutsText
-        => new StringBuilder().AppendJoin(", ", _categorySearchShortcuts.Select(search => $"{search.Key} {search.Value.Category.Humanize().Pluralize()}")).ToString();
+        => new StringBuilder()
+            .AppendJoin(", ", _categorySearchShortcuts.Select(search => $"{search.Key} {search.Value.Category.Humanize().Pluralize()}"))
+            .Append(", =(math expression)")
+            .ToString();
 
     private GameEntitySearchResults SearchResults { get; set; } = GameEntitySearchResults.Empty;
 
@@ -144,10 +156,22 @@
     private async Task OnSearchContextChange(OverlaySearchContext newContext)
         => await SearchAsync();
 
+    private decimal? CalculatorResult { get; set; }
+    private bool HasCalculatorError { get; set; }
+
     private async Task SearchAsync()
     {
+        if (SearchText?.StartsWith("=") == true)
+        {
+            HasCalculatorError = !TryEvaluateMathExpression(SearchText, out var result);
+            CalculatorResult = result;
+            await GlobalAnalyticsReporter.TrackEventAsync(new SearchCalculationEvent());
+            return;
+        }
+
         try
         {
+            CalculatorResult = null;
             if (string.IsNullOrWhiteSpace(SearchText))
             {
                 Logger.LogDebug("Search text is empty, no search performed");
@@ -185,6 +209,31 @@
         {
             Logger.LogError(ex, "Error during search");
         }
+    }
+
+    /// <summary>
+    ///     Parses strings as math expression using https://github.com/AntonovAnton/math.evaluation
+    /// </summary>
+    /// <remarks>
+    ///     See https://github.com/ArkanisCorporation/ArkanisOverlay/milestone/6 for related issues & feature requests.
+    /// </remarks>
+    /// <param name="expression">The string expression, expected to begin with an equal sign `=`.</param>
+    /// <param name="result">The evaluation result</param>
+    /// <returns>True if the expression was parsed successfully, false otherwise.</returns>
+    private bool TryEvaluateMathExpression(string expression, out decimal result)
+    {
+        try
+        {
+            result = new MathExpression(expression[1..].Replace(" ", string.Empty), null, CultureInfo.CurrentCulture).EvaluateDecimal();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Could not evaluate the provided expression: {Expression}", expression);
+        }
+
+        result = 0;
+        return false;
     }
 
 }
