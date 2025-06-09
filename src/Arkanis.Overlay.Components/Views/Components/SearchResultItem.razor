@@ -30,33 +30,36 @@
                     IsFocused="@context.ContainsFocus"/>
             </MudStack>
         </KeyboardShortcutBadge>
-        @if (DisplayContext)
+        @if (RenderContext)
         {
-            <MudDivider Class="my-2"/>
-            <MudGrid Class="my-n2"
-                     Spacing="2"
-                     Style="height: calc(3 * 62px + 3 * 12px); scrollbar-width: thin;"> @* 3 * <result item height> + 3 * <item spacing> *@
-                @if (Model is IGamePurchasable)
-                {
-                    <MudItem xs="6" Class="pt-0 h-100">
-                        <PriceTagTable Models="@PurchasePriceTags">
-                            <CaptionContent>
-                                All available <b>purchase</b> prices
-                            </CaptionContent>
-                        </PriceTagTable>
-                    </MudItem>
-                }
-                @if (Model is IGameSellable)
-                {
-                    <MudItem xs="6" Class="pt-0 h-100">
-                        <PriceTagTable Models="@SalePriceTags">
-                            <CaptionContent>
-                                All available <b>sale</b> prices
-                            </CaptionContent>
-                        </PriceTagTable>
-                    </MudItem>
-                }
-            </MudGrid>
+            <div class="focus-animate-height"
+                 style="height: calc(3 * 62px + 3 * 12px);"> @* 3 * <result item height> + 3 * <item spacing> *@
+                <MudDivider Class="my-2"/>
+                <MudGrid Class="my-n2"
+                         Spacing="2"
+                         Style="height: 100%; scrollbar-width: thin;">
+                    @if (Model is IGamePurchasable)
+                    {
+                        <MudItem xs="6" Class="pt-0 h-100">
+                            <PriceTagTable Models="@PurchasePriceTags">
+                                <CaptionContent>
+                                    All available <b>purchase</b> prices
+                                </CaptionContent>
+                            </PriceTagTable>
+                        </MudItem>
+                    }
+                    @if (Model is IGameSellable)
+                    {
+                        <MudItem xs="6" Class="pt-0 h-100">
+                            <PriceTagTable Models="@SalePriceTags">
+                                <CaptionContent>
+                                    All available <b>sale</b> prices
+                                </CaptionContent>
+                            </PriceTagTable>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </div>
         }
     </MudPaper>
 </FocusRegion>
@@ -64,11 +67,8 @@
 @code
 {
 
-    private readonly bool _displayContext = false;
-
-    private bool DisplayContext
-        => (_focusRegion?.HasFocus == true || _displayContext)
-           && Model is IGamePurchasable or IGameSellable;
+    private bool RenderContext
+        => Model is IGamePurchasable or IGameSellable;
 
     private KeyboardKey KeyboardShortcut
         => _itemInfo?.IsVisible switch
@@ -89,11 +89,11 @@
     private QuickAccessContainer.EntryInfo? _itemInfo;
     private QuickAccessContainer.EntryRegistration? _registration;
 
-    public ElementReference PageElement
-        => _focusRegion?.ContainerElement ?? default;
-
     private ICollection<PriceTag> PurchasePriceTags { get; set; } = [];
     private ICollection<PriceTag> SalePriceTags { get; set; } = [];
+
+    public ElementReference PageElement
+        => _focusRegion?.ContainerElement ?? default;
 
     [CascadingParameter]
     public QuickAccessContainer? Container { get; set; }
