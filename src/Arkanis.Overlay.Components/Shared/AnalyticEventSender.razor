@@ -1,3 +1,4 @@
+@inject IJSRuntime JsRuntime
 @inject IAnalytics Analytics
 @inject IDialogService DialogService
 @inject IAnalyticsEventReporter AnalyticsEventReporter
@@ -7,12 +8,14 @@
 @inject ILogger<AnalyticEventSender> Logger
 @using Arkanis.Overlay.Domain.Models.Analytics
 @using Microsoft.EntityFrameworkCore.Infrastructure
+@using Microsoft.JSInterop
 @implements IDisposable
 
 <NavigationTracker/>
 
 @code
 {
+    private EventInterop? _eventInterop;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -21,14 +24,22 @@
         if (firstRender)
         {
             await ConfigureAnalyticsAsync(UserRePreferencesProvider.CurrentPreferences);
-            await GlobalAnalyticsReporter.LinkReporterAsync(AnalyticsEventReporter);
+            await LinkAnalyticsReporterAsync();
+
+            _eventInterop = new EventInterop(JsRuntime);
+            var linkAnalyticsHandler = EventInterop.CreateHandler(LinkAnalyticsReporterAsync);
+            await _eventInterop.RegisterWindowEventHandlerAsync("focus", linkAnalyticsHandler);
         }
     }
+
+    private async Task LinkAnalyticsReporterAsync()
+        => await GlobalAnalyticsReporter.LinkReporterAsync(AnalyticsEventReporter);
 
     public void Dispose()
     {
         UserRePreferencesProvider.ApplyPreferences -= OnPreferencesChanged;
         DialogService.DialogInstanceAddedAsync -= OnDialogInstanceAddedAsync;
+        _eventInterop?.Dispose();
     }
 
     protected override void OnInitialized()
@@ -55,8 +66,8 @@
     {
         try
         {
-            await InvokeAsync(StateHasChanged);
             await ConfigureAnalyticsAsync(preferences);
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception e)
         {
@@ -78,6 +89,7 @@
 
             var globalConfigData = AnalyticsPropertyProvider.PropertyItems.ToDictionary();
             await Analytics.ConfigureGlobalConfigData(globalConfigData);
+            Analytics.ConfigureGlobalEventData(globalConfigData);
         }
     }
 
