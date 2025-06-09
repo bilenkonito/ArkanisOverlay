@@ -1,9 +1,12 @@
 @inject IAnalytics Analytics
+@inject IDialogService DialogService
 @inject IAnalyticsEventReporter AnalyticsEventReporter
 @inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
 @inject IUserPreferencesProvider UserRePreferencesProvider
 @inject SharedAnalyticsPropertyProvider AnalyticsPropertyProvider
 @inject ILogger<AnalyticEventSender> Logger
+@using Arkanis.Overlay.Domain.Models.Analytics
+@using Microsoft.EntityFrameworkCore.Infrastructure
 @implements IDisposable
 
 <NavigationTracker/>
@@ -23,12 +26,29 @@
     }
 
     public void Dispose()
-        => UserRePreferencesProvider.ApplyPreferences -= OnPreferencesChanged;
+    {
+        UserRePreferencesProvider.ApplyPreferences -= OnPreferencesChanged;
+        DialogService.DialogInstanceAddedAsync -= OnDialogInstanceAddedAsync;
+    }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         UserRePreferencesProvider.ApplyPreferences += OnPreferencesChanged;
+        DialogService.DialogInstanceAddedAsync += OnDialogInstanceAddedAsync;
+    }
+
+    private Task OnDialogInstanceAddedAsync(IDialogReference arg)
+    {
+        _ = arg.Result.ContinueWith(async _ =>
+            {
+                if (arg.Dialog?.GetType().ShortDisplayName() is { } dialogName)
+                {
+                    await GlobalAnalyticsReporter.TrackEventAsync(new DialogOpenedEvent(dialogName));
+                }
+            }
+        );
+        return Task.CompletedTask;
     }
 
     private async void OnPreferencesChanged(object? _, UserPreferences preferences)
