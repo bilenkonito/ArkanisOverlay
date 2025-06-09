@@ -41,6 +41,7 @@ public class GoogleAnalyticsEventReporter(
 
     private void AddCommonEventData(Dictionary<string, object> eventData)
     {
+        //? this is potentially no longer necessary as global event data should be configured on tracking interop level
         foreach (var (propertyName, propertyValue) in analyticsPropertyProvider.PropertyItems)
         {
             eventData[propertyName] = propertyValue;
