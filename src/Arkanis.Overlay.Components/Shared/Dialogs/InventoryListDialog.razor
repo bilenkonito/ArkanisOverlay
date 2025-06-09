@@ -1,5 +1,7 @@
+@using Arkanis.Overlay.Domain.Models.Analytics
 @using Arkanis.Overlay.Domain.Models.Inventory
 @inject IInventoryManager InventoryManager
+@inject IAnalyticsEventReporter EventReporter
 @inject ILogger<InventoryListDialog> Logger
 
 <MudDialog DefaultFocus="@DefaultFocus.Element" ContentClass="py-2">
@@ -44,9 +46,17 @@
     [Parameter]
     public InventoryEntryList Model { get; set; } = CreateDefaultModel();
 
+    [Parameter]
+    public bool IsEdit { get; set; }
+
     private async Task SubmitAsync()
     {
         await InventoryManager.AddOrUpdateListAsync(Model);
+        if (!IsEdit)
+        {
+            await EventReporter.TrackEventAsync(InventoryEvents.AddList());
+        }
+
         MudDialog.Close(DialogResult.Ok(Model));
     }
 
@@ -58,6 +68,7 @@
         var dialogParameters = new DialogParameters<InventoryListDialog>
         {
             [nameof(Model)] = model ?? CreateDefaultModel(),
+            [nameof(IsEdit)] = model is not null,
         };
         var dialogOptions = new DialogOptions
         {

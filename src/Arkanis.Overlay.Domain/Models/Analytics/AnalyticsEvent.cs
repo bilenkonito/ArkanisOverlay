@@ -27,6 +27,43 @@ public sealed record DialogOpenedEvent(string DialogId) : BuiltInAnalyticsEvent(
 
 #endregion
 
+#region Inventory events
+
+public static class InventoryEvents
+{
+    public static InventoryAddItem AddItem()
+        => new();
+
+    public static InventoryRemoveItem RemoveItem()
+        => new();
+
+    public static InventoryTransferItem AssignLocation()
+        => new();
+
+    public static InventoryAddList AddList()
+        => new();
+
+    public static InventoryRemoveList RemoveList()
+        => new();
+
+    public static InventoryAssignList AssignList()
+        => new();
+}
+
+public sealed record InventoryAddList() : BuiltInAnalyticsEvent("inventory_list_add");
+
+public sealed record InventoryRemoveList() : BuiltInAnalyticsEvent("inventory_list_remove");
+
+public sealed record InventoryAssignList() : BuiltInAnalyticsEvent("inventory_list_assign");
+
+public sealed record InventoryAddItem() : BuiltInAnalyticsEvent("inventory_item_add");
+
+public sealed record InventoryRemoveItem() : BuiltInAnalyticsEvent("inventory_item_remove");
+
+public sealed record InventoryTransferItem() : BuiltInAnalyticsEvent("inventory_item_transfer");
+
+#endregion
+
 #region Regular events
 
 public sealed record SearchCalculationEvent() : BuiltInAnalyticsEvent("search_calculate");

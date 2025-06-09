@@ -2,9 +2,11 @@
 @using Arkanis.Overlay.Components.Shared.Dialogs
 @using Arkanis.Overlay.Domain.Abstractions
 @using Arkanis.Overlay.Domain.Abstractions.Game
+@using Arkanis.Overlay.Domain.Models.Analytics
 @using Arkanis.Overlay.Domain.Models.Inventory
 @using Arkanis.Overlay.Domain.Models.Keyboard
 @inject IDialogService DialogService
+@inject IAnalyticsEventReporter EventReporter
 @inject IInventoryManager InventoryManager
 
 <PageTitle>@ApplicationConstants.ApplicationName — Inventory</PageTitle>
@@ -599,7 +601,11 @@
 
         var configuration = new BulkOperationDialog<InventoryEntryBase>.Configuration
         {
-            PerformOperation = async entry => await InventoryManager.AddOrUpdateEntryAsync(entry.SetLocation(location)),
+            PerformOperation = async entry =>
+            {
+                await InventoryManager.AddOrUpdateEntryAsync(entry.SetLocation(location));
+                await EventReporter.TrackEventAsync(InventoryEvents.AssignLocation());
+            },
             Description = @<div>
                 <MudText Typo="@Typo.inherit">Please confirm inventory transfer to:</MudText>
                 <div class="pl-4">
@@ -635,6 +641,7 @@
             {
                 entry.List = list;
                 await InventoryManager.AddOrUpdateEntryAsync(entry);
+                await EventReporter.TrackEventAsync(InventoryEvents.AssignList());
             },
             Description = @<div>
                 <MudText Typo="@Typo.inherit">Please confirm list (re-)assignment to:</MudText>
@@ -664,7 +671,11 @@
     {
         var configuration = new BulkOperationDialog<InventoryEntryBase>.Configuration
         {
-            PerformOperation = async entry => await InventoryManager.DeleteEntryAsync(entry.Id),
+            PerformOperation = async entry =>
+            {
+                await InventoryManager.DeleteEntryAsync(entry.Id);
+                await EventReporter.TrackEventAsync(InventoryEvents.RemoveItem());
+            },
             Description = @<div>
                 <MudText Typo="@Typo.inherit">
                     Please confirm <u>permanent removal</u> of the following inventory entries:
@@ -696,6 +707,7 @@
         if (await DialogService.ShowMessageBox(options) == true)
         {
             await InventoryManager.DeleteListAsync(contextItem.Id);
+            await EventReporter.TrackEventAsync(InventoryEvents.RemoveList());
             await RefreshDataAsync();
             await InvokeAsync(StateHasChanged);
         }
@@ -716,6 +728,7 @@
         if (await DialogService.ShowMessageBox(options) == true)
         {
             await InventoryManager.DeleteEntryAsync(contextItem.Id);
+            await EventReporter.TrackEventAsync(InventoryEvents.RemoveItem());
             await RefreshDataAsync();
             await InvokeAsync(StateHasChanged);
         }
