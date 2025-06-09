@@ -28,9 +28,10 @@ public class GoogleAnalyticsEventReporter(
     {
         var eventData = analyticsEvent switch
         {
-            BuiltInFeatureUsageStateChangedEvent @event => CreateSpecificEventData(@event),
+            FeatureUsageStateChangedEvent @event => CreateSpecificEventData(@event),
             DialogOpenedEvent @event => CreateSpecificEventData(@event),
             SearchEvent @event => CreateSpecificEventData(@event),
+            not null => CreateCommonEventData(analyticsEvent),
             _ => [],
         };
 
@@ -46,25 +47,28 @@ public class GoogleAnalyticsEventReporter(
         }
     }
 
-    private static Dictionary<string, object> CreateSpecificEventData(BuiltInFeatureUsageStateChangedEvent @event)
-        => new()
+    private static Dictionary<string, object> CreateSpecificEventData(FeatureUsageStateChangedEvent @event)
+        => new(CreateCommonEventData(@event))
         {
-            [EventCategoryKey] = "Feature",
-            [EventLabelKey] = @event.FeatureName,
             ["value"] = @event.IsEnabled ? 1 : 0,
         };
 
     private static Dictionary<string, object> CreateSpecificEventData(SearchEvent @event)
-        => new()
+        => new(CreateCommonEventData(@event))
         {
             ["search_term"] = @event.Query,
         };
 
     private static Dictionary<string, object> CreateSpecificEventData(DialogOpenedEvent @event)
+        => new(CreateCommonEventData(@event))
+        {
+            ["value"] = @event.DialogId,
+        };
+
+    private static Dictionary<string, object> CreateCommonEventData(AnalyticsEvent @event)
         => new()
         {
-            [EventCategoryKey] = "Dialog",
-            [EventLabelKey] = "Opened",
-            ["value"] = @event.DialogId,
+            [EventCategoryKey] = @event.ModuleName,
+            [EventLabelKey] = @event.EventName,
         };
 }
