@@ -6,13 +6,13 @@
 @inject IPriceProvider PriceProvider
 
 <FocusRegion @ref="_focusRegion" Class="search-result-container">
-    <MudPaper Class="w-100 search-result px-4 py-2 focus" tabindex="0">
+    <MudPaper Class="w-100 search-result px-4 focus" tabindex="0">
         <KeyboardShortcutBadge Keys="@( [KeyboardKey.AltLeft, KeyboardShortcut])"
                                Origin="@Origin.TopLeft"
                                Class="w-100"
                                IsActive="@(KeyboardShortcutActive)"
                                OnKeyPress="@(() => context.SourceRegion.FocusAsync())">
-            <MudStack Class="w-100"
+            <MudStack Class="w-100 py-2"
                       Justify="@Justify.FlexStart"
                       AlignItems="@AlignItems.Center"
                       Row>
@@ -34,7 +34,7 @@
         {
             <div class="focus-animate-height"
                  style="height: calc(3 * 62px + 3 * 12px);"> @* 3 * <result item height> + 3 * <item spacing> *@
-                <MudDivider Class="my-2"/>
+                <MudDivider Class="mb-2"/>
                 <MudGrid Class="my-n2"
                          Spacing="2"
                          Style="height: 100%; scrollbar-width: thin;">
