@@ -1,15 +1,21 @@
+@inject IJSRuntime JsRuntime
 @inject IAnalytics Analytics
+@inject IDialogService DialogService
 @inject IAnalyticsEventReporter AnalyticsEventReporter
 @inject IGlobalAnalyticsReporter GlobalAnalyticsReporter
 @inject IUserPreferencesProvider UserRePreferencesProvider
 @inject SharedAnalyticsPropertyProvider AnalyticsPropertyProvider
 @inject ILogger<AnalyticEventSender> Logger
+@using Arkanis.Overlay.Domain.Models.Analytics
+@using Microsoft.EntityFrameworkCore.Infrastructure
+@using Microsoft.JSInterop
 @implements IDisposable
 
 <NavigationTracker/>
 
 @code
 {
+    private EventInterop? _eventInterop;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -18,25 +24,50 @@
         if (firstRender)
         {
             await ConfigureAnalyticsAsync(UserRePreferencesProvider.CurrentPreferences);
-            await GlobalAnalyticsReporter.LinkReporterAsync(AnalyticsEventReporter);
+            await LinkAnalyticsReporterAsync();
+
+            _eventInterop = new EventInterop(JsRuntime);
+            var linkAnalyticsHandler = EventInterop.CreateHandler(LinkAnalyticsReporterAsync);
+            await _eventInterop.RegisterWindowEventHandlerAsync("focus", linkAnalyticsHandler);
         }
     }
 
+    private async Task LinkAnalyticsReporterAsync()
+        => await GlobalAnalyticsReporter.LinkReporterAsync(AnalyticsEventReporter);
+
     public void Dispose()
-        => UserRePreferencesProvider.ApplyPreferences -= OnPreferencesChanged;
+    {
+        UserRePreferencesProvider.ApplyPreferences -= OnPreferencesChanged;
+        DialogService.DialogInstanceAddedAsync -= OnDialogInstanceAddedAsync;
+        _eventInterop?.Dispose();
+    }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         UserRePreferencesProvider.ApplyPreferences += OnPreferencesChanged;
+        DialogService.DialogInstanceAddedAsync += OnDialogInstanceAddedAsync;
+    }
+
+    private Task OnDialogInstanceAddedAsync(IDialogReference arg)
+    {
+        _ = arg.Result.ContinueWith(async _ =>
+            {
+                if (arg.Dialog?.GetType().ShortDisplayName() is { } dialogName)
+                {
+                    await GlobalAnalyticsReporter.TrackEventAsync(new DialogOpenedEvent(dialogName));
+                }
+            }
+        );
+        return Task.CompletedTask;
     }
 
     private async void OnPreferencesChanged(object? _, UserPreferences preferences)
     {
         try
         {
-            await InvokeAsync(StateHasChanged);
             await ConfigureAnalyticsAsync(preferences);
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception e)
         {
@@ -58,6 +89,7 @@
 
             var globalConfigData = AnalyticsPropertyProvider.PropertyItems.ToDictionary();
             await Analytics.ConfigureGlobalConfigData(globalConfigData);
+            Analytics.ConfigureGlobalEventData(globalConfigData);
         }
     }
 

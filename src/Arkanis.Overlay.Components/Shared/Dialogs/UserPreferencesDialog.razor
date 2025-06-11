@@ -227,7 +227,7 @@
 
     private static async Task<DialogResult> ShowAsync(IDialogService dialogService, DialogOptions dialogOptions)
     {
-        var dialogRef = await dialogService.ShowAsync<UserPreferencesEditDialog>(null, dialogOptions);
+        var dialogRef = await dialogService.ShowAsync<UserPreferencesDialog>(null, dialogOptions);
         return await dialogRef.Result ?? DialogResult.Cancel();
     }
 

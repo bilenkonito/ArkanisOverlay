@@ -1,7 +1,9 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Enums
+@using Arkanis.Overlay.Domain.Models.Analytics
 @using Arkanis.Overlay.Domain.Models.Inventory
 @inject IInventoryManager InventoryManager
+@inject IAnalyticsEventReporter EventReporter
 @inject ILogger<InventoryEntryUpdateDialog> Logger
 
 <MudDialog DefaultFocus="@DefaultFocus.Element" ContentClass="py-2">
@@ -114,6 +116,16 @@
         if (!CanSubmit)
         {
             return;
+        }
+
+        if (TargetList is not null && SourceModel.List != TargetList)
+        {
+            await EventReporter.TrackEventAsync(InventoryEvents.AssignList());
+        }
+
+        if (TargetLocation is not null && SourceModel is IGameLocatedAt locatedAt && locatedAt.Location.Id != TargetLocation.Id)
+        {
+            await EventReporter.TrackEventAsync(InventoryEvents.AssignLocation());
         }
 
         if (IsEditMode || TargetQuantity == SourceModel.Quantity)

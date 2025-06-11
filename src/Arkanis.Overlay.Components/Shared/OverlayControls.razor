@@ -91,7 +91,7 @@
 {
 
     private async Task OpenUserOptionsDialogAsync()
-        => await UserPreferencesEditDialog.ShowAsync(DialogService);
+        => await UserPreferencesDialog.ShowAsync(DialogService);
 
     private async Task OpenAboutDialogAsync()
         => await AboutDialog.ShowAsync(DialogService);
