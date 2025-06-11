@@ -39,6 +39,24 @@
     outline: 2px solid var(--mud-palette-primary);
 }
 
+.focus-animate-height {
+    overflow: hidden;
+    transition: height 100ms;
+}
+
+.focus:not(:focus):not(:focus-within) .focus-animate-height {
+    height: 0 !important;
+}
+
+.focus:focus .focus-animate-height,
+.focus:focus-within .focus-animate-height {
+    transition: height 100ms;
+}
+
+.mud-badge {
+    z-index: 100;
+}
+
 .mud-paper:not(.mud-paper-square) .mud-table-root tr:last-of-type > :first-child,
 .mud-expansion-panels:not(.mud-expansion-panels-square) .mud-table-root tr:last-of-type > :first-child {
     border-bottom-left-radius: var(--mud-default-borderradius) !important;
