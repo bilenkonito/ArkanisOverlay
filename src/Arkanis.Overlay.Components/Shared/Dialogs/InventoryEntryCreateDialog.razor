@@ -1,7 +1,9 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Enums
+@using Arkanis.Overlay.Domain.Models.Analytics
 @using Arkanis.Overlay.Domain.Models.Inventory
 @inject IInventoryManager InventoryManager
+@inject IAnalyticsEventReporter EventReporter
 @inject ILogger<InventoryEntryCreateDialog> Logger
 
 <MudDialog DefaultFocus="@DefaultFocus.Element" ContentClass="py-2">
@@ -76,6 +78,7 @@
 
         var inventoryEntry = InventoryEntry.Create(TargetEntity, TargetQuantity, TargetLocation, TargetList);
         await InventoryManager.AddOrUpdateEntryAsync(inventoryEntry);
+        await EventReporter.TrackEventAsync(InventoryEvents.AddItem());
         MudDialog.Close(DialogResult.Ok(inventoryEntry));
     }
 

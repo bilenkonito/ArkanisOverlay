@@ -10,7 +10,7 @@
 {
 
     protected override Task OnInitializedAsync()
-        => UserPreferencesEditDialog.ShowFullscreenAsync(DialogService)
+        => UserPreferencesDialog.ShowFullscreenAsync(DialogService)
             .ContinueWith(_ => WindowControls.CloseAsync());
 
 }
