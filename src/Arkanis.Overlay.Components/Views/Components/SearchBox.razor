@@ -30,21 +30,25 @@
                                        Class="w-100"
                                        IsActive="@(!Disabled)"
                                        OnKeyPress="@(OnSearchBoxKeyboardShortcut)">
-                    <MudTextField
-                        id="searchBox"
-                        @ref="_searchBox"
-                        T="string"
-                        Style="border-bottom-left-radius: 0; border-top-left-radius: 0"
-                        @bind-Value="@SearchText"
-                        Variant="Variant.Outlined"
-                        Adornment="@Adornment.End"
-                        AdornmentIcon="@Icons.Material.Filled.Search"
-                        AdornmentColor="@Color.Secondary"
-                        DebounceInterval="180"
-                        OnDebounceIntervalElapsed="@SearchAsync"
-                        Disabled="@Disabled"
-                        AutoFocus
-                        Immediate/>
+                    <form autocomplete="off" aria-autocomplete="off">
+                        <MudTextField
+                            id="searchBox"
+                            type="search"
+                            autocomplete="off"
+                            @ref="_searchBox"
+                            T="string"
+                            Style="border-bottom-left-radius: 0; border-top-left-radius: 0"
+                            @bind-Value="@SearchText"
+                            Variant="Variant.Outlined"
+                            Adornment="@Adornment.End"
+                            AdornmentIcon="@Icons.Material.Filled.Search"
+                            AdornmentColor="@Color.Secondary"
+                            DebounceInterval="180"
+                            OnDebounceIntervalElapsed="@SearchAsync"
+                            Disabled="@Disabled"
+                            AutoFocus
+                            Immediate/>
+                    </form>
                 </KeyboardShortcutBadge>
             </FocusRegion>
         </MudStack>
