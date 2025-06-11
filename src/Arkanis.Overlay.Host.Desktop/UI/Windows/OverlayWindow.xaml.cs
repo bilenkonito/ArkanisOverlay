@@ -61,11 +61,24 @@ public sealed partial class OverlayWindow : IDisposable
         Top = _windowTracker.CurrentWindowPosition.Y;
         Left = _windowTracker.CurrentWindowPosition.X;
 
-        BlazorWebView.BlazorWebViewInitializing += BlazorWebView_Initializing;
         _preferencesProvider.ApplyPreferences += ApplyUserPreferences;
     }
 
     public static OverlayWindow? Instance { get; private set; }
+
+    public void Dispose()
+    {
+        _globalHotkey.Dispose();
+        _windowTracker.Dispose();
+        if (BlazorWebView is IDisposable blazorWebViewDisposable)
+        {
+            blazorWebViewDisposable.Dispose();
+        }
+        else if (BlazorWebView != null)
+        {
+            _ = BlazorWebView.DisposeAsync().AsTask();
+        }
+    }
 
     private void ApplyUserPreferences(object? sender, UserPreferences newPreferences)
     {
@@ -196,7 +209,16 @@ public sealed partial class OverlayWindow : IDisposable
     }
 
     private void BlazorWebView_Initializing(object? sender, BlazorWebViewInitializingEventArgs e)
-        => e.UserDataFolder = Path.Join(ApplicationConstants.ApplicationDataDirectory.FullName, "WebView");
+    {
+        e.UserDataFolder = Path.Join(ApplicationConstants.ApplicationDataDirectory.FullName, "WebView");
+        e.EnvironmentOptions = new CoreWebView2EnvironmentOptions
+        {
+            AreBrowserExtensionsEnabled = true,
+        };
+    }
+
+    private void BlazorWebView_UrlLoading(object? sender, UrlLoadingEventArgs e)
+        => e.UrlLoadingStrategy = UrlLoadingStrategy.OpenInWebView;
 
     private void WebView_Loaded(object? sender, CoreWebView2NavigationCompletedEventArgs e)
     {
@@ -209,11 +231,15 @@ public sealed partial class OverlayWindow : IDisposable
         BlazorWebView.Focus();
     }
 
-    private void CoreWebView_Loaded(object? sender, CoreWebView2InitializationCompletedEventArgs e)
+    private async void CoreWebView_Loaded(object? sender, CoreWebView2InitializationCompletedEventArgs e)
     {
         // BlazorWebView.WebView.CoreWebView2.SetVirtualHostNameToFolderMapping("resources.internal", "Resources", CoreWebView2HostResourceAccessKind.Allow);
         BlazorWebView.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+        BlazorWebView.WebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = false;
         BlazorWebView.WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+
+        await BlazorWebView.WebView.CoreWebView2.Profile.AddBrowserExtensionAsync(@"D:\Git\github\ArkanisCorporation\VerseGuideOverlayInterop")
+            .ConfigureAwait(false);
     }
 
     private void HideOverlay()
@@ -249,18 +275,4 @@ public sealed partial class OverlayWindow : IDisposable
 
     public void Exit()
         => Dispatcher.Invoke(() => OnExitCommand(this, new RoutedEventArgs()));
-
-    public void Dispose()
-    {
-        _globalHotkey.Dispose();
-        _windowTracker.Dispose();
-        if (BlazorWebView is IDisposable blazorWebViewDisposable)
-        {
-            blazorWebViewDisposable.Dispose();
-        }
-        else if (BlazorWebView != null)
-        {
-            _ = BlazorWebView.DisposeAsync().AsTask();
-        }
-    }
 }

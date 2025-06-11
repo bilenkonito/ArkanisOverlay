@@ -24,10 +24,12 @@
         <blazor:BlazorWebView HostPage="wwwroot\index.html"
                               x:Name="BlazorWebView"
                               Loaded="MainWindow_Loaded"
+                              BlazorWebViewInitializing="BlazorWebView_Initializing"
+                              UrlLoading="BlazorWebView_UrlLoading"
                               Panel.ZIndex="99"
                               Focusable="True"
                               Services="{DynamicResource services}"
-                              StartPath="/search">
+                              StartPath="https://verseguide.com/">
             <blazor:BlazorWebView.RootComponents>
                 <blazor:RootComponent Selector="#app" ComponentType="{x:Type ui:RazorApp}" />
             </blazor:BlazorWebView.RootComponents>
