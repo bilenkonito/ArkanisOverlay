@@ -436,6 +436,11 @@
           "Humanizer.Core": "[2.14.1]"
         }
       },
+      "MathTrigonometric": {
+        "type": "Transitive",
+        "resolved": "1.2.0",
+        "contentHash": "5Mr4SCGevBHpYI2MBkqVtbwtiW/Nr/gi9P323NhgAToJP06DgcHDlKqZ5qfrV0VoQSNHuSaAz6uGCcJqdwsQdA=="
+      },
       "Microsoft.AspNetCore.Authorization": {
         "type": "Transitive",
         "resolved": "8.0.16",
@@ -723,6 +728,7 @@
           "Arkanis.Overlay.Domain": "[1.0.0, )",
           "Arkanis.Overlay.Infrastructure": "[1.0.0, )",
           "Blazor-Analytics": "[3.12.0, )",
+          "MathEvaluator": "[2.3.1, )",
           "Microsoft.AspNetCore.Components.Web": "[8.0.16, )",
           "MudBlazor": "[8.6.0, )",
           "MudBlazor.FontIcons.MaterialSymbols": "[1.2.0, )"
@@ -843,6 +849,15 @@
           "Humanizer.Core.zh-CN": "2.14.1",
           "Humanizer.Core.zh-Hans": "2.14.1",
           "Humanizer.Core.zh-Hant": "2.14.1"
+        }
+      },
+      "MathEvaluator": {
+        "type": "CentralTransitive",
+        "requested": "[2.3.1, )",
+        "resolved": "2.3.1",
+        "contentHash": "ES/gH3gncB3IKWhWk1DT9yh/YWlFnNPEjnW4U1g82xmax6AExKfepSI1IX8AbDhuMdyo+RonrRGJF98wZMsN/Q==",
+        "dependencies": {
+          "MathTrigonometric": "1.2.0"
         }
       },
       "Microsoft.AspNetCore.Components.Web": {

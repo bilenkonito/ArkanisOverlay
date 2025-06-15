@@ -208,5 +208,5 @@
     }
 
     private async Task OnAddAsync()
-        => await InventoryEntryUpdateDialog.ShowEditAsync(DialogService, Model, CurrentLocation);
+        => await InventoryEntryCreateDialog.ShowAsync(DialogService, Model, CurrentLocation);
 }

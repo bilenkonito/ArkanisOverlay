@@ -89,10 +89,10 @@ public class UserPreferencesJsonFileManager(IGlobalAnalyticsReporter analyticsRe
 
     private async Task TrackFeatureChangesAsync(UserPreferences @new)
     {
-        await TrackIfChangedAsync(x => x.BlurBackground, newValue => new BlurFeatureStateChangedEvent(newValue));
-        await TrackIfChangedAsync(x => x.TerminateOnGameExit, newValue => new TerminateWithGameFeatureStateChangedEvent(newValue));
-        await TrackIfChangedAsync(x => x.AutoStartWithBoot, newValue => new AutoStartFeatureStateChangedEvent(newValue));
-        await TrackIfChangedAsync(x => x.DisableAnalytics, newValue => new AnalyticsFeatureStateChangedEvent(!newValue));
+        await TrackIfChangedAsync(x => x.BlurBackground, FeatureUsageStateChangedEvent.BlurBackground);
+        await TrackIfChangedAsync(x => x.TerminateOnGameExit, FeatureUsageStateChangedEvent.TerminateWithGame);
+        await TrackIfChangedAsync(x => x.AutoStartWithBoot, FeatureUsageStateChangedEvent.AutoStart);
+        await TrackIfChangedAsync(x => x.DisableAnalytics, newValue => FeatureUsageStateChangedEvent.Analytics(!newValue));
 
         return;
 

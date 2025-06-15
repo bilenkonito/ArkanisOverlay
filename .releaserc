@@ -5,9 +5,9 @@
             "channel": "stable"
         },
         {
-            "name": "release/nightly",
+            "name": "main",
             "channel": "nightly",
-            "prerelease": "preview"
+            "prerelease": "nightly"
         },
         {
             "name": "release/rc",
@@ -28,11 +28,6 @@
             "name": "ci",
             "channel": "ci",
             "prerelease": "ci-do-not-use"
-        },
-        {
-            "name": "main",
-            "channel": "main",
-            "prerelease": "main-do-not-use"
         }
     ],
     "repositoryUrl": "https://github.com/ArkanisCorporation/ArkanisOverlay",
