@@ -367,6 +367,7 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     [MapperIgnoreTarget(nameof(GameEntity.Name))]
     [MapProperty(nameof(CommodityRouteDTO.Price_margin), nameof(GameTradeRoute.PriceMarginPercent))]
     [MapProperty(nameof(CommodityRouteDTO.Price_roi), nameof(GameTradeRoute.PriceReturnOnInvestmentPercent))]
+    [MapProperty(nameof(CommodityRouteDTO.Date_added), nameof(GameTradeRoute.CreatedAt))]
     [MapPropertyFromSource(nameof(GameTradeRoute.Commodity), Use = nameof(GetCommodityForTradeRoute))]
     [MapPropertyFromSource(nameof(GameTradeRoute.Origin), Use = nameof(MapTradeRouteOriginParty))]
     [MapPropertyFromSource(nameof(GameTradeRoute.Destination), Use = nameof(MapTradeRouteDestinationParty))]

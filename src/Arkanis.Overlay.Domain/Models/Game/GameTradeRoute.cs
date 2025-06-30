@@ -16,6 +16,8 @@ public class GameTradeRoute(int id, GameCommodity commodity)
 
     public required Party Destination { get; init; }
 
+    public required DateTimeOffset CreatedAt { get; init; }
+
     public override GameEntityName Name
         => new(
             new GameEntityName.Name(
