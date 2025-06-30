@@ -187,3 +187,8 @@
         height: 40px;
     }
 }
+
+.width-min-content {
+    max-width: min-content !important;
+    width: min-content !important;
+}

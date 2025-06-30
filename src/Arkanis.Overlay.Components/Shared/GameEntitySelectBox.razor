@@ -1,5 +1,4 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
-@using Arkanis.Overlay.Domain.Enums
 @inject ISearchService SearchService
 
 <MudAutocomplete Label="@Label"
@@ -12,6 +11,7 @@
                  Clearable="@(!Required)"
                  Required="@Required"
                  CoerceText="false"
+                 PopoverClass="width-min-content"
                  SearchFunc="@FindLocationsAsync">
     <ItemTemplate>
         @if (context is not null)
