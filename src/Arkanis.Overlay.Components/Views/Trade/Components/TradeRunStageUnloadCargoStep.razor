@@ -20,6 +20,7 @@
             Model="@PreferredLocation.Name"/>
         @if (IsPostTrade && Stage.UsedAutoload)
         {
+            @* TODO: Add autoload fee reporting *@
             <MudButton StartIcon="@MaterialIcons.Filled.Forklift"
                        OnClick="@OnTransferredClick"
                        Color="@Color.Success"
