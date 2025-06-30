@@ -32,17 +32,23 @@
               Class="py-2 px-4">
         <MudGrid>
             <MudItem xs="12" md="3">
-                @* TODO: Add ship selection *@
+                <GameEntitySelectBox
+                    @bind-Value="@SelectedVehicleEntity"
+                    @bind-Value:after="@RefreshDataAsync"
+                    EntityCategories="@( [GameEntityCategory.GroundVehicle, GameEntityCategory.SpaceShip])"
+                    Accept="@(x => x is GameVehicle { CargoCapacity: > 0 })"/>
+            </MudItem>
+            <MudItem xs="12" md="1">
                 <MudTextField
                     @bind-Value="@_context.CargoCapacity"
                     InputType="@InputType.Number"
                     DebounceInterval="200"
                     OnDebounceIntervalElapsed="RefreshDataAsync"
-                    Label="Cargo capacity (SCU)"
-                    Placeholder="Used ship capacity"
+                    Label="Capacity (SCU)"
+                    Placeholder="Cargo capacity"
                     Clearable/>
             </MudItem>
-            <MudItem xs="12" md="3">
+            <MudItem xs="12" md="2">
                 <GameEntitySelectBox
                     Label="Commodity"
                     EntityCategory="@GameEntityCategory.Commodity"
@@ -269,6 +275,9 @@
     private SortField _sortBy;
     private SortButton<SortField>.SortDirection _sortDirection;
 
+    private GameVehicle? SelectedVehicle
+        => SelectedVehicleEntity as GameVehicle;
+
     private IGameLocation? SelectedOriginLocation
         => SelectedOriginLocationEntity as IGameLocation;
 
@@ -285,6 +294,12 @@
     private GameTradeRoute[] FilteredRoutes { get; set; } = [];
 
     private readonly SearchContext _context = new();
+
+    [Parameter]
+    public int? CargoCapacity { get; set; }
+
+    [Parameter]
+    public IGameEntity? SelectedVehicleEntity { get; set; }
 
     [Parameter]
     public IGameEntity? SelectedCommodityEntity { get; set; }
@@ -318,6 +333,14 @@
     {
         await Task.CompletedTask;
         _context.Commodity = SelectedCommodityEntity as GameCommodity;
+        _context.CargoCapacity ??= SelectedVehicle?.CargoCapacity;
+        if (_context.CargoCapacity == _context.Vehicle?.CargoCapacity && SelectedVehicle != _context.Vehicle)
+        {
+            // vehicle selection changed/cleared, if the cargo capacity corresponds to the previous selection update it
+            _context.CargoCapacity = SelectedVehicle?.CargoCapacity;
+        }
+
+        _context.Vehicle = SelectedVehicle;
         _context.OriginLocation = SelectedOriginLocation;
         _context.DestinationLocation = SelectedDestinationLocation;
 
@@ -389,6 +412,7 @@
     public class SearchContext
     {
         public int? CargoCapacity { get; set; }
+        public GameVehicle? Vehicle { get; set; }
         public GameCommodity? Commodity { get; set; }
         public IGameLocation? OriginLocation { get; set; }
         public IGameLocation? DestinationLocation { get; set; }
