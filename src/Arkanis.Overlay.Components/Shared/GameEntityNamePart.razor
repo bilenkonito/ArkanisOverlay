@@ -5,11 +5,14 @@
     @if (PreferCode && CodeModel is not null)
     {
     }
-    else if (Embedded && Model is GameEntityName.IHasShortName shortVariant)
+    else if ((Embedded || PreferShort) && Model is GameEntityName.IHasShortName shortVariant)
     {
-        <MudText Typo="@NameTypo" Style="@NameCss">
-            @shortVariant.ShortName
-        </MudText>
+        <MudTooltip Placement="@Placement.Top"
+                    Text="@Model.FullName">
+            <MudText Typo="@NameTypo" Style="@NameCss">
+                @shortVariant.ShortName
+            </MudText>
+        </MudTooltip>
     }
     else
     {
@@ -54,6 +57,9 @@
 
     [Parameter]
     public bool PreferCode { get; set; }
+
+    [Parameter]
+    public bool PreferShort { get; set; }
 
     [Parameter]
     public Typo? Typo { get; set; }

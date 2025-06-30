@@ -1,4 +1,7 @@
-<GameEntityNameLabel Model="@Model.EntityName" Embedded="@Embedded"/>
+<GameEntityNameLabel
+    Model="@Model.EntityName"
+    Embedded="@Embedded"
+    PreferShort="@PreferShort"/>
 
 @code
 {
@@ -8,5 +11,8 @@
 
     [Parameter]
     public bool Embedded { get; set; }
+
+    [Parameter]
+    public bool PreferShort { get; set; }
 
 }

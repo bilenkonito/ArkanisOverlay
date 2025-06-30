@@ -12,15 +12,18 @@
         @if (Model.Company is { } companyReference)
         {
             <div class="d-flex text-secondary flex-truncate">
-                <GameCompanyNamePart Model="@companyReference"/>
+                <GameCompanyNamePart
+                    Model="@companyReference"
+                    PreferShort/>
             </div>
         }
         <GameEntityNamePart
             Class="no-wrap"
             Typo="@Typo"
             Model="@Model.MainContent"
-            PreferCode="PreferCode"
-            Embedded="@Embedded"/>
+            PreferCode="@PreferCode"
+            Embedded="@Embedded"
+            PreferShort="@(PreferShort || Model.Company is not null)"/>
     </MudStack>
     @if (Model.Properties is { Count: > 0 } properties && !Embedded)
     {
@@ -54,5 +57,8 @@
 
     [Parameter]
     public bool PreferCode { get; set; }
+
+    [Parameter]
+    public bool PreferShort { get; set; }
 
 }
