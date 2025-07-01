@@ -1,11 +1,15 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
 using System.Collections;
+using System.ComponentModel;
 using Abstractions.Game;
+using Attributes;
 using Enums;
 using Search;
 using Trade;
 
+[Description("Game Item Entry")]
+[CacheEntryDescription("Game Items")]
 public class GameItem(int id, string fullName, GameCompany manufacturer, GameProductCategory category)
     : GameEntity(UexApiGameEntityId.Create<GameItem>(id), GameEntityCategory.Item), IGameManufactured, IGameTradable
 {
