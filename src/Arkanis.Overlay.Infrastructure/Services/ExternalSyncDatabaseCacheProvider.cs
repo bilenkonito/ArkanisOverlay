@@ -28,15 +28,19 @@ internal class ExternalSyncDatabaseCacheProvider<TRepository>(
 {
     private Type RepositoryType { get; } = typeof(TRepository);
 
-    public async Task StoreAsync<TSource>(TSource source, DataCached dataState, CancellationToken cancellationToken = default)
+    public async Task StoreAsync<TSource>(TSource source, InternalCacheProperties properties, CancellationToken cancellationToken = default)
     {
         var recordKey = CreateKey<TSource>();
+        var dataState = properties.DataState;
         await using var db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
 
         var cacheRecord = new ExternalSourceDataCache
         {
             Id = recordKey,
+            Title = properties.Title,
+            Description = properties.Description,
             Content = JsonSerializer.SerializeToDocument(source),
+            ContentSizeBytes = JsonSerializer.SerializeToUtf8Bytes(source).LongLength,
             DataAvailableState = dataState.SourcedState,
             CachedUntil = dataState.CachedUntil,
         };
