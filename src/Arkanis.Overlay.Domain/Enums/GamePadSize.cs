@@ -6,6 +6,9 @@ public enum GamePadSize
 {
     Unknown,
 
+    [Description("Extra Small")]
+    Xs,
+
     [Description("Small")]
     S,
 
