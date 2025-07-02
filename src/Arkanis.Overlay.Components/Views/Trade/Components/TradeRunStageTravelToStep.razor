@@ -48,7 +48,8 @@
         <MudButton StartIcon="@MaterialIcons.Filled.FlightLand"
                    OnClick="@OnReachedClick"
                    Color="@Color.Success"
-                   Size="@Size.Large">
+                   Size="@Size.Large"
+                   Disabled="@IsDisabled">
             I am at the location
         </MudButton>
     </MudStack>
@@ -65,7 +66,7 @@
         => Stage.ReachedAt is not null;
 
     private bool IsDisabled
-        => IsCompleted;
+        => IsCompleted || Stage.FinalizedAt is not null;
 
     private IGameLocation PreferredLocation
         => PreferParentLocation

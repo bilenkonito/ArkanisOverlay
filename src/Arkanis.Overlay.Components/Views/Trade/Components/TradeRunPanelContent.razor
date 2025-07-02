@@ -10,9 +10,10 @@
     {
         var isIncomplete = stage.FinalizedAt is null;
         var isCurrentlyInProgress = isIncomplete && isFirstIncomplete;
-        if (isCurrentlyInProgress)
+        if (isCurrentlyInProgress && stage.StartedAt is null)
         {
-            stage.StartedAt ??= DateTimeOffset.Now;
+            stage.StartedAt = DateTimeOffset.Now;
+            _ = UpdateRunAsync();
         }
 
         <MudExpansionPanel @key="@stage"
@@ -72,7 +73,7 @@
                 <MudIcon
                     Icon="@MaterialIcons.Filled.FileOpen"/>
                 <MudText Class="text-primary">
-                    Run Summary
+                    Run Summary and Finalization
                 </MudText>
             </MudStack>
         </TitleContent>

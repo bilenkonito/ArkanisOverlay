@@ -1,11 +1,14 @@
 @using Arkanis.Overlay.Components.Views.Trade
-<MudMainContent>
+@implements IDisposable
+@inject ITradeRunManager TradeRunManager
+
+<MudMainContent Class="pb-8">
     <MudStack Spacing="6"
               Justify="@Justify.FlexStart"
               AlignItems="@AlignItems.Center">
 
         <MudPaper>
-            <MudTabs ActivePanelIndex="ActivePanelIndex" Rounded>
+            <MudTabs @ref="_tabs" ActivePanelIndex="ActivePanelIndex" Rounded>
                 <MudTabPanel OnClick="@(() => ActivateTabAsync(Tab.RunsInProgress))"
                              Disabled="@(TradeRunsInProgress == 0)">
                     <TabContent>
@@ -59,6 +62,9 @@
 @code
 {
 
+    private IDisposable? _changeRegistration;
+    private MudTabs? _tabs;
+
     [Parameter]
     public Tab ActiveTab { get; set; }
 
@@ -80,7 +86,14 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        TradeRunsInProgress = 4;
+        await RefreshDataAsync();
+        await UpdateActiveTabAsync();
+
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task UpdateActiveTabAsync()
+    {
         if (ActiveTab == Tab.Default)
         {
             await ActivateTabAsync(
@@ -93,8 +106,30 @@
         {
             await ActivateTabAsync(Tab.RouteSearch);
         }
+    }
 
-        await base.OnParametersSetAsync();
+    private async Task RefreshDataAsync()
+    {
+        var newCount = await TradeRunManager.GetInProgressCountAsync(CancellationToken.None);
+        if (newCount != TradeRunsInProgress)
+        {
+            TradeRunsInProgress = newCount;
+            await InvokeAsync(StateHasChanged);
+
+            //? StateHasChanged is not enough for the tabs to properly update
+            _tabs?.ActivatePanel(ActivePanelIndex);
+        }
+
+        RegisterForChanges();
+    }
+
+    private void RegisterForChanges()
+    {
+        _changeRegistration?.Dispose();
+        _changeRegistration = TradeRunManager.ChangeToken.RegisterChangeCallback(
+            _ => InvokeAsync(RefreshDataAsync),
+            null
+        );
     }
 
     private async Task ActivateTabAsync(Tab activeTab)
@@ -103,4 +138,6 @@
         await ActiveTabChanged.InvokeAsync(activeTab);
     }
 
+    public void Dispose()
+        => _changeRegistration?.Dispose();
 }

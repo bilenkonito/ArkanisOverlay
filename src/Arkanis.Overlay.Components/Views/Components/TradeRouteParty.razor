@@ -53,7 +53,7 @@
                 @if (Context?.CargoCapacity is var capacity and > 0)
                 {
                     <span>
-                        @Math.Min(capacity.Value, Model.CargoUnitsAvailable)/
+                        @Math.Min(capacity.Value, Model.CargoUnitsAvailable).ToString("N0")/
                     </span>
                 }
                 <span>

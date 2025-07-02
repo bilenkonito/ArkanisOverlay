@@ -1,4 +1,6 @@
 @inherits TradeRunComponent
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
 
 <MudStack AlignItems="@AlignItems.Center"
           Class="mr-4"
@@ -79,14 +81,14 @@
             </MudText>
         }
     </MudStack>
-    <MudIconButton
-        Class="visible-on-parent-hover"
-        Color="@Color.Warning"
-        Icon="@Icons.Material.Filled.Edit"/>
-    <MudIconButton
-        Class="visible-on-parent-hover"
-        Color="@Color.Error"
-        Icon="@Icons.Material.Filled.DeleteForever"/>
+    @if (!TradeRun.AcquiredQuantities.Any() && TradeRun.FinalizedAt is null)
+    {
+        <MudIconButton
+            Class="visible-on-parent-hover"
+            Color="@Color.Error"
+            OnClick="DeleteForeverAsync"
+            Icon="@Icons.Material.Filled.DeleteForever"/>
+    }
     <MudSpacer/>
     <MudStack AlignItems="@AlignItems.End" Spacing="0"
               Class="h-100">
@@ -105,5 +107,29 @@
 
 @code
 {
+
+    private async Task DeleteForeverAsync()
+    {
+        var options = new MessageBoxOptions
+        {
+            Title = "Are you sure?",
+            MarkupMessage = new MarkupString("Do you really want to permanently remove this trade run?"),
+            YesText = "Remove",
+            CancelText = "Cancel",
+        };
+        if (await DialogService.ShowMessageBox(options) == true)
+        {
+            foreach (var stage in TradeRun.Stages)
+            {
+                stage.FinalizedAt = DateTimeOffset.UtcNow;
+            }
+
+            TradeRun.FinalizedAt = DateTimeOffset.UtcNow;
+            await UpdateRunAsync();
+
+            await TradeRunManager.DeleteRunAsync(TradeRun.Id, CancellationToken.None);
+            NavigationManager.Refresh();
+        }
+    }
 
 }

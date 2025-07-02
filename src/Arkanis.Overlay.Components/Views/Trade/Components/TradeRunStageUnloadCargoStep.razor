@@ -24,7 +24,8 @@
             <MudButton StartIcon="@MaterialIcons.Filled.Forklift"
                        OnClick="@OnTransferredClick"
                        Color="@Color.Success"
-                       Size="@Size.Large">
+                       Size="@Size.Large"
+                       Disabled="@IsDisabled">
                 The cargo transfer has finished
             </MudButton>
         }
@@ -43,7 +44,8 @@
                 <MudButton StartIcon="@MaterialSymbols.Outlined.GarageDoor"
                            OnClick="@OnTransferredClick"
                            Color="@Color.Success"
-                           Size="@Size.Large">
+                           Size="@Size.Large"
+                           Disabled="@IsDisabled">
                     I have the ship stored
                 </MudButton>
             }
@@ -52,7 +54,8 @@
                 <MudButton StartIcon="@MaterialIcons.Filled.Forklift"
                            OnClick="@OnTransferredClick"
                            Color="@Color.Success"
-                           Size="@Size.Large">
+                           Size="@Size.Large"
+                           Disabled="@IsDisabled">
                     I have unloaded the cargo
                 </MudButton>
             }
@@ -67,7 +70,7 @@
         => Stage.TransferredAt is not null;
 
     private bool IsDisabled
-        => IsCompleted || (!Stage.UsedAutoload && IsPostTrade);
+        => IsCompleted || (!Stage.UsedAutoload && IsPostTrade) || Stage.FinalizedAt is not null;
 
     private IGameLocation PreferredLocation
         => PreferParentLocation

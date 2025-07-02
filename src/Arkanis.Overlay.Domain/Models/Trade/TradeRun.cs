@@ -1,6 +1,5 @@
 namespace Arkanis.Overlay.Domain.Models.Trade;
 
-using Enums;
 using Game;
 using Inventory;
 using MoreLinq;
@@ -14,7 +13,7 @@ public record TradeRunId(Guid Identity) : TypedDomainId<Guid>(Identity)
 
 public class TradeRun
 {
-    public TradeRunId TradeRunId { get; init; } = TradeRunId.CreateNew();
+    public TradeRunId Id { get; init; } = TradeRunId.CreateNew();
 
     public AcquisitionStage[] Acquisitions { get; set; } = [];
     public List<SaleStage> Sales { get; set; } = [];
@@ -28,7 +27,7 @@ public class TradeRun
 
     public IEnumerable<QuantityOf> AcquiredQuantities
         => Acquisitions
-            .Where(x => x.FinalizedAt is not null)
+            .Where(x => x is { AcquiredAt: not null, FinalizedAt: not null })
             .GroupBy(x => x.Quantity.Reference.EntityId)
             .Select(amounts => new QuantityOf(
                     amounts.First().Quantity.Reference,
@@ -39,7 +38,7 @@ public class TradeRun
 
     public IEnumerable<QuantityOf> SoldQuantities
         => Sales
-            .Where(x => x.FinalizedAt is not null)
+            .Where(x => x is { SoldAt: not null, FinalizedAt: not null })
             .GroupBy(x => x.Quantity.Reference.EntityId)
             .Select(amounts => new QuantityOf(
                     amounts.First().Quantity.Reference,
@@ -64,6 +63,15 @@ public class TradeRun
 
     public GameCurrency Profit
         => Revenue + Investment;
+
+    public GameCurrency CurrentInvestment
+        => new(-1 * Acquisitions.Where(x => x.AcquiredAt is not null).Sum(x => x.PriceTotal.Amount));
+
+    public GameCurrency CurrentRevenue
+        => new(Sales.Where(x => x.SoldAt is not null).Sum(x => x.PriceTotal.Amount));
+
+    public GameCurrency CurrentProfit
+        => CurrentRevenue + CurrentInvestment;
 
     public IEnumerable<Stage> Stages
         => Acquisitions
@@ -182,6 +190,8 @@ public class TradeRun
 
     public abstract class Stage
     {
+        public int Id { get; init; }
+
         public GameCurrency PricePerUnit { get; set; } = GameCurrency.Zero;
 
         public GameCurrency PriceTotal
@@ -256,25 +266,23 @@ public class TradeRun
 
         public required GameTerminal Terminal { get; set; }
 
-        // TODO: relevant terminal data
-
-        public bool SourcedDataConfirmed { get; set; }
-        public GameContainerSize MaxContainerSize { get; set; }
-        public TerminalInventoryStatus StockStatus { get; set; }
-        public Quantity Stock { get; set; } = Inventory.Quantity.FromScu(0);
+        public TerminalData UserSourcedData { get; set; } = new();
 
         public static TerminalPurchaseStage Create(GameTradeRoute tradeRoute)
         {
-            var commodity = new CommodityReference(tradeRoute.Commodity);
+            var commodity = new OwnableEntityReference.Commodity(tradeRoute.Commodity);
             var currentStock = Inventory.Quantity.FromScu(tradeRoute.Origin.CargoUnitsAvailable);
             var commodityQuantity = new QuantityOf(commodity, currentStock);
 
             return new TerminalPurchaseStage
             {
                 PricePerUnit = tradeRoute.Origin.Price,
-                MaxContainerSize = tradeRoute.Origin.MaxContainerSize,
-                StockStatus = tradeRoute.Origin.InventoryStatus,
-                Stock = currentStock,
+                UserSourcedData =
+                {
+                    MaxContainerSize = tradeRoute.Origin.MaxContainerSize,
+                    StockStatus = tradeRoute.Origin.InventoryStatus,
+                    Stock = currentStock,
+                },
                 Terminal = tradeRoute.Origin.Terminal,
                 Quantity = commodityQuantity,
             };
@@ -336,23 +344,21 @@ public class TradeRun
 
         public required GameTerminal Terminal { get; set; }
 
-        // TODO: relevant terminal data
-
-        public bool SourcedDataConfirmed { get; set; }
-        public GameContainerSize MaxContainerSize { get; set; }
-        public TerminalInventoryStatus StockStatus { get; set; }
-        public Quantity Stock { get; set; } = Inventory.Quantity.FromScu(0);
+        public TerminalData UserSourcedData { get; set; } = new();
 
         public static TerminalSaleStage Create(GameTradeRoute tradeRoute)
         {
-            var commodity = new CommodityReference(tradeRoute.Commodity);
+            var commodity = new OwnableEntityReference.Commodity(tradeRoute.Commodity);
             var commodityQuantity = new QuantityOf(commodity, tradeRoute.Origin.CargoUnitsAvailable, Inventory.Quantity.UnitType.StandardCargoUnit);
 
             return new TerminalSaleStage
             {
                 PricePerUnit = tradeRoute.Destination.Price,
-                MaxContainerSize = tradeRoute.Destination.MaxContainerSize,
-                StockStatus = tradeRoute.Destination.InventoryStatus,
+                UserSourcedData =
+                {
+                    MaxContainerSize = tradeRoute.Destination.MaxContainerSize,
+                    StockStatus = tradeRoute.Destination.InventoryStatus,
+                },
                 Terminal = tradeRoute.Destination.Terminal,
                 Quantity = commodityQuantity,
             };

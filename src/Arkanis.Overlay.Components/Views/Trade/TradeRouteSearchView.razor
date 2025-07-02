@@ -1,6 +1,7 @@
 @using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @inject IGameEntityRepository<GameTradeRoute> TradeRouteRepository
+@inject ITradeRunManager TradeRunManager
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
 <style>
@@ -247,6 +248,7 @@
                                             <MudIconButton
                                                 Icon="@Icons.Material.Filled.AirlineStops"
                                                 Class="focus"
+                                                OnClick="@(() => CreateTradeRunAsync(route))"
                                                 tabindex="1"/>
                                         </MudTooltip>
                                     }
@@ -424,5 +426,11 @@
         Margin,
         Profit,
         Distance,
+    }
+
+    private async Task CreateTradeRunAsync(GameTradeRoute tradeRoute)
+    {
+        var tradeRun = TradeRun.Create(tradeRoute);
+        await TradeRunManager.AddOrUpdateEntryAsync(tradeRun);
     }
 }

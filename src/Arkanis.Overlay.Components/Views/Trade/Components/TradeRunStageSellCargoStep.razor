@@ -59,7 +59,7 @@
             <MudItem xs="12" sm="6" md="5">
                 <MudSelect T="TerminalInventoryStatus"
                            Label="New stock status"
-                           @bind-Value="@Stage.StockStatus"
+                           @bind-Value="@Stage.UserSourcedData.StockStatus"
                            HelperText="Stock status reported AFTER the sale">
                     @foreach (var status in Enum.GetValues<TerminalInventoryStatus>().Where(x => x is not TerminalInventoryStatus.Unknown))
                     {
@@ -72,14 +72,14 @@
             <MudItem xs="12" sm="6" md="4">
                 <MudNumericField
                     Label="New stock (SCU)"
-                    @bind-Value="@Stage.Stock.Amount"
+                    @bind-Value="@Stage.UserSourcedData.Stock.Amount"
                     HelperText="Stock reported AFTER the sale"
                     Min="0"/>
             </MudItem>
             <MudItem xs="12" md="3">
                 <MudSelect T="GameContainerSize"
                            Label="Max. acceptable container"
-                           @bind-Value="@Stage.MaxContainerSize">
+                           @bind-Value="@Stage.UserSourcedData.MaxContainerSize">
                     @foreach (var status in Enum.GetValues<GameContainerSize>().Where(x => x is not GameContainerSize.Unknown))
                     {
                         <MudSelectItem Value="@status">
@@ -89,7 +89,7 @@
                 </MudSelect>
             </MudItem>
         </MudGrid>
-        <MudCheckBox @bind-Value="@Stage.SourcedDataConfirmed">
+        <MudCheckBox @bind-Value="@Stage.UserSourcedData.UserConfirmed">
             <MudStack Spacing="0">
                 <MudText>
                     I have verified the provided values
@@ -105,7 +105,8 @@
                 StartIcon="@MaterialIcons.Filled.Error"
                 OnClick="@OnSoldClick"
                 Color="@Color.Error"
-                Size="@Size.Large">
+                Size="@Size.Large"
+                Disabled="@IsDisabled">
                 I have not made the sale
             </MudButton>
         }
@@ -115,7 +116,8 @@
                 StartIcon="@MaterialIcons.Filled.ShoppingCartCheckout"
                 OnClick="@OnSoldClick"
                 Color="@Color.Warning"
-                Size="@Size.Large">
+                Size="@Size.Large"
+                Disabled="@IsDisabled">
                 I have made partial sale
             </MudButton>
         }
@@ -125,7 +127,8 @@
                 StartIcon="@MaterialIcons.Filled.ShoppingCartCheckout"
                 OnClick="@OnSoldClick"
                 Color="@Color.Success"
-                Size="@Size.Large">
+                Size="@Size.Large"
+                Disabled="@IsDisabled">
                 I have made the sale
             </MudButton>
         }
@@ -139,7 +142,7 @@
         => Stage.SoldAt is not null;
 
     private bool IsDisabled
-        => IsCompleted;
+        => IsCompleted || Stage.FinalizedAt is not null;
 
     private Quantity UnsoldAmount { get; set; } = Quantity.Zero;
 

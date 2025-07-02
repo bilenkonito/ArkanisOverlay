@@ -30,7 +30,8 @@
         <MudButton StartIcon="@MaterialIcons.Filled.Forklift"
                    OnClick="@OnTransferredClick"
                    Color="@Color.Success"
-                   Size="@Size.Large">
+                   Size="@Size.Large"
+                   Disabled="@IsDisabled">
             @if (Stage.UsedAutoload)
             {
                 <MudText Typo="@Typo.inherit">
@@ -54,7 +55,7 @@
         => Stage.TransferredAt is not null;
 
     private bool IsDisabled
-        => IsCompleted;
+        => IsCompleted || Stage.FinalizedAt is not null;
 
     [Parameter]
     [EditorRequired]

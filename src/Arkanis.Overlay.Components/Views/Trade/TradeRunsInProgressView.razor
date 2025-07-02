@@ -1,5 +1,5 @@
 @using Arkanis.Overlay.Components.Views.Trade.Components
-@inject IGameEntityRepository<GameTradeRoute> TradeRouteRepository
+@inject ITradeRunManager TradeRunManager
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
 <style>
@@ -48,7 +48,7 @@
                       Row>
                 <MudChip
                     T="int"
-                    Value="4"
+                    Value="@TradeRuns.Count"
                     Color="@Color.Info"/>
                 <MudText Typo="@Typo.h4">
                     Trades In Progress
@@ -67,7 +67,7 @@
         <MudExpansionPanels Gutters="false"
                             Class="trade-runs">
             @{ var panelIndex = 0; }
-            @foreach (var tradeRun in TradeRuns.Take(4))
+            @foreach (var tradeRun in TradeRuns)
             {
                 <MudExpansionPanel Gutters="false"
                                    Expanded="@(panelIndex++ == 0)">
@@ -91,27 +91,20 @@
 @code
 {
 
-    private List<TradeRun> TradeRuns { get; } = [];
+    private List<TradeRun> TradeRuns { get; set; } = [];
 
-    public GameTradeRoute[] Routes { get; set; } = [];
-
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        await base.OnInitializedAsync();
+        await base.OnParametersSetAsync();
 
-        Routes = await TradeRouteRepository.GetAllAsync()
-            .Where(x => x.Destination.Price > x.Origin.Price)
-            .ToArrayAsync();
-
-        foreach (var tradeRoute in Routes.Take(4))
-        {
-            TradeRuns.Add(TradeRun.Create(tradeRoute));
-        }
+        var runs = await TradeRunManager.GetAllRunsAsync();
+        TradeRuns = runs.Where(x => x.FinalizedAt is null).ToList();
     }
 
-    private async Task OnTradeRunChanged()
+    private async Task OnTradeRunChanged(TradeRun tradeRun)
     {
-        // TODO: persist trade run changes
+        await TradeRunManager.AddOrUpdateEntryAsync(tradeRun, CancellationToken.None);
         await InvokeAsync(StateHasChanged);
     }
+
 }

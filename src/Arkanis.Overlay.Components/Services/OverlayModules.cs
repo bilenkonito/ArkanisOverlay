@@ -32,7 +32,11 @@ public class OverlayModules
             Url = "/trade",
             Name = "Trade",
             Icon = Outlined.Storefront,
-            GetUpdateCountAsync = _ => ValueTask.FromResult(4),
+            GetUpdateCountAsync = async serviceProvider =>
+            {
+                var inventoryManager = serviceProvider.GetRequiredService<ITradeRunManager>();
+                return await inventoryManager.GetInProgressCountAsync();
+            },
         },
         new()
         {
@@ -75,9 +79,9 @@ public class OverlayModules
         public bool Disabled { get; init; }
         public string Icon { get; init; } = Icons.Material.Filled.ViewModule;
 
-        public string GetAbsoluteUri(NavigationManager  navigationManager)
-            => navigationManager.ToAbsoluteUri(Url).ToString();
-
         public Func<IServiceProvider, ValueTask<int>> GetUpdateCountAsync { get; set; } = _ => ValueTask.FromResult(0);
+
+        public string GetAbsoluteUri(NavigationManager navigationManager)
+            => navigationManager.ToAbsoluteUri(Url).ToString();
     }
 }
