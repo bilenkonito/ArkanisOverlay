@@ -5,14 +5,14 @@
            ContentStyle="background: var(--mud-palette-background);">
     <TitleContent>
         <MudText Typo="@Typo.h6">
-            Find Trade Route
+            Find Trade Destination
         </MudText>
     </TitleContent>
     <DialogContent>
         <div style="height: 1vh;"></div>
-        <TradeRouteSearchView SelectedCommodityEntity="@CurrentParameters.Commodity"
-                              SelectedOriginLocationEntity="@CurrentParameters.Origin"
-                              SelectedDestinationLocationEntity="@CurrentParameters.Destination">
+        <TradeDestinationSearchView CargoCapacity="@CurrentParameters.QuantityAmount"
+                                    SelectedCommodityEntity="@CurrentParameters.Commodity"
+                                    SelectedDestinationLocationEntity="@CurrentParameters.Destination">
             <ControlsContent Context="tradeRoute">
                 <MudDivider
                     FlexItem
@@ -28,7 +28,7 @@
                         tabindex="1"/>
                 </MudTooltip>
             </ControlsContent>
-        </TradeRouteSearchView>
+        </TradeDestinationSearchView>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="@Cancel">Close</MudButton>
@@ -52,22 +52,23 @@
         var dialogOptions = new DialogOptions
         {
             FullWidth = true,
-            FullScreen = true,
+            MaxWidth = MaxWidth.Medium,
+            // FullScreen = true,
             CloseOnEscapeKey = true,
             CloseButton = true,
         };
-        var dialogParams = new DialogParameters<TradeRouteSearchDialog>
+        var dialogParams = new DialogParameters<TradeDestinationSearchDialog>
         {
             [nameof(CurrentParameters)] = parameters,
         };
-        var dialogRef = await dialogService.ShowAsync<TradeRouteSearchDialog>(null, dialogParams, dialogOptions);
+        var dialogRef = await dialogService.ShowAsync<TradeDestinationSearchDialog>(null, dialogParams, dialogOptions);
         return await dialogRef.GetReturnValueAsync<GameTradeRoute>();
     }
 
     public class Parameters
     {
+        public int? QuantityAmount { get; set; }
         public GameCommodity? Commodity { get; set; }
-        public IGameLocation? Origin { get; set; }
         public IGameLocation? Destination { get; set; }
     }
 

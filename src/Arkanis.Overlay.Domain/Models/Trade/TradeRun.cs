@@ -92,11 +92,11 @@ public class TradeRun
             .Where(x => x.Reference.EntityId == gameEntityId)
             .SingleOrDefault(Quantity.Zero);
 
-    public static TradeRun Create(GameTradeRoute tradeRoute)
+    public static TradeRun Create(GameTradeRoute tradeRoute, Context context)
         => new()
         {
-            Acquisitions = [TerminalPurchaseStage.Create(tradeRoute)],
-            Sales = [TerminalSaleStage.Create(tradeRoute)],
+            Acquisitions = [TerminalPurchaseStage.Create(tradeRoute, context)],
+            Sales = [TerminalSaleStage.Create(tradeRoute, context)],
         };
 
     public IEnumerable<PlayerEvent> CreateEvents()
@@ -112,6 +112,12 @@ public class TradeRun
         {
             yield return new PlayerEvent.RunCompleted(FinalizedAt.Value);
         }
+    }
+
+    public class Context
+    {
+        public UexId<GameVehicle>? VehicleId { get; init; }
+        public Quantity Quantity { get; init; } = Quantity.Zero;
     }
 
     public abstract class PlayerEvent(DateTimeOffset occuredAt)
@@ -277,7 +283,7 @@ public class TradeRun
         IGameLocation IGameLocatedAt.Location
             => Terminal;
 
-        public static TerminalPurchaseStage Create(GameTradeRoute tradeRoute)
+        public static TerminalPurchaseStage Create(GameTradeRoute tradeRoute, Context context)
         {
             var commodity = new OwnableEntityReference.Commodity(tradeRoute.Commodity);
             var currentStock = Inventory.Quantity.FromScu(tradeRoute.Origin.CargoUnitsAvailable);
@@ -290,7 +296,7 @@ public class TradeRun
                 {
                     MaxContainerSize = tradeRoute.Origin.MaxContainerSize,
                     StockStatus = tradeRoute.Origin.InventoryStatus,
-                    Stock = currentStock,
+                    Stock = currentStock - context.Quantity,
                 },
                 Terminal = tradeRoute.Origin.Terminal,
                 Quantity = commodityQuantity,
@@ -358,10 +364,11 @@ public class TradeRun
         IGameLocation IGameLocatedAt.Location
             => Terminal;
 
-        public static TerminalSaleStage Create(GameTradeRoute tradeRoute)
+        public static TerminalSaleStage Create(GameTradeRoute tradeRoute, Context context)
         {
             var commodity = new OwnableEntityReference.Commodity(tradeRoute.Commodity);
-            var commodityQuantity = new QuantityOf(commodity, tradeRoute.Origin.CargoUnitsAvailable, Inventory.Quantity.UnitType.StandardCargoUnit);
+            var currentStock = Inventory.Quantity.FromScu(tradeRoute.Destination.CargoUnitsAvailable);
+            var commodityQuantity = new QuantityOf(commodity, context.Quantity.Amount, context.Quantity.Unit);
 
             return new TerminalSaleStage
             {
@@ -370,6 +377,7 @@ public class TradeRun
                 {
                     MaxContainerSize = tradeRoute.Destination.MaxContainerSize,
                     StockStatus = tradeRoute.Destination.InventoryStatus,
+                    Stock = currentStock + context.Quantity,
                 },
                 Terminal = tradeRoute.Destination.Terminal,
                 Quantity = commodityQuantity,

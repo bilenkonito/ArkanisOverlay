@@ -145,14 +145,14 @@
 
     private async Task ContinueToDifferentLocationAsync()
     {
-        // TODO: rework destination selection
         foreach (var unsoldQuantity in TradeRun.UnsoldQuantities)
         {
-            var selectedTradeRoute = await TradeRouteSearchDialog.ShowAsync(
+            var selectedTradeRoute = await TradeDestinationSearchDialog.ShowAsync(
                 DialogService,
-                new TradeRouteSearchDialog.Parameters
+                new TradeDestinationSearchDialog.Parameters
                 {
                     Commodity = unsoldQuantity.Reference.Entity as GameCommodity,
+                    QuantityAmount = unsoldQuantity.Amount,
                 }
             );
 
@@ -161,8 +161,12 @@
                 continue;
             }
 
-            var stage = TradeRun.TerminalSaleStage.Create(selectedTradeRoute);
-            stage.Quantity = unsoldQuantity;
+            var runContext = new TradeRun.Context
+            {
+                VehicleId = null,
+                Quantity = unsoldQuantity,
+            };
+            var stage = TradeRun.TerminalSaleStage.Create(selectedTradeRoute, runContext);
             TradeRun.Sales.Add(stage);
         }
 
