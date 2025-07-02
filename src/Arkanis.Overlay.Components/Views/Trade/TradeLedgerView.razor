@@ -118,7 +118,17 @@
                         CellClass="text-right pr-4"
                         FooterClass="text-right pr-4">
             <CellTemplate>
-                @context.Item.Length.Humanize()
+                @if (context.Item.FinalizedAt.HasValue)
+                {
+                    @context.Item.Length.Humanize()
+                }
+                else
+                {
+                    <MudText Typo="@Typo.inherit"
+                             Color="Color.Warning">
+                        In Progress
+                    </MudText>
+                }
             </CellTemplate>
             <AggregateTemplate>
                 @context.Aggregate(TimeSpan.Zero, (a, b) => a + b.Length).Humanize()
