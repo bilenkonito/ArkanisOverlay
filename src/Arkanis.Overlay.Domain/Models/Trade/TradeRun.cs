@@ -1,5 +1,7 @@
 namespace Arkanis.Overlay.Domain.Models.Trade;
 
+using System.Diagnostics.CodeAnalysis;
+using Abstractions.Game;
 using Game;
 using Inventory;
 using MoreLinq;
@@ -11,6 +13,7 @@ public record TradeRunId(Guid Identity) : TypedDomainId<Guid>(Identity)
         => new(Guid.NewGuid());
 }
 
+[SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
 public class TradeRun
 {
     public TradeRunId Id { get; init; } = TradeRunId.CreateNew();
@@ -80,6 +83,9 @@ public class TradeRun
 
     public bool HasUnsoldCargo
         => UnsoldQuantities.Any(x => x.Amount > 0);
+
+    public TimeSpan Length
+        => (FinalizedAt ?? DateTimeOffset.UtcNow) - CreatedAt;
 
     public Quantity AcquiredQuantityOf(UexApiGameEntityId gameEntityId)
         => AcquiredQuantities
@@ -259,7 +265,7 @@ public class TradeRun
         }
     }
 
-    public sealed class TerminalPurchaseStage : AcquisitionStage
+    public sealed class TerminalPurchaseStage : AcquisitionStage, IGameLocatedAt
     {
         public override string Title
             => $"Purchase {Quantity.ToString(QuantityOf.FormatWithReferenceCode, null)} at {Terminal.Name.MainContent.FullName}";
@@ -267,6 +273,9 @@ public class TradeRun
         public required GameTerminal Terminal { get; set; }
 
         public TerminalData UserSourcedData { get; set; } = new();
+
+        IGameLocation IGameLocatedAt.Location
+            => Terminal;
 
         public static TerminalPurchaseStage Create(GameTradeRoute tradeRoute)
         {
@@ -337,7 +346,7 @@ public class TradeRun
         }
     }
 
-    public sealed class TerminalSaleStage : SaleStage
+    public sealed class TerminalSaleStage : SaleStage, IGameLocatedAt
     {
         public override string Title
             => $"Sell {Quantity.ToString(QuantityOf.FormatWithReferenceCode, null)} at {Terminal.Name.MainContent.FullName}";
@@ -345,6 +354,9 @@ public class TradeRun
         public required GameTerminal Terminal { get; set; }
 
         public TerminalData UserSourcedData { get; set; } = new();
+
+        IGameLocation IGameLocatedAt.Location
+            => Terminal;
 
         public static TerminalSaleStage Create(GameTradeRoute tradeRoute)
         {

@@ -1,5 +1,5 @@
 @using System.Globalization
-@GameValue.ToString(Format, CultureInfo)@Suffix
+@GameValue.ToString(Format, CultureInfo)<span class="@SuffixClass">@Suffix</span>
 
 @code
 {
@@ -13,6 +13,9 @@
 
     [Parameter]
     public string? Suffix { get; set; } = ", Earth, Sol System";
+
+    [Parameter]
+    public string? SuffixClass { get; set; }
 
     [Parameter]
     public string Format { get; set; } = "F";

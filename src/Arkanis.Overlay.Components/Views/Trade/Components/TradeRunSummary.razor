@@ -22,7 +22,7 @@
                 Trade run length
             </MudText>
             <MudText Typo="@Typo.h6" Color="@Color.Success">
-                @(((TradeRun.FinalizedAt ?? DateTimeOffset.UtcNow) - TradeRun.CreatedAt).Humanize())
+                @(TradeRun.Length.Humanize())
             </MudText>
         </MudStack>
         <MudStack AlignItems="@AlignItems.Center"
