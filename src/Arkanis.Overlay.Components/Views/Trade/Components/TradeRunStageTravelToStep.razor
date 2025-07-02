@@ -1,4 +1,5 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
+@using Arkanis.Overlay.Infrastructure.Helpers
 @using MudBlazor.Utilities
 @inherits TradeRunStageComponent<TradeRun.Stage>
 
@@ -25,7 +26,7 @@
                  Class="image-author text-secondary">
             Screenshot by
             <MudLink Typo="@Typo.inherit"
-                     Href="@($"https://uexcorp.space/@{Location.ImageAuthor}")"
+                     Href="@ExternalLinkHelper.GetUexUserLink(Location.ImageAuthor, "screenshot_attribution")"
                      Target="_blank">
                 @Location.ImageAuthor (UEX)
             </MudLink>
