@@ -47,6 +47,13 @@ public class OverlayModules
         },
         new()
         {
+            Url = "/market",
+            Name = "Market",
+            Icon = Outlined.Store,
+            Disabled = true,
+        },
+        new()
+        {
             Url = "/hangar",
             Name = "Hangar",
             Icon = Outlined.GarageDoor,
