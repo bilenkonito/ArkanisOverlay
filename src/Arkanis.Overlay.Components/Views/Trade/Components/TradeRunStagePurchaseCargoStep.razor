@@ -31,6 +31,7 @@
             <MudItem xs="12" sm="6" md="4">
                 <MudNumericField
                     Label="Quantity purchased (SCU)"
+                    Format="N0"
                     @bind-Value="@Stage.Quantity.Amount"
                     @bind-Value:after="@UpdateStageAsync"
                     Min="0"
@@ -39,6 +40,7 @@
             <MudItem xs="12" sm="6" md="4">
                 <MudNumericField
                     Label="Purchase price (per SCU)"
+                    Format="N0"
                     @bind-Value="@Stage.PricePerUnit.Amount"
                     @bind-Value:after="@UpdateStageAsync"
                     Required/>
@@ -71,6 +73,7 @@
             <MudItem xs="12" sm="6" md="4">
                 <MudNumericField
                     Label="Remaining stock (SCU)"
+                    Format="N0"
                     @bind-Value="@Stage.UserSourcedData.Stock.Amount"
                     HelperText="Stock reported AFTER the purchase"
                     Min="0"/>

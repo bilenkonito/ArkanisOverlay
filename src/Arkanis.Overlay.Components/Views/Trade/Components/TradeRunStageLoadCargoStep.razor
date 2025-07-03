@@ -33,6 +33,7 @@
                 Format="N0"
                 @bind-Value="@Stage.CargoTransferFee.Amount"
                 @bind-Value:after="@UpdateStageAsync"
+                Min="0"
                 Adornment="@Adornment.Start"
                 AdornmentText="@GameCurrency.Symbol"
                 Class="flex-grow-0"

@@ -65,7 +65,7 @@ public class TradeRun
         => new(-1 * Acquisitions.Sum(x => x.PriceTotal.Amount));
 
     public GameCurrency Fees
-        => new(-1 * Stages.Sum(x => x.CargoTransferFee.Amount));
+        => new(Stages.Sum(x => x.Fees.Amount));
 
     public GameCurrency Revenue
         => new(Sales.Sum(x => x.PriceTotal.Amount));
@@ -221,6 +221,9 @@ public class TradeRun
         public GameCurrency PriceTotal
             => PricePerUnit * Quantity.Amount;
 
+        public virtual GameCurrency Fees
+            => CargoTransferFee * -1;
+
         public abstract GameCurrency Balance { get; }
         public abstract string Title { get; }
         public abstract string CurrentStepTitle { get; }
@@ -243,7 +246,7 @@ public class TradeRun
         public DateTimeOffset? AcquiredAt { get; set; }
 
         public override GameCurrency Balance
-            => PricePerUnit * Quantity.Amount * -1;
+            => (PricePerUnit * Quantity.Amount * -1) + Fees;
 
         public override string CurrentStepTitle
             => this switch
@@ -322,7 +325,7 @@ public class TradeRun
         public DateTimeOffset? SoldAt { get; set; }
 
         public override GameCurrency Balance
-            => PricePerUnit * Quantity.Amount;
+            => (PricePerUnit * Quantity.Amount) + Fees;
 
         public override string CurrentStepTitle
             => this switch
