@@ -1,6 +1,7 @@
 <MudText Typo="@Typo">
     <MudStack AlignItems="@AlignItems.Baseline"
               Spacing="@Spacing"
+              Wrap="@Wrap.Wrap"
               Row>
         @foreach (var (entityIndex, entity) in Model.Acquisitions
                           .Select(x => x.Quantity.Reference.Entity)

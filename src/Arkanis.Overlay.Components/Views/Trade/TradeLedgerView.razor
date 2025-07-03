@@ -106,7 +106,7 @@
             </CellTemplate>
             <AggregateTemplate>
                 <span>
-                    @context.Select(x => x.Vehicle).Distinct().Count()
+                    @context.Where(x => x.Vehicle != null).Select(x => x.Vehicle).Distinct().Count()
                     <span style="font-weight: normal">
                         vehicles
                     </span>

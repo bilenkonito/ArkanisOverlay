@@ -29,107 +29,105 @@
     }
 </style>
 
-<div class="px-3">
-    <MudPaper Style="position: sticky; top: 0; z-index: 10; min-width: 60vw"
-              Elevation="4"
-              Class="py-2 px-4">
-        <MudGrid>
-            <MudItem xs="12" md="3">
-                <GameEntitySelectBox
-                    Label="Transport vehicle"
-                    @bind-Value="@SelectedVehicleEntity"
-                    @bind-Value:after="@RefreshDataAsync"
-                    EntityCategories="@( [GameEntityCategory.GroundVehicle, GameEntityCategory.SpaceShip])"
-                    Accept="@(x => x is GameVehicle { CargoCapacity: > 0 })"/>
-            </MudItem>
-            <MudItem xs="12" md="1">
-                <MudTextField
-                    @bind-Value="@_context.CargoCapacity"
-                    InputType="@InputType.Number"
-                    DebounceInterval="200"
-                    OnDebounceIntervalElapsed="RefreshDataAsync"
-                    Label="Capacity (SCU)"
-                    Placeholder="Cargo capacity"
-                    Clearable/>
-            </MudItem>
-            <MudItem xs="12" md="2">
-                <GameEntitySelectBox
-                    Label="Commodity"
-                    EntityCategory="@GameEntityCategory.Commodity"
-                    Accept="@(commodity => ApplicableCommodities.Contains(commodity))"
-                    @bind-Value="@SelectedCommodityEntity"
-                    @bind-Value:after="@RefreshDataAsync"/>
-            </MudItem>
-            <MudItem xs="12" md="3">
-                <GameEntitySelectBox
-                    Label="Origin location"
-                    EntityCategory="@GameEntityCategory.Location"
-                    Accept="@(location => ApplicableOriginLocations.Contains(location))"
-                    @bind-Value="@SelectedOriginLocationEntity"
-                    @bind-Value:after="@RefreshDataAsync"/>
-            </MudItem>
-            <MudItem xs="12" md="3">
-                <GameEntitySelectBox
-                    Label="Destination location"
-                    EntityCategory="@GameEntityCategory.Location"
-                    Accept="@(location => ApplicableDestinationLocations.Contains(location))"
-                    @bind-Value="@SelectedDestinationLocationEntity"
-                    @bind-Value:after="@RefreshDataAsync"/>
-            </MudItem>
-            <MudItem xs="12" md="7">
-                <MudStack Spacing="2" Row>
-                    <MudToggleIconButton
-                        @bind-Toggled="@_allowIllegal"
-                        @bind-Toggled:after="@RefreshDataAsync"
-                        Icon="@Icons.Material.Filled.LocalPolice"
-                        Color="@Color.Success"
-                        ToggledColor="@Color.Error"/>
-                    <MudToggleIconButton
-                        @bind-Toggled="@_onlyAutoLoadLocations"
-                        @bind-Toggled:after="@RefreshDataAsync"
-                        Icon="@Icons.Material.Filled.AutoMode"
-                        Color="@Color.Inherit"
-                        ToggledColor="@Color.Success"/>
-                    <MudDivider Vertical FlexItem/>
-                    <MudToggleIconButton
-                        @bind-Toggled="@_onlyGroundLocations"
-                        @bind-Toggled:after="@RefreshDataAsync"
-                        Disabled="@_onlySpaceLocations"
-                        Icon="@Icons.Material.Filled.SouthAmerica"
-                        Color="@Color.Inherit"
-                        ToggledColor="@Color.Warning"/>
-                    <MudToggleIconButton
-                        @bind-Toggled="@_onlySpaceLocations"
-                        @bind-Toggled:after="@RefreshDataAsync"
-                        Disabled="@_onlyGroundLocations"
-                        Icon="@Icons.Material.Filled.Rocket"
-                        Color="@Color.Inherit"
-                        ToggledColor="@Color.Warning"/>
-                </MudStack>
-            </MudItem>
-            <MudItem xs="12" md="5">
-                <SortButton TargetField="@SortField.Profit"
-                            @bind-ActiveField="@_sortBy"
-                            @bind-Direction="@_sortDirection"
-                            OnChange="@RefreshDataAsync">
-                    Profit
-                </SortButton>
-                <SortButton TargetField="@SortField.Margin"
-                            @bind-ActiveField="@_sortBy"
-                            @bind-Direction="@_sortDirection"
-                            OnChange="@RefreshDataAsync">
-                    Margin
-                </SortButton>
-                <SortButton TargetField="@SortField.Distance"
-                            @bind-ActiveField="@_sortBy"
-                            @bind-Direction="@_sortDirection"
-                            OnChange="@RefreshDataAsync">
-                    Distance
-                </SortButton>
-            </MudItem>
-        </MudGrid>
-    </MudPaper>
-</div>
+<MudPaper Style="position: sticky; top: 0; z-index: 10; min-width: 60vw"
+          Elevation="4"
+          Class="py-2 px-4 mx-3">
+    <MudGrid>
+        <MudItem xs="12" md="3">
+            <GameEntitySelectBox
+                Label="Transport vehicle"
+                @bind-Value="@SelectedVehicleEntity"
+                @bind-Value:after="@RefreshDataAsync"
+                EntityCategories="@( [GameEntityCategory.GroundVehicle, GameEntityCategory.SpaceShip])"
+                Accept="@(x => x is GameVehicle { CargoCapacity: > 0 })"/>
+        </MudItem>
+        <MudItem xs="12" md="1">
+            <MudTextField
+                @bind-Value="@_context.CargoCapacity"
+                InputType="@InputType.Number"
+                DebounceInterval="200"
+                OnDebounceIntervalElapsed="RefreshDataAsync"
+                Label="Capacity (SCU)"
+                Placeholder="Cargo capacity"
+                Clearable/>
+        </MudItem>
+        <MudItem xs="12" md="2">
+            <GameEntitySelectBox
+                Label="Commodity"
+                EntityCategory="@GameEntityCategory.Commodity"
+                Accept="@(commodity => ApplicableCommodities.Contains(commodity))"
+                @bind-Value="@SelectedCommodityEntity"
+                @bind-Value:after="@RefreshDataAsync"/>
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <GameEntitySelectBox
+                Label="Origin location"
+                EntityCategory="@GameEntityCategory.Location"
+                Accept="@(location => ApplicableOriginLocations.Contains(location))"
+                @bind-Value="@SelectedOriginLocationEntity"
+                @bind-Value:after="@RefreshDataAsync"/>
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <GameEntitySelectBox
+                Label="Destination location"
+                EntityCategory="@GameEntityCategory.Location"
+                Accept="@(location => ApplicableDestinationLocations.Contains(location))"
+                @bind-Value="@SelectedDestinationLocationEntity"
+                @bind-Value:after="@RefreshDataAsync"/>
+        </MudItem>
+        <MudItem xs="12" md="7">
+            <MudStack Spacing="2" Row>
+                <MudToggleIconButton
+                    @bind-Toggled="@_allowIllegal"
+                    @bind-Toggled:after="@RefreshDataAsync"
+                    Icon="@Icons.Material.Filled.LocalPolice"
+                    Color="@Color.Success"
+                    ToggledColor="@Color.Error"/>
+                <MudToggleIconButton
+                    @bind-Toggled="@_onlyAutoLoadLocations"
+                    @bind-Toggled:after="@RefreshDataAsync"
+                    Icon="@Icons.Material.Filled.AutoMode"
+                    Color="@Color.Inherit"
+                    ToggledColor="@Color.Success"/>
+                <MudDivider Vertical FlexItem/>
+                <MudToggleIconButton
+                    @bind-Toggled="@_onlyGroundLocations"
+                    @bind-Toggled:after="@RefreshDataAsync"
+                    Disabled="@_onlySpaceLocations"
+                    Icon="@Icons.Material.Filled.SouthAmerica"
+                    Color="@Color.Inherit"
+                    ToggledColor="@Color.Warning"/>
+                <MudToggleIconButton
+                    @bind-Toggled="@_onlySpaceLocations"
+                    @bind-Toggled:after="@RefreshDataAsync"
+                    Disabled="@_onlyGroundLocations"
+                    Icon="@Icons.Material.Filled.Rocket"
+                    Color="@Color.Inherit"
+                    ToggledColor="@Color.Warning"/>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" md="5">
+            <SortButton TargetField="@SortField.Profit"
+                        @bind-ActiveField="@_sortBy"
+                        @bind-Direction="@_sortDirection"
+                        OnChange="@RefreshDataAsync">
+                Profit
+            </SortButton>
+            <SortButton TargetField="@SortField.Margin"
+                        @bind-ActiveField="@_sortBy"
+                        @bind-Direction="@_sortDirection"
+                        OnChange="@RefreshDataAsync">
+                Margin
+            </SortButton>
+            <SortButton TargetField="@SortField.Distance"
+                        @bind-ActiveField="@_sortBy"
+                        @bind-Direction="@_sortDirection"
+                        OnChange="@RefreshDataAsync">
+                Distance
+            </SortButton>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
 
 <div class="px-3">
     <CascadingValue Value="@_context" IsFixed>
@@ -192,7 +190,7 @@
                                         <GameEntityNamePart
                                             Typo="@Typo.inherit"
                                             Model="@route.Commodity.Name.MainContent"
-                                            Style="height: initial; z-index: 10"
+                                            Style="height: initial; position: relative; z-index: 2"
                                             PreferCode/>
                                     </MudText>
                                     <MudIcon
