@@ -1,6 +1,7 @@
 @using Arkanis.Overlay.Components.Shared.Dialogs
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @inherits TradeRunComponent
+@inject IInventoryManager InventoryManager
 @inject IDialogService DialogService
 
 <MudExpansionPanels MultiExpansion
@@ -140,7 +141,11 @@
 
     private async Task FinalizeRunCargoKeptAsync()
     {
-        // TODO: save unsold cargo into inventory
+        foreach (var unsoldQuantity in TradeRun.UnsoldQuantities)
+        {
+            await InventoryManager.AddOrUpdateEntryAsync(InventoryEntry.Create(unsoldQuantity));
+        }
+
         await FinalizeRunAsync();
     }
 
