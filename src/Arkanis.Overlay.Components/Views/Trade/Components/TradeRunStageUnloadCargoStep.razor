@@ -18,9 +18,17 @@
         </MudStack>
         <GameEntityNameLabel
             Model="@PreferredLocation.Name"/>
-        @if (IsPostTrade && Stage.UsedAutoload)
+        @if (IsPostTrade && Stage.CargoTransferAutomatic)
         {
-            @* TODO: Add autoload fee reporting *@
+            <MudNumericField
+                Label="Transfer fee"
+                Format="N0"
+                @bind-Value="@Stage.CargoTransferFee.Amount"
+                @bind-Value:after="@UpdateStageAsync"
+                Adornment="@Adornment.Start"
+                AdornmentText="@GameCurrency.Symbol"
+                Class="flex-grow-0"
+                Immediate/>
             <MudButton StartIcon="@MaterialIcons.Filled.Forklift"
                        OnClick="@OnTransferredClick"
                        Color="@Color.Success"
@@ -31,7 +39,7 @@
         }
         else
         {
-            <MudCheckBox @bind-Value="@Stage.UsedAutoload"
+            <MudCheckBox @bind-Value="@Stage.CargoTransferAutomatic"
                          @bind-Value:after="@UpdateStageAsync">
                 <MudStack Spacing="0">
                     <MudText>
@@ -39,7 +47,7 @@
                     </MudText>
                 </MudStack>
             </MudCheckBox>
-            @if (Stage.UsedAutoload)
+            @if (Stage.CargoTransferAutomatic)
             {
                 <MudButton StartIcon="@MaterialSymbols.Outlined.GarageDoor"
                            OnClick="@OnTransferredClick"
@@ -55,7 +63,7 @@
                            OnClick="@OnTransferredClick"
                            Color="@Color.Success"
                            Size="@Size.Large"
-                           Disabled="@IsDisabled">
+                           Disabled="@IsConfirmDisabled">
                     I have unloaded the cargo
                 </MudButton>
             }
@@ -70,7 +78,13 @@
         => Stage.TransferredAt is not null;
 
     private bool IsDisabled
-        => IsCompleted || (!Stage.UsedAutoload && IsPostTrade) || Stage.FinalizedAt is not null;
+        => IsCompleted
+           || (!Stage.CargoTransferAutomatic && IsPostTrade)
+           || Stage.FinalizedAt is not null;
+
+    private bool IsConfirmDisabled
+        => IsDisabled
+           || Stage is { CargoTransferAutomatic: true, CargoTransferFee.Amount: 0 };
 
     private IGameLocation PreferredLocation
         => PreferParentLocation
@@ -96,9 +110,19 @@
     [Parameter]
     public bool PreferParentLocation { get; set; }
 
+    protected override Task UpdateStageAsync()
+    {
+        if (!Stage.CargoTransferAutomatic)
+        {
+            Stage.CargoTransferFee.Amount = 0;
+        }
+
+        return base.UpdateStageAsync();
+    }
+
     private async Task OnTransferredClick()
     {
-        if (!Stage.UsedAutoload || IsPostTrade)
+        if (!Stage.CargoTransferAutomatic || IsPostTrade)
         {
             Stage.TransferredAt = DateTimeOffset.Now;
         }

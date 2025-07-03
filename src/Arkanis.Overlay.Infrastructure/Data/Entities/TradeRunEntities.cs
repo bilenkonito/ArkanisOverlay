@@ -70,7 +70,9 @@ public class TradeRunEntity : IDatabaseEntity<TradeRunId>
         public GameCurrency PricePerUnit { get; set; } = GameCurrency.Zero;
 
         public required QuantityOfEntity Quantity { get; set; }
-        public bool UsedAutoload { get; set; }
+
+        public GameCurrency CargoTransferFee { get; set; } = GameCurrency.Zero;
+        public bool CargoTransferAutomatic { get; set; }
 
         public DateTimeOffset? StartedAt { get; set; }
         public DateTimeOffset? ReachedAt { get; set; }

@@ -14,8 +14,10 @@ internal partial class TradeRunEntityMapper(UexApiDtoMapper uexMapper)
     private GameCommodity ResolveCommodity(UexId<GameCommodity> commodityId)
         => uexMapper.ResolveCachedGameEntity(commodityId);
 
-    private GameVehicle ResolveVehicle(UexId<GameVehicle> vehicleId)
-        => uexMapper.ResolveCachedGameEntity(vehicleId);
+    private GameVehicle? ResolveVehicle(UexId<GameVehicle>? vehicleId)
+        => vehicleId is not null
+            ? uexMapper.ResolveCachedGameEntity(vehicleId)
+            : null;
 
     private GameTerminal ResolveTerminal(UexId<GameTerminal> terminalId)
         => uexMapper.ResolveCachedGameEntity(terminalId);

@@ -16,7 +16,7 @@ public class TradeRunStageComponent<T> : TradeRunComponent where T : TradeRun.St
     [Parameter]
     public EventCallback<T> StageChanged { get; set; }
 
-    protected async Task UpdateStageAsync()
+    protected virtual async Task UpdateStageAsync()
         => await StageChanged.InvokeAsync(Stage);
 
     protected async Task NextStepAsync()

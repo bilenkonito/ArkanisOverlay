@@ -64,11 +64,14 @@ public class TradeRun
     public GameCurrency Investment
         => new(-1 * Acquisitions.Sum(x => x.PriceTotal.Amount));
 
+    public GameCurrency Fees
+        => new(-1 * Stages.Sum(x => x.CargoTransferFee.Amount));
+
     public GameCurrency Revenue
         => new(Sales.Sum(x => x.PriceTotal.Amount));
 
     public GameCurrency Profit
-        => Revenue + Investment;
+        => Revenue + Investment + Fees;
 
     public GameCurrency CurrentInvestment
         => new(-1 * Acquisitions.Where(x => x.AcquiredAt is not null).Sum(x => x.PriceTotal.Amount));
@@ -77,7 +80,7 @@ public class TradeRun
         => new(Sales.Where(x => x.SoldAt is not null).Sum(x => x.PriceTotal.Amount));
 
     public GameCurrency CurrentProfit
-        => CurrentRevenue + CurrentInvestment;
+        => CurrentRevenue + CurrentInvestment + Fees;
 
     public IEnumerable<Stage> Stages
         => Acquisitions
@@ -223,7 +226,9 @@ public class TradeRun
         public abstract string CurrentStepTitle { get; }
 
         public required QuantityOf Quantity { get; set; }
-        public bool UsedAutoload { get; set; }
+
+        public GameCurrency CargoTransferFee { get; set; } = GameCurrency.Zero;
+        public bool CargoTransferAutomatic { get; set; }
 
         public DateTimeOffset? StartedAt { get; set; }
         public DateTimeOffset? ReachedAt { get; set; }
@@ -323,7 +328,7 @@ public class TradeRun
             => this switch
             {
                 { ReachedAt: null } => "Travel to the destination",
-                { TransferredAt: null } when !UsedAutoload => "Unload the acquired cargo",
+                { TransferredAt: null } when !CargoTransferAutomatic => "Unload the acquired cargo",
                 { SoldAt: null } => "Sell the cargo",
                 { TransferredAt: null } => "Wait for the cargo to unload",
                 { FinalizedAt: null } => "Prepare for takeoff",

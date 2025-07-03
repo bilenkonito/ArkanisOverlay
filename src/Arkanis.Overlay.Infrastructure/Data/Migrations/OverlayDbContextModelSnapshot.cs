@@ -202,6 +202,12 @@ namespace Arkanis.Overlay.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("CargoTransferAutomatic")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CargoTransferFee")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasMaxLength(21)
@@ -224,9 +230,6 @@ namespace Arkanis.Overlay.Infrastructure.Data.Migrations
 
                     b.Property<DateTimeOffset?>("TransferredAt")
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("UsedAutoload")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

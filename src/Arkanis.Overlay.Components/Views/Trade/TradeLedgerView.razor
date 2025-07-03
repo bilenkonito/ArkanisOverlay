@@ -101,7 +101,7 @@
                 }
                 else
                 {
-                    <span class="text-muted">N/A</span>
+                    <span class="text-secondary">N/A</span>
                 }
             </CellTemplate>
             <AggregateTemplate>
@@ -113,6 +113,29 @@
                 </span>
             </AggregateTemplate>
         </TemplateColumn>
+        <PropertyColumn Title="Length"
+                        Property="@(x => x.Length)"
+                        AggregateDefinition="@(new AggregateDefinition<TradeRun>())"
+                        HeaderClass="text-right flex-row-reverse pr-4"
+                        CellClass="text-right pr-4"
+                        FooterClass="text-right pr-4">
+            <CellTemplate>
+                @if (context.Item.FinalizedAt.HasValue)
+                {
+                    @context.Item.Length.Humanize()
+                }
+                else
+                {
+                    <MudText Typo="@Typo.inherit"
+                             Color="Color.Warning">
+                        In Progress
+                    </MudText>
+                }
+            </CellTemplate>
+            <AggregateTemplate>
+                @context.Aggregate(TimeSpan.Zero, (a, b) => a + b.Length).Humanize()
+            </AggregateTemplate>
+        </PropertyColumn>
         <PropertyColumn Title="Acquired"
                         Property="@(x => x.AcquiredQuantities)"
                         SortBy="@(x => Quantity.Aggregate(x.AcquiredQuantities).FirstOrDefault(Quantity.Zero))"
@@ -143,29 +166,6 @@
             <AggregateTemplate>
                 <QuantityAggregateLabel
                     Models="@context.SelectMany(x => x.SoldQuantities)"/>
-            </AggregateTemplate>
-        </PropertyColumn>
-        <PropertyColumn Title="Length"
-                        Property="@(x => x.Length)"
-                        AggregateDefinition="@(new AggregateDefinition<TradeRun>())"
-                        HeaderClass="text-right flex-row-reverse pr-4"
-                        CellClass="text-right pr-4"
-                        FooterClass="text-right pr-4">
-            <CellTemplate>
-                @if (context.Item.FinalizedAt.HasValue)
-                {
-                    @context.Item.Length.Humanize()
-                }
-                else
-                {
-                    <MudText Typo="@Typo.inherit"
-                             Color="Color.Warning">
-                        In Progress
-                    </MudText>
-                }
-            </CellTemplate>
-            <AggregateTemplate>
-                @context.Aggregate(TimeSpan.Zero, (a, b) => a + b.Length).Humanize()
             </AggregateTemplate>
         </PropertyColumn>
         <PropertyColumn Title="Profit"
