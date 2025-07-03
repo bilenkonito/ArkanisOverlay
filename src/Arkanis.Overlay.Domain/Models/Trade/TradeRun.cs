@@ -18,9 +18,12 @@ public class TradeRun
 {
     public TradeRunId Id { get; init; } = TradeRunId.CreateNew();
 
+    public GameVehicle? Vehicle { get; init; }
+
     public AcquisitionStage[] Acquisitions { get; set; } = [];
     public List<SaleStage> Sales { get; set; } = [];
 
+    public StarCitizenVersion? Version { get; init; }
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.Now;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.Now;
     public DateTimeOffset? FinalizedAt { get; set; }
@@ -95,8 +98,10 @@ public class TradeRun
     public static TradeRun Create(GameTradeRoute tradeRoute, Context context)
         => new()
         {
+            Vehicle = context.Vehicle,
             Acquisitions = [TerminalPurchaseStage.Create(tradeRoute, context)],
             Sales = [TerminalSaleStage.Create(tradeRoute, context)],
+            Version = context.Version,
         };
 
     public IEnumerable<PlayerEvent> CreateEvents()
@@ -116,7 +121,8 @@ public class TradeRun
 
     public class Context
     {
-        public UexId<GameVehicle>? VehicleId { get; init; }
+        public required StarCitizenVersion? Version { get; init; }
+        public GameVehicle? Vehicle { get; init; }
         public Quantity Quantity { get; init; } = Quantity.Zero;
     }
 

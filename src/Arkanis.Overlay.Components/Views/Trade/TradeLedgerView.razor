@@ -19,6 +19,14 @@
         .mud-table-child-content {
             padding: 0 !important;
         }
+
+        .game-entity-name {
+            height: fit-content;
+
+            > .d-flex {
+                height: fit-content;
+            }
+        }
     }
 </style>
 
@@ -77,6 +85,32 @@
                         </span>
                     </span>
                 </MudStack>
+            </AggregateTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Vehicle"
+                        AggregateDefinition="@(new AggregateDefinition<TradeRun>())">
+            <CellTemplate>
+                @if (context.Item.Vehicle?.Name is { } vehicleName)
+                {
+                    <GameEntityNameLabel
+                        Model="@vehicleName"
+                        Typo="@Typo.inherit"
+                        Style="height: fit-content"
+                        Embedded
+                        PreferShort/>
+                }
+                else
+                {
+                    <span class="text-muted">N/A</span>
+                }
+            </CellTemplate>
+            <AggregateTemplate>
+                <span>
+                    @context.Select(x => x.Vehicle).Distinct().Count()
+                    <span style="font-weight: normal">
+                        vehicles
+                    </span>
+                </span>
             </AggregateTemplate>
         </TemplateColumn>
         <PropertyColumn Title="Acquired"

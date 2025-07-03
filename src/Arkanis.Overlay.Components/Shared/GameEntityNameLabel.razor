@@ -3,7 +3,9 @@
     @if (Model.Location is { } locationReference && !Embedded)
     {
         <div class="header location">
-            <GameLocationNamePart Model="@locationReference"/>
+            <GameLocationNamePart
+                Model="@locationReference"
+                Typo="@Typo"/>
         </div>
     }
     <MudStack Class="primary"
@@ -14,6 +16,7 @@
             <div class="d-flex text-secondary flex-truncate">
                 <GameCompanyNamePart
                     Model="@companyReference"
+                    Typo="@Typo"
                     PreferShort/>
             </div>
         }

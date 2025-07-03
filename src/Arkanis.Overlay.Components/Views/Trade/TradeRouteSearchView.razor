@@ -1,7 +1,9 @@
 @using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Abstractions.Game
+@using Arkanis.Overlay.Domain.Models
 @inject IGameEntityRepository<GameTradeRoute> TradeRouteRepository
 @inject ITradeRunManager TradeRunManager
+@inject IExternalServiceStateProvider ServiceStateProvider
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
 <style>
@@ -434,9 +436,11 @@
 
     private async Task CreateTradeRunAsync(GameTradeRoute tradeRoute)
     {
+        var currentServiceState = await ServiceStateProvider.LoadCurrentServiceStateAsync(CancellationToken.None);
         var runContext = new TradeRun.Context
         {
-            VehicleId = SelectedVehicle?.Id as UexId<GameVehicle>,
+            Version = (currentServiceState as ServiceAvailableState)?.Version,
+            Vehicle = SelectedVehicle,
             Quantity = Quantity.FromScu(_context.CargoCapacity ?? tradeRoute.Origin.CargoUnitsAvailable),
         };
         var tradeRun = TradeRun.Create(tradeRoute, runContext);

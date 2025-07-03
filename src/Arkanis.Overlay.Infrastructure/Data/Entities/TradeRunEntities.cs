@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using Abstractions;
 using Converters;
+using Domain.Models;
 using Domain.Models.Game;
 using Domain.Models.Trade;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,9 @@ using Riok.Mapperly.Abstractions;
 [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
 public class TradeRunEntity : IDatabaseEntity<TradeRunId>
 {
+    public UexId<GameVehicle>? VehicleId { get; init; }
+    public StarCitizenVersion? Version { get; init; }
+
     public List<AcquisitionStage> Acquisitions { get; set; } = [];
     public List<SaleStage> Sales { get; set; } = [];
 
@@ -30,6 +34,12 @@ public class TradeRunEntity : IDatabaseEntity<TradeRunId>
         {
             builder.Property(x => x.Id)
                 .HasConversion<GuidDomainIdConverter<TradeRunId>>();
+
+            builder.Property(x => x.VehicleId)
+                .HasConversion<UexApiDomainIdConverter<GameVehicle>>();
+
+            builder.Property(x => x.Version)
+                .HasConversion<StarCitizenVersionValueConverter>();
 
             builder.HasMany(x => x.Acquisitions)
                 .WithOne()

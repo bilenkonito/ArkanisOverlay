@@ -16,6 +16,8 @@ namespace Arkanis.Overlay.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    VehicleId = table.Column<string>(type: "TEXT", nullable: true),
+                    Version = table.Column<string>(type: "TEXT", maxLength: 10, nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     FinalizedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: true)

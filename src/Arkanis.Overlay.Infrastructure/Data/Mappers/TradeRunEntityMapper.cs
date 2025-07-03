@@ -34,6 +34,7 @@ internal partial class TradeRunEntityMapper(UexApiDtoMapper uexMapper)
 
     #region (To Domain) Trade Run Mapping
 
+    [MapProperty(nameof(TradeRunEntity.VehicleId), nameof(TradeRun.Vehicle), Use = nameof(ResolveVehicle))]
     public partial TradeRun Map(TradeRunEntity tradeRun);
 
     #endregion

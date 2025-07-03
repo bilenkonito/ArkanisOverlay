@@ -163,7 +163,8 @@
 
             var runContext = new TradeRun.Context
             {
-                VehicleId = null,
+                Version = TradeRun.Version,
+                Vehicle = null,
                 Quantity = unsoldQuantity,
             };
             var stage = TradeRun.TerminalSaleStage.Create(selectedTradeRoute, runContext);
