@@ -245,6 +245,9 @@
     public IGameEntity? SelectedDestinationLocationEntity { get; set; }
 
     [Parameter]
+    public Func<IGameLocation, bool> ExcludeDestination { get; set; } = _ => false;
+
+    [Parameter]
     public RenderFragment<GameTradeRoute>? ControlsContent { get; set; }
 
     protected override async Task OnParametersSetAsync()
@@ -283,6 +286,7 @@
 
         ApplicableCommodities = AllRoutes
             .Where(FilterByDestination)
+            .Where(FilterByDestinationExclusion)
             .Where(FilterByProperties)
             .Select(x => x.Commodity)
             .Distinct()
@@ -290,6 +294,7 @@
 
         ApplicableOriginLocations = AllRoutes
             .Where(FilterByDestination)
+            .Where(FilterByDestinationExclusion)
             .Where(FilterByCommodity)
             .Where(FilterByProperties)
             .Select(x => x.Origin.Terminal)
@@ -299,6 +304,7 @@
             .ToArray();
 
         ApplicableDestinationLocations = AllRoutes
+            .Where(FilterByDestinationExclusion)
             .Where(FilterByCommodity)
             .Where(FilterByProperties)
             .Select(x => x.Destination.Terminal)
@@ -313,6 +319,7 @@
 
         FilteredRoutes = AllRoutes
             .Where(FilterByDestination)
+            .Where(FilterByDestinationExclusion)
             .Where(FilterByCommodity)
             .Where(FilterByProperties)
             .OrderBy(Order, orderByDirection)
@@ -330,6 +337,9 @@
 
     bool FilterByDestination(GameTradeRoute x)
         => SelectedDestinationLocation is null || SelectedDestinationLocation.IsOrContains(x.Destination.Terminal);
+
+    bool FilterByDestinationExclusion(GameTradeRoute x)
+        => !ExcludeDestination(x.Destination.Terminal);
 
     bool FilterByProperties(GameTradeRoute x)
         => (_allowIllegal || !x.Commodity.IsIllegal)

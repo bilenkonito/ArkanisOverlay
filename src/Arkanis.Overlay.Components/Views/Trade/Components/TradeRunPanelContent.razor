@@ -1,4 +1,5 @@
 @using Arkanis.Overlay.Components.Shared.Dialogs
+@using Arkanis.Overlay.Domain.Abstractions.Game
 @inherits TradeRunComponent
 @inject IDialogService DialogService
 
@@ -153,6 +154,7 @@
                 {
                     Commodity = unsoldQuantity.Reference.Entity as GameCommodity,
                     QuantityAmount = unsoldQuantity.Amount,
+                    Exclude = location => TradeRun.Sales.OfType<IGameLocatedAt>().Any(x => x.Location.IsOrContains(location)),
                 }
             );
 

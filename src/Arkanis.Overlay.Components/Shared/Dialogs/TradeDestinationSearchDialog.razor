@@ -12,7 +12,8 @@
         <div style="height: 1vh;"></div>
         <TradeDestinationSearchView CargoCapacity="@CurrentParameters.QuantityAmount"
                                     SelectedCommodityEntity="@CurrentParameters.Commodity"
-                                    SelectedDestinationLocationEntity="@CurrentParameters.Destination">
+                                    SelectedDestinationLocationEntity="@CurrentParameters.Destination"
+                                    ExcludeDestination="@CurrentParameters.Exclude">
             <ControlsContent Context="tradeRoute">
                 <MudDivider
                     FlexItem
@@ -70,6 +71,7 @@
         public int? QuantityAmount { get; set; }
         public GameCommodity? Commodity { get; set; }
         public IGameLocation? Destination { get; set; }
+        public Func<IGameLocation, bool> Exclude { get; set; } = _ => false;
     }
 
 }
