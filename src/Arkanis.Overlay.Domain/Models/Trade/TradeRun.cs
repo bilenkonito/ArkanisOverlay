@@ -124,6 +124,9 @@ public class TradeRun
         public required StarCitizenVersion? Version { get; init; }
         public GameVehicle? Vehicle { get; init; }
         public Quantity Quantity { get; init; } = Quantity.Zero;
+
+        public QuantityOf GetQuantityOf(OwnableEntityReference entityReference)
+            => new(entityReference, Quantity.Amount, Quantity.Unit);
     }
 
     public abstract class PlayerEvent(DateTimeOffset occuredAt)
@@ -293,7 +296,6 @@ public class TradeRun
         {
             var commodity = new OwnableEntityReference.Commodity(tradeRoute.Commodity);
             var currentStock = Inventory.Quantity.FromScu(tradeRoute.Origin.CargoUnitsAvailable);
-            var commodityQuantity = new QuantityOf(commodity, currentStock);
 
             return new TerminalPurchaseStage
             {
@@ -305,7 +307,7 @@ public class TradeRun
                     Stock = currentStock - context.Quantity,
                 },
                 Terminal = tradeRoute.Origin.Terminal,
-                Quantity = commodityQuantity,
+                Quantity = context.GetQuantityOf(commodity),
             };
         }
     }
@@ -374,7 +376,6 @@ public class TradeRun
         {
             var commodity = new OwnableEntityReference.Commodity(tradeRoute.Commodity);
             var currentStock = Inventory.Quantity.FromScu(tradeRoute.Destination.CargoUnitsAvailable);
-            var commodityQuantity = new QuantityOf(commodity, context.Quantity.Amount, context.Quantity.Unit);
 
             return new TerminalSaleStage
             {
@@ -386,7 +387,7 @@ public class TradeRun
                     Stock = currentStock + context.Quantity,
                 },
                 Terminal = tradeRoute.Destination.Terminal,
-                Quantity = commodityQuantity,
+                Quantity = context.GetQuantityOf(commodity),
             };
         }
     }
