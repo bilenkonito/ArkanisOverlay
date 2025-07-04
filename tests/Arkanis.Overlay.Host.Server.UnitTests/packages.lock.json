@@ -1031,7 +1031,6 @@
           "Arkanis.Overlay.Infrastructure": "[1.0.0, )",
           "Octokit": "[14.0.0, )",
           "Serilog": "[4.3.0, )",
-          "Serilog.Expressions": "[5.1.0-dev-02301, )",
           "Serilog.Extensions.Hosting": "[8.0.0, )",
           "Serilog.Settings.Configuration": "[8.0.4, )",
           "Serilog.Sinks.Console": "[6.0.0, )"
@@ -1446,15 +1445,6 @@
         "requested": "[4.3.0, )",
         "resolved": "4.3.0",
         "contentHash": "+cDryFR0GRhsGOnZSKwaDzRRl4MupvJ42FhCE4zhQRVanX0Jpg6WuCBk59OVhVDPmab1bB+nRykAnykYELA9qQ=="
-      },
-      "Serilog.Expressions": {
-        "type": "CentralTransitive",
-        "requested": "[5.1.0-dev-02301, )",
-        "resolved": "5.1.0-dev-02301",
-        "contentHash": "hW7OKCr8m/5h84oTFeXSnnfqFozn05h9BfU+1kMLLFvSmJPjRhaxqVqR/zs2+g9kD8s0d9CSRCwhtZAshbyvUg==",
-        "dependencies": {
-          "Serilog": "4.2.0"
-        }
       },
       "Serilog.Extensions.Hosting": {
         "type": "CentralTransitive",
