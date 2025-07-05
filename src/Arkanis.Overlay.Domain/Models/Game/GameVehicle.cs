@@ -27,6 +27,9 @@ public abstract class GameVehicle(
 
     public GamePadSize PadSize { get; init; }
 
+    public bool SupportsDocking { get; init; }
+    public bool SupportsCargoDeck { get; init; }
+
     public GameCompany Manufacturer
         => manufacturer;
 

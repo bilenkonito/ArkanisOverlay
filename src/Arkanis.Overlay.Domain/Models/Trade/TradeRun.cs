@@ -318,6 +318,11 @@ public class TradeRun
                         : tradeRoute.Origin.InventoryStatus,
                     Stock = newStock,
                 },
+                CargoTransferType = context.Vehicle switch
+                {
+                    { SupportsCargoDeck: true } => GameCargoTransferType.CargoDeck,
+                    _ => GameCargoTransferType.Manual,
+                },
                 Terminal = tradeRoute.Origin.Terminal,
                 Quantity = context.GetQuantityOf(commodity),
             };
@@ -397,6 +402,11 @@ public class TradeRun
                     MaxContainerSize = tradeRoute.Destination.MaxContainerSize,
                     StockStatus = tradeRoute.Destination.InventoryStatus,
                     Stock = currentStock + context.Quantity,
+                },
+                CargoTransferType = context.Vehicle switch
+                {
+                    { SupportsCargoDeck: true } => GameCargoTransferType.CargoDeck,
+                    _ => GameCargoTransferType.Manual,
                 },
                 Terminal = tradeRoute.Destination.Terminal,
                 Quantity = context.GetQuantityOf(commodity),
