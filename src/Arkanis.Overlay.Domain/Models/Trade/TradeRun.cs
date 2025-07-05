@@ -232,7 +232,7 @@ public class TradeRun
         public required QuantityOf Quantity { get; set; }
 
         public GameCurrency CargoTransferFee { get; set; } = GameCurrency.Zero;
-        public bool CargoTransferAutomatic { get; set; }
+        public GameCargoTransferType CargoTransferType { get; set; } = GameCargoTransferType.Manual;
 
         public DateTimeOffset? StartedAt { get; set; }
         public DateTimeOffset? ReachedAt { get; set; }
@@ -335,7 +335,7 @@ public class TradeRun
             => this switch
             {
                 { ReachedAt: null } => "Travel to the destination",
-                { TransferredAt: null } when !CargoTransferAutomatic => "Unload the acquired cargo",
+                { TransferredAt: null } when CargoTransferType is GameCargoTransferType.Manual => "Unload the acquired cargo",
                 { SoldAt: null } => "Sell the cargo",
                 { TransferredAt: null } => "Wait for the cargo to unload",
                 { FinalizedAt: null } => "Prepare for takeoff",

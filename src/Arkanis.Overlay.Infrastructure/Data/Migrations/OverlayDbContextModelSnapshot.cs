@@ -202,10 +202,10 @@ namespace Arkanis.Overlay.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("CargoTransferAutomatic")
+                    b.Property<int>("CargoTransferFee")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CargoTransferFee")
+                    b.Property<int>("CargoTransferType")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Discriminator")

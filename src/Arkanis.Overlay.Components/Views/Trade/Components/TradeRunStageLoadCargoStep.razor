@@ -18,15 +18,18 @@
         </MudStack>
         <GameEntityNameLabel
             Model="@Location.Name"/>
-        <MudCheckBox @bind-Value="@Stage.CargoTransferAutomatic"
-                     @bind-Value:after="@UpdateStageAsync">
-            <MudStack Spacing="0">
-                <MudText>
-                    I have used auto-load
-                </MudText>
-            </MudStack>
-        </MudCheckBox>
-        @if (Stage.CargoTransferAutomatic)
+        <MudSelect Label="Cargo transfer type"
+                   @bind-Value="@Stage.CargoTransferType"
+                   @bind-Value:after="@UpdateStageAsync"
+                   Style="min-width: 240px">
+            @foreach (var status in Enum.GetValues<GameCargoTransferType>().Where(x => x is not GameCargoTransferType.Unknown))
+            {
+                <MudSelectItem Value="@status">
+                    @status.Humanize()
+                </MudSelectItem>
+            }
+        </MudSelect>
+        @if (Stage.CargoTransferType is GameCargoTransferType.AutoLoad)
         {
             <MudNumericField
                 Label="Transfer fee"
@@ -44,16 +47,16 @@
                    Color="@Color.Success"
                    Size="@Size.Large"
                    Disabled="@IsConfirmDisabled">
-            @if (Stage.CargoTransferAutomatic)
+            @if (Stage.CargoTransferType is GameCargoTransferType.Manual)
             {
                 <MudText Typo="@Typo.inherit">
-                    The cargo transfer has finished
+                    I have loaded the cargo
                 </MudText>
             }
             else
             {
                 <MudText Typo="@Typo.inherit">
-                    I have loaded the cargo
+                    The cargo transfer has finished
                 </MudText>
             }
         </MudButton>
@@ -72,7 +75,7 @@
 
     private bool IsConfirmDisabled
         => IsDisabled
-           || Stage is { CargoTransferAutomatic: true, CargoTransferFee.Amount: 0 };
+           || Stage is { CargoTransferType: GameCargoTransferType.AutoLoad, CargoTransferFee.Amount: 0 };
 
     [Parameter]
     [EditorRequired]
@@ -89,7 +92,7 @@
 
     protected override Task UpdateStageAsync()
     {
-        if (!Stage.CargoTransferAutomatic)
+        if (Stage.CargoTransferType is not GameCargoTransferType.AutoLoad)
         {
             Stage.CargoTransferFee.Amount = 0;
         }
