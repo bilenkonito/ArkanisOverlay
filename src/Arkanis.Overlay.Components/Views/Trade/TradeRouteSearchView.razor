@@ -404,7 +404,7 @@
         {
             Version = (currentServiceState as ServiceAvailableState)?.Version,
             Vehicle = SelectedVehicle,
-            Quantity = Quantity.FromScu(_context.CargoCapacity ?? tradeRoute.Origin.CargoUnitsAvailable),
+            Quantity = Quantity.FromScu(Math.Min(_context.CargoCapacity ?? tradeRoute.Origin.CargoUnitsAvailable, tradeRoute.Origin.CargoUnitsAvailable)),
         };
         var tradeRun = TradeRun.Create(tradeRoute, runContext);
         await TradeRunManager.AddOrUpdateEntryAsync(tradeRun);
