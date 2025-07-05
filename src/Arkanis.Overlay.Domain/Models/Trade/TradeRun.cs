@@ -33,26 +33,18 @@ public class TradeRun
         => Stages.FirstOrDefault(x => x.FinalizedAt is null);
 
     public IEnumerable<QuantityOf> AcquiredQuantities
-        => Acquisitions
-            .Where(x => x is { AcquiredAt: not null, FinalizedAt: not null })
-            .GroupBy(x => x.Quantity.Reference.EntityId)
-            .Select(amounts => new QuantityOf(
-                    amounts.First().Quantity.Reference,
-                    amounts.Select(amount => amount.Quantity.Amount).Sum(),
-                    amounts.First().Quantity.Unit
-                )
-            );
+        => QuantityOf.Aggregate(
+            Acquisitions
+                .Where(x => x.IsFinalized)
+                .Select(x => x.Quantity)
+        );
 
     public IEnumerable<QuantityOf> SoldQuantities
-        => Sales
-            .Where(x => x is { SoldAt: not null, FinalizedAt: not null })
-            .GroupBy(x => x.Quantity.Reference.EntityId)
-            .Select(amounts => new QuantityOf(
-                    amounts.First().Quantity.Reference,
-                    amounts.Select(amount => amount.Quantity.Amount).Sum(),
-                    amounts.First().Quantity.Unit
-                )
-            );
+        => QuantityOf.Aggregate(
+            Sales
+                .Where(x => x.IsFinalized)
+                .Select(x => x.Quantity)
+        );
 
     public IEnumerable<QuantityOf> UnsoldQuantities
         => AcquiredQuantities.LeftJoin(
@@ -99,14 +91,41 @@ public class TradeRun
             .Where(x => x.Reference.EntityId == gameEntityId)
             .SingleOrDefault(Quantity.Zero);
 
-    public static TradeRun Create(GameTradeRoute tradeRoute, Context context)
-        => new()
+    public void SynchroniseSellableQuantities()
+    {
+        var quantities = QuantityOf.Aggregate(Acquisitions.Where(x => !x.IsFinalized).Select(x => x.Quantity));
+        foreach (var unsoldQuantity in quantities.Where(x => x.Amount > 0))
         {
-            Vehicle = context.Vehicle,
-            Acquisitions = [TerminalPurchaseStage.Create(tradeRoute, context)],
-            Sales = [TerminalSaleStage.Create(tradeRoute, context)],
-            Version = context.Version,
-        };
+            var plannedSales = Sales
+                .Where(x => !x.IsFinalized)
+                .Where(x => x.Quantity.Reference.EntityId == unsoldQuantity.Reference.EntityId)
+                .ToArray();
+
+            Quantity quantityToSell = unsoldQuantity with { };
+            foreach (var (saleIndex, plannedSale) in plannedSales.Index())
+            {
+                var isLast = saleIndex == plannedSales.Length - 1;
+                if (quantityToSell.Amount <= 0)
+                {
+                    // there is nothing left to sell
+                    Sales.Remove(plannedSale);
+                    continue;
+                }
+
+                quantityToSell -= plannedSale.Quantity;
+                if (quantityToSell.Amount < 0)
+                {
+                    // sold more than purchased, decrease the quantity to sell
+                    plannedSale.Quantity.Amount += quantityToSell.Amount;
+                }
+                else if (isLast && quantityToSell.Amount > 0)
+                {
+                    // did not sell everything, add to last sale
+                    plannedSale.Quantity.Amount += quantityToSell.Amount;
+                }
+            }
+        }
+    }
 
     public IEnumerable<PlayerEvent> CreateEvents()
     {
@@ -122,6 +141,15 @@ public class TradeRun
             yield return new PlayerEvent.RunCompleted(FinalizedAt.Value);
         }
     }
+
+    public static TradeRun Create(GameTradeRoute tradeRoute, Context context)
+        => new()
+        {
+            Vehicle = context.Vehicle,
+            Acquisitions = [TerminalPurchaseStage.Create(tradeRoute, context)],
+            Sales = [TerminalSaleStage.Create(tradeRoute, context)],
+            Version = context.Version,
+        };
 
     public class Context
     {
@@ -234,6 +262,7 @@ public class TradeRun
         public GameCurrency CargoTransferFee { get; set; } = GameCurrency.Zero;
         public GameCargoTransferType CargoTransferType { get; set; } = GameCargoTransferType.Manual;
 
+        public abstract bool IsFinalized { get; }
         public bool IsRetry { get; set; }
 
         public DateTimeOffset? StartedAt { get; set; }
@@ -285,6 +314,9 @@ public class TradeRun
         public override GameCurrency Balance
             => (PricePerUnit * Quantity.Amount * -1) + Fees;
 
+        public override bool IsFinalized
+            => this is { AcquiredAt: not null, FinalizedAt: not null };
+
         public override string CurrentStepTitle
             => this switch
             {
@@ -295,6 +327,7 @@ public class TradeRun
                 { FinalizedAt: not null } => "This stage has been finished",
                 _ => "Continue",
             };
+
 
         /// <inheritdoc />
         public override IEnumerable<PlayerEvent> CreateEvents()
@@ -357,6 +390,9 @@ public class TradeRun
 
         public override GameCurrency Balance
             => (PricePerUnit * Quantity.Amount) + Fees;
+
+        public override bool IsFinalized
+            => this is { SoldAt: not null, FinalizedAt: not null };
 
         public override string CurrentStepTitle
             => this switch

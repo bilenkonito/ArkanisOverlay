@@ -120,6 +120,12 @@
     private bool IsDisabled
         => IsCompleted || Stage.FinalizedAt is not null;
 
+    protected override async Task UpdateStageAsync()
+    {
+        TradeRun.SynchroniseSellableQuantities();
+        await base.UpdateStageAsync();
+    }
+
     private async Task OnAcquiredClick()
     {
         Stage.AcquiredAt ??= DateTimeOffset.Now;

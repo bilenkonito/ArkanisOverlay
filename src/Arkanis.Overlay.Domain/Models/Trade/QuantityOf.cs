@@ -41,4 +41,17 @@ public record QuantityOf(OwnableEntityReference Reference, int Amount, Quantity.
 
     public override string ToString()
         => ToString(null, null);
+
+    public static IEnumerable<QuantityOf> Aggregate(IEnumerable<QuantityOf> quantities)
+        => quantities
+            .GroupBy(quantity => quantity.Reference.EntityId)
+            .Select(quantitiesByEntity =>
+                {
+                    var firstQuantity = quantitiesByEntity.First();
+                    return new QuantityOf(
+                        firstQuantity.Reference,
+                        Quantity.Aggregate(quantitiesByEntity).Single()
+                    );
+                }
+            );
 }
