@@ -2,6 +2,7 @@ namespace Arkanis.Overlay.Domain.Models.Trade;
 
 using System.Diagnostics.CodeAnalysis;
 using Abstractions.Game;
+using Enums;
 using Game;
 using Inventory;
 using MoreLinq;
@@ -303,7 +304,8 @@ public class TradeRun
         public static TerminalPurchaseStage Create(GameTradeRoute tradeRoute, Context context)
         {
             var commodity = new OwnableEntityReference.Commodity(tradeRoute.Commodity);
-            var currentStock = Inventory.Quantity.FromScu(tradeRoute.Origin.CargoUnitsAvailable);
+            var newStockAmount = Math.Min(tradeRoute.Origin.CargoUnitsAvailable - context.Quantity.Amount, 0);
+            var newStock = Inventory.Quantity.FromScu(newStockAmount);
 
             return new TerminalPurchaseStage
             {
@@ -311,8 +313,10 @@ public class TradeRun
                 UserSourcedData =
                 {
                     MaxContainerSize = tradeRoute.Origin.MaxContainerSize,
-                    StockStatus = tradeRoute.Origin.InventoryStatus,
-                    Stock = currentStock - context.Quantity,
+                    StockStatus = newStockAmount == 0
+                        ? TerminalInventoryStatus.OutOfStock
+                        : tradeRoute.Origin.InventoryStatus,
+                    Stock = newStock,
                 },
                 Terminal = tradeRoute.Origin.Terminal,
                 Quantity = context.GetQuantityOf(commodity),
