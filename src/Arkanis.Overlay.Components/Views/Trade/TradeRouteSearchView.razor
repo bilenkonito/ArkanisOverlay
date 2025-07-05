@@ -77,33 +77,41 @@
         </MudItem>
         <MudItem xs="12" md="7">
             <MudStack Spacing="2" Row>
-                <MudToggleIconButton
-                    @bind-Toggled="@_allowIllegal"
-                    @bind-Toggled:after="@RefreshDataAsync"
-                    Icon="@Icons.Material.Filled.LocalPolice"
-                    Color="@Color.Success"
-                    ToggledColor="@Color.Error"/>
-                <MudToggleIconButton
-                    @bind-Toggled="@_onlyAutoLoadLocations"
-                    @bind-Toggled:after="@RefreshDataAsync"
-                    Icon="@Icons.Material.Filled.AutoMode"
-                    Color="@Color.Inherit"
-                    ToggledColor="@Color.Success"/>
+                <Tooltip Text="@(_allowIllegal ? "All commodities" : "Legal commodities only")">
+                    <MudToggleIconButton
+                        @bind-Toggled="@_allowIllegal"
+                        @bind-Toggled:after="@RefreshDataAsync"
+                        Icon="@Icons.Material.Filled.LocalPolice"
+                        Color="@Color.Success"
+                        ToggledColor="@Color.Error"/>
+                </Tooltip>
+                <Tooltip Text="@(_onlyAutoLoadLocations ? "Auto-load locations only" : "All locations (click to filter by auto-load)")">
+                    <MudToggleIconButton
+                        @bind-Toggled="@_onlyAutoLoadLocations"
+                        @bind-Toggled:after="@RefreshDataAsync"
+                        Icon="@Icons.Material.Filled.AutoMode"
+                        Color="@Color.Inherit"
+                        ToggledColor="@Color.Success"/>
+                </Tooltip>
                 <MudDivider Vertical FlexItem/>
-                <MudToggleIconButton
-                    @bind-Toggled="@_onlyGroundLocations"
-                    @bind-Toggled:after="@RefreshDataAsync"
-                    Disabled="@_onlySpaceLocations"
-                    Icon="@Icons.Material.Filled.SouthAmerica"
-                    Color="@Color.Inherit"
-                    ToggledColor="@Color.Warning"/>
-                <MudToggleIconButton
-                    @bind-Toggled="@_onlySpaceLocations"
-                    @bind-Toggled:after="@RefreshDataAsync"
-                    Disabled="@_onlyGroundLocations"
-                    Icon="@Icons.Material.Filled.Rocket"
-                    Color="@Color.Inherit"
-                    ToggledColor="@Color.Warning"/>
+                <Tooltip Text="Ground locations only">
+                    <MudToggleIconButton
+                        @bind-Toggled="@_onlyGroundLocations"
+                        @bind-Toggled:after="@RefreshDataAsync"
+                        Disabled="@_onlySpaceLocations"
+                        Icon="@Icons.Material.Filled.SouthAmerica"
+                        Color="@Color.Inherit"
+                        ToggledColor="@Color.Warning"/>
+                </Tooltip>
+                <Tooltip Text="Orbital locations only">
+                    <MudToggleIconButton
+                        @bind-Toggled="@_onlySpaceLocations"
+                        @bind-Toggled:after="@RefreshDataAsync"
+                        Disabled="@_onlyGroundLocations"
+                        Icon="@Icons.Material.Filled.Rocket"
+                        Color="@Color.Inherit"
+                        ToggledColor="@Color.Warning"/>
+                </Tooltip>
             </MudStack>
         </MudItem>
         <MudItem xs="12" md="5">
@@ -247,7 +255,7 @@
                                             Vertical/>
 
                                         <MudTooltip
-                                            Text="Create Trade Run"
+                                            Text="Create trade run"
                                             Placement="@Placement.Top">
                                             <MudIconButton
                                                 Icon="@Icons.Material.Filled.AirlineStops"

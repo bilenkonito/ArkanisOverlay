@@ -172,23 +172,7 @@
                                           Class="h-100 mr-n2"
                                           Row>
 
-                                    @if (ControlsContent is null)
-                                    {
-                                        <MudDivider
-                                            FlexItem
-                                            Vertical/>
-
-                                        <MudTooltip
-                                            Text="Create Trade Run"
-                                            Placement="@Placement.Top">
-                                            <MudIconButton
-                                                Icon="@Icons.Material.Filled.AirlineStops"
-                                                Class="focus"
-                                                OnClick="@(() => CreateTradeRunAsync(route))"
-                                                tabindex="1"/>
-                                        </MudTooltip>
-                                    }
-                                    else
+                                    @if (ControlsContent is not null)
                                     {
                                         @ControlsContent(route)
                                     }
