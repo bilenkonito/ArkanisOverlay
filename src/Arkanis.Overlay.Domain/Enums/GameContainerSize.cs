@@ -21,6 +21,9 @@ public enum GameContainerSize
     [Description("16 SCU")]
     Sixteen = 16,
 
+    [Description("24 SCU")]
+    TwentyFour = 24,
+
     [Description("32 SCU")]
     ThirtyTwo = 32,
 }
