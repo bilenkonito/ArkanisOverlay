@@ -37,6 +37,7 @@ namespace Arkanis.Overlay.Infrastructure.Data.Migrations
                     PricePerUnit = table.Column<int>(type: "INTEGER", nullable: false),
                     CargoTransferFee = table.Column<int>(type: "INTEGER", nullable: false),
                     CargoTransferType = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsRetry = table.Column<bool>(type: "INTEGER", nullable: false),
                     StartedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
                     ReachedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
                     TransferredAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),

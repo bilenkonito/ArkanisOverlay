@@ -101,6 +101,13 @@
                                 Finalize - keep cargo in the inventory
                             </MudButton>
                             <MudButton Class="w-100"
+                                       OnClick="ContinueAtLastLocationAsync"
+                                       Variant="@Variant.Outlined"
+                                       Color="@Color.Success"
+                                       Disabled="@IsInProgress">
+                                Continue at the current location and wait
+                            </MudButton>
+                            <MudButton Class="w-100"
                                        OnClick="ContinueToDifferentLocationAsync"
                                        Variant="@Variant.Outlined"
                                        Color="@Color.Success"
@@ -149,6 +156,23 @@
         await FinalizeRunAsync();
     }
 
+    private async Task ContinueAtLastLocationAsync()
+    {
+        if (TradeRun.Sales.LastOrDefault() is not TradeRun.TerminalSaleStage lastSale)
+        {
+            return;
+        }
+
+        foreach (var unsoldQuantity in TradeRun.UnsoldQuantities)
+        {
+            // TODO: potential mismatch of commodity-terminal in case of multiple commodities
+            var stage = TradeRun.TerminalSaleStage.CreateRetry(lastSale, unsoldQuantity);
+            TradeRun.Sales.Add(stage);
+        }
+
+        await UpdateRunAsync();
+    }
+
     private async Task ContinueToDifferentLocationAsync()
     {
         foreach (var unsoldQuantity in TradeRun.UnsoldQuantities)
@@ -171,7 +195,7 @@
             var runContext = new TradeRun.Context
             {
                 Version = TradeRun.Version,
-                Vehicle = null,
+                Vehicle = TradeRun.Vehicle,
                 Quantity = unsoldQuantity,
             };
             var stage = TradeRun.TerminalSaleStage.Create(selectedTradeRoute, runContext);

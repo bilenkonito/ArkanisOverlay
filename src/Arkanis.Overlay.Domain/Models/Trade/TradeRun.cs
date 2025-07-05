@@ -146,7 +146,7 @@ public class TradeRun
                 => "Trade run started";
 
             public override string Icon
-                => Filled.Check;
+                => Filled.Start;
         }
 
         public class RunCompleted(DateTimeOffset occuredAt) : PlayerEvent(occuredAt)
@@ -155,7 +155,7 @@ public class TradeRun
                 => "Trade run finalized";
 
             public override string Icon
-                => Filled.Start;
+                => Filled.CheckCircle;
         }
 
         public class StageCompleted(DateTimeOffset occuredAt) : PlayerEvent(occuredAt)
@@ -234,12 +234,48 @@ public class TradeRun
         public GameCurrency CargoTransferFee { get; set; } = GameCurrency.Zero;
         public GameCargoTransferType CargoTransferType { get; set; } = GameCargoTransferType.Manual;
 
+        public bool IsRetry { get; set; }
+
         public DateTimeOffset? StartedAt { get; set; }
         public DateTimeOffset? ReachedAt { get; set; }
         public DateTimeOffset? TransferredAt { get; set; }
         public DateTimeOffset? FinalizedAt { get; set; }
 
-        public abstract IEnumerable<PlayerEvent> CreateEvents();
+        /// <summary>
+        ///     Generates a sequence of player events for the current stage based on its state.
+        /// </summary>
+        /// <remarks>
+        ///     The event sequence is not guaranteed to be in any specific order.
+        /// </remarks>
+        /// <returns>
+        ///     An enumerable collection of <see cref="PlayerEvent" /> objects representing the events
+        ///     that occurred during this stage, such as takeoff, landing, cargo transfer, and stage completion.
+        /// </returns>
+        public virtual IEnumerable<PlayerEvent> CreateEvents()
+        {
+            if (!IsRetry)
+            {
+                if (StartedAt is not null)
+                {
+                    yield return new PlayerEvent.Takeoff(StartedAt.Value);
+                }
+
+                if (ReachedAt is not null)
+                {
+                    yield return new PlayerEvent.Landing(ReachedAt.Value);
+                }
+            }
+
+            if (TransferredAt is not null)
+            {
+                yield return new PlayerEvent.CargoTransferred(Quantity, TransferredAt.Value);
+            }
+
+            if (FinalizedAt is not null)
+            {
+                yield return new PlayerEvent.StageCompleted(FinalizedAt.Value);
+            }
+        }
     }
 
     public abstract class AcquisitionStage : Stage
@@ -260,31 +296,17 @@ public class TradeRun
                 _ => "Continue",
             };
 
+        /// <inheritdoc />
         public override IEnumerable<PlayerEvent> CreateEvents()
         {
-            if (StartedAt is not null)
+            foreach (var playerEvent in base.CreateEvents())
             {
-                yield return new PlayerEvent.Takeoff(StartedAt.Value);
-            }
-
-            if (ReachedAt is not null)
-            {
-                yield return new PlayerEvent.Landing(ReachedAt.Value);
+                yield return playerEvent;
             }
 
             if (AcquiredAt is not null)
             {
                 yield return new PlayerEvent.CargoAcquired(Quantity, AcquiredAt.Value);
-            }
-
-            if (TransferredAt is not null)
-            {
-                yield return new PlayerEvent.CargoTransferred(Quantity, TransferredAt.Value);
-            }
-
-            if (FinalizedAt is not null)
-            {
-                yield return new PlayerEvent.StageCompleted(FinalizedAt.Value);
             }
         }
     }
@@ -348,31 +370,17 @@ public class TradeRun
                 _ => "Continue",
             };
 
+        /// <inheritdoc />
         public override IEnumerable<PlayerEvent> CreateEvents()
         {
-            if (StartedAt is not null)
+            foreach (var playerEvent in base.CreateEvents())
             {
-                yield return new PlayerEvent.Takeoff(StartedAt.Value);
-            }
-
-            if (ReachedAt is not null)
-            {
-                yield return new PlayerEvent.Landing(ReachedAt.Value);
+                yield return playerEvent;
             }
 
             if (SoldAt is not null)
             {
                 yield return new PlayerEvent.CargoSold(Quantity, SoldAt.Value);
-            }
-
-            if (TransferredAt is not null)
-            {
-                yield return new PlayerEvent.CargoTransferred(Quantity, TransferredAt.Value);
-            }
-
-            if (FinalizedAt is not null)
-            {
-                yield return new PlayerEvent.StageCompleted(FinalizedAt.Value);
             }
         }
     }
@@ -412,5 +420,23 @@ public class TradeRun
                 Quantity = context.GetQuantityOf(commodity),
             };
         }
+
+        public static TerminalSaleStage CreateRetry(TerminalSaleStage saleStage, QuantityOf quantityOf)
+            => new()
+            {
+                IsRetry = true,
+                StartedAt = saleStage.StartedAt,
+                ReachedAt = saleStage.ReachedAt,
+                PricePerUnit = saleStage.PricePerUnit,
+                UserSourcedData =
+                {
+                    MaxContainerSize = saleStage.UserSourcedData.MaxContainerSize,
+                    StockStatus = saleStage.UserSourcedData.StockStatus,
+                    Stock = saleStage.UserSourcedData.Stock,
+                },
+                CargoTransferType = saleStage.CargoTransferType,
+                Terminal = saleStage.Terminal,
+                Quantity = quantityOf,
+            };
     }
 }

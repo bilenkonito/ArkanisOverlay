@@ -74,6 +74,8 @@ public class TradeRunEntity : IDatabaseEntity<TradeRunId>
         public GameCurrency CargoTransferFee { get; set; } = GameCurrency.Zero;
         public GameCargoTransferType CargoTransferType { get; set; }
 
+        public bool IsRetry { get; set; }
+
         public DateTimeOffset? StartedAt { get; set; }
         public DateTimeOffset? ReachedAt { get; set; }
         public DateTimeOffset? TransferredAt { get; set; }

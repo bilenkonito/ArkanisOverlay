@@ -216,6 +216,9 @@ namespace Arkanis.Overlay.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset?>("FinalizedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsRetry")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("PricePerUnit")
                         .HasColumnType("INTEGER");
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Arkanis.Overlay.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(OverlayDbContext))]
-    [Migration("20250705081006_AddSupportForTradeRunPersistence")]
+    [Migration("20250705093732_AddSupportForTradeRunPersistence")]
     partial class AddSupportForTradeRunPersistence
     {
         /// <inheritdoc />
@@ -218,6 +218,9 @@ namespace Arkanis.Overlay.Infrastructure.Data.Migrations
 
                     b.Property<DateTimeOffset?>("FinalizedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsRetry")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("PricePerUnit")
                         .HasColumnType("INTEGER");
