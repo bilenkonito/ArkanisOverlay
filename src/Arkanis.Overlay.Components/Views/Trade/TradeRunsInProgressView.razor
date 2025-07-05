@@ -59,7 +59,8 @@
                      Class="px-2">
                 The following trade runs are currently open and in progress.
                 You can continue to work on them until they can be finalized.
-                Trade runs without any acquired items can be completely abandoned by clicking the remove button in their header.
+                Trade runs without any acquired items can be completely abandoned by clicking the remove button in their
+                header.
                 In case your cargo has been lost in transit, the trade run can be finalized prematurely via the summary.
             </MudText>
         </div>
@@ -70,7 +71,8 @@
             @foreach (var tradeRun in TradeRuns)
             {
                 <MudExpansionPanel Gutters="false"
-                                   Expanded="@(panelIndex++ == 0)">
+                                   Expanded="@(panelIndex++ == 0)"
+                                   HeaderClass="hover-parent">
                     <TitleContent>
                         <TradeRunPanelTitle
                             TradeRun="tradeRun"

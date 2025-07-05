@@ -37,13 +37,20 @@
     }
     <MudSpacer/>
     <MudStack AlignItems="@AlignItems.End" Spacing="0"
-              Class="h-100">
+              Class="h-100 hidden-on-parent-hover">
         <MudText Class="mb-n3">
             <GameCurrencyLabel
                 Model="@(TradeRun.Investment)"
                 Typo="@Typo.h6"
                 UseColour/>
         </MudText>
+        <GameCurrencyLabel
+            Model="@(TradeRun.Revenue)"
+            Typo="@Typo.h6"
+            UseColour/>
+    </MudStack>
+    <MudStack AlignItems="@AlignItems.End" Spacing="0"
+              Class="h-100 visible-on-parent-hover">
         <GameCurrencyLabel
             Model="@(TradeRun.Profit)"
             Typo="@Typo.h6"
