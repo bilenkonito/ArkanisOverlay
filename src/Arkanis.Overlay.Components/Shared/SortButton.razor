@@ -60,7 +60,7 @@
         var newDirection = Direction switch
         {
             _ when args.Button == 2 => SortDirection.None,
-            SortDirection.Ascending when IsActive => SortDirection.Descending,
+            SortDirection.Ascending when IsActive => SortDirection.None,
             SortDirection.Descending when IsActive => SortDirection.Ascending,
             _ => SortDirection.Descending,
         };
