@@ -316,7 +316,9 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     [MapProperty(nameof(UniverseTerminalDTO.Screenshot_full), nameof(GameLocationEntity.ImageUrl))]
     [MapProperty(nameof(UniverseTerminalDTO.Screenshot_author), nameof(GameLocationEntity.ImageAuthor))]
     [MapProperty(nameof(UniverseTerminalDTO.Is_available_live), nameof(GameTerminal.IsAvailable))]
-    [MapProperty(nameof(UniverseTerminalDTO.Is_auto_load), nameof(GameTerminal.IsAutoLoad))]
+    [MapProperty(nameof(UniverseTerminalDTO.Is_auto_load), nameof(GameTerminal.HasAutoLoad))]
+    [MapProperty(nameof(UniverseTerminalDTO.Is_nqa), nameof(GameTerminal.IsIllegal))]
+    [MapProperty(nameof(UniverseTerminalDTO.Is_cargo_center), nameof(GameTerminal.HasCargoDeck))]
     [MapProperty(nameof(UniverseTerminalDTO.Max_container_size), nameof(GameTerminal.MaxContainerSize))]
     [MapPropertyFromSource("location", Use = nameof(GetGameLocationForTerminal))]
     private partial GameTerminal MapInternal(UniverseTerminalDTO source);

@@ -76,43 +76,9 @@
                 @bind-Value:after="@RefreshDataAsync"/>
         </MudItem>
         <MudItem xs="12" md="7">
-            <MudStack Spacing="2" Row>
-                <Tooltip Text="@(_allowIllegal ? "All commodities" : "Legal commodities only")">
-                    <MudToggleIconButton
-                        @bind-Toggled="@_allowIllegal"
-                        @bind-Toggled:after="@RefreshDataAsync"
-                        Icon="@Icons.Material.Filled.LocalPolice"
-                        Color="@Color.Success"
-                        ToggledColor="@Color.Error"/>
-                </Tooltip>
-                <Tooltip Text="@(_onlyAutoLoadLocations ? "Auto-load locations only" : "All locations (click to filter by auto-load)")">
-                    <MudToggleIconButton
-                        @bind-Toggled="@_onlyAutoLoadLocations"
-                        @bind-Toggled:after="@RefreshDataAsync"
-                        Icon="@Icons.Material.Filled.AutoMode"
-                        Color="@Color.Inherit"
-                        ToggledColor="@Color.Success"/>
-                </Tooltip>
-                <MudDivider Vertical FlexItem/>
-                <Tooltip Text="Ground locations only">
-                    <MudToggleIconButton
-                        @bind-Toggled="@_onlyGroundLocations"
-                        @bind-Toggled:after="@RefreshDataAsync"
-                        Disabled="@_onlySpaceLocations"
-                        Icon="@Icons.Material.Filled.SouthAmerica"
-                        Color="@Color.Inherit"
-                        ToggledColor="@Color.Warning"/>
-                </Tooltip>
-                <Tooltip Text="Orbital locations only">
-                    <MudToggleIconButton
-                        @bind-Toggled="@_onlySpaceLocations"
-                        @bind-Toggled:after="@RefreshDataAsync"
-                        Disabled="@_onlyGroundLocations"
-                        Icon="@Icons.Material.Filled.Rocket"
-                        Color="@Color.Inherit"
-                        ToggledColor="@Color.Warning"/>
-                </Tooltip>
-            </MudStack>
+            <TradeRouteFilterControls
+                @bind-Context="@_filterContext"
+                @bind-Context:after="@RefreshDataAsync"/>
         </MudItem>
         <MudItem xs="12" md="5">
             <SortButton TargetField="@SortField.Profit"
@@ -258,7 +224,7 @@
                                             Text="Create trade run"
                                             Placement="@Placement.Top">
                                             <MudIconButton
-                                                Icon="@Icons.Material.Filled.AirlineStops"
+                                                Icon="@Icons.Material.Filled.Flight"
                                                 Class="focus"
                                                 OnClick="@(() => CreateTradeRunAsync(route))"
                                                 tabindex="1"/>
@@ -281,13 +247,10 @@
 
 @code
 {
-    private bool _allowIllegal;
-    private bool _onlyGroundLocations;
-    private bool _onlySpaceLocations;
-    private bool _onlyAutoLoadLocations;
 
     private SortField _sortBy;
     private SortButton<SortField>.SortDirection _sortDirection;
+    private TradeRouteFilterControls.ContextModel _filterContext = new();
 
     private GameVehicle? SelectedVehicle
         => SelectedVehicleEntity as GameVehicle;
@@ -361,7 +324,7 @@
         ApplicableCommodities = AllRoutes
             .Where(FilterByOrigin)
             .Where(FilterByDestination)
-            .Where(FilterByPropertiesOrigin)
+            .Where(_filterContext.Filter)
             .Select(x => x.Commodity)
             .Distinct()
             .ToArray();
@@ -369,7 +332,7 @@
         ApplicableOriginLocations = AllRoutes
             .Where(FilterByDestination)
             .Where(FilterByCommodity)
-            .Where(FilterByPropertiesOrigin)
+            .Where(_filterContext.Filter)
             .Select(x => x.Origin.Terminal)
             .Distinct()
             .SelectMany(x => (IEnumerable<IGameLocation>) [x, ..x.Parents])
@@ -379,7 +342,7 @@
         ApplicableDestinationLocations = AllRoutes
             .Where(FilterByOrigin)
             .Where(FilterByCommodity)
-            .Where(FilterByPropertiesOrigin)
+            .Where(_filterContext.Filter)
             .Select(x => x.Destination.Terminal)
             .Distinct()
             .SelectMany(x => (IEnumerable<IGameLocation>) [x, ..x.Parents])
@@ -394,7 +357,7 @@
             .Where(FilterByOrigin)
             .Where(FilterByDestination)
             .Where(FilterByCommodity)
-            .Where(FilterByPropertiesOrigin)
+            .Where(_filterContext.Filter)
             .OrderBy(Order, orderByDirection)
             .ToArray();
     }
@@ -413,12 +376,6 @@
 
     bool FilterByDestination(GameTradeRoute x)
         => SelectedDestinationLocation is null || SelectedDestinationLocation.IsOrContains(x.Destination.Terminal);
-
-    bool FilterByPropertiesOrigin(GameTradeRoute x)
-        => (_allowIllegal || !x.Commodity.IsIllegal)
-           && (!_onlyGroundLocations || (x.Origin.Terminal.IsOnGround && x.Destination.Terminal.IsOnGround))
-           && (!_onlySpaceLocations || (x.Origin.Terminal.IsInSpace && x.Destination.Terminal.IsInSpace))
-           && (!_onlyAutoLoadLocations || (x.Origin.Terminal.IsAutoLoad && x.Destination.Terminal.IsAutoLoad));
 
     bool FilterByCommodity(GameTradeRoute x)
         => SelectedCommodityEntity is null || x.Commodity == SelectedCommodityEntity;

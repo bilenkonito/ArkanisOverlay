@@ -41,7 +41,7 @@
         </MudItem>
         <MudItem xs="12" md="3">
             <MudTextField
-                @bind-Value="@_context.CargoCapacity"
+                @bind-Value="@_searchContext.CargoCapacity"
                 InputType="@InputType.Number"
                 DebounceInterval="200"
                 OnDebounceIntervalElapsed="RefreshDataAsync"
@@ -58,35 +58,9 @@
                 @bind-Value:after="@RefreshDataAsync"/>
         </MudItem>
         <MudItem xs="12" md="7">
-            <MudStack Spacing="2" Row>
-                <MudToggleIconButton
-                    @bind-Toggled="@_allowIllegal"
-                    @bind-Toggled:after="@RefreshDataAsync"
-                    Icon="@Icons.Material.Filled.LocalPolice"
-                    Color="@Color.Success"
-                    ToggledColor="@Color.Error"/>
-                <MudToggleIconButton
-                    @bind-Toggled="@_onlyAutoLoadLocations"
-                    @bind-Toggled:after="@RefreshDataAsync"
-                    Icon="@Icons.Material.Filled.AutoMode"
-                    Color="@Color.Inherit"
-                    ToggledColor="@Color.Success"/>
-                <MudDivider Vertical FlexItem/>
-                <MudToggleIconButton
-                    @bind-Toggled="@_onlyGroundLocations"
-                    @bind-Toggled:after="@RefreshDataAsync"
-                    Disabled="@_onlySpaceLocations"
-                    Icon="@Icons.Material.Filled.SouthAmerica"
-                    Color="@Color.Inherit"
-                    ToggledColor="@Color.Warning"/>
-                <MudToggleIconButton
-                    @bind-Toggled="@_onlySpaceLocations"
-                    @bind-Toggled:after="@RefreshDataAsync"
-                    Disabled="@_onlyGroundLocations"
-                    Icon="@Icons.Material.Filled.Rocket"
-                    Color="@Color.Inherit"
-                    ToggledColor="@Color.Warning"/>
-            </MudStack>
+            <TradeRouteFilterControls
+                @bind-Context="@_filterContext"
+                @bind-Context:after="@RefreshDataAsync"/>
         </MudItem>
         <MudItem xs="12" md="5" Class="d-flex justify-end">
             <SortButton TargetField="@TradeRouteSearchView.SortField.Profit"
@@ -106,7 +80,7 @@
 </MudPaper>
 
 <div class="px-3">
-    <CascadingValue Value="@_context" IsFixed>
+    <CascadingValue Value="@_searchContext" IsFixed>
         <MudStack Spacing="3">
             <Virtualize Items="@FilteredRoutes"
                         ItemSize="64"
@@ -114,7 +88,7 @@
                         Context="route">
                 @{
                     var priceDestination = route.Destination.Price;
-                    var quantityReachable = Quantity.FromScu(_context.CargoCapacity ?? 0);
+                    var quantityReachable = Quantity.FromScu(_searchContext.CargoCapacity ?? 0);
                 }
                 <MudPaper Class="px-4 focus"
                           tabindex="0">
@@ -189,11 +163,6 @@
 
 @code
 {
-    private bool _allowIllegal;
-    private bool _onlyGroundLocations;
-    private bool _onlySpaceLocations;
-    private bool _onlyAutoLoadLocations;
-
     private TradeRouteSearchView.SortField _sortBy;
     private SortButton<TradeRouteSearchView.SortField>.SortDirection _sortDirection;
 
@@ -212,7 +181,8 @@
     private GameTradeRoute[] AllRoutes { get; set; } = [];
     private GameTradeRoute[] FilteredRoutes { get; set; } = [];
 
-    private readonly TradeRouteSearchView.SearchContext _context = new();
+    private readonly TradeRouteSearchView.SearchContext _searchContext = new();
+    private TradeRouteFilterControls.ContextModel _filterContext = new();
 
     [Parameter]
     public int? CargoCapacity { get; set; } = 1;
@@ -255,21 +225,21 @@
     private async Task RefreshDataAsync()
     {
         await Task.CompletedTask;
-        _context.Commodity = SelectedCommodityEntity as GameCommodity;
-        _context.CargoCapacity ??= SelectedVehicle?.CargoCapacity ?? CargoCapacity;
-        if (_context.CargoCapacity == _context.Vehicle?.CargoCapacity && SelectedVehicle != _context.Vehicle)
+        _searchContext.Commodity = SelectedCommodityEntity as GameCommodity;
+        _searchContext.CargoCapacity ??= SelectedVehicle?.CargoCapacity ?? CargoCapacity;
+        if (_searchContext.CargoCapacity == _searchContext.Vehicle?.CargoCapacity && SelectedVehicle != _searchContext.Vehicle)
         {
             // vehicle selection changed/cleared, if the cargo capacity corresponds to the previous selection update it
-            _context.CargoCapacity = SelectedVehicle?.CargoCapacity;
+            _searchContext.CargoCapacity = SelectedVehicle?.CargoCapacity;
         }
 
-        _context.Vehicle = SelectedVehicle;
-        _context.DestinationLocation = SelectedDestinationLocation;
+        _searchContext.Vehicle = SelectedVehicle;
+        _searchContext.DestinationLocation = SelectedDestinationLocation;
 
         ApplicableCommodities = AllRoutes
             .Where(FilterByDestination)
             .Where(FilterByDestinationExclusion)
-            .Where(FilterByProperties)
+            .Where(_filterContext.FilterDestination)
             .Select(x => x.Commodity)
             .Distinct()
             .ToArray();
@@ -278,7 +248,7 @@
             .Where(FilterByDestination)
             .Where(FilterByDestinationExclusion)
             .Where(FilterByCommodity)
-            .Where(FilterByProperties)
+            .Where(_filterContext.FilterDestination)
             .Select(x => x.Origin.Terminal)
             .Distinct()
             .SelectMany(x => (IEnumerable<IGameLocation>) [x, ..x.Parents])
@@ -288,7 +258,7 @@
         ApplicableDestinationLocations = AllRoutes
             .Where(FilterByDestinationExclusion)
             .Where(FilterByCommodity)
-            .Where(FilterByProperties)
+            .Where(_filterContext.FilterDestination)
             .Select(x => x.Destination.Terminal)
             .Distinct()
             .SelectMany(x => (IEnumerable<IGameLocation>) [x, ..x.Parents])
@@ -303,7 +273,7 @@
             .Where(FilterByDestination)
             .Where(FilterByDestinationExclusion)
             .Where(FilterByCommodity)
-            .Where(FilterByProperties)
+            .Where(_filterContext.FilterDestination)
             .OrderBy(Order, orderByDirection)
             .ToArray();
     }
@@ -313,7 +283,7 @@
         {
             TradeRouteSearchView.SortField.Margin => x.PriceMarginPercent,
             TradeRouteSearchView.SortField.Distance => x.Distance ?? double.MaxValue,
-            TradeRouteSearchView.SortField.Profit => Math.Min(_context.CargoCapacity ?? int.MaxValue, x.Origin.CargoUnitsAvailable) * (x.Destination.Price.Amount - x.Origin.Price.Amount),
+            TradeRouteSearchView.SortField.Profit => Math.Min(_searchContext.CargoCapacity ?? int.MaxValue, x.Origin.CargoUnitsAvailable) * (x.Destination.Price.Amount - x.Origin.Price.Amount),
             _ => x.PriceReturnOnInvestmentPercent * x.Origin.Price.Amount,
         };
 
@@ -322,12 +292,6 @@
 
     bool FilterByDestinationExclusion(GameTradeRoute x)
         => !ExcludeDestination(x.Destination.Terminal);
-
-    bool FilterByProperties(GameTradeRoute x)
-        => (_allowIllegal || !x.Commodity.IsIllegal)
-           && (!_onlyGroundLocations || x.Destination.Terminal.IsOnGround)
-           && (!_onlySpaceLocations || x.Destination.Terminal.IsInSpace)
-           && (!_onlyAutoLoadLocations || x.Destination.Terminal.IsAutoLoad);
 
     bool FilterByCommodity(GameTradeRoute x)
         => SelectedCommodityEntity is null || x.Commodity == SelectedCommodityEntity;

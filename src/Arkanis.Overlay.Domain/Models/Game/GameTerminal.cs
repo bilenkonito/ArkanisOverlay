@@ -29,7 +29,9 @@ public sealed class GameTerminal(
         => Parent is not GameSpaceStation;
 
     public bool IsAvailable { get; init; }
-    public bool IsAutoLoad { get; init; }
+    public bool IsIllegal { get; init; }
+    public bool HasAutoLoad { get; init; }
+    public bool HasCargoDeck { get; set; }
     public int? MaxContainerSize { get; init; }
 
     protected override IEnumerable<SearchableTrait> CollectSearchableTraits()
