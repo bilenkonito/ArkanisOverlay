@@ -1,3 +1,4 @@
+@using Arkanis.Overlay.Domain.Abstractions
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @inject ISearchService SearchService
 
@@ -31,6 +32,10 @@
 
 @code
 {
+
+    private HashSet<IGameEntity> _except = [];
+    private HashSet<IGameEntity> _only = [];
+
     [Parameter]
     public string? Label { get; set; } = "Game entity";
 
@@ -56,7 +61,20 @@
     public Func<IGameEntity, bool> Accept { get; set; } = _ => true;
 
     [Parameter]
+    public IEnumerable<IGameEntity> Except { get; set; } = [];
+
+    [Parameter]
+    public IEnumerable<IGameEntity> Only { get; set; } = [];
+
+    [Parameter]
     public string? HelperText { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        _except = Except.ToHashSet(IIdentifiable.EqualityComparer.For<IGameLocation>());
+        _only = Except.ToHashSet(IIdentifiable.EqualityComparer.For<IGameLocation>());
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -88,7 +106,11 @@
         }
 
         var results = await SearchService.SearchAsync(queries, ct);
-        return results.GameEntities.Select(x => x.Subject).Where(Accept);
+        return results.GameEntities
+            .Select(x => x.Subject)
+            .Where(x => _except.Contains(x) == false)
+            .Where(x => _only.Count == 0 || _only.Contains(x))
+            .Where(Accept);
     }
 
     private string? GetText(IGameEntity? value)
