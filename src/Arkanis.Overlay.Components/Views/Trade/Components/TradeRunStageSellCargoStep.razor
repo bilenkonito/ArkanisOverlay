@@ -26,10 +26,11 @@
             <GameEntityNameLabel
                 Model="@(Stage.Terminal.Name)"/>
         </MudStack>
-        <MudGrid Style="min-width: 400px; max-width: 75%;">
+        <MudGrid Spacing="2" Style="min-width: 400px; max-width: 75%;">
             <MudItem xs="12" sm="6" md="4">
                 <MudNumericField
-                    Label="Quantity sold (SCU)"
+                    Label="Quantity sold"
+                    HelperText="in SCUs"
                     Format="N0"
                     @bind-Value="@Stage.Quantity.Amount"
                     @bind-Value:after="@UpdateStageAsync"

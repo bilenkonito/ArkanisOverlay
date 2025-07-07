@@ -30,12 +30,12 @@
 <MudPaper Style="position: sticky; top: 0; z-index: 10;"
           Elevation="4"
           Class="py-2 px-4 mx-3">
-    <MudGrid>
+    <MudGrid Spacing="2">
         <MudItem xs="12" md="4">
             <GameEntitySelectBox
                 Label="Commodity"
                 EntityCategory="@GameEntityCategory.Commodity"
-                Accept="@(commodity => ApplicableCommodities.Contains(commodity))"
+                Only="@ApplicableCommodities"
                 @bind-Value="@SelectedCommodityEntity"
                 @bind-Value:after="@RefreshDataAsync"/>
         </MudItem>
@@ -45,7 +45,8 @@
                 InputType="@InputType.Number"
                 DebounceInterval="200"
                 OnDebounceIntervalElapsed="RefreshDataAsync"
-                Label="Stock amount (SCU)"
+                Label="Stock amount"
+                HelperText="in SCUs"
                 Placeholder="Cargo amount"
                 Clearable/>
         </MudItem>
@@ -53,7 +54,7 @@
             <GameEntitySelectBox
                 Label="Destination location"
                 EntityCategory="@GameEntityCategory.Location"
-                Accept="@(location => ApplicableDestinationLocations.Contains(location))"
+                Only="@ApplicableDestinationLocations"
                 @bind-Value="@SelectedDestinationLocationEntity"
                 @bind-Value:after="@RefreshDataAsync"/>
         </MudItem>
