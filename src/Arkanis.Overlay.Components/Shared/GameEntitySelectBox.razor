@@ -1,6 +1,5 @@
+@using Arkanis.Overlay.Domain.Abstractions
 @using Arkanis.Overlay.Domain.Abstractions.Game
-@using Arkanis.Overlay.Domain.Enums
-@using Arkanis.Overlay.Domain.Models.Search
 @inject ISearchService SearchService
 
 <MudAutocomplete Label="@Label"
@@ -13,6 +12,7 @@
                  Clearable="@(!Required)"
                  Required="@Required"
                  CoerceText="false"
+                 PopoverClass="width-min-content"
                  SearchFunc="@FindLocationsAsync">
     <ItemTemplate>
         @if (context is not null)
@@ -32,6 +32,10 @@
 
 @code
 {
+
+    private HashSet<IGameEntity> _except = [];
+    private HashSet<IGameEntity> _only = [];
+
     [Parameter]
     public string? Label { get; set; } = "Game entity";
 
@@ -51,10 +55,26 @@
     public GameEntityCategory EntityCategory { get; set; }
 
     [Parameter]
+    public GameEntityCategory[] EntityCategories { get; set; } = [];
+
+    [Parameter]
     public Func<IGameEntity, bool> Accept { get; set; } = _ => true;
 
     [Parameter]
+    public IEnumerable<IGameEntity> Except { get; set; } = [];
+
+    [Parameter]
+    public IEnumerable<IGameEntity> Only { get; set; } = [];
+
+    [Parameter]
     public string? HelperText { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        _except = Except.ToHashSet(IIdentifiable.EqualityComparer.For<IGameLocation>());
+        _only = Except.ToHashSet(IIdentifiable.EqualityComparer.For<IGameLocation>());
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -75,13 +95,22 @@
             queries = queries.Append(new EntityCategorySearch(EntityCategory));
         }
 
+        foreach (var category in EntityCategories)
+        {
+            queries = queries.Append(new EntityCategorySearch(category, false));
+        }
+
         if (searchText is not null)
         {
             queries = queries.Append(new FuzzyTextSearch(searchText));
         }
 
         var results = await SearchService.SearchAsync(queries, ct);
-        return results.GameEntities.Select(x => x.Subject).Where(Accept);
+        return results.GameEntities
+            .Select(x => x.Subject)
+            .Where(x => _except.Contains(x) == false)
+            .Where(x => _only.Count == 0 || _only.Contains(x))
+            .Where(Accept);
     }
 
     private string? GetText(IGameEntity? value)
