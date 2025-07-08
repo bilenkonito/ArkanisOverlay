@@ -3,10 +3,21 @@ namespace Arkanis.Overlay.Infrastructure.Services;
 using Abstractions;
 using Microsoft.Extensions.Primitives;
 
-public sealed class ChangeTokenManager : IChangeTokenManager, IAsyncDisposable
+public sealed class ChangeTokenManager : IChangeTokenManager, IDisposable, IAsyncDisposable
 {
     private readonly Dictionary<Type, CancellationTokenSource> _changeProviders = [];
     private readonly SemaphoreSlim _semaphore = new(1, 1);
+
+    public void Dispose()
+    {
+        foreach (var cancellationTokenSource in _changeProviders.Values)
+        {
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+        }
+
+        _changeProviders.Clear();
+    }
 
     public async ValueTask DisposeAsync()
     {
