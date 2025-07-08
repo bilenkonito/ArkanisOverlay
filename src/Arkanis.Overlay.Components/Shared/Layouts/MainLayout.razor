@@ -1,8 +1,9 @@
-@using Arkanis.Overlay.Common
 @using Arkanis.Overlay.Common.Abstractions
 @using Microsoft.AspNetCore.Http.Extensions
+@using Microsoft.JSInterop
 @inherits LayoutComponentBase
 @inject IAppVersionProvider VersionProvider
+@inject IJSRuntime JsRuntime
 
 <MudThemeProvider Theme="_currentTheme" IsDarkMode="true"/>
 <MudPopoverProvider/>
@@ -31,15 +32,22 @@
                 </MudExpansionPanel>
                 <MudStack Class="mt-4" Row>
                     <MudButton Color="@Color.Success"
-                               Size="Size.Large"
-                               Variant="Variant.Outlined"
+                               Size="@Size.Large"
+                               Variant="@Variant.Outlined"
                                StartIcon="@MaterialSymbols.Outlined.FrameReload"
-                               OnClick="() => _errorBoundary?.Recover()">
-                        Reload Overlay
+                               OnClick="@TryRecover">
+                        Try To Reload
+                    </MudButton>
+                    <MudButton Color="@Color.Success"
+                               Size="@Size.Large"
+                               Variant="@Variant.Outlined"
+                               StartIcon="@MaterialSymbols.Outlined.ChevronLeft"
+                               OnClick="@NavigateToPrevious">
+                        Go To Previous Page
                     </MudButton>
                     <MudButton Color="@Color.Warning"
-                               Size="Size.Large"
-                               Variant="Variant.Outlined"
+                               Size="@Size.Large"
+                               Variant="@Variant.Outlined"
                                StartIcon="@MaterialSymbols.Outlined.OpenInBrowser"
                                Href="@CreateNewIssueUrl(context)"
                                Target="_blank">
@@ -64,6 +72,18 @@
 
     private ErrorBoundary? _errorBoundary;
 
+    private void TryRecover()
+    {
+        _errorBoundary?.Recover();
+    }
+
+    private async Task NavigateToPrevious()
+    {
+        await JsRuntime.InvokeVoidAsync("history.back");
+        await Task.Delay(20);
+        TryRecover();
+    }
+
     private string CreateNewIssueUrl(Exception context)
     {
         var queryBuilder = new QueryBuilder
@@ -75,5 +95,4 @@
 
         return $"{ApplicationConstants.GitHubRepositoryUrl}/issues/new{queryBuilder.ToQueryString()}";
     }
-
 }
