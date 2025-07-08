@@ -100,7 +100,7 @@
     private bool IsDisabled
         => IsCompleted
            || (Stage.CargoTransferType is GameCargoTransferType.Manual && IsPostTrade)
-           || Stage.FinalizedAt is not null;
+           || Stage.IsFinalized;
 
     private bool IsConfirmDisabled
         => IsDisabled

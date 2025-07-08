@@ -1,10 +1,13 @@
 ﻿@page "/"
 @using Arkanis.Overlay.Common.Abstractions
 @using Arkanis.Overlay.Components.Views.Components
+@using Arkanis.Overlay.Components.Views.Trade.Components
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Abstractions.Services
+@using Arkanis.Overlay.Domain.Models
 @using Arkanis.Overlay.Domain.Models.Game
 @using Arkanis.Overlay.Domain.Models.Inventory
+@using Arkanis.Overlay.Domain.Models.Trade
 @using Arkanis.Overlay.Host.Server.Models
 @using Arkanis.Overlay.Host.Server.Services
 @using MoreLinq
@@ -15,6 +18,7 @@
 @inject IGameEntityRepository<GameCity> GameCityRepository
 @inject IGameEntityRepository<GameItem> GameItemRepository
 @inject IGameEntityRepository<GameCommodity> GameCommodityRepository
+@inject IGameEntityRepository<GameTradeRoute> GameTradeRouteRepository
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
 <style>
@@ -42,7 +46,7 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudContainer Class="w-100">
+        <MudContainer Class="w-100" MaxWidth="@MaxWidth.Large">
             <MudStack Class="w-100" AlignItems="@AlignItems.Center" Row>
                 <MudText Typo="@Typo.h5" Class="mr-4">Arkanis Overlay</MudText>
                 <MudButton StartIcon="@Icons.Material.Filled.ScreenshotMonitor" Href="/search">
@@ -74,7 +78,7 @@
         </MudContainer>
     </MudAppBar>
     <MudMainContent Class="pb-8">
-        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-12">
+        <MudContainer MaxWidth="@MaxWidth.Large" Class="mt-12">
             <MudPaper Class="pa-6 text-center">
                 <MudText Typo="Typo.h2" Class="mb-2">Welcome to the Arkanis Overlay Demo</MudText>
                 <MudText Typo="Typo.subtitle1" Class="mb-4">
@@ -242,6 +246,106 @@
                 <div>
                     <MudText Typo="@Typo.h3"
                              Align="Align.Center">
+                        Tools for Haulers and Traders
+                    </MudText>
+
+                    <MudText Typo="Typo.body2"
+                             Align="Align.Center">
+                        Whether you're a trader, explorer, or pirate, this tool helps you track your assets and plan
+                        your
+                        next move.
+                        Get a comprehensive view of your ships, cargo, and other assets, and find the best
+                        routes between systems to maximize your profits.
+                    </MudText>
+                </div>
+
+                <MudGrid Justify="@Justify.Center">
+                    <MudItem xs="12" sm="8" md="6">
+                        <MudPaper Class="pa-4">
+                            <MudStack>
+                                <MudText Typo="Typo.h6">🗃️ Trade Route Finder</MudText>
+                                <MudText Typo="Typo.body2">
+
+                                </MudText>
+                                <MudButton Variant="Variant.Outlined"
+                                           Color="Color.Secondary"
+                                           StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
+                                           Href="/trade">
+                                    Try it out
+                                </MudButton>
+                            </MudStack>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+
+                <MudPaper Class="pa-12 embed-wrapper">
+                    <MudStack>
+                        @foreach (var tradeRoute in TradeRoutes)
+                        {
+                            <TradeRouteItem Model="@tradeRoute">
+                                <ControlsContent>
+                                    <MudTooltip
+                                        Text="Create trade run"
+                                        Placement="@Placement.Top">
+                                        <MudIconButton
+                                            Icon="@Icons.Material.Filled.Flight"
+                                            Class="focus"
+                                            Disabled
+                                            tabindex="1"/>
+                                    </MudTooltip>
+                                </ControlsContent>
+                            </TradeRouteItem>
+                        }
+                    </MudStack>
+                </MudPaper>
+
+                <MudGrid Justify="@Justify.Center">
+                    <MudItem xs="12" sm="8" md="6">
+                        <MudPaper Class="pa-4">
+                            <MudStack>
+                                <MudText Typo="Typo.h6">🗃️ Trade Run Management</MudText>
+                                <MudText Typo="Typo.body2">
+
+                                </MudText>
+                                <MudButton Variant="Variant.Outlined"
+                                           Color="Color.Secondary"
+                                           StartIcon="@Icons.Material.Filled.ScreenshotMonitor"
+                                           Href="/trade">
+                                    Try it out
+                                </MudButton>
+                            </MudStack>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+
+                <MudPaper Class="pa-12 embed-wrapper">
+                    <style>
+                        .trade-runs {
+                            .mud-expand-panel-content {
+                                padding-bottom: 0;
+                            }
+                        }
+
+                        .trade-runs .stages {
+                            .mud-card-actions.mud-stepper-actions {
+                                display: none;
+                            }
+                        }
+                    </style>
+                    <MudStack Class="trade-runs">
+                        <TradeRunPanelContent
+                            TradeRun="@TradeRun"
+                            Disabled/>
+                    </MudStack>
+                </MudPaper>
+            </MudStack>
+
+            <MudDivider Class="my-8"/>
+
+            <MudStack Spacing="6">
+                <div>
+                    <MudText Typo="@Typo.h3"
+                             Align="Align.Center">
                         Inventory Management
                     </MudText>
 
@@ -359,6 +463,8 @@
     private IGameLocation[] Locations { get; set; } = [];
     private GameCommodity[] Commodities { get; set; } = [];
     private GameItem[] Items { get; set; } = [];
+    private GameTradeRoute[] TradeRoutes { get; set; } = [];
+    private TradeRun? TradeRun { get; set; }
 
     private InventoryEntryBase[] InventoryEntries { get; set; } = [];
     private InventoryEntryList[] InventoryLists { get; set; } = [];
@@ -407,6 +513,14 @@
             .OfType<GameCommodity>()
             .ToArray();
 
+        TradeRoutes = Array.Empty<GameTradeRoute>()
+            .Append(await GameTradeRouteRepository.GetAsync(UexApiGameEntityId.Create<GameTradeRoute>(248)))
+            .Append(await GameTradeRouteRepository.GetAsync(UexApiGameEntityId.Create<GameTradeRoute>(6416)))
+            .Append(await GameTradeRouteRepository.GetAsync(UexApiGameEntityId.Create<GameTradeRoute>(1308)))
+            .Where(tradeRoute => tradeRoute is not null)
+            .OfType<GameTradeRoute>()
+            .ToArray();
+
         InventoryLists =
         [
             new InventoryEntryList
@@ -419,8 +533,26 @@
             },
         ];
 
-        if (this is { Commodities.Length: >= 3, Items.Length: >= 3, Locations.Length: >= 3, InventoryLists.Length: >= 2 })
+
+        if (this is { Commodities.Length: >= 3, Items.Length: >= 3, Locations.Length: >= 3, InventoryLists.Length: >= 2, TradeRoutes.Length: > 0 })
         {
+            var tradeRoute = TradeRoutes.First();
+            TradeRun = TradeRun.Create(
+                tradeRoute,
+                new TradeRun.Context
+                {
+                    Quantity = Quantity.FromScu(tradeRoute.Origin.CargoUnitsAvailable),
+                    Version = StarCitizenVersion.Create("unknown"),
+                }
+            );
+            TradeRun.CreatedAt = DateTimeOffset.Now - TimeSpan.FromMinutes(78);
+            var purchaseStage = TradeRun.Acquisitions.OfType<TradeRun.TerminalPurchaseStage>().First();
+            purchaseStage.StartedAt = TradeRun.CreatedAt + TimeSpan.FromMinutes(1);
+            purchaseStage.ReachedAt = TradeRun.CreatedAt + TimeSpan.FromMinutes(28);
+            purchaseStage.AcquiredAt = TradeRun.CreatedAt + TimeSpan.FromMinutes(34);
+            purchaseStage.TransferredAt = TradeRun.CreatedAt + TimeSpan.FromMinutes(54);
+            purchaseStage.FinalizedAt = TradeRun.CreatedAt + TimeSpan.FromMinutes(59);
+
             InventoryEntries =
             [
                 InventoryEntry.Create(Commodities[0], NewScu(11), Locations[0], InventoryLists[0]),

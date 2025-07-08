@@ -146,7 +146,7 @@
         => Stage.SoldAt is not null;
 
     private bool IsDisabled
-        => IsCompleted || Stage.FinalizedAt is not null;
+        => IsCompleted || Stage.IsFinalized;
 
     private Quantity UnsoldAmount { get; set; } = Quantity.Zero;
 
