@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Services;
 
+using Abstractions;
 using Common.Extensions;
 using Domain.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,11 @@ public static class DependencyInjection
             .Alias<IPurchasePriceProvider, FakePriceProvider>()
             .Alias<ISalePriceProvider, FakePriceProvider>()
             .Alias<IRentPriceProvider, FakePriceProvider>();
+
+    public static IServiceCollection AddCommonInfrastructureServices(this IServiceCollection services)
+        => services
+            .AddSingleton<ChangeTokenManager>()
+            .Alias<IChangeTokenManager, ChangeTokenManager>();
 
     public static IServiceCollection AddDatabaseExternalSyncCacheProviders(this IServiceCollection services)
         => services
