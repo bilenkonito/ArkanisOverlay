@@ -58,6 +58,7 @@
                                OnClick="@OnFinalizeClick"
                                StartIcon="@MaterialIcons.Filled.FlightTakeoff"
                                Color="@Color.Success"
+                               Disabled="@Disabled"
                                Class="w-100">
                         Finalize stage and continue
                     </MudButton>
@@ -72,8 +73,12 @@
 
 @code
 {
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
     private bool IsCompleted
-        => Stage.FinalizedAt is not null;
+        => Stage.IsFinalized;
 
     private async Task OnFinalizeClick()
     {

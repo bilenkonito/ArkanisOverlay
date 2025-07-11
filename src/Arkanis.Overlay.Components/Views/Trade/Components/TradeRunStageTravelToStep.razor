@@ -67,7 +67,7 @@
         => Stage.ReachedAt is not null;
 
     private bool IsDisabled
-        => IsCompleted || Stage.FinalizedAt is not null;
+        => IsCompleted || Stage.IsFinalized || TradeRun.FinalizedAt is not null;
 
     private IGameLocation PreferredLocation
         => PreferParentLocation

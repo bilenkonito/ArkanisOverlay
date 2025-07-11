@@ -25,7 +25,7 @@ public class TradeRun
     public List<SaleStage> Sales { get; set; } = [];
 
     public StarCitizenVersion? Version { get; init; }
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.Now;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.Now;
     public DateTimeOffset? FinalizedAt { get; set; }
 
