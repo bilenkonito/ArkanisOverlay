@@ -168,6 +168,15 @@
                                     Model="@item"
                                     ItemIndex="@index"/>
                             }
+                            @if (Items.Length == 0)
+                            {
+                                for (var i = 0; i < 3; i++)
+                                {
+                                    <MudSkeleton
+                                        SkeletonType="@SkeletonType.Rectangle"
+                                        Height="62px"/>
+                                }
+                            }
                         </MudStack>
                     </MudPaper>
                 </MudItem>
@@ -182,6 +191,15 @@
                                 <SearchResultItem
                                     Model="@commodity"
                                     ItemIndex="@index"/>
+                            }
+                            @if (Commodities.Length == 0)
+                            {
+                                for (var i = 0; i < 3; i++)
+                                {
+                                    <MudSkeleton
+                                        SkeletonType="@SkeletonType.Rectangle"
+                                        Height="62px"/>
+                                }
                             }
                         </MudStack>
                     </MudPaper>
@@ -235,6 +253,15 @@
                                     Model="@terminal"
                                     ItemIndex="@index"/>
                             }
+                            @if (Locations.Length == 0)
+                            {
+                                for (var i = 0; i < 3; i++)
+                                {
+                                    <MudSkeleton
+                                        SkeletonType="@SkeletonType.Rectangle"
+                                        Height="62px"/>
+                                }
+                            }
                         </MudStack>
                     </MudPaper>
                 </MudItem>
@@ -251,8 +278,10 @@
 
                     <MudText Typo="Typo.body2"
                              Align="Align.Center">
-                        Whether you're running scrap between moons or hauling high-value goods across systems, every credit counts.
-                        This module gives you the edge — powerful tools designed to help traders and haulers find the best routes, track their runs, and maximize profit in the ever-shifting economy of the 'verse.
+                        Whether you're running scrap between moons or hauling high-value goods across systems, every
+                        credit counts.
+                        This module gives you the edge — powerful tools designed to help traders and haulers find the
+                        best routes, track their runs, and maximize profit in the ever-shifting economy of the 'verse.
                     </MudText>
                 </div>
 
@@ -296,6 +325,15 @@
                                 </ControlsContent>
                             </TradeRouteItem>
                         }
+                        @if (TradeRoutes.Length == 0)
+                        {
+                            for (var i = 0; i < 3; i++)
+                            {
+                                <MudSkeleton
+                                    SkeletonType="@SkeletonType.Rectangle"
+                                    Height="62px"/>
+                            }
+                        }
                     </MudStack>
                 </MudPaper>
 
@@ -335,9 +373,26 @@
                         }
                     </style>
                     <MudStack Class="trade-runs">
-                        <TradeRunPanelContent
-                            TradeRun="@TradeRun"
-                            Disabled/>
+                        @if (TradeRun is not null)
+                        {
+                            <TradeRunPanelContent
+                                TradeRun="@TradeRun"
+                                Disabled/>
+                        }
+                        else
+                        {
+                            <MudSkeleton
+                                SkeletonType="@SkeletonType.Rectangle"
+                                Height="64px"/>
+
+                            <MudSkeleton
+                                SkeletonType="@SkeletonType.Rectangle"
+                                Height="30vh"/>
+
+                            <MudSkeleton
+                                SkeletonType="@SkeletonType.Rectangle"
+                                Height="64px"/>
+                        }
                     </MudStack>
                 </MudPaper>
             </MudStack>
