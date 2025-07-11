@@ -3,6 +3,7 @@
 @using Arkanis.Overlay.Domain.Models
 @inject IGameEntityRepository<GameTradeRoute> TradeRouteRepository
 @inject ITradeRunManager TradeRunManager
+@inject IAnalyticsEventReporter EventReporter
 @inject IExternalServiceStateProvider ServiceStateProvider
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
@@ -409,5 +410,6 @@
         };
         var tradeRun = TradeRun.Create(tradeRoute, runContext);
         await TradeRunManager.AddOrUpdateEntryAsync(tradeRun);
+        await EventReporter.TrackEventAsync(TradeRunEvents.CreateTradeRun());
     }
 }

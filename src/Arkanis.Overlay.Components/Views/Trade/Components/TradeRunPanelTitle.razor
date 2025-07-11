@@ -1,5 +1,6 @@
 @inherits TradeRunComponent
 @inject IDialogService DialogService
+@inject IAnalyticsEventReporter EventReporter
 @inject NavigationManager NavigationManager
 
 <MudStack AlignItems="@AlignItems.Center"
@@ -81,6 +82,7 @@
             await UpdateRunAsync();
 
             await TradeRunManager.DeleteRunAsync(TradeRun.Id, CancellationToken.None);
+            await EventReporter.TrackEventAsync(TradeRunEvents.AbandonTradeRun());
             NavigationManager.Refresh();
         }
     }

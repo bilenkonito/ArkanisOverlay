@@ -2,6 +2,7 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @inherits TradeRunComponent
 @inject IInventoryManager InventoryManager
+@inject IAnalyticsEventReporter EventReporter
 @inject IDialogService DialogService
 
 <MudExpansionPanels MultiExpansion
@@ -144,6 +145,7 @@
     {
         TradeRun.FinalizedAt = DateTimeOffset.Now;
         await UpdateRunAsync();
+        await EventReporter.TrackEventAsync(TradeRunEvents.FinalizeTradeRun());
     }
 
     private async Task FinalizeRunCargoKeptAsync()
@@ -168,6 +170,7 @@
             // TODO: potential mismatch of commodity-terminal in case of multiple commodities
             var stage = TradeRun.TerminalSaleStage.CreateRetry(lastSale, unsoldQuantity);
             TradeRun.Sales.Add(stage);
+            await EventReporter.TrackEventAsync(TradeRunEvents.CreateTradeRunStage());
         }
 
         await UpdateRunAsync();
@@ -200,6 +203,7 @@
             };
             var stage = TradeRun.TerminalSaleStage.Create(selectedTradeRoute, runContext);
             TradeRun.Sales.Add(stage);
+            await EventReporter.TrackEventAsync(TradeRunEvents.CreateTradeRunStage());
         }
 
         await UpdateRunAsync();

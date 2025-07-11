@@ -1,4 +1,5 @@
 @inherits TradeRunStageComponent<TradeRun.AcquisitionStage>
+@inject IAnalyticsEventReporter EventReporter
 
 <MudStepper>
     <ChildContent>
@@ -62,5 +63,6 @@
     {
         Stage.FinalizedAt = DateTimeOffset.Now;
         await UpdateStageAsync();
+        await EventReporter.TrackEventAsync(TradeRunEvents.FinalizeTradeRunStage());
     }
 }
