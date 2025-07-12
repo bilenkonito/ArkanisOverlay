@@ -89,6 +89,8 @@
         await RefreshDataAsync();
         await UpdateActiveTabAsync();
 
+        RegisterForChanges();
+
         await base.OnParametersSetAsync();
     }
 
@@ -114,22 +116,25 @@
         if (newCount != TradeRunsInProgress)
         {
             TradeRunsInProgress = newCount;
-            await InvokeAsync(StateHasChanged);
-
-            //? StateHasChanged is not enough for the tabs to properly update
             _tabs?.ActivatePanel(ActivePanelIndex);
         }
-
-        RegisterForChanges();
     }
 
     private void RegisterForChanges()
     {
-        _changeRegistration?.Dispose();
-        _changeRegistration = TradeRunManager.ChangeToken.RegisterChangeCallback(
-            _ => InvokeAsync(RefreshDataAsync),
-            null
-        );
+        _changeRegistration ??= RegisterNewCallback();
+        return;
+
+        IDisposable RegisterNewCallback()
+            => TradeRunManager.ChangeToken.RegisterChangeCallback(
+                _ =>
+                {
+                    InvokeAsync(RefreshDataAsync);
+                    _changeRegistration?.Dispose();
+                    _changeRegistration = RegisterNewCallback();
+                },
+                null
+            );
     }
 
     private async Task ActivateTabAsync(Tab activeTab)

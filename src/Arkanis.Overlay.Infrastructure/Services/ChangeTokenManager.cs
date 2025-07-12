@@ -31,8 +31,11 @@ public sealed class ChangeTokenManager : IChangeTokenManager, IDisposable, IAsyn
     }
 
     public IChangeToken GetChangeTokenFor<T>()
+        => GetChangeTokenFor(typeof(T));
+
+    private CancellationChangeToken GetChangeTokenFor(Type type)
     {
-        var changeProvider = GetOrCreateChangeProvider(typeof(T));
+        var changeProvider = GetOrCreateChangeProvider(type);
         return new CancellationChangeToken(changeProvider.Token);
     }
 
@@ -43,14 +46,20 @@ public sealed class ChangeTokenManager : IChangeTokenManager, IDisposable, IAsyn
             await _semaphore.WaitAsync();
             var targetType = typeof(T);
 
-            if (_changeProviders.TryGetValue(targetType, out var changeProvider))
+            if (!_changeProviders.TryGetValue(targetType, out var changeProvider))
             {
-                await changeProvider.CancelAsync();
-                changeProvider.Dispose();
+                return GetChangeTokenFor(targetType);
             }
 
-            changeProvider = GetOrCreateChangeProvider(targetType, true);
-            return new CancellationChangeToken(changeProvider.Token);
+            //! new change token must be created BEFORE announcing the change, the update handler may contain logic to refresh the change token
+            //! not doing so may lead to stack overflows or deadlocks
+            GetOrCreateChangeProvider(targetType, true);
+
+            // announce the change
+            await changeProvider.CancelAsync();
+            changeProvider.Dispose();
+
+            return GetChangeTokenFor(targetType);
         }
         finally
         {
@@ -63,10 +72,19 @@ public sealed class ChangeTokenManager : IChangeTokenManager, IDisposable, IAsyn
 
     private CancellationTokenSource GetOrCreateChangeProvider(Type targetType, bool recreate = false)
     {
-        CancellationTokenSource? changeProvider = null;
-        if (recreate || !_changeProviders.TryGetValue(targetType, out changeProvider))
+        CancellationTokenSource? changeProvider;
+        if (recreate)
         {
-            _changeProviders[targetType] = changeProvider ??= new CancellationTokenSource();
+            changeProvider = _changeProviders[targetType] = new CancellationTokenSource();
+        }
+        else if (!_changeProviders.TryGetValue(targetType, out changeProvider))
+        {
+            changeProvider = new CancellationTokenSource();
+            if (!_changeProviders.TryAdd(targetType, changeProvider))
+            {
+                // there is already an existing change provider
+                changeProvider = _changeProviders[targetType];
+            }
         }
 
         return changeProvider;
