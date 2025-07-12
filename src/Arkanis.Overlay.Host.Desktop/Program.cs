@@ -2,6 +2,7 @@ namespace Arkanis.Overlay.Host.Desktop;
 
 using System.Globalization;
 using System.IO;
+using Windows.Win32;
 using Common;
 using Common.Abstractions;
 using Common.Enums;
@@ -24,6 +25,8 @@ using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
 using Quartz;
 using Serilog;
+using Serilog.Templates;
+using Serilog.Templates.Themes;
 using Services;
 using Services.Factories;
 using UI;
@@ -39,6 +42,12 @@ public static class Program
     [STAThread]
     public static async Task Main(string[] args)
     {
+        // WPF Applications do not allocate a console by default, nor do they attach to the parent console if one exists.
+        // To get proper console output, we need to attach to the parent console.
+        // This is safe to use even if there is no parent console or process - it just won't have any effect.
+        PInvoke.AttachConsole(PInvoke.ATTACH_PARENT_PROCESS);
+
+
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
             .CreateBootstrapLogger();
@@ -199,8 +208,12 @@ public static class Program
     internal static IServiceCollection AddLoggerServices(this IServiceCollection services, IConfiguration configuration)
         => services.AddSerilog(loggerConfig => loggerConfig
             .WriteTo.Console(
-                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
-                formatProvider: CultureInfo.InvariantCulture
+                new ExpressionTemplate(
+                    "[{@t:HH:mm:ss} {@l:u3}] [{Substring(SourceContext, LastIndexOf(SourceContext, '.') + 1)}] {@m}\n{@x}",
+                    CultureInfo.InvariantCulture,
+                    applyThemeWhenOutputIsRedirected: true,
+                    theme: TemplateTheme.Literate
+                )
             )
             .WriteTo.File(
                 Path.Join(ApplicationConstants.ApplicationLogsDirectory.FullName, "app.log"),
