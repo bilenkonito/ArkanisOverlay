@@ -24,7 +24,7 @@ public class OverlayModules
             Url = "/inventory",
             Name = "Inventory",
             Icon = Icons.Material.Filled.Warehouse,
-            GetChangeTokenAsync = serviceProvider => ValueTask.FromResult(serviceProvider.GetRequiredService<IInventoryManager>().ChangeToken),
+            GetChangeToken = serviceProvider => serviceProvider.GetRequiredService<IInventoryManager>().ChangeToken,
             GetUpdateCountAsync = async serviceProvider =>
             {
                 var inventoryManager = serviceProvider.GetRequiredService<IInventoryManager>();
@@ -36,7 +36,7 @@ public class OverlayModules
             Url = "/trade",
             Name = "Trade",
             Icon = Outlined.Storefront,
-            GetChangeTokenAsync = serviceProvider => ValueTask.FromResult(serviceProvider.GetRequiredService<ITradeRunManager>().ChangeToken),
+            GetChangeToken = serviceProvider => serviceProvider.GetRequiredService<ITradeRunManager>().ChangeToken,
             GetUpdateCountAsync = async serviceProvider =>
             {
                 var inventoryManager = serviceProvider.GetRequiredService<ITradeRunManager>();
@@ -93,8 +93,8 @@ public class OverlayModules
         public string Icon { get; init; } = Icons.Material.Filled.ViewModule;
         public KeyboardKey? ShortcutOverride { get; init; }
 
-        public Func<IServiceProvider, ValueTask<IChangeToken>> GetChangeTokenAsync { get; set; } =
-            _ => ValueTask.FromResult<IChangeToken>(NullChangeToken.Singleton);
+        public Func<IServiceProvider, IChangeToken> GetChangeToken { get; set; } =
+            _ => NullChangeToken.Singleton;
 
         public Func<IServiceProvider, ValueTask<int>> GetUpdateCountAsync { get; set; } =
             _ => ValueTask.FromResult(0);

@@ -121,8 +121,7 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        var tasks = OverlayModules.GetAll().Select(RegisterForChangeAsync);
-        await Task.WhenAll(tasks);
+        OverlayModules.GetAll().ForEach(RegisterForChanges);
     }
 
     protected override async Task OnParametersSetAsync()
@@ -131,27 +130,11 @@
         await RefreshDataAsync();
     }
 
-    private async Task RegisterForChangeAsync(OverlayModules.Entry entry)
+    private void RegisterForChanges(OverlayModules.Entry entry)
     {
-        var changeToken = await entry.GetChangeTokenAsync(ServiceProvider);
-        _moduleChangeRegistrations.AddOrUpdate(entry.GetHashCode(), RegisterNewCallback, UpdateExistingCallback);
-        return;
-
-        IDisposable RegisterNewCallback(int key)
-            => UpdateExistingCallback(key, null);
-
-        IDisposable UpdateExistingCallback(int _, IDisposable? previousRegistration)
-        {
-            previousRegistration?.Dispose();
-            return changeToken.RegisterChangeCallback(
-                _ =>
-                {
-                    InvokeAsync(RefreshDataAsync);
-                    InvokeAsync(() => RegisterForChangeAsync(entry));
-                },
-                null
-            );
-        }
+        var registration = new ChangeTokenRegistration(() => entry.GetChangeToken(ServiceProvider));
+        registration.OnChange += () => InvokeAsync(RefreshDataAsync);
+        _moduleChangeRegistrations[entry.GetHashCode()] = registration;
     }
 
     private async Task RefreshDataAsync()
@@ -199,6 +182,7 @@
 
     public void Dispose()
     {
+        _moduleChangeRegistrations.Values.ForEach(x => x.Dispose());
         NavigationManager.LocationChanged -= OnLocationChangedAsync;
     }
 

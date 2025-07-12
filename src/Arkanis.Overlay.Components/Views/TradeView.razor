@@ -122,19 +122,9 @@
 
     private void RegisterForChanges()
     {
-        _changeRegistration ??= RegisterNewCallback();
-        return;
-
-        IDisposable RegisterNewCallback()
-            => TradeRunManager.ChangeToken.RegisterChangeCallback(
-                _ =>
-                {
-                    InvokeAsync(RefreshDataAsync);
-                    _changeRegistration?.Dispose();
-                    _changeRegistration = RegisterNewCallback();
-                },
-                null
-            );
+        var registration = new ChangeTokenRegistration(() => TradeRunManager.ChangeToken);
+        registration.OnChange += () => InvokeAsync(RefreshDataAsync);
+        _changeRegistration = registration;
     }
 
     private async Task ActivateTabAsync(Tab activeTab)
