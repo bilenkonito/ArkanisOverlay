@@ -1,6 +1,5 @@
 namespace Arkanis.Overlay.Components.Helpers;
 
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Primitives;
 
 public sealed class ChangeTokenRegistration : IDisposable
@@ -24,11 +23,24 @@ public sealed class ChangeTokenRegistration : IDisposable
     private void ChangeHandler(object? _)
         => UpdateRegistration();
 
-    [MemberNotNull(nameof(_currentRegistration))]
     private void UpdateRegistration()
     {
         _currentRegistration?.Dispose();
-        _currentRegistration = _getChangeToken().RegisterChangeCallback(ChangeHandler, null);
-        OnChange?.Invoke();
+
+        try
+        {
+            var newChangeToken = _getChangeToken();
+            if (!newChangeToken.HasChanged)
+            {
+                // the new token still indicates a change, do not update the registration to prevent stack overflow
+                _currentRegistration = newChangeToken.RegisterChangeCallback(ChangeHandler, null);
+            }
+
+            OnChange?.Invoke();
+        }
+        catch (ObjectDisposedException)
+        {
+            // ignore
+        }
     }
 }
