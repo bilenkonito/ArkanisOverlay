@@ -330,6 +330,8 @@ internal partial class UexApiDtoMapper(IGameEntityHydrationService hydrationServ
     [MapProperty(nameof(CommodityDTO.Name), "fullName")]
     [MapProperty(nameof(CommodityDTO.Code), "codeName")]
     [MapProperty(nameof(CommodityDTO.Is_illegal), nameof(GameCommodity.IsIllegal))]
+    [MapProperty(nameof(CommodityDTO.Is_harvestable), nameof(GameCommodity.IsHarvestable))]
+    [MapProperty(nameof(CommodityDTO.Is_sellable), nameof(GameCommodity.IsSellable))]
     private partial GameCommodity MapInternal(CommodityDTO source);
 
     [MapperIgnoreTarget(nameof(GameEntity.Name))]

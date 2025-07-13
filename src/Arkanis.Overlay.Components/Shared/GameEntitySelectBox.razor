@@ -3,11 +3,11 @@
 @inject ISearchService SearchService
 
 <MudAutocomplete Label="@Label"
+                 Placeholder="@Placeholder"
                  Value="@Value"
                  ValueChanged="@ValueChanged"
                  Text="@GetText(Value)"
                  HelperText="@HelperText"
-                 Placeholder="Search for game entity"
                  Disabled="@Disabled"
                  Clearable="@(!Required)"
                  Required="@Required"
@@ -34,10 +34,13 @@
 {
 
     private HashSet<IGameEntity> _except = [];
-    private HashSet<IGameEntity> _only = [];
+    private HashSet<IGameEntity>? _only;
 
     [Parameter]
     public string? Label { get; set; } = "Game entity";
+
+    [Parameter]
+    public string? Placeholder { get; set; } = "Search for game entity";
 
     [Parameter]
     public IGameEntity? Value { get; set; }
@@ -64,7 +67,7 @@
     public IEnumerable<IGameEntity> Except { get; set; } = [];
 
     [Parameter]
-    public IEnumerable<IGameEntity> Only { get; set; } = [];
+    public IEnumerable<IGameEntity>? Only { get; set; }
 
     [Parameter]
     public string? HelperText { get; set; }
@@ -73,7 +76,7 @@
     {
         base.OnParametersSet();
         _except = Except.ToHashSet(IIdentifiable.EqualityComparer.For<IGameLocation>());
-        _only = Except.ToHashSet(IIdentifiable.EqualityComparer.For<IGameLocation>());
+        _only = Only?.ToHashSet(IIdentifiable.EqualityComparer.For<IGameLocation>());
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -109,7 +112,7 @@
         return results.GameEntities
             .Select(x => x.Subject)
             .Where(x => _except.Contains(x) == false)
-            .Where(x => _only.Count == 0 || _only.Contains(x))
+            .Where(x => _only is null || _only.Contains(x))
             .Where(Accept);
     }
 

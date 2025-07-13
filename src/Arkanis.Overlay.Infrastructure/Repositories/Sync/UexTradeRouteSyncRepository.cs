@@ -9,41 +9,46 @@ using Domain.Models.Game;
 using External.UEX.Abstractions;
 using Local;
 using Microsoft.Extensions.Logging;
+using MoreAsyncLINQ;
 using Services;
 
 internal class UexTradeRouteSyncRepository(
     GameEntityRepositoryDependencyResolver dependencyResolver,
     IExternalSyncCacheProvider<UexTradeRouteSyncRepository> cacheProvider,
-    IGameEntityRepository<GamePlanet> planetRepository,
+    IGameEntityRepository<GameCommodity> commodityRepository,
     IUexCommoditiesApi commoditiesApi,
     UexServiceStateProvider stateProvider,
     UexApiDtoMapper mapper,
     ILogger<UexTradeRouteSyncRepository> logger
 ) : UexGameEntitySyncRepositoryBase<CommodityRouteDTO, GameTradeRoute>(stateProvider, cacheProvider, mapper, logger)
 {
+    private const int BatchSize = 6;
+
     protected override IDependable GetDependencies()
         => dependencyResolver.DependsOn<GameTerminal>(this)
             .AlsoDependsOn<GameCommodity>();
 
     protected override async Task<UexApiResponse<ICollection<CommodityRouteDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
-        var planets = planetRepository.GetAllAsync(cancellationToken);
+        var commodities = commodityRepository.GetAllAsync(cancellationToken)
+            .Where(x => !x.IsHarvestable)
+            .Where(x => x.IsSellable);
 
         var items = new ConcurrentBag<CommodityRouteDTO>();
         UexApiResponse<GetCommoditiesRoutesOkResponse>? response = null;
 
-        await foreach (var planet in planets)
+        await foreach (var commodityBatch in commodities.Batch(BatchSize).WithCancellation(cancellationToken))
         {
-            await LoadForPlanetOrbitAsync(planet);
+            await Task.WhenAll(commodityBatch.Select(LoadForPlanetOrbitAsync));
         }
 
         return CreateResponse(response, items.ToArray());
 
-        async Task<UexApiResponse<GetCommoditiesRoutesOkResponse>> LoadForPlanetOrbitAsync(GamePlanet planet)
+        async Task<UexApiResponse<GetCommoditiesRoutesOkResponse>> LoadForPlanetOrbitAsync(GameCommodity commodity)
         {
-            var orbitEntityId = planet.Id;
-            var orbitId = orbitEntityId.Identity.ToString(CultureInfo.InvariantCulture);
-            response = await commoditiesApi.GetCommoditiesRoutesByOrbitOriginAsync(orbitId, cancellationToken).ConfigureAwait(false);
+            var commodityEntityId = commodity.Id;
+            var commodityId = commodityEntityId.Identity.ToString(CultureInfo.InvariantCulture);
+            response = await commoditiesApi.GetCommoditiesRoutesByCommodityAsync(commodityId, cancellationToken).ConfigureAwait(false);
             foreach (var dto in response.Result.Data ?? ThrowCouldNotParseResponse())
             {
                 items.Add(dto);

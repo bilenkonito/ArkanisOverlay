@@ -26,14 +26,14 @@
                     Side="@TradeRouteParty.PartySide.Origin"
                     Spacing="6"/>
             </div>
-            <div style="grid-column: auto">
+            <div style="grid-column: auto" class="pr-1">
                 <MudStack Justify="@Justify.Center"
                           AlignItems="@AlignItems.End"
                           Class="text-right h-100"
                           Spacing="0">
                     <MudText Typo="Typo.inherit" Color="@Color.Error">
                         <GameCurrencyLabel
-                            Model="@(PriceOrigin * ScuReachable)"
+                            Model="@PriceOriginTotal"
                             Decimals="1"/>
                     </MudText>
                 </MudStack>
@@ -63,19 +63,19 @@
                     }
                 </MudStack>
             </div>
-            <div style="grid-column: auto" class="d-flex justify-start">
+            <div style="grid-column: auto" class="d-flex justify-end pr-4">
                 <MudStack Spacing="0"
                           Class="text-right">
                     <MudText Typo="Typo.inherit">
                         <GameCurrencyLabel
-                            Model="@(PriceDestination * ScuReachable)"
+                            Model="@PriceDestinationTotal"
                             Decimals="1"/>
                     </MudText>
                     <MudText Typo="Typo.inherit"
                              Color="@Color.Success"
                              Class="no-wrap">
                         <GameCurrencyLabel
-                            Model="@(PriceDestination * ScuReachable - PriceOrigin * ScuReachable)"
+                            Model="@(PriceDestinationTotal - PriceOriginTotal)"
                             Prefix="+"
                             Decimals="1"/>
                     </MudText>
@@ -121,16 +121,20 @@
         => Model.Destination.Price;
 
     private int ScuReachable
-        => Context?.CargoCapacity > 0
-            ? Math.Min(Context.CargoCapacity.Value, Model.Origin.CargoUnitsAvailable)
-            : Model.Origin.CargoUnitsAvailable;
+        => Context?.ScuReachable(Model.Origin.CargoUnitsAvailable) ?? 0;
+
+    private GameCurrency PriceOriginTotal
+        => PriceOrigin * ScuReachable;
+
+    private GameCurrency PriceDestinationTotal
+        => PriceDestination * ScuReachable;
+
+    [CascadingParameter]
+    public TradeRouteSearchView.SearchContext? Context { get; set; }
 
     [Parameter]
     [EditorRequired]
     public required GameTradeRoute Model { get; set; }
-
-    [Parameter]
-    public TradeRouteSearchView.SearchContext? Context { get; set; }
 
     [Parameter]
     public RenderFragment<GameTradeRoute>? ControlsContent { get; set; }
