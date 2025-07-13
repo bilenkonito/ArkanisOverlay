@@ -42,9 +42,9 @@
                 @bind-Value:after="@RefreshDataAsync"/>
         </MudItem>
         <MudItem xs="12" md="1">
-            <MudTextField
+            <MudNumericField
                 @bind-Value="@_context.CargoCapacity"
-                InputType="@InputType.Number"
+                Min="0"
                 DebounceInterval="200"
                 OnDebounceIntervalElapsed="RefreshDataAsync"
                 Label="Capacity"
@@ -195,7 +195,6 @@
     {
         await Task.CompletedTask;
         _context.Commodity = SelectedCommodityEntity as GameCommodity;
-        _context.CargoCapacity ??= SelectedVehicle?.CargoCapacity ?? CargoCapacity;
         if (_context.CargoCapacity == _context.Vehicle?.CargoCapacity && SelectedVehicle != _context.Vehicle)
         {
             // vehicle selection changed/cleared, if the cargo capacity corresponds to the previous selection update it
