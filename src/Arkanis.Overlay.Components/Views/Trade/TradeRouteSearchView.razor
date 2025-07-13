@@ -36,6 +36,7 @@
         <MudItem xs="12" md="3">
             <GameEntitySelectBox
                 Label="Transport vehicle"
+                Placeholder="Search for a game vehicle"
                 EntityCategories="@( [GameEntityCategory.GroundVehicle, GameEntityCategory.SpaceShip])"
                 Accept="@(x => x is GameVehicle { CargoCapacity: > 0 })"
                 @bind-Value="@SelectedVehicleEntity"
@@ -55,6 +56,7 @@
         <MudItem xs="12" md="2">
             <GameEntitySelectBox
                 Label="Commodity"
+                Placeholder="Search for a game commodity"
                 EntityCategory="@GameEntityCategory.Commodity"
                 Only="@ApplicableCommodities"
                 @bind-Value="@SelectedCommodityEntity"
@@ -63,6 +65,7 @@
         <MudItem xs="12" md="3">
             <GameEntitySelectBox
                 Label="Origin location"
+                Placeholder="Search for a game location"
                 EntityCategory="@GameEntityCategory.Location"
                 Only="@ApplicableOriginLocations"
                 @bind-Value="@SelectedOriginLocationEntity"
@@ -71,6 +74,7 @@
         <MudItem xs="12" md="3">
             <GameEntitySelectBox
                 Label="Destination location"
+                Placeholder="Search for a game location"
                 EntityCategory="@GameEntityCategory.Location"
                 Only="@ApplicableDestinationLocations"
                 @bind-Value="@SelectedDestinationLocationEntity"

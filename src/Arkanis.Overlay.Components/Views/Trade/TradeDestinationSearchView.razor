@@ -34,6 +34,7 @@
         <MudItem xs="12" md="4">
             <GameEntitySelectBox
                 Label="Commodity"
+                Placeholder="Search for a game commodity"
                 EntityCategory="@GameEntityCategory.Commodity"
                 Only="@ApplicableCommodities"
                 @bind-Value="@SelectedCommodityEntity"
@@ -53,6 +54,7 @@
         <MudItem xs="12" md="5">
             <GameEntitySelectBox
                 Label="Destination location"
+                Placeholder="Search for a game location"
                 EntityCategory="@GameEntityCategory.Location"
                 Only="@ApplicableDestinationLocations"
                 @bind-Value="@SelectedDestinationLocationEntity"
