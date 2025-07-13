@@ -50,22 +50,4 @@
             </chapter:TrayIcon.ContextMenu>
         </chapter:TrayIcon>
     </chapter:Tray.TrayIcon>
-    <!-- <icon:TrayIconHandlers.TrayIcons> -->
-    <!--     <icon:TrayIcon -->
-    <!--         Title="Arkanis Overlay" -->
-    <!--         IconSource="../../Resources/favicon.ico" -->
-    <!--         NotificationServiceMemberPath="NotificationService" -->
-    <!--         ContextMenuVariation="ContextMenuStrip"> -->
-    <!-- -->
-    <!--         <icon:TrayIcon.ContextMenu> -->
-    <!--             <ContextMenu> -->
-    <!--                 <MenuItem Header="About" Click="OnAboutCommand" /> -->
-    <!--                 <MenuItem Header="Preferences" Click="OnPreferenceCommand" /> -->
-    <!--                 <Separator /> -->
-    <!--                 <MenuItem Header="Exit" Click="OnExitCommand" /> -->
-    <!--             </ContextMenu> -->
-    <!--         </icon:TrayIcon.ContextMenu> -->
-    <!--     </icon:TrayIcon> -->
-    <!-- -->
-    <!-- </icon:TrayIconHandlers.TrayIcons> -->
 </Window>
