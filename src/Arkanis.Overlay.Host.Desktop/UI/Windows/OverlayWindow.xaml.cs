@@ -214,6 +214,7 @@ public sealed partial class OverlayWindow : IDisposable
         // BlazorWebView.WebView.CoreWebView2.SetVirtualHostNameToFolderMapping("resources.internal", "Resources", CoreWebView2HostResourceAccessKind.Allow);
         BlazorWebView.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
         BlazorWebView.WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+        BlazorWebView.WebView.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
     }
 
     private void HideOverlay()

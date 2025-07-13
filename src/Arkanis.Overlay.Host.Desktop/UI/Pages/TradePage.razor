@@ -1,0 +1,13 @@
+@page "/trade"
+@page "/trade/{page}"
+@layout OverlayLayout
+
+<div>
+    <TradeView/>
+</div>
+
+@code
+{
+    [Parameter]
+    public string? Page { get; set; }
+}

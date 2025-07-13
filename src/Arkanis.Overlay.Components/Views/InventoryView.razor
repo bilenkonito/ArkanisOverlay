@@ -1,15 +1,10 @@
-@using Arkanis.Overlay.Common
 @using Arkanis.Overlay.Components.Shared.Dialogs
 @using Arkanis.Overlay.Domain.Abstractions
 @using Arkanis.Overlay.Domain.Abstractions.Game
-@using Arkanis.Overlay.Domain.Models.Analytics
-@using Arkanis.Overlay.Domain.Models.Inventory
-@using Arkanis.Overlay.Domain.Models.Keyboard
+@implements IDisposable
 @inject IDialogService DialogService
 @inject IAnalyticsEventReporter EventReporter
 @inject IInventoryManager InventoryManager
-
-<PageTitle>@ApplicationConstants.ApplicationName — Inventory</PageTitle>
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
 <style>
@@ -18,34 +13,12 @@
         animation: 250ms fadeInDown;
     }
 
-    :not(:hover) * .visible-on-parent-hover {
-        display: none;
-    }
-
-    .mud-tabs-tabbar-content {
-        overflow: visible !important;
-    }
-
     .mud-tabs-tabbar-content .mud-badge.mud-badge-top.center.mud-badge-overlap {
         bottom: calc(100% - 8px);
     }
 
     .mud-tabs-tabbar .mud-tabs-scroll-button {
         display: none;
-    }
-
-    .mud-tabs-tabbar-wrapper {
-        display: flex !important;
-        width: 100% !important;
-        transform: none !important;
-    }
-
-    .mud-tabs-tabbar-wrapper .mud-badge-root {
-        width: 100%;
-    }
-
-    .mud-tabs-tabbar-wrapper > * {
-        flex: 1;
     }
 </style>
 
@@ -100,40 +73,29 @@
                 <MudPaper Style="position: sticky; top: 0; z-index: 100"
                           Elevation="4"
                           Class="py-2 px-4">
-                    <MudGrid>
+                    <MudGrid Spacing="2">
                         <MudItem xs="12" md="3">
                             <MudTextField
                                 @bind-Value="@_searchText"
                                 DebounceInterval="200"
-                                OnDebounceIntervalElapsed="UpdateFilters"
+                                OnDebounceIntervalElapsed="@UpdateFilters"
                                 Label="Search"
                                 Placeholder="Item or commodity name"
                                 Clearable/>
                         </MudItem>
                         <MudItem xs="12" md="3">
-                            <MudSelect @bind-Value="_selectedLocation"
-                                       @bind-Value:after="UpdateFilters"
-                                       Label="Location"
-                                       Placeholder="Select a game location"
-                                       Clearable>
-                                @foreach (var location in AllLocations)
-                                {
-                                    <MudSelectItem Value="@location">
-                                        @location.Name.MainContent.FullName
-                                    </MudSelectItem>
-                                }
-                                @if (AllLocations.Length == 0)
-                                {
-                                    <MudSelectItem T="IGameLocation" Value="@null" Disabled>
-                                        No locations used yet
-                                    </MudSelectItem>
-                                }
-                            </MudSelect>
+                            <GameEntitySelectBox
+                                Label="Location"
+                                Placeholder="Search for a game location"
+                                EntityCategory="@GameEntityCategory.Location"
+                                Only="@FilteredLocations"
+                                @bind-Value="@_selectedLocationEntity"
+                                @bind-Value:after="@UpdateFilters"/>
                         </MudItem>
                         <MudItem xs="12" md="3">
                             <InventoryListSelect
-                                @bind-Value="_selectedList"
-                                @bind-Value:after="UpdateFilters"/>
+                                @bind-Value="@_selectedList"
+                                @bind-Value:after="@UpdateFilters"/>
                         </MudItem>
                         <MudItem xs="12" md="3">
                             <MudStack AlignItems="@AlignItems.Center"
@@ -237,7 +199,8 @@
                 </MudExpansionPanels>
 
                 <MudPaper>
-                    <MudTabs @bind-ActivePanelIndex="@_activePanelIndex"
+                    <MudTabs Class="with-badges"
+                             @bind-ActivePanelIndex="@_activePanelIndex"
                              AlwaysShowScrollButtons="false"
                              Rounded>
                         <MudTabPanel>
@@ -437,12 +400,16 @@
 {
     private bool _fabMenuOpen;
     private string? _searchText;
-    private IGameLocation? _selectedLocation;
+    private IGameEntity? _selectedLocationEntity;
     private InventoryEntryList? _selectedList;
     private int _activePanelIndex;
+    private IDisposable? _changeRegistration;
+
+    private IGameLocation? SelectedLocation
+        => _selectedLocationEntity as IGameLocation;
 
     private bool FiltersActive
-        => this is { _searchText: not null } or { _selectedLocation: not null } or { _selectedList: not null };
+        => this is { _searchText: not null } or { SelectedLocation: not null } or { _selectedList: not null };
 
     private ICollection<InventoryEntryBase> FilteredEntries { get; set; } = [];
 
@@ -466,6 +433,15 @@
         await RefreshDataAsync();
     }
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        var registration = new ChangeTokenRegistration(() => InventoryManager.ChangeToken);
+        registration.OnChange += () => InvokeAsync(RefreshDataAsync);
+        _changeRegistration = registration;
+    }
+
     private async Task RefreshDataAsync()
     {
         AllEntries = await InventoryManager.GetAllEntriesAsync();
@@ -479,7 +455,7 @@
     {
         FilteredEntries = AllEntries
             .Where(x => _searchText is null || x.Entity.Name.MainContent.FullName.Contains(_searchText, StringComparison.OrdinalIgnoreCase))
-            .Where(x => _selectedLocation is null || (x is IGameLocatedAt locatedAt && locatedAt.Location == _selectedLocation))
+            .Where(x => SelectedLocation is null || (x is IGameLocatedAt locatedAt && SelectedLocation.IsOrContains(locatedAt.Location)))
             .Where(x => _selectedList is null || x.List?.Id == _selectedList.Id)
             .ToArray();
 
@@ -507,7 +483,7 @@
 
     private IGameLocation[] GetUniqueLocations(IEnumerable<InventoryEntryBase> entries)
         => entries.OfType<IGameLocatedAt>()
-            .Select(x => x.Location)
+            .SelectMany<IGameLocatedAt, IGameLocation>(x => [x.Location, ..x.Location.Parents])
             .Distinct()
             .OrderBy(x => x.Name.MainContent.FullName)
             .ToArray();
@@ -594,7 +570,7 @@
 
     private async Task TransferSelectedAsync()
     {
-        if ((_selectedLocation ?? await SelectGameLocationDialog.ShowAsync(DialogService)) is not { } location)
+        if ((SelectedLocation ?? await SelectGameLocationDialog.ShowAsync(DialogService)) is not { } location)
         {
             return;
         }
@@ -736,7 +712,7 @@
 
     private async Task UpdateAsync(InventoryEntryBase contextItem)
     {
-        if (await InventoryEntryUpdateDialog.ShowEditAsync(DialogService, contextItem, _selectedLocation) is not null)
+        if (await InventoryEntryUpdateDialog.ShowEditAsync(DialogService, contextItem, SelectedLocation) is not null)
         {
             await RefreshDataAsync();
             await InvokeAsync(StateHasChanged);
@@ -745,7 +721,7 @@
 
     private async Task TransferAsync(InventoryEntryBase contextItem)
     {
-        if (await InventoryEntryUpdateDialog.ShowTransferAsync(DialogService, contextItem, _selectedLocation) is not null)
+        if (await InventoryEntryUpdateDialog.ShowTransferAsync(DialogService, contextItem, SelectedLocation) is not null)
         {
             await RefreshDataAsync();
             await InvokeAsync(StateHasChanged);
@@ -784,4 +760,8 @@
 
     private bool IsPanelInactive(Panel panel)
         => _activePanelIndex != (int)panel;
+
+    public void Dispose()
+        => _changeRegistration?.Dispose();
 }
+

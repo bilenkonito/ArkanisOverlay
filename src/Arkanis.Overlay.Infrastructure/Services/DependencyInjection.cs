@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Services;
 
+using Abstractions;
 using Common.Extensions;
 using Domain.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,11 @@ public static class DependencyInjection
             .Alias<ISalePriceProvider, FakePriceProvider>()
             .Alias<IRentPriceProvider, FakePriceProvider>();
 
+    public static IServiceCollection AddCommonInfrastructureServices(this IServiceCollection services)
+        => services
+            .AddSingleton<ChangeTokenManager>()
+            .Alias<IChangeTokenManager, ChangeTokenManager>();
+
     public static IServiceCollection AddDatabaseExternalSyncCacheProviders(this IServiceCollection services)
         => services
             .AddSingleton(typeof(IExternalSyncCacheProvider<>), typeof(ExternalSyncDatabaseCacheProvider<>));
@@ -25,6 +31,9 @@ public static class DependencyInjection
 
     public static IServiceCollection AddLocalInventoryManagementServices(this IServiceCollection services)
         => services.AddScoped<IInventoryManager, LocalDatabaseInventoryManager>();
+
+    public static IServiceCollection AddLocalTradeRunManagementServices(this IServiceCollection services)
+        => services.AddScoped<ITradeRunManager, LocalDatabaseTradeRunManager>();
 
     public static IServiceCollection AddServicesForUserPreferencesFromJsonFile(this IServiceCollection services)
         => services.AddUserPreferencesServices<UserPreferencesJsonFileManager>();

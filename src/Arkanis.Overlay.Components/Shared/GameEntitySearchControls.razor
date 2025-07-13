@@ -1,8 +1,5 @@
 @using Arkanis.Overlay.Components.Shared.Dialogs
 @using Arkanis.Overlay.Domain.Abstractions.Game
-@using Arkanis.Overlay.Domain.Models.Inventory
-@using Arkanis.Overlay.Domain.Models.Keyboard
-@using MoreLinq
 @inject IDialogService DialogService
 @inject IInventoryManager InventoryManager
 
@@ -183,12 +180,16 @@
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        _allEntries = await InventoryManager.GetEntriesForAsync(Model.Id);
-        _unassignedEntries = _allEntries.Where(x => x.Type is InventoryEntryBase.EntryType.Virtual).ToArray();
-        _unassignedQuantities = Quantity.Aggregate(_unassignedEntries.Select(x => x.Quantity)).ToArray();
 
-        _assignedEntries = _allEntries.Where(x => x is IGameLocatedAt locatedAt && CurrentLocation?.IsOrContains(locatedAt.Location) != false).ToArray();
-        _assignedQuantities = Quantity.Aggregate(_assignedEntries.Select(x => x.Quantity)).ToArray();
+        if (Model is GameItem or GameCommodity)
+        {
+            _allEntries = await InventoryManager.GetEntriesForAsync(Model.Id);
+            _unassignedEntries = _allEntries.Where(x => x.Type is InventoryEntryBase.EntryType.Virtual).ToArray();
+            _unassignedQuantities = Quantity.Aggregate(_unassignedEntries.Select(x => x.Quantity)).ToArray();
+
+            _assignedEntries = _allEntries.Where(x => x is IGameLocatedAt locatedAt && CurrentLocation?.IsOrContains(locatedAt.Location) != false).ToArray();
+            _assignedQuantities = Quantity.Aggregate(_assignedEntries.Select(x => x.Quantity)).ToArray();
+        }
 
         if (!IsFocused)
         {

@@ -1,11 +1,11 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
-@using Arkanis.Overlay.Domain.Enums
 <MudDialog DefaultFocus="@DefaultFocus.FirstChild" ContentClass="py-2">
     <TitleContent>
         Select Location
     </TitleContent>
     <DialogContent>
         <GameEntitySelectBox
+            Placeholder="Search for a game location"
             EntityCategory="@GameEntityCategory.Location"
             Accept="@AcceptEntity"
             @bind-Value="Location"/>

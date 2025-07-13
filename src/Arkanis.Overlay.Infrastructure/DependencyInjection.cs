@@ -39,10 +39,12 @@ public static class DependencyInjection
             .AddSingleton<ServiceDependencyResolver>()
             .AddHostedService<InitializeServicesHostedService>()
             .AddAllUexApiClients()
+            .AddCommonInfrastructureServices()
             .AddOverlaySqliteDatabaseServices()
             .AddDatabaseExternalSyncCacheProviders()
             .AddInMemorySearchServices()
             .AddLocalInventoryManagementServices()
+            .AddLocalTradeRunManagementServices()
             .AddUexInMemoryGameEntityServices()
             .AddPriceProviders()
             .AddUexHydrationServices();

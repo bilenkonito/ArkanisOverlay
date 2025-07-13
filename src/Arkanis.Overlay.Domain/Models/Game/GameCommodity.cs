@@ -1,15 +1,26 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
+using System.ComponentModel;
 using Abstractions.Game;
+using Attributes;
 using Enums;
 using Search;
 using Trade;
 
+[Description("Game Commodity Entry")]
+[CacheEntryDescription("Game Commodities")]
 public class GameCommodity(int id, string fullName, string codeName)
     : GameEntity(UexApiGameEntityId.Create<GameCommodity>(id), GameEntityCategory.Commodity), IGameTradable
 {
     public UexId<GameCommodity> StrongId
         => (Id as UexId<GameCommodity>)!;
+
+    public bool IsIllegal { get; init; }
+    public bool IsHarvestable { get; init; }
+    public bool IsSellable { get; init; }
+
+    public bool IsLegal
+        => !IsIllegal;
 
     public override GameEntityName Name { get; } = new(new GameEntityName.NameWithCode(fullName, codeName));
 

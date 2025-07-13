@@ -1,0 +1,38 @@
+@inherits TradeRunStageComponent<TradeRun.Stage>
+
+<!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
+<style>
+    .mud-stepper-nav {
+        border-bottom: 1px solid var(--mud-palette-lines-default);
+    }
+
+    .mud-stepper-content > .d-flex[role="group"] {
+        height: 30vh;
+    }
+</style>
+
+@if (Stage is TradeRun.AcquisitionStage acquisitionStage)
+{
+    <TradeRunStageAcquisitionStepper
+        Stage="@acquisitionStage"
+        StageChanged="@UpdateStageAsync"
+        TradeRun="@TradeRun"
+        Disabled="@Disabled"/>
+}
+
+@if (Stage is TradeRun.SaleStage saleStage)
+{
+    <TradeRunStageSaleStepper
+        Stage="@saleStage"
+        StageChanged="@UpdateStageAsync"
+        TradeRun="@TradeRun"
+        Disabled="@Disabled"/>
+}
+
+@code
+{
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+}

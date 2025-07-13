@@ -1,10 +1,13 @@
 namespace Arkanis.Overlay.Domain.Abstractions.Services;
 
 using Game;
+using Microsoft.Extensions.Primitives;
 using Models.Inventory;
 
 public interface IInventoryManager
 {
+    IChangeToken ChangeToken { get; }
+
     Task<int> GetUnassignedCountAsync(CancellationToken cancellationToken = default);
 
     Task<ICollection<InventoryEntryBase>> GetEntriesForAsync(
