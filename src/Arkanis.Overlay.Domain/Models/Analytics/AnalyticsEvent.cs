@@ -64,6 +64,38 @@ public sealed record InventoryTransferItem() : BuiltInAnalyticsEvent("inventory_
 
 #endregion
 
+#region Trade Run events
+
+public static class TradeRunEvents
+{
+    public static TradeRunCreate CreateTradeRun()
+        => new();
+
+    public static TradeRunStageCreate CreateTradeRunStage()
+        => new();
+
+    public static TradeRunStageFinalize FinalizeTradeRunStage()
+        => new();
+
+    public static TradeRunFinalize FinalizeTradeRun()
+        => new();
+
+    public static TradeRunAbandon AbandonTradeRun()
+        => new();
+}
+
+public sealed record TradeRunCreate() : BuiltInAnalyticsEvent("trade_run-create");
+
+public sealed record TradeRunStageCreate() : BuiltInAnalyticsEvent("trade_run-stage_create");
+
+public sealed record TradeRunStageFinalize() : BuiltInAnalyticsEvent("trade_run-stage_finalize");
+
+public sealed record TradeRunFinalize() : BuiltInAnalyticsEvent("trade_run-finalize");
+
+public sealed record TradeRunAbandon() : BuiltInAnalyticsEvent("trade_run-abandon");
+
+#endregion
+
 #region Regular events
 
 public sealed record SearchCalculationEvent() : BuiltInAnalyticsEvent("search_calculate");

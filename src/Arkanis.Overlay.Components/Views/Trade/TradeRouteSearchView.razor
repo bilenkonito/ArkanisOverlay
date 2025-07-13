@@ -1,8 +1,8 @@
-@using Arkanis.Overlay.Components.Views.Components
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @using Arkanis.Overlay.Domain.Models
 @inject IGameEntityRepository<GameTradeRoute> TradeRouteRepository
 @inject ITradeRunManager TradeRunManager
+@inject IAnalyticsEventReporter EventReporter
 @inject IExternalServiceStateProvider ServiceStateProvider
 
 <!--suppress CssUnusedSymbol, CssUnresolvedCustomProperty -->
@@ -36,15 +36,16 @@
         <MudItem xs="12" md="3">
             <GameEntitySelectBox
                 Label="Transport vehicle"
+                Placeholder="Search for a game vehicle"
                 EntityCategories="@( [GameEntityCategory.GroundVehicle, GameEntityCategory.SpaceShip])"
                 Accept="@(x => x is GameVehicle { CargoCapacity: > 0 })"
                 @bind-Value="@SelectedVehicleEntity"
                 @bind-Value:after="@RefreshDataAsync"/>
         </MudItem>
         <MudItem xs="12" md="1">
-            <MudTextField
+            <MudNumericField
                 @bind-Value="@_context.CargoCapacity"
-                InputType="@InputType.Number"
+                Min="0"
                 DebounceInterval="200"
                 OnDebounceIntervalElapsed="RefreshDataAsync"
                 Label="Capacity"
@@ -55,6 +56,7 @@
         <MudItem xs="12" md="2">
             <GameEntitySelectBox
                 Label="Commodity"
+                Placeholder="Search for a game commodity"
                 EntityCategory="@GameEntityCategory.Commodity"
                 Only="@ApplicableCommodities"
                 @bind-Value="@SelectedCommodityEntity"
@@ -63,6 +65,7 @@
         <MudItem xs="12" md="3">
             <GameEntitySelectBox
                 Label="Origin location"
+                Placeholder="Search for a game location"
                 EntityCategory="@GameEntityCategory.Location"
                 Only="@ApplicableOriginLocations"
                 @bind-Value="@SelectedOriginLocationEntity"
@@ -71,6 +74,7 @@
         <MudItem xs="12" md="3">
             <GameEntitySelectBox
                 Label="Destination location"
+                Placeholder="Search for a game location"
                 EntityCategory="@GameEntityCategory.Location"
                 Only="@ApplicableDestinationLocations"
                 @bind-Value="@SelectedDestinationLocationEntity"
@@ -111,139 +115,23 @@
                         ItemSize="64"
                         OverscanCount="20"
                         Context="route">
-                @{
-                    var priceOrigin = route.Origin.Price;
-                    var priceDestination = route.Destination.Price;
-                    var scuReachable = _context.CargoCapacity > 0
-                        ? Math.Min(_context.CargoCapacity.Value, route.Origin.CargoUnitsAvailable)
-                        : route.Origin.CargoUnitsAvailable;
-                }
-                <MudPaper Class="px-4 focus"
-                          tabindex="0">
-                    <div style="min-height: 64px; align-content: center;">
-                        <div style="display: grid; grid-template-columns: 5fr 1fr 1fr 1fr 5fr min-content;"
-                             class="align-center gap-3">
-                            @* <div class="my-n3 mx-n1 h-100" style="grid-column: auto; min-width: 20px"> *@
-                            @*     <MudStack Spacing="0" *@
-                            @*               Class="h-100" *@
-                            @*               AlignItems="@AlignItems.Center" *@
-                            @*               Justify="@Justify.Center"> *@
-                            @*         @if (DateTimeOffset.Now - route.CreatedAt > TimeSpan.FromDays(31)) *@
-                            @*         { *@
-                            @*             <MudIcon *@
-                            @*                 Icon="@Icons.Material.Filled.AccessTime" *@
-                            @*                 Color="@Color.Warning" *@
-                            @*                 Size="@Size.Small"/> *@
-                            @*         } *@
-                            @*     </MudStack> *@
-                            @* </div> *@
-                            <div style="grid-column: auto">
-                                <TradeRouteParty
-                                    Model="@route.Origin"
-                                    Route="@route"
-                                    Side="@TradeRouteParty.PartySide.Origin"
-                                    Spacing="6"/>
-                            </div>
-                            <div style="grid-column: auto">
-                                <MudStack Justify="@Justify.Center"
-                                          AlignItems="@AlignItems.End"
-                                          Class="text-right h-100"
-                                          Spacing="0">
-                                    <MudText Typo="Typo.inherit" Color="@Color.Error">
-                                        <GameCurrencyLabel
-                                            Model="@(priceOrigin * scuReachable)"
-                                            Decimals="1"/>
-                                    </MudText>
-                                </MudStack>
-                            </div>
-                            <div style="grid-column: auto">
-                                <MudStack AlignItems="@AlignItems.Center"
-                                          Justify="@Justify.Center"
-                                          Class="h-100 mx-3"
-                                          Spacing="0">
-                                    <MudText Typo="@Typo.body2" Class="my-n1 no-wrap text-secondary">
-                                        <GameEntityNamePart
-                                            Typo="@Typo.inherit"
-                                            Model="@route.Commodity.Name.MainContent"
-                                            Style="height: initial; position: relative; z-index: 2"
-                                            PreferCode/>
-                                    </MudText>
-                                    <MudIcon
-                                        Icon="@Icons.Material.Filled.ArrowRightAlt"
-                                        Size="@Size.Large"
-                                        Class="my-n1"/>
-                                    @if (route.Distance is { } distance)
-                                    {
-                                        <MudText Typo="@Typo.body2"
-                                                 Class="my-n1 no-wrap">
-                                            @distance Gm
-                                        </MudText>
-                                    }
-                                </MudStack>
-                            </div>
-                            <div style="grid-column: auto" class="d-flex justify-start">
-                                <MudStack Spacing="0"
-                                          Class="text-right">
-                                    <MudText Typo="Typo.inherit">
-                                        <GameCurrencyLabel
-                                            Model="@(priceDestination * scuReachable)"
-                                            Decimals="1"/>
-                                    </MudText>
-                                    <MudText Typo="Typo.inherit"
-                                             Color="@Color.Success"
-                                             Class="no-wrap">
-                                        <GameCurrencyLabel
-                                            Model="@(priceDestination * scuReachable - priceOrigin * scuReachable)"
-                                            Prefix="+"
-                                            Decimals="1"/>
-                                    </MudText>
-                                </MudStack>
-                            </div>
-                            <div style="grid-column: auto">
-                                <TradeRouteParty
-                                    Model="@route.Destination"
-                                    Route="@route"
-                                    Side="@TradeRouteParty.PartySide.Destination"
-                                    Class="flex-grow-1"
-                                    Spacing="6"
-                                    CompareToOrigin
-                                    AlignRight/>
-                            </div>
-                            <div style="grid-column: auto">
-                                <MudStack Spacing="2"
-                                          AlignItems="@AlignItems.Center"
-                                          Justify="@Justify.FlexEnd"
-                                          Class="h-100 mr-n2"
-                                          Row>
-                                    @if (ControlsContent is null)
-                                    {
-                                        <MudDivider
-                                            FlexItem
-                                            Vertical/>
-
-                                        <MudTooltip
-                                            Text="Create trade run"
-                                            Placement="@Placement.Top">
-                                            <MudIconButton
-                                                Icon="@Icons.Material.Filled.Flight"
-                                                Class="focus"
-                                                OnClick="@(() => CreateTradeRunAsync(route))"
-                                                tabindex="1"/>
-                                        </MudTooltip>
-                                    }
-                                    else
-                                    {
-                                        @ControlsContent(route)
-                                    }
-                                </MudStack>
-                            </div>
-                        </div>
-                    </div>
-                </MudPaper>
+                <TradeRouteItem @key="@route.Id"
+                                Model="@route">
+                    <ControlsContent>
+                        <MudTooltip
+                            Text="Create trade run"
+                            Placement="@Placement.Top">
+                            <MudIconButton
+                                Icon="@Icons.Material.Filled.Flight"
+                                Class="focus"
+                                OnClick="@(() => CreateTradeRunAsync(route))"
+                                tabindex="1"/>
+                        </MudTooltip>
+                    </ControlsContent>
+                </TradeRouteItem>
             </Virtualize>
         </MudStack>
     </CascadingValue>
-
 </div>
 
 @code
@@ -311,7 +199,6 @@
     {
         await Task.CompletedTask;
         _context.Commodity = SelectedCommodityEntity as GameCommodity;
-        _context.CargoCapacity ??= SelectedVehicle?.CargoCapacity ?? CargoCapacity;
         if (_context.CargoCapacity == _context.Vehicle?.CargoCapacity && SelectedVehicle != _context.Vehicle)
         {
             // vehicle selection changed/cleared, if the cargo capacity corresponds to the previous selection update it
@@ -388,6 +275,11 @@
         public GameCommodity? Commodity { get; set; }
         public IGameLocation? OriginLocation { get; set; }
         public IGameLocation? DestinationLocation { get; set; }
+
+        public int ScuReachable(int available)
+            => CargoCapacity > 0
+                ? Math.Min(CargoCapacity.Value, available)
+                : available;
     }
 
     public enum SortField
@@ -409,5 +301,6 @@
         };
         var tradeRun = TradeRun.Create(tradeRoute, runContext);
         await TradeRunManager.AddOrUpdateEntryAsync(tradeRun);
+        await EventReporter.TrackEventAsync(TradeRunEvents.CreateTradeRun());
     }
 }

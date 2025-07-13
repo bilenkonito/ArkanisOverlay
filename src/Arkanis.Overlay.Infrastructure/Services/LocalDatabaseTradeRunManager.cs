@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Services;
 
+using Abstractions;
 using Data;
 using Data.Mappers;
 using Domain.Abstractions.Services;
@@ -11,16 +12,12 @@ using Microsoft.Extensions.Primitives;
 internal sealed class LocalDatabaseTradeRunManager(
     IDbContextFactory<OverlayDbContext> dbContextFactory,
     IMemoryCache memoryCache,
+    IChangeTokenManager changeTokenManager,
     TradeRunEntityMapper mapper
-) : ITradeRunManager, IDisposable
+) : ITradeRunManager
 {
-    private CancellationTokenSource _changeSource = new();
-
-    public void Dispose()
-        => _changeSource.Dispose();
-
     public IChangeToken ChangeToken
-        => new CancellationChangeToken(_changeSource.Token);
+        => changeTokenManager.GetChangeTokenFor<CacheId>();
 
     public async Task<int> GetInProgressCountAsync(CancellationToken cancellationToken = default)
         => await memoryCache.GetOrCreateAsync(
@@ -86,14 +83,9 @@ internal sealed class LocalDatabaseTradeRunManager(
     }
 
     private async Task TriggerChangeAsync()
-    {
-        var previousChangeSource = _changeSource;
-        _changeSource = new CancellationTokenSource();
-        memoryCache.Remove(CacheId.InProgressCountQuery);
-        await previousChangeSource.CancelAsync();
-    }
+        => await changeTokenManager.TriggerChangeForAsync<CacheId>();
 
-    private static class CacheId
+    private class CacheId
     {
         public static readonly GetCount InProgressCountQuery = new();
 

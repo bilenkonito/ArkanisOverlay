@@ -18,6 +18,9 @@ public class LocalDatabaseServiceTestBedFixture : OverlayDbContextTestBedFixture
         services.AddSingleton<IGameEntityHydrationService, NoHydrationMockService>();
         services.AddSingleton<UexApiDtoMapper>();
 
+        services.AddSingleton<ChangeTokenManager>()
+            .Alias<IChangeTokenManager, ChangeTokenManager>();
+
         services.AddSingleton<LocalDatabaseInventoryManager>()
             .Alias<IInventoryManager, LocalDatabaseInventoryManager>();
 

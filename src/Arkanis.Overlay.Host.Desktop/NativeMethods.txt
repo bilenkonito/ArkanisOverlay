@@ -91,3 +91,7 @@ GetModuleFileNameEx
 
 PostThreadMessage
 GetCurrentThreadId
+
+// Console Allocation
+AttachConsole
+ATTACH_PARENT_PROCESS

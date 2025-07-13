@@ -120,7 +120,7 @@
         => Stage.AcquiredAt is not null;
 
     private bool IsDisabled
-        => IsCompleted || Stage.FinalizedAt is not null;
+        => IsCompleted || Stage.IsFinalized;
 
     protected override async Task UpdateStageAsync()
     {

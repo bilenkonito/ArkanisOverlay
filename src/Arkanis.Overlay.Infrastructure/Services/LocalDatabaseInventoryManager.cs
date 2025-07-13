@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Services;
 
+using Abstractions;
 using Data;
 using Data.Entities;
 using Data.Entities.Abstractions;
@@ -16,16 +17,12 @@ using Microsoft.Extensions.Primitives;
 internal class LocalDatabaseInventoryManager(
     IDbContextFactory<OverlayDbContext> dbContextFactory,
     IMemoryCache memoryCache,
+    IChangeTokenManager changeTokenManager,
     InventoryEntityMapper mapper
-) : IInventoryManager, IDisposable
+) : IInventoryManager
 {
-    private CancellationTokenSource _changeSource = new();
-
     public IChangeToken ChangeToken
-        => new CancellationChangeToken(_changeSource.Token);
-
-    public void Dispose()
-        => _changeSource.Dispose();
+        => changeTokenManager.GetChangeTokenFor<CacheId>();
 
     public async Task<int> GetUnassignedCountAsync(CancellationToken cancellationToken = default)
         => await memoryCache.GetOrCreateAsync(
@@ -217,12 +214,7 @@ internal class LocalDatabaseInventoryManager(
     }
 
     private async Task TriggerChangeAsync()
-    {
-        var previousChangeSource = _changeSource;
-        _changeSource = new CancellationTokenSource();
-        memoryCache.Remove(CacheId.UnassignedCountQuery);
-        await previousChangeSource.CancelAsync();
-    }
+        => await changeTokenManager.TriggerChangeForAsync<CacheId>();
 
     /// <summary>
     ///     Compacts multiple database entities into one.
@@ -267,7 +259,7 @@ internal class LocalDatabaseInventoryManager(
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    private static class CacheId
+    private class CacheId
     {
         public static readonly GetCount UnassignedCountQuery = new(InventoryEntryBase.EntryType.Virtual);
 

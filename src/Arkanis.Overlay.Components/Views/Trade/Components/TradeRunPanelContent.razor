@@ -2,6 +2,7 @@
 @using Arkanis.Overlay.Domain.Abstractions.Game
 @inherits TradeRunComponent
 @inject IInventoryManager InventoryManager
+@inject IAnalyticsEventReporter EventReporter
 @inject IDialogService DialogService
 
 <MudExpansionPanels MultiExpansion
@@ -56,7 +57,8 @@
                 <TradeRunStageStepper
                     Stage="@stage"
                     StageChanged="@UpdateRunAsync"
-                    TradeRun="@TradeRun"/>
+                    TradeRun="@TradeRun"
+                    Disabled="@Disabled"/>
             </ChildContent>
         </MudExpansionPanel>
 
@@ -91,27 +93,28 @@
                         {
                             <MudButton Class="w-100"
                                        OnClick="FinalizeRunAsync"
-                                       Color="@Color.Error">
+                                       Color="@Color.Error"
+                                       Disabled="@(Disabled)">
                                 Finalize - remaining cargo lost
                             </MudButton>
                             <MudButton Class="w-100"
                                        OnClick="FinalizeRunCargoKeptAsync"
                                        Color="@Color.Warning"
-                                       Disabled="@(IsInProgress && !TradeRun.HasUnsoldCargo)">
+                                       Disabled="@(Disabled || (IsInProgress && !TradeRun.HasUnsoldCargo))">
                                 Finalize - keep cargo in the inventory
                             </MudButton>
                             <MudButton Class="w-100"
                                        OnClick="ContinueAtLastLocationAsync"
                                        Variant="@Variant.Outlined"
                                        Color="@Color.Success"
-                                       Disabled="@IsInProgress">
+                                       Disabled="@(Disabled || IsInProgress)">
                                 Continue at the current location and wait
                             </MudButton>
                             <MudButton Class="w-100"
                                        OnClick="ContinueToDifferentLocationAsync"
                                        Variant="@Variant.Outlined"
                                        Color="@Color.Success"
-                                       Disabled="@IsInProgress">
+                                       Disabled="@(Disabled || IsInProgress)">
                                 Continue to a different destination
                             </MudButton>
                         }
@@ -121,7 +124,7 @@
                                        OnClick="FinalizeRunAsync"
                                        Variant="@Variant.Outlined"
                                        Color="@Color.Success"
-                                       Disabled="@IsInProgress">
+                                       Disabled="@(Disabled || IsInProgress)">
                                 Finalize
                             </MudButton>
                         }
@@ -134,6 +137,10 @@
 
 @code
 {
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
     private bool AllStagesComplete
         => TradeRun.Stages.All(x => x.FinalizedAt is not null);
 
@@ -144,6 +151,7 @@
     {
         TradeRun.FinalizedAt = DateTimeOffset.Now;
         await UpdateRunAsync();
+        await EventReporter.TrackEventAsync(TradeRunEvents.FinalizeTradeRun());
     }
 
     private async Task FinalizeRunCargoKeptAsync()
@@ -168,6 +176,7 @@
             // TODO: potential mismatch of commodity-terminal in case of multiple commodities
             var stage = TradeRun.TerminalSaleStage.CreateRetry(lastSale, unsoldQuantity);
             TradeRun.Sales.Add(stage);
+            await EventReporter.TrackEventAsync(TradeRunEvents.CreateTradeRunStage());
         }
 
         await UpdateRunAsync();
@@ -200,6 +209,7 @@
             };
             var stage = TradeRun.TerminalSaleStage.Create(selectedTradeRoute, runContext);
             TradeRun.Sales.Add(stage);
+            await EventReporter.TrackEventAsync(TradeRunEvents.CreateTradeRunStage());
         }
 
         await UpdateRunAsync();
