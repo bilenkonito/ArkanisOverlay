@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 
 public static class ExternalLinkHelper
 {
-    private static string AddAttributionGoogleAnalyticsTo(string url, string? contentId = null)
+    private static string AddAttributionGoogleAnalyticsTo(string url, string? contentId = null, Dictionary<string, string>? queryParams = null)
     {
-        var queryParams = new Dictionary<string, string>
+        queryParams = new Dictionary<string, string>(queryParams ?? [])
         {
             ["utm_source"] = "Arkanis",
             ["utm_medium"] = "referral",
@@ -19,6 +19,19 @@ public static class ExternalLinkHelper
 
         return url + QueryString.Create(queryParams);
     }
+
+    public static string GetArkanisGitHubLink(string? contentId = null)
+        => AddAttributionGoogleAnalyticsTo("https://github.com/ArkanisCorporation/ArkanisOverlay", contentId);
+
+    public static string GetArkanisGitHubReportBugLink(string? contentId = null)
+        => AddAttributionGoogleAnalyticsTo(
+            "https://github.com/ArkanisCorporation/ArkanisOverlay/issues/new",
+            contentId,
+            new Dictionary<string, string>
+            {
+                ["template"] = "bug_report.yml",
+            }
+        );
 
     public static string GetUexLink(string? contentId = null)
         => AddAttributionGoogleAnalyticsTo("https://uexcorp.space/", contentId);
