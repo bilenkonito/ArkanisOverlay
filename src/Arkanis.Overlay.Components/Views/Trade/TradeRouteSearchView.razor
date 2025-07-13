@@ -272,6 +272,11 @@
         public GameCommodity? Commodity { get; set; }
         public IGameLocation? OriginLocation { get; set; }
         public IGameLocation? DestinationLocation { get; set; }
+
+        public int ScuReachable(int available)
+            => CargoCapacity > 0
+                ? Math.Min(CargoCapacity.Value, available)
+                : available;
     }
 
     public enum SortField
