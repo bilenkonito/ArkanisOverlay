@@ -1,8 +1,12 @@
 namespace Arkanis.Overlay.Domain.Models.Game;
 
+using System.ComponentModel;
+using Attributes;
 using Enums;
 using Search;
 
+[Description("Game Trade Route Entry")]
+[CacheEntryDescription("Game Trade Routes")]
 public class GameTradeRoute(int id, GameCommodity commodity)
     : GameEntity(UexApiGameEntityId.Create<GameTradeRoute>(id), GameEntityCategory.TradeRoute)
 {
