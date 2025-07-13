@@ -16,6 +16,8 @@ public class GameCommodity(int id, string fullName, string codeName)
         => (Id as UexId<GameCommodity>)!;
 
     public bool IsIllegal { get; init; }
+    public bool IsHarvestable { get; init; }
+    public bool IsSellable { get; init; }
 
     public bool IsLegal
         => !IsIllegal;

@@ -36,15 +36,16 @@
         <MudItem xs="12" md="3">
             <GameEntitySelectBox
                 Label="Transport vehicle"
+                Placeholder="Search for a game vehicle"
                 EntityCategories="@( [GameEntityCategory.GroundVehicle, GameEntityCategory.SpaceShip])"
                 Accept="@(x => x is GameVehicle { CargoCapacity: > 0 })"
                 @bind-Value="@SelectedVehicleEntity"
                 @bind-Value:after="@RefreshDataAsync"/>
         </MudItem>
         <MudItem xs="12" md="1">
-            <MudTextField
+            <MudNumericField
                 @bind-Value="@_context.CargoCapacity"
-                InputType="@InputType.Number"
+                Min="0"
                 DebounceInterval="200"
                 OnDebounceIntervalElapsed="RefreshDataAsync"
                 Label="Capacity"
@@ -55,6 +56,7 @@
         <MudItem xs="12" md="2">
             <GameEntitySelectBox
                 Label="Commodity"
+                Placeholder="Search for a game commodity"
                 EntityCategory="@GameEntityCategory.Commodity"
                 Only="@ApplicableCommodities"
                 @bind-Value="@SelectedCommodityEntity"
@@ -63,6 +65,7 @@
         <MudItem xs="12" md="3">
             <GameEntitySelectBox
                 Label="Origin location"
+                Placeholder="Search for a game location"
                 EntityCategory="@GameEntityCategory.Location"
                 Only="@ApplicableOriginLocations"
                 @bind-Value="@SelectedOriginLocationEntity"
@@ -71,6 +74,7 @@
         <MudItem xs="12" md="3">
             <GameEntitySelectBox
                 Label="Destination location"
+                Placeholder="Search for a game location"
                 EntityCategory="@GameEntityCategory.Location"
                 Only="@ApplicableDestinationLocations"
                 @bind-Value="@SelectedDestinationLocationEntity"
@@ -195,7 +199,6 @@
     {
         await Task.CompletedTask;
         _context.Commodity = SelectedCommodityEntity as GameCommodity;
-        _context.CargoCapacity ??= SelectedVehicle?.CargoCapacity ?? CargoCapacity;
         if (_context.CargoCapacity == _context.Vehicle?.CargoCapacity && SelectedVehicle != _context.Vehicle)
         {
             // vehicle selection changed/cleared, if the cargo capacity corresponds to the previous selection update it
@@ -272,6 +275,11 @@
         public GameCommodity? Commodity { get; set; }
         public IGameLocation? OriginLocation { get; set; }
         public IGameLocation? DestinationLocation { get; set; }
+
+        public int ScuReachable(int available)
+            => CargoCapacity > 0
+                ? Math.Min(CargoCapacity.Value, available)
+                : available;
     }
 
     public enum SortField

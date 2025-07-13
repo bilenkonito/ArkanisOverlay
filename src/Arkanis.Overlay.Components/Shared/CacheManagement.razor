@@ -1,9 +1,9 @@
 @using Arkanis.Overlay.Infrastructure.Data
 @using Arkanis.Overlay.Infrastructure.Data.Entities
 @using Arkanis.Overlay.Infrastructure.Services.Abstractions
-@using Humanizer
 @using Microsoft.EntityFrameworkCore
 @implements IDisposable
+@inject NavigationManager NavigationManager
 @inject IDbContextFactory<OverlayDbContext> DbContextFactory
 @inject IEnumerable<ISelfUpdatable> SelfUpdatableServices
 @inject ILogger<CacheManagement> Logger
@@ -23,6 +23,12 @@
     <ToolBarContent>
         <MudStack Justify="@Justify.FlexEnd" Class="w-100" Row>
             <MudButton StartIcon="@Icons.Material.Filled.Refresh"
+                       Color="@Color.Warning"
+                       Disabled="@IsInProgress"
+                       OnClick="@(() => NavigationManager.Refresh(true))">
+                Reload Page
+            </MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.Sync"
                        Color="@Color.Error"
                        Disabled="@IsInProgress"
                        OnClick="@(() => ReloadAllAsync())">
@@ -33,14 +39,12 @@
     <Columns>
         <PropertyColumn Property="@(x => x.Title)" Title="Description">
             <CellTemplate>
-                <MudStack Spacing="0">
+                <MudTooltip Text="@context.Item.Description"
+                            Placement="@Placement.Top">
                     <MudText Typo="@Typo.inherit">
                         @context.Item.Title
                     </MudText>
-                    <MudText Typo="@Typo.caption" Class="text-secondary">
-                        @context.Item.Description
-                    </MudText>
-                </MudStack>
+                </MudTooltip>
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="@(x => x.ContentSizeBytes)"
@@ -71,7 +75,7 @@
         <TemplateColumn>
             <CellTemplate>
                 <MudIconButton
-                    Icon="@Icons.Material.Filled.Refresh"
+                    Icon="@Icons.Material.Filled.Sync"
                     Color="@Color.Error"
                     Size="@Size.Small"
                     Disabled="@IsInProgress"

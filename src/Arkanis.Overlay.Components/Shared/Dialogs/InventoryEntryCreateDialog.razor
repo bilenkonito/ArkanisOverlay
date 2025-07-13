@@ -23,6 +23,7 @@
             <MudItem xs="12">
                 <GameEntitySelectBox
                     Label="Location"
+                    Placeholder="Search for a game location"
                     EntityCategory="@GameEntityCategory.Location"
                     Accept="@(location => location is GameSpaceStation or GameCity or GameOutpost)"
                     @bind-Value="TargetLocationEntity"/>
