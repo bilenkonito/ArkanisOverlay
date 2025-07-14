@@ -2,6 +2,15 @@
   "version": 2,
   "dependencies": {
     "net8.0-windows10.0.17763": {
+      "Chapter.Net.WPF.SystemTray": {
+        "type": "Direct",
+        "requested": "[2.1.0, )",
+        "resolved": "2.1.0",
+        "contentHash": "Zbpek1+VsrBfvsccyjCE5c98k0XNHhklsvswSwi0wCGlBXXSrUeMPyR7tnumrn+b6WuqA8VuAYVil85sZA157Q==",
+        "dependencies": {
+          "Chapter.Net.WPF": "3.3.0"
+        }
+      },
       "Dapplo.Microsoft.Extensions.Hosting.AppServices": {
         "type": "Direct",
         "requested": "[1.0.14, )",
@@ -292,12 +301,6 @@
           "TinyIpc": "3.0.1"
         }
       },
-      "TrayIcon": {
-        "type": "Direct",
-        "requested": "[1.1.1.1, )",
-        "resolved": "1.1.1.1",
-        "contentHash": "uTNrt1zlOUewcaFHwtafwxtSFWEmy6+TK1hQ4ciHhA+5c9yV1kGCtPlFNzOVQkQQyJ5WRpb4SJb/6m+un9pPUg=="
-      },
       "Velopack": {
         "type": "Direct",
         "requested": "[0.0.1251, )",
@@ -305,6 +308,19 @@
         "contentHash": "rDojkZXbakJgTKn8wmw4/kPGP+j63AO87dKRhzwYIVYL1rj7KZKXw+uhA6R6nCXMnHZ0isW9QXNW0O2h7bTVAQ==",
         "dependencies": {
           "NuGet.Versioning": "6.13.2"
+        }
+      },
+      "Chapter.Net.WinAPI": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "eekmw3yXQYE2t3KFtkZdHXS8xCjE0GBvUTZJuRH5hqBeYA9pNQ+EP0E8QjdhQBkuGDyD4HTKqKfsURKqdfYBlg=="
+      },
+      "Chapter.Net.WPF": {
+        "type": "Transitive",
+        "resolved": "3.3.0",
+        "contentHash": "SFRpJP75zRYLrykho5BHPp5aMrmYluM1Uq4wbqhhD3XGxYbWsH78B5n04oOjKQ0t/ek1uPogtOfgDsnxCzOm/g==",
+        "dependencies": {
+          "Chapter.Net.WinAPI": "2.2.0"
         }
       },
       "Dapplo.Microsoft.Extensions.Hosting.UiThread": {

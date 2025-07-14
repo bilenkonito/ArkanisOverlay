@@ -28,6 +28,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Chapter.Net.WPF.SystemTray" />
         <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.AppServices"/>
         <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Plugins"/>
         <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Wpf"/>
@@ -60,7 +61,6 @@
         <PackageReference Include="Serilog.Sinks.Console"/>
         <PackageReference Include="Serilog.Sinks.File"/>
         <PackageReference Include="SingleInstanceCore"/>
-        <PackageReference Include="TrayIcon"/>
         <PackageReference Include="Velopack"/>
     </ItemGroup>
 
