@@ -96,6 +96,19 @@
         "resolved": "3.1.0",
         "contentHash": "K9O9TOzugqOo4LJ87uuq1VG8RAqGp20Ng85Wx932oT5LNBkIgeeGYubVW5UMnOOTanFNbGavmbuYrJr4INzSwg=="
       },
+      "Chapter.Net.WinAPI": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "eekmw3yXQYE2t3KFtkZdHXS8xCjE0GBvUTZJuRH5hqBeYA9pNQ+EP0E8QjdhQBkuGDyD4HTKqKfsURKqdfYBlg=="
+      },
+      "Chapter.Net.WPF": {
+        "type": "Transitive",
+        "resolved": "3.3.0",
+        "contentHash": "SFRpJP75zRYLrykho5BHPp5aMrmYluM1Uq4wbqhhD3XGxYbWsH78B5n04oOjKQ0t/ek1uPogtOfgDsnxCzOm/g==",
+        "dependencies": {
+          "Chapter.Net.WinAPI": "2.2.0"
+        }
+      },
       "Dapplo.Microsoft.Extensions.Hosting.UiThread": {
         "type": "Transitive",
         "resolved": "1.0.14",
@@ -1129,6 +1142,7 @@
           "Arkanis.Overlay.Common": "[1.0.0, )",
           "Arkanis.Overlay.Components": "[1.0.0, )",
           "Arkanis.Overlay.External.UEX": "[1.0.0, )",
+          "Chapter.Net.WPF.SystemTray": "[2.1.0, )",
           "Dapplo.Microsoft.Extensions.Hosting.AppServices": "[1.0.14, )",
           "Dapplo.Microsoft.Extensions.Hosting.Plugins": "[1.0.14, )",
           "Dapplo.Microsoft.Extensions.Hosting.Wpf": "[1.0.14, )",
@@ -1153,7 +1167,6 @@
           "Serilog.Sinks.Console": "[6.0.0, )",
           "Serilog.Sinks.File": "[7.0.0, )",
           "SingleInstanceCore": "[2.2.2, )",
-          "TrayIcon": "[1.1.1.1, )",
           "Velopack": "[0.0.1251, )"
         }
       },
@@ -1181,6 +1194,15 @@
         "dependencies": {
           "Microsoft.AspNetCore.Components": "3.1.8",
           "Microsoft.AspNetCore.Components.Web": "3.1.8"
+        }
+      },
+      "Chapter.Net.WPF.SystemTray": {
+        "type": "CentralTransitive",
+        "requested": "[2.1.0, )",
+        "resolved": "2.1.0",
+        "contentHash": "Zbpek1+VsrBfvsccyjCE5c98k0XNHhklsvswSwi0wCGlBXXSrUeMPyR7tnumrn+b6WuqA8VuAYVil85sZA157Q==",
+        "dependencies": {
+          "Chapter.Net.WPF": "3.3.0"
         }
       },
       "Dapplo.Microsoft.Extensions.Hosting.AppServices": {
@@ -1726,12 +1748,6 @@
         "dependencies": {
           "TinyIpc": "3.0.1"
         }
-      },
-      "TrayIcon": {
-        "type": "CentralTransitive",
-        "requested": "[1.1.1.1, )",
-        "resolved": "1.1.1.1",
-        "contentHash": "uTNrt1zlOUewcaFHwtafwxtSFWEmy6+TK1hQ4ciHhA+5c9yV1kGCtPlFNzOVQkQQyJ5WRpb4SJb/6m+un9pPUg=="
       },
       "Velopack": {
         "type": "CentralTransitive",
