@@ -20,8 +20,7 @@
             _ = UpdateRunAsync();
         }
 
-        <MudExpansionPanel @key="@stage"
-                           Tag="@stage"
+        <MudExpansionPanel Tag="@stage"
                            Gutters="false"
                            Disabled="@isIncomplete"
                            Expanded="@isCurrentlyInProgress"
