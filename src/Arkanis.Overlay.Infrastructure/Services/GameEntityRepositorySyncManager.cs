@@ -50,7 +50,7 @@ internal sealed class GameEntityRepositorySyncManager<T>(
         if (!syncRepositories.Any())
         {
             logger.LogWarning("No external repositories found for entity: {EntityType}", typeof(T));
-            await repository.UpdateAllAsync(new SyncDataUpToDate<T>(), cancellationToken);
+            await repository.UpdateAllAsync(new SyncDataUpToDate<T>(Array.Empty<T>().ToAsyncEnumerable()), cancellationToken);
             return;
         }
 
