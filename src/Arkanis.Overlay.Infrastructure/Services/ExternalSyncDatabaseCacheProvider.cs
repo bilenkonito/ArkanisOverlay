@@ -72,7 +72,7 @@ internal class ExternalSyncDatabaseCacheProvider<TRepository>(
                     currentServiceState
                 );
             }
-            else if (currentDataState is DataProcessingErrored)
+            else if (currentDataState is DataProcessingErrored or DataMissing { FastTrackedInitialization: true })
             {
                 logger.LogWarning(
                     "Permitting use of expired cache for {Type} entities due to the current internal data state: {DataState}",

@@ -71,6 +71,11 @@ internal sealed class GameEntityRepositorySyncManager<T>(
         await repository.UpdateAllAsync(aggregateSyncData, cancellationToken);
     }
 
-    protected override Task InitializeAsyncCore(CancellationToken cancellationToken)
-        => UpdateAsync(true, cancellationToken);
+    protected override async Task InitializeAsyncCore(CancellationToken cancellationToken)
+    {
+        // runs initial data update - this is fast-tracked with whatever cache is available based on initial repository state
+        await UpdateIfNecessaryAsync(cancellationToken);
+        // launches secondary data update to update expired data on the background
+        _ = Task.Run(() => UpdateIfNecessaryAsync(cancellationToken), cancellationToken);
+    }
 }
