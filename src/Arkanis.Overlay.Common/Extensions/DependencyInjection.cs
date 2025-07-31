@@ -186,11 +186,4 @@ public record CommonOptions
 {
     public bool UseFileLogging { get; set; }
     public bool UseSeqLogging { get; set; }
-
-    public CommonOptions()
-    {
-        // Set default values
-        UseFileLogging = false;
-        UseSeqLogging = false;
-    }
 }
