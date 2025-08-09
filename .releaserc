@@ -1,20 +1,33 @@
 {
     "branches": [
-        "main",
         {
-            "name": "nightly",
+            "name": "release/stable",
+            "channel": "stable"
+        },
+        {
+            "name": "main",
             "channel": "nightly",
             "prerelease": "nightly"
         },
         {
-            "name": "rc",
+            "name": "release/rc",
             "channel": "rc",
             "prerelease": "rc"
         },
         {
+            "name": "release/beta",
+            "channel": "beta",
+            "prerelease": "beta"
+        },
+        {
+            "name": "release/alpha",
+            "channel": "alpha",
+            "prerelease": "alpha"
+        },
+        {
             "name": "ci",
             "channel": "ci",
-            "prerelease": "test-do-not-use"
+            "prerelease": "ci-do-not-use"
         }
     ],
     "repositoryUrl": "https://github.com/ArkanisCorporation/ArkanisOverlay",
@@ -23,27 +36,19 @@
     "plugins": [
         "@semantic-release/commit-analyzer",
         [
-            "@semantic-release/exec",
-            {
-                "verifyReleaseCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} ./scripts/release-10-verify.sh",
-                "prepareCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} ./scripts/release-20-prepare.sh",
-                "publishCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} ./scripts/release-30-publish.sh"
-            }
-        ],
-        "@semantic-release/release-notes-generator",
-        [
             "@semantic-release/changelog",
             {
                 "changelogFile": "CHANGELOG.md"
             }
         ],
+        "@semantic-release/release-notes-generator",
+        "@semantic-release/github",
         [
-            "@semantic-release/github",
+            "@semantic-release/exec",
             {
-                "assets": [
-                    { "path": "ArkanisOverlay.zip" },
-                    { "path": "CHANGELOG.md" }
-                ]
+                "verifyReleaseCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} VERSION_CHANNEL=${nextRelease.channel} ./scripts/release-10-verify.sh",
+                "prepareCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} VERSION_CHANNEL=${nextRelease.channel} ./scripts/release-20-prepare.sh",
+                "publishCmd": "VERSION=${nextRelease.version} VERSION_TAG=${nextRelease.gitTag} VERSION_CHANNEL=${nextRelease.channel} ./scripts/release-30-publish.sh"
             }
         ]
     ]

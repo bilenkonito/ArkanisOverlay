@@ -17,7 +17,8 @@ public class UexGameEntityInMemoryRepository<T>(ILogger<UexGameEntityInMemoryRep
     where T : class, IGameEntity
 {
     internal Dictionary<UexApiGameEntityId, T> Entities { get; set; } = [];
-    public InternalDataState DataState { get; private set; } = DataMissing.Instance;
+
+    public InternalDataState DataState { get; private set; } = DataMissing.Initial;
 
     public async IAsyncEnumerable<T> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -40,18 +41,28 @@ public class UexGameEntityInMemoryRepository<T>(ILogger<UexGameEntityInMemoryRep
         if (syncData is SyncDataUpToDate<T>)
         {
             logger.LogDebug("Skipping update for {EntityType} entities, already up to date", typeof(T).Name);
+            Initialized();
             return;
         }
 
         if (syncData is not LoadedSyncData<T> loadedSyncData)
         {
-            logger.LogWarning("Unable to perform update of {EntityType} entities: {@SyncData}", typeof(T).Name, syncData);
+            if (IsReady)
+            {
+                logger.LogWarning("Unable to perform update of {EntityType} entities: {@SyncData}", typeof(T).Name, syncData);
+            }
+            else
+            {
+                Initialized();
+                logger.LogError("Unable to perform initial update of {EntityType} entities: {@SyncData}", typeof(T).Name, syncData);
+            }
+
             return;
         }
 
         try
         {
-            DataState = loadedSyncData.DataState;
+            DataState = loadedSyncData.DataState with { RefreshRequired = false };
             Entities = await loadedSyncData.GameEntities.ToDictionaryAsync(x => x.Id, cancellationToken).ConfigureAwait(false);
             Initialized();
             logger.LogInformation(

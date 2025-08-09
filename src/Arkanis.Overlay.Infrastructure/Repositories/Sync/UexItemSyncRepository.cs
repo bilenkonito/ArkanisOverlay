@@ -1,5 +1,6 @@
 namespace Arkanis.Overlay.Infrastructure.Repositories.Sync;
 
+using System.Collections.Concurrent;
 using System.Globalization;
 using Data.Mappers;
 using Domain.Abstractions;
@@ -25,7 +26,8 @@ internal class UexItemSyncRepository(
     private const int BatchSize = 4;
 
     protected override IDependable GetDependencies()
-        => dependencyResolver.DependsOn<GameProductCategory>(this);
+        => dependencyResolver.DependsOn<GameProductCategory>(this)
+            .AlsoDependsOn<GameCompany>();
 
     protected override async Task<UexApiResponse<ICollection<ItemDTO>>> GetInternalResponseAsync(CancellationToken cancellationToken)
     {
@@ -33,7 +35,8 @@ internal class UexItemSyncRepository(
             .Where(x => x.CategoryType == GameItemCategoryType.Item)
             .Where(category => category.Id.Identity > 0);
 
-        var items = new List<ItemDTO>();
+        // this must be a thread-safe collection due to the batching that follows
+        var items = new ConcurrentBag<ItemDTO>();
         var responseDetectedAsNull = false;
         UexApiResponse<GetItemsOkResponse>? response = null;
 
@@ -42,13 +45,13 @@ internal class UexItemSyncRepository(
             await Task.WhenAll(categoryBatch.Select(LoadForCategoryAsync));
         }
 
-        if (items.Count == 0 && responseDetectedAsNull)
+        if (items.IsEmpty && responseDetectedAsNull)
         {
             // temporary workaround, some responses return Result.Data=null
             ThrowCouldNotParseResponse();
         }
 
-        return CreateResponse(response, items);
+        return CreateResponse(response, items.ToArray());
 
         async Task LoadForCategoryAsync(GameProductCategory category)
         {
@@ -56,19 +59,15 @@ internal class UexItemSyncRepository(
             var categoryId = categoryEntityId.Identity.ToString(CultureInfo.InvariantCulture);
             response = await itemsApi.GetItemsByCategoryAsync(categoryId, cancellationToken).ConfigureAwait(false);
             responseDetectedAsNull |= response.Result.Data is null;
-            items.AddRange(response.Result.Data ?? []);
+            foreach (var dto in response.Result.Data ?? [])
+            {
+                items.Add(dto);
+            }
         }
     }
 
     protected override UexApiGameEntityId? GetSourceApiId(ItemDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameItem>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
-
-    /// <remarks>
-    ///     Some items do not have company ID defined.
-    ///     Typical example are centurion/imperator subscriber items.
-    /// </remarks>
-    protected override bool IncludeSourceModel(ItemDTO sourceModel)
-        => sourceModel.Id_company > 0;
 }

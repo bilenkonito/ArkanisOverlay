@@ -34,6 +34,6 @@ internal class UexOutpostSyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(UniverseOutpostDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameOutpost>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 }

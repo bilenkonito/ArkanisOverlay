@@ -1,9 +1,9 @@
 name: .NET Release
 
 permissions:
-  contents: write       # for publishing a GitHub release
+  contents: write       # for publishing a GitHub release and creating release backpropagation PRs
   issues: write         # for commenting on released issues
-  pull-requests: write  # for commenting on released pull requests
+  pull-requests: write  # for commenting on released pull requests and creating release backpropagation PRs
   packages: write       # for publishing packages in repository registry
 
 on:
@@ -55,6 +55,9 @@ jobs:
 
       - run: echo "Cache hit - ${{ steps.setup-dotnet.outputs.cache-hit }}"
 
+      - name: Restore dependencies
+        run: dotnet restore --locked-mode -p:EnableWindowsTargeting=true
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -70,7 +73,7 @@ jobs:
         id: semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEBUG: ${{ inputs.dry_run && 'semantic-release:*' || '' }}
+          DEBUG: ${{ inputs.dry_run && '*' || '' }}
         with:
           ci: ${{ ! inputs.dry_run }}
           dry_run: ${{ inputs.dry_run }}
@@ -80,6 +83,20 @@ jobs:
             @semantic-release/exec@7.0.3
 
       - run: echo "New release - ${{ steps.semantic-release.outputs.new_release_version || 'no new release' }}"
+
+      - name: Setup Version Backpropagation PR
+        if: ${{ ! inputs.dry_run && steps.semantic-release.outputs.new_release_version && github.ref == 'refs/heads/release/stable' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_URL=$(gh pr new --base ${{ github.event.repository.default_branch }} --head ${{ github.ref_name }} --title "Backpropagate release version to default branch: ${{ steps.semantic-release.outputs.new_release_version }}" --body "This is an automated post-release action." --label ci --label automated)
+          PR_NUMBER=${PR_URL##*/}
+          gh pr merge --merge --auto ${PR_URL}
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.PR_AUTOMATION_PAT }}" \
+            -H "Accept: application/vnd.github+json" \
+            "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${PR_NUMBER}/reviews" \
+            -d '{"event":"APPROVE"}'
 
     outputs:
       new_version: ${{ steps.semantic-release.outputs.new_release_version }}

@@ -4,18 +4,20 @@ using Abstractions;
 using Domain.Abstractions.Game;
 using Domain.Abstractions.Services;
 using Domain.Models;
+using Domain.Models.Game;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
 /// <summary>
 ///     This service performs synchronization of internal and external game entity repositories.
 /// </summary>
-/// <param name="syncRepository">External repository</param>
+/// <param name="syncRepositories">External repositories</param>
 /// <param name="repository">Internal repository</param>
 /// <param name="logger">A logger</param>
 /// <typeparam name="T">Internal entity domain type</typeparam>
 internal sealed class GameEntityRepositorySyncManager<T>(
-    IGameEntityExternalSyncRepository<T> syncRepository,
+    IEnumerable<IGameEntityExternalSyncRepository<T>> syncRepositories,
     IGameEntityRepository<T> repository,
     ILogger<GameEntityRepositorySyncManager<T>> logger
 ) : SelfInitializableServiceBase, ISelfUpdatable where T : class, IGameEntity
@@ -34,23 +36,46 @@ internal sealed class GameEntityRepositorySyncManager<T>(
     private async Task UpdateAsync(bool onlyWhenNecessary, CancellationToken cancellationToken)
     {
         var currentDataState = repository.DataState;
+        if (!onlyWhenNecessary && currentDataState is DataCached cached)
+        {
+            currentDataState = cached with { RefreshRequired = true };
+        }
+
         if (currentDataState is not DataMissing and DataCached { RefreshRequired: true } && onlyWhenNecessary)
         {
             logger.LogDebug("Current data of {EntityType} repository are up to date: {AppDataState}", typeof(T), currentDataState);
             return;
         }
 
-        var syncData = await syncRepository.GetAllAsync(currentDataState, cancellationToken);
+        if (!syncRepositories.Any())
+        {
+            logger.LogWarning("No external repositories found for entity: {EntityType}", typeof(T));
+            await repository.UpdateAllAsync(new SyncDataUpToDate<T>(Array.Empty<T>().ToAsyncEnumerable()), cancellationToken);
+            return;
+        }
+
+        var aggregateSyncData = GameEntitySyncData<T>.Missing;
+        foreach (var syncRepository in syncRepositories)
+        {
+            var syncData = await syncRepository.GetAllAsync(currentDataState, cancellationToken);
+            aggregateSyncData = aggregateSyncData.MergeWith(syncData);
+        }
+
         logger.LogDebug(
-            "Updating data of {EntityType} repository: {CurrentAppDataState} using {NewAppDataState}",
-            typeof(T),
+            "Updating data of {RepositoryType}: {CurrentAppDataState} using {NewAppDataState}",
+            repository.GetType().ShortDisplayName(),
             currentDataState,
-            syncData
+            aggregateSyncData
         );
 
-        await repository.UpdateAllAsync(syncData, cancellationToken);
+        await repository.UpdateAllAsync(aggregateSyncData, cancellationToken);
     }
 
-    protected override Task InitializeAsyncCore(CancellationToken cancellationToken)
-        => UpdateAsync(true, cancellationToken);
+    protected override async Task InitializeAsyncCore(CancellationToken cancellationToken)
+    {
+        // runs initial data update - this is fast-tracked with whatever cache is available based on initial repository state
+        await UpdateIfNecessaryAsync(cancellationToken);
+        // launches secondary data update to update expired data on the background
+        _ = Task.Run(() => UpdateIfNecessaryAsync(cancellationToken), cancellationToken);
+    }
 }

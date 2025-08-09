@@ -1,0 +1,130 @@
+namespace Arkanis.Overlay.Domain.Models.Inventory;
+
+using Abstractions;
+using Abstractions.Game;
+using Game;
+using Trade;
+
+public record InventoryEntryId(Guid Identity) : TypedDomainId<Guid>(Identity)
+{
+    public static InventoryEntryId CreateNew()
+        => new(Guid.NewGuid());
+}
+
+public static class InventoryEntry
+{
+    public static VirtualInventoryEntry Create(QuantityOf quantityOf, InventoryEntryList? list = null)
+        => new()
+        {
+            Quantity = quantityOf,
+            List = list,
+        };
+
+    public static LocationInventoryEntry Create(QuantityOf quantityOf, IGameLocation location, InventoryEntryList? list = null)
+        => new()
+        {
+            Quantity = quantityOf,
+            Location = location,
+            List = list,
+        };
+
+    public static VirtualInventoryEntry Create(GameItem item, Quantity quantity, InventoryEntryList? list = null)
+        => Create(QuantityOf.Create(item, quantity), list);
+
+    public static VirtualInventoryEntry Create(GameCommodity item, Quantity quantity, InventoryEntryList? list = null)
+        => Create(QuantityOf.Create(item, quantity), list);
+
+    public static LocationInventoryEntry CreateAt(GameItem item, Quantity quantity, IGameLocation location, InventoryEntryList? list = null)
+        => Create(QuantityOf.Create(item, quantity), location, list);
+
+    public static LocationInventoryEntry CreateAt(GameCommodity item, Quantity quantity, IGameLocation location, InventoryEntryList? list = null)
+        => Create(QuantityOf.Create(item, quantity), location, list);
+
+    public static InventoryEntryBase Create(IGameEntity source, Quantity quantity, IGameLocation? location = null, InventoryEntryList? list = null)
+        => source switch
+        {
+            GameItem item => location is not null
+                ? CreateAt(item, quantity, location, list)
+                : Create(item, quantity, list),
+            GameCommodity commodity => location is not null
+                ? CreateAt(commodity, quantity, location, list)
+                : Create(commodity, quantity, list),
+            _ => throw new NotSupportedException($"Unable to create appropriate inventory entry for: {source}"),
+        };
+
+    public static InventoryEntryBase CreateFrom(
+        InventoryEntryBase source,
+        Quantity? quantity = null,
+        IGameLocation? location = null,
+        InventoryEntryList? list = null
+    )
+    {
+        quantity ??= source.Quantity;
+        list ??= source.List;
+        if (source is IGameLocatedAt locatedAt)
+        {
+            location ??= locatedAt.Location;
+        }
+
+        return Create(source.Quantity.Reference.Entity, quantity, location, list);
+    }
+}
+
+public abstract class InventoryEntryBase : IIdentifiable
+{
+    public enum EntryType
+    {
+        Undefined,
+        Virtual,
+        Location,
+    }
+
+    public InventoryEntryId Id { get; init; } = InventoryEntryId.CreateNew();
+
+    public bool IsManagedInternally
+        => TradeRun is not null;
+
+    public IGameEntity Entity
+        => Quantity.Reference.Entity;
+
+    public TradeRun? TradeRun { get; set; }
+    public InventoryEntryList? List { get; set; }
+
+    public abstract EntryType Type { get; }
+
+    public required QuantityOf Quantity { get; set; }
+
+    IDomainId IIdentifiable.Id
+        => Id;
+
+    public abstract InventoryEntryBase SetLocation(IGameLocation location);
+}
+
+public sealed class VirtualInventoryEntry : InventoryEntryBase
+{
+    public override EntryType Type
+        => EntryType.Virtual;
+
+    public override InventoryEntryBase SetLocation(IGameLocation location)
+        => new LocationInventoryEntry
+        {
+            Id = Id,
+            Quantity = Quantity,
+            Location = location,
+            List = List,
+        };
+}
+
+public sealed class LocationInventoryEntry : InventoryEntryBase, IGameLocatedAt
+{
+    public override EntryType Type
+        => EntryType.Location;
+
+    public required IGameLocation Location { get; set; }
+
+    public override InventoryEntryBase SetLocation(IGameLocation location)
+    {
+        Location = location;
+        return this;
+    }
+}

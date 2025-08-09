@@ -4,16 +4,16 @@ on:
   # You can use the GitHub API to trigger a webhook event called repository_dispatch
   # when you want to trigger a workflow for activity that happens outside of GitHub.
   repository_dispatch:
-    branches: [ main, rc, nightly, dev, ci ]
+    branches: [ main, release/*, ci ]
   push:
-    branches: [ main, rc, nightly, dev, ci ]
+    branches: [ main, release/*, ci ]
   pull_request:
-    branches: [ main, rc, nightly, dev ]
+    branches: [ main, release/* ]
 
 permissions:
-  contents: write       # for publishing a GitHub release
+  contents: write       # for publishing a GitHub release and creating release backpropagation PRs
   issues: write         # for commenting on released issues
-  pull-requests: write  # for commenting on released pull requests
+  pull-requests: write  # for commenting on released pull requests and creating release backpropagation PRs
   packages: write       # for publishing packages in repository registry
 
 env:
@@ -33,10 +33,10 @@ jobs:
     with:
       dry_run: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/ci' }}
 
-  deploy:
+  deploy-production:
     name: Deployment
-    if: ${{ needs.release.outputs.new_version != '' }}
     needs: release
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Would run deployment pipeline here"
+    if: ${{ github.ref == 'refs/heads/release/stable' && needs.release.outputs.new_tag != '' }}
+    uses: ./.github/workflows/_deploy-production.yaml
+    with:
+      image_ref: ${{ needs.release.outputs.new_tag }}

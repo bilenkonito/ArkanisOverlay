@@ -4,10 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <ContainerRepository>ArkanisCorporation/ArkanisOverlay</ContainerRepository>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <EnableSdkContainerSupport>true</EnableSdkContainerSupport>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,10 +15,17 @@
 
     <ItemGroup>
         <Content Remove="packages.lock.json"/>
+        <Content Include="..\..\.dockerignore">
+          <Link>.dockerignore</Link>
+        </Content>
         <None Include="packages.lock.json">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Octokit"/>
     </ItemGroup>
 
 </Project>

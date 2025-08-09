@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 /// </remarks>
 [Trait(nameof(TestConstants.Traits.DataSource), TestConstants.Traits.DataSource.ExternalApi)]
 [Trait(nameof(TestConstants.Traits.DataState), TestConstants.Traits.DataState.Live)]
+[Collection(TestConstants.Collections.RepositorySyncLiveApi)]
 public class LiveUexTerminalSyncRepositoryTest(ITestOutputHelper testOutputHelper, LiveUexSyncRepositoryTestFixture fixture)
     : UexSyncRepositoryTestBase<GameTerminal, LiveUexSyncRepositoryTestFixture>(testOutputHelper, fixture)
 {

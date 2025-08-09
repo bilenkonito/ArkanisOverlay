@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -eEuo pipefail
 
+THIS_DIR="$(dirname "$(realpath "$0")")"
+
+. "${THIS_DIR}/common.sh"
+
 ### prepareCmd
 #
 #| Command property | Description                                                                                                         |
@@ -9,10 +13,17 @@ set -eEuo pipefail
 #| `stdout`         | Can be used for logging.                                                                                            |
 #| `stderr`         | Can be used for logging.                                                                                            |
 
-[[ -z "${VERSION}" ]] && >&2 echo "VERSION is not set" && exit 2
-[[ -z "${VERSION_TAG}" ]] && >&2 echo "VERSION_TAG is not set" && exit 2
-[[ -z "${CONFIGURATION}" ]] && CONFIGURATION="Release"
+if [[ ! -d publish-win64 ]]; then
+  >&2 echo "publish-win64 directory does not exist"
+  exit 2
+fi
 
-"$(dirname "$(realpath "$0")")/release-21-prepare-win.sh"
+if [[ ! -d publish-server ]]; then
+  >&2 echo "publish-server directory does not exist"
+  exit 2
+fi
 
-"$(dirname "$(realpath "$0")")/release-22-prepare-server.sh"
+if [[ ! -d release-win64 ]]; then
+  >&2 echo "release-win64 directory does not exist"
+  exit 2
+fi

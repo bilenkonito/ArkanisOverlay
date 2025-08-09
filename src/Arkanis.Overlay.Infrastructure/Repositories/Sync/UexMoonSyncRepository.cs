@@ -34,6 +34,6 @@ internal class UexMoonSyncRepository(
 
     protected override UexApiGameEntityId? GetSourceApiId(UniverseMoonDTO source)
         => source.Id is not null
-            ? UexApiGameEntityId.Create<GameMoon>(source.Id.Value)
+            ? Mapper.CreateGameEntityId(source, x => x.Id)
             : null;
 }

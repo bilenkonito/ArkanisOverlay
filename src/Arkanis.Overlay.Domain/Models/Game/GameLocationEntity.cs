@@ -11,26 +11,30 @@ public abstract class GameLocationEntity(UexApiGameEntityId id, GameLocationEnti
 
     public GameLocationEntity? Parent { get; } = parent;
 
+    public string? ImageUrl { get; set; }
+    public string? ImageAuthor { get; set; }
+
     public HashSet<UexApiGameEntityId> ParentIds { get; } = parent is not null
         ? [parent.Id, ..parent.ParentIds]
+        : [];
+
+    public IEnumerable<IGameLocation> Parents { get; } = parent is not null
+        ? [parent, ..parent.Parents]
         : [];
 
     IGameLocation? IGameLocation.ParentLocation
         => Parent;
 
-    public override IEnumerable<SearchableTrait> SearchableAttributes
+    protected override IEnumerable<SearchableTrait> CollectSearchableTraits()
     {
-        get
+        if (Parent is not null)
         {
-            if (Parent is not null)
-            {
-                yield return new SearchableLocation(this);
-            }
+            yield return new SearchableLocation(this);
+        }
 
-            foreach (var searchableAttribute in base.SearchableAttributes)
-            {
-                yield return searchableAttribute;
-            }
+        foreach (var searchableAttribute in base.CollectSearchableTraits())
+        {
+            yield return searchableAttribute;
         }
     }
 

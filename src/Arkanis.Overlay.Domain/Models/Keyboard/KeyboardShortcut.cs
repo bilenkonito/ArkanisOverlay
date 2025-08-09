@@ -24,8 +24,7 @@ public sealed class KeyboardShortcut(IEnumerable<KeyboardKey> pressedKeys) : IEq
             var categoryCounts = PressedKeys.Select(KeyboardKeyUtils.GetCategory).GroupBy(key => key).ToDictionary(x => x.Key, x => x.Count());
             var modifierKeyCount = categoryCounts.GetValueOrDefault(KeyboardKeyCategory.Modifier, 0);
             return IsEmpty
-                   || modifierKeyCount >= 2
-                   || (modifierKeyCount == 1 && categoryCounts.Count >= 2 && categoryCounts.Values.Sum() == 2);
+                   || (categoryCounts.Count > 0 && categoryCounts.Values.Sum() > 0);
         }
     }
 

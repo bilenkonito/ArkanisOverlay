@@ -1,9 +1,25 @@
 <Project>
     <PropertyGroup>
         <LangVersion>preview</LangVersion>
+        <AnalysisLevel>preview</AnalysisLevel>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn>
+            $(NoWarn);
             CA1848; <!-- For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogError(ILogger, string?, params object?[])' -->
+            CA1826; <!-- Do not use Enumerable methods on indexable collections. Instead use the collection directly. -->
+            CA1822; <!-- Member 'PrepareRequest' does not access instance data and can be marked as static. -->
         </NoWarn>
+        <WarningsNotAsErrors>
+            $(WarningsNotAsErrors);
+            NU1900; <!-- Error occurred while getting package vulnerability data: Unable to load the service index for source... -->
+        </WarningsNotAsErrors>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PublisherName>Arkanis Corporation</PublisherName>
+        <Company>Arkanis Corporation</Company>
+        <Authors>FatalMerlin, TheKronnY and contributors</Authors>
+        <Copyright>Copyright © $([System.DateTime]::Now.Year) FatalMerlin, TheKronnY and contributors</Copyright>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -13,10 +29,11 @@
         <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
         <!-- Use package version lock file to ensure consistent package versions across builds -->
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
     </PropertyGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="$(AssemblyName).UnitTests"/>
-        <InternalsVisibleTo Include="$(AssemblyName).IntegrationTests"/>
+        <InternalsVisibleTo Include="$(PackageId).UnitTests"/>
+        <InternalsVisibleTo Include="$(PackageId).IntegrationTests"/>
     </ItemGroup>
 </Project>
