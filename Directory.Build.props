@@ -29,6 +29,7 @@
         <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
         <!-- Use package version lock file to ensure consistent package versions across builds -->
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
     </PropertyGroup>
 
     <ItemGroup>
